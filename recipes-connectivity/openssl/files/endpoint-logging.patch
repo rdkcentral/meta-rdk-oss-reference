@@ -1,0 +1,86 @@
+Date: Mar 30, 2022
+From: pkappe316 <Prakash_KAPPESANNANAGAPPA@comcast.com>
+Source: COMCAST
+Subject: Log all endpoints from openssl using to connect
+Signed-off-by: pkappe316 <Prakash_KAPPESANNANAGAPPA@comcast.com>
+Index: openssl-1.1.1g/include/openssl/ssl.h
+===================================================================
+--- openssl-1.1.1g.orig/include/openssl/ssl.h
++++ openssl-1.1.1g/include/openssl/ssl.h
+@@ -1680,6 +1680,7 @@ __owur X509 *SSL_get_peer_certificate(co
+ 
+ __owur STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s);
+ 
++void SSL_endpoint_logging(const SSL *s);
+ __owur int SSL_CTX_get_verify_mode(const SSL_CTX *ctx);
+ __owur int SSL_CTX_get_verify_depth(const SSL_CTX *ctx);
+ __owur SSL_verify_cb SSL_CTX_get_verify_callback(const SSL_CTX *ctx);
+Index: openssl-1.1.1g/ssl/build.info
+===================================================================
+--- openssl-1.1.1g.orig/ssl/build.info
++++ openssl-1.1.1g/ssl/build.info
+@@ -7,7 +7,7 @@ SOURCE[../libssl]=\
+         methods.c   t1_lib.c  t1_enc.c tls13_enc.c \
+         d1_lib.c  record/rec_layer_d1.c d1_msg.c \
+         statem/statem_dtls.c d1_srtp.c \
+-        ssl_lib.c ssl_cert.c ssl_sess.c \
++        ssl_lib.c ssl_elog.c ssl_cert.c ssl_sess.c \
+         ssl_ciph.c ssl_stat.c ssl_rsa.c \
+         ssl_asn1.c ssl_txt.c ssl_init.c ssl_conf.c  ssl_mcnf.c \
+         bio_ssl.c ssl_err.c tls_srp.c t1_trce.c ssl_utst.c \
+Index: openssl-1.1.1g/ssl/ssl_elog.c
+===================================================================
+--- /dev/null
++++ openssl-1.1.1g/ssl/ssl_elog.c
+@@ -0,0 +1,29 @@
++#include "ssl_local.h"
++#include <systemd/sd-journal.h>
++
++#define ARG_PRIORITY LOG_INFO
++#define LEVEL_PRIORITY 1
++
++void SSL_endpoint_logging(const SSL *s) {
++   if ( s != NULL ) {
++      const char *endpointname=SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
++      if ( endpointname != NULL ) {
++          FILE *CUSTOM_LOG;
++          int journal_fd;
++
++          journal_fd = sd_journal_stream_fd("sslendpoint" ,ARG_PRIORITY, LEVEL_PRIORITY);
++          if(journal_fd >= 0){
++              CUSTOM_LOG = fdopen(journal_fd, "w");
++              if(!CUSTOM_LOG) {
++                  fprintf(stderr, "Failed to create file object\n");
++                  close(journal_fd);
++              }
++              else {
++                  fprintf(CUSTOM_LOG, "%s", endpointname);
++                  fclose(CUSTOM_LOG);
++              }
++          }
++      }
++   }
++}
++
+Index: openssl-1.1.1g/ssl/ssl_lib.c
+===================================================================
+--- openssl-1.1.1g.orig/ssl/ssl_lib.c
++++ openssl-1.1.1g/ssl/ssl_lib.c
+@@ -1527,6 +1527,8 @@ X509 *SSL_get_peer_certificate(const SSL
+         return r;
+ 
+     X509_up_ref(r);
++    /* Get each endpoint/hostname from every secure connection */
++    SSL_endpoint_logging(s);
+ 
+     return r;
+ }
+Index: openssl-1.1.1g/util/libssl.num
+===================================================================
+--- openssl-1.1.1g.orig/util/libssl.num
++++ openssl-1.1.1g/util/libssl.num
+@@ -498,3 +498,4 @@ SSL_CTX_get_recv_max_early_data
+ SSL_CTX_set_recv_max_early_data         499	1_1_1	EXIST::FUNCTION:
+ SSL_CTX_set_post_handshake_auth         500	1_1_1	EXIST::FUNCTION:
+ SSL_get_signature_type_nid              501	1_1_1a	EXIST::FUNCTION:
++SSL_endpoint_logging                    32768  1_1_1g  EXIST::FUNCTION:

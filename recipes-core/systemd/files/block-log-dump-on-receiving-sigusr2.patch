@@ -1,0 +1,27 @@
+Date: Oct 14 2020
+From: Deva <Deva_Thiyagarajan2@comcast.com>
+Subject: Block systemd manager log dump on receiving sigusr2
+Source: COMCAST
+Signed-off-by: Deva <Deva_Thiyagarajan2@comcast.com>
+Index: git/src/core/manager.c
+===================================================================
+--- git.orig/src/core/manager.c
++++ git/src/core/manager.c
+@@ -1637,6 +1637,9 @@ static int manager_dispatch_signal_fd(sd
+                         _cleanup_fclose_ FILE *f = NULL;
+                         size_t size;
+ 
++                        log_error("Received SIGUSR2. Blocking log dump");
++
++#if 0
+                         f = open_memstream(&dump, &size);
+                         if (!f) {
+                                 log_warning("Failed to allocate memory stream.");
+@@ -1657,6 +1660,7 @@ static int manager_dispatch_signal_fd(sd
+                         }
+ 
+                         log_dump(LOG_INFO, dump);
++#endif
+                         break;
+                 }
+ 

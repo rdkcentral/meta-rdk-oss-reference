@@ -1,0 +1,34 @@
+Date: Apr 5, 2016 11:53 PM
+From: Vinu Palackal <Vinu_P@cable.comcast.com>
+Subject: [PATCH] DELIA-13604: resolv.dnsmasq empty file
+Dibbler configuration file was resolv.conf, we are cusmtomizing this to /etc/resolv.dnsmasq to align with our env.	
+Source: COMCAST a05d1cd5c70747095c10dea0719411309e17fc25 Apr 5, 2016 11:53 PM
+Signed-off-by: Vinu Palackal <Vinu_P@cable.comcast.com>
+---
+
+Index: dibbler-1.0.0RC2/Misc/Portable.h
+===================================================================
+--- dibbler-1.0.0RC2.orig/Misc/Portable.h
++++ dibbler-1.0.0RC2/Misc/Portable.h
+@@ -150,7 +150,7 @@ struct link_state_notify_t
+ #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
+ #define SRVCONF_FILE       "/etc/dibbler/server.conf"
+ #define RELCONF_FILE       "/etc/dibbler/relay.conf"
+-#define RESOLVCONF_FILE    "/etc/resolv.conf"
++#define RESOLVCONF_FILE    "/etc/resolv.dnsmasq"
+ #define NTPCONF_FILE       "/etc/ntp.conf"
+ #define RADVD_FILE         "/etc/dibbler/radvd.conf"
+ #define CLNTPID_FILE       "/var/lib/dibbler/client.pid"
+Index: dibbler-1.0.0RC2/Misc/Portable.h.in
+===================================================================
+--- dibbler-1.0.0RC2.orig/Misc/Portable.h.in
++++ dibbler-1.0.0RC2/Misc/Portable.h.in
+@@ -150,7 +150,7 @@ struct link_state_notify_t
+ #define CLNTCONF_FILE      "/etc/dibbler/client.conf"
+ #define SRVCONF_FILE       "/etc/dibbler/server.conf"
+ #define RELCONF_FILE       "/etc/dibbler/relay.conf"
+-#define RESOLVCONF_FILE    "/etc/resolv.conf"
++#define RESOLVCONF_FILE    "/etc/resolv.dnsmasq"
+ #define NTPCONF_FILE       "/etc/ntp.conf"
+ #define RADVD_FILE         "/etc/dibbler/radvd.conf"
+ #define CLNTPID_FILE       "/tmp/dibbler/client.pid"

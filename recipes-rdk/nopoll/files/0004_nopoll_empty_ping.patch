@@ -1,0 +1,21 @@
+Date: May 25, 2024
+From: Chris Buchter <Chris_Buchter@cable.comcast.com>
+Source: COMCAST
+Subject: IPControl actually does respond to ping with pong, but handler doesn't get called when ping doesn't contain data. 
+Update nopoll with patch to make this work
+Signed-off-by: Chris Buchter <Chris_Buchter@cable.comcast.com>
+Index: git/src/nopoll_conn.c
+===================================================================
+--- git.orig/src/nopoll_conn.c
++++ git/src/nopoll_conn.c
+@@ -3802,6 +3802,10 @@ noPollMsg   * nopoll_conn_get_msg (noPol
+ 			if (msg->op_code == NOPOLL_PING_FRAME) {
+ 
+ 				nopoll_log (conn->ctx, NOPOLL_LEVEL_DEBUG, "PING received over connection id=%d, replying PONG", conn->id);
++				/* Send to ping handler IF it exists */
++				if(conn->on_ping_msg) {
++				    conn->on_ping_msg (conn->ctx, conn, msg, conn->on_ping_msg_data);
++			        }
+ 				/* call to send pong */
+ 				nopoll_conn_send_pong (conn, nopoll_msg_get_payload_size (msg), (noPollPtr)nopoll_msg_get_payload (msg));
+ 				nopoll_msg_unref (msg);

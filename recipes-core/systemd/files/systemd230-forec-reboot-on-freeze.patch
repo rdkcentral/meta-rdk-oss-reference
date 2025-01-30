@@ -1,0 +1,42 @@
+Date: Dec 11, 2018 1:56 AM
+From: Vinu Palackal <Vinu_P@cable.comcast.com>
+Subject: [PATCH] XONE-19886: force reboot on systemd freeze
+        Added a force reboot to ensure the box reboot on systemd freeze
+Source: COMCAST a91e26dc7ea57c67227898c2a8cfb685795db173 Sep 20, 2019 2:46 PM
+Signed-off-by: Vinu Palackal <Vinu_P@cable.comcast.com>
+---
+
+Index: git/src/core/main.c
+===================================================================
+--- git.orig/src/core/main.c
++++ git/src/core/main.c
+@@ -130,7 +130,8 @@ static uint64_t arg_default_tasks_max =
+ static sd_id128_t arg_machine_id = {};
+ 
+ noreturn static void freeze_or_reboot(void) {
+-
++        // create a FILE typed pointer
++	FILE *file_pointer;
+         if (arg_crash_reboot) {
+                 log_notice("Rebooting in 10s...");
+                 (void) sleep(10);
+@@ -141,6 +142,19 @@ noreturn static void freeze_or_reboot(vo
+         }
+ 
+         log_emergency("Freezing execution.");
++        log_info("Systemd went into freeze Mode, we will do a force reboot on next reboot call");
++       	// open the file "name_of_file.txt" for writing
++	file_pointer = fopen("/tmp/systemd_freeze_reboot_on", "w"); 
++        if ( file_pointer != NULL )
++        { 
++	  // Write to the file
++	  fprintf(file_pointer, "REBOOT");
++	
++	  // Close the file
++	  fclose(file_pointer);
++        }else {
++           log_error("Failed to open reboot flag file");
++        } 
+         freeze();
+ }
+ 

@@ -1,0 +1,21 @@
+Date: Dec 17, 2015 2:25 AM
+From: Vinu Palackal <Vinu_P@cable.comcast.com>
+Subject: [PATCH] DELIA-11508: Adding the year info into the log timestamp prefix
+	Year info was not there in the timestamp prefix, Ensure year value in the timestamp prefix.
+Source: COMCAST 87d5db5553d23d4ffce67214e1466766b3d830e4 Dec 17, 2015 5:55 AM
+Signed-off-by: Vinu Palackal <Vinu_P@cable.comcast.com>
+---
+
+Index: git/src/shared/logs-show.c
+===================================================================
+--- git.orig/src/shared/logs-show.c
++++ git/src/shared/logs-show.c
+@@ -332,7 +332,7 @@ static int output_short(
+                         r = strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S%z", localtime_r(&t, &tm));
+                         break;
+                 case OUTPUT_SHORT_PRECISE:
+-                        r = strftime(buf, sizeof(buf), "%b %d %H:%M:%S", localtime_r(&t, &tm));
++                        r = strftime(buf, sizeof(buf), "%Y %b %d %H:%M:%S", localtime_r(&t, &tm));
+                         if (r > 0) {
+                                 snprintf(buf + strlen(buf), sizeof(buf) - strlen(buf),
+                                          ".%06llu", (unsigned long long) (x % USEC_PER_SEC));

@@ -1,0 +1,24 @@
+Date: Mar 15 2021
+From: Swarnalatha <Swarnalatha_SubiramanyaRaju@comcast.com>
+Subject: Identify minimum requirements of binaries and libraries
+running inside the container
+1.Harden the Netflix conatiner  (Crun based) configuration by removing
+unwanted container capabilities
+2. All generic mount binds are removed from the container configuration
+3. Restrict the permissions of mount entries in the configuration
+4. Restrict the system calls with in the container
+5. Restrict the cgroup memory with in the container
+Source: COMCAST
+Signed-off-by: Swarnalatha <Swarnalatha_SubiramanyaRaju@comcast.com>
+Index: git/src/arch-arm-syscalls.c
+===================================================================
+--- git.orig/src/arch-arm-syscalls.c
++++ git/src/arch-arm-syscalls.c
+@@ -82,6 +82,7 @@ const struct arch_syscall_def arm_syscal
+ 	{ "clone", (__SCMP_NR_BASE + 120) },
+ 	{ "clone3", (__SCMP_NR_BASE + 435) },
+ 	{ "close", (__SCMP_NR_BASE +  6) },
++	{ "close_range", (__SCMP_NR_BASE +  436) },
+ 	{ "connect", (__SCMP_NR_BASE + 283) },
+ 	{ "copy_file_range", (__SCMP_NR_BASE + 391) },
+ 	{ "creat", (__SCMP_NR_BASE +  8) },

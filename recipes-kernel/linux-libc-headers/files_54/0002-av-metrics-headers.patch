@@ -1,0 +1,159 @@
+From d82de9e6772f4d7c92a0164f3accff8cd5fa388d Mon Sep 17 00:00:00 2001
+From: Deekshit Devadas <deekshit.devadas@sky.uk>
+Date: Mon, 19 Jun 2023 12:43:12 +0100
+Subject: [PATCH] RDK-42648: Add kernel interfaces for metrics generation
+
+Reason for change: 1) Add Audio, Video, Idle Time
+& AAMP Metrics to help check AV playback performance
+
+Test Procedure: Verify Metrics
+Risks: Low
+Priority: P1
+Signed-off-by: deekshit.devadas <deekshit.devadas@sky.uk>
+
+Change-Id: I63f0c4d858eb4fbc92dc052eb5eb6d3b45a4001d
+---
+
+diff -Naur a/linux-4.9/include/uapi/linux/prctl.h b/linux-4.9/include/uapi/linux/prctl.h
+--- a/include/uapi/linux/prctl.h	2023-09-12 15:47:10.081799545 +0100
++++ b/include/uapi/linux/prctl.h	2023-09-12 15:49:33.497792810 +0100
+@@ -197,4 +197,139 @@
+ # define PR_CAP_AMBIENT_LOWER		3
+ # define PR_CAP_AMBIENT_CLEAR_ALL	4
+ 
++#define PR_SET_FTRACE_MARKER	99
++
++/* sets max size of string buffer */
++#define FTRACE_BUF_SIZE	1024
++
++/* define structure(s) used for logging video and audio metrics */
++typedef struct {
++	signed long long lastSyncTime;
++	signed long long maxSyncTime;
++	signed long long minSyncTime;
++	signed long long sumSyncTime;
++	int numVsyncs1ms;
++	int numVsyncs2ms;
++	int numVsyncs3ms;
++	int numVsyncs4ms;
++	int numVsyncs5ms;
++	int numVsyncs6ms;
++	int numVsyncs7ms;
++	int numVsyncs8ms;
++	int numVsyncs9ms;
++	int numVsyncs10ms;
++	int vsyncCount;
++	int framesDisplayed;
++	int framesFRC;
++	int framesQDropped;
++	int framesPTSLateDropped;
++	int framesSyncFreeDropped;
++	int framesRepeats;
++	int underruns;
++	int Qunderflow;
++	int gapUnderflow;
++	int maxConsecQDrops;
++	int maxConsecPTSLateDrops;
++	int maxSyncFreeDropped;
++	int maxConsecRepeats;
++	int maxUnderruns;
++	int maxQunderflow;
++	int maxGapUnderflow;
++	int consecQDrops;
++	int consecPTSLateDrops;
++	int consecSyncFreeDropped;
++	int consecRepeats;
++	int consecUnderruns;
++	int consecQunderflow;
++	int consecGapUnderflow;
++	int syncRate;
++	int syncMode;
++	int retuneCount;
++	int decodeErrorCount;
++	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
++	int reserved[2];
++} VIDEO_METRICS;
++/* max two AV channels supported */
++#define MAX_VIDEO_CHANNELS	2
++
++#define PR_GET_VIDEO_METRICS	100
++#define PR_SET_VIDEO_METRICS	101
++
++typedef enum {
++	AUDIO_METRIC_TYPE_STREAM_INPUT = 0,
++	AUDIO_METRIC_TYPE_SYSTEM_INPUT,
++	AUDIO_METRIC_TYPE_AD_INPUT,
++	AUDIO_METRIC_TYPE_MAIN_INPUT,
++	AUDIO_METRIC_TYPE_MAX_INPUTS,
++	AUDIO_METRIC_TYPE_OUTPUT
++} AUDIO_METRIC_TYPE;
++
++/* define structure(s) used for logging audio metrics */
++typedef struct {
++	int underrunTime;
++} AUDIO_OUTPUT_METRICS;
++
++typedef struct {
++	int underruns;
++	int bufFullTime;
++	int bufLevel;
++	int sampleRate;
++	int numChannels;
++	int discardPkt;
++	int reconfigCount;
++	int frameRepeat;
++	int frameSkip;
++	int frameInSync;
++	int resync;
++	int reserve[5];
++} AUDIO_INPUT_CHAN_METRICS;
++
++typedef struct {
++	int count;
++	int underruns;
++	int bufFullTime;
++	int minBufFullTime;
++	int maxBufFullTime;
++	int bufLevelBytes;
++	int maxBufLevelBytes;
++	int discardPkt;
++	int reconfigCount;
++	int sampleRate;
++	int numChannels;
++	int resyncCount;
++	int frameRepeatCount;
++	int consecRepeats;
++	int maxConsecRepeats;
++	int frameSkipCount;
++	int frameInSync;
++	int consecSkips;
++	int maxConsecSkips;
++	/* pad out to 1 cache line (64 bytes) */
++	int reserved[13];
++} AUDIO_INPUT_METRICS;
++
++typedef struct {
++	int underrunTime;
++	int underrunCount;
++	int minUnderrunTime;
++	int maxUnderrunTime;
++	AUDIO_INPUT_METRICS input[AUDIO_METRIC_TYPE_MAX_INPUTS];
++	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
++} AUDIO_METRICS;
++/* max two AV channels supported */
++#define MAX_AUDIO_CHANNELS	2
++
++#define PR_GET_AUDIO_METRICS	102
++#define PR_SET_AUDIO_METRICS	103
++
++#define T962X3_NUM_CPUS 4
++
++typedef struct {
++	unsigned long long metricStartTime;
++	unsigned long long metricEndTime;
++	unsigned long long idle_time[T962X3_NUM_CPUS];
++} IDLE_METRICS;
++
++#define PR_GET_IDLE_METRICS		104
++
+ #endif /* _LINUX_PRCTL_H */

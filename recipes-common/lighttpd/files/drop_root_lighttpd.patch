@@ -1,0 +1,56 @@
+Date: Jan 4, 2021
+From: mkrish802 <Manoj_Krishnan@comcast.com>
+Source: COMCAST
+Subject: Drop root privileges for lighttpd process
+Signed-off-by: mkrish802 <Manoj_Krishnan@comcast.com>
+Index: lighttpd-1.4.53/src/server.c
+===================================================================
+--- lighttpd-1.4.53.orig/src/server.c
++++ lighttpd-1.4.53/src/server.c
+@@ -17,6 +17,7 @@
+ #include "plugin.h"
+ #include "joblist.h"
+ #include "network_write.h"
++#include "cap.h"
+ 
+ #ifdef HAVE_VERSIONSTAMP_H
+ # include "versionstamp.h"
+@@ -83,7 +84,7 @@
+ /* IRIX doesn't like the alarm based time() optimization */
+ /* #define USE_ALARM */
+ #endif
+-
++static cap_user appcaps;
+ static int oneshot_fd = 0;
+ static volatile int pid_fd = -2;
+ static server_socket_array graceful_sockets;
+@@ -974,6 +975,21 @@ static void server_graceful_state (serve
+     }
+ }
+ 
++void drop_root()
++{
++    appcaps.caps = NULL;
++    appcaps.user_name = NULL;
++    bool ret = false;
++    ret = isBlocklisted();
++    if(!ret)
++    {
++       init_capability();
++       drop_root_caps(&appcaps);
++       update_process_caps(&appcaps);
++       read_capability(&appcaps);
++    }
++}
++
+ static int server_main (server * const srv, int argc, char **argv) {
+ 	int print_config = 0;
+ 	int test_config = 0;
+@@ -1372,6 +1388,7 @@ static int server_main (server * const s
+ 			prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
+ 		}
+ #endif
++                drop_root();
+ 	}
+ 
+ 	/* set max-conns */

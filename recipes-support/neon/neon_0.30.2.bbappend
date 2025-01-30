@@ -1,0 +1,5 @@
+PACKAGECONFIG:remove:kirkstone = "gnutls"
+PACKAGECONFIG:class-native:remove:kirkstone = "gnutls"
+PACKAGECONFIG:append:kirkstone = " openssl"
+PACKAGECONFIG:class-native:append:kirkstone = " openssl"
+PACKAGECONFIG:remove = "libproxy"

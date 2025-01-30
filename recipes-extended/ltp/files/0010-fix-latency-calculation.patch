@@ -1,0 +1,57 @@
+Date: Jun 27, 2022 6:00 PM
+From: nhanas001c <Naveenkumar_Hanasi@comcast.com>
+Subject: LTP Package patch   
+	Fix Latency test calculations
+ 	Original calculation took unsigned int differences from end to start
+ 	However if we go across a second the usecs field would have a smaller 
+	end than start value, and the unsigned int difference was "large" causing
+	test failures
+ 	We could switch the sign, but this patch uses timersub() to perform
+	the safest timer difference calculation available.
+ 	We also add a return check to the usleep to amit a perror() on short
+	or bad sleep returns. 
+Source: RED 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
+---
+diff -ur git.orig/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c git/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c
+--- git.orig/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c	2022-05-04 10:39:07.623570811 +0100
++++ git/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c	2022-05-04 10:59:17.009837396 +0100
+@@ -75,8 +75,8 @@
+ 	int fail = 0, ALLOWED;
+ 	char mytaskfile[FILENAME_MAX];
+ 	int test_num;
+-	struct timeval prev_time, cur_time;
+-	unsigned int actual, actual_s, actual_us, sleeptime;
++	struct timeval prev_time, cur_time, diff_time;
++	unsigned int actual, sleeptime;
+ 	unsigned int delta, delta_max = 0;
+ 	pid_t script_pid;
+ 
+@@ -107,19 +107,22 @@
+
+ 	/* Let us start capturing the time now */
+ 	for (count = NUM_TIMES; count >= 0; count -= INTERVALS) {
++	int rv;
+ 		if (gettimeofday(&prev_time, NULL) == -1)
+ 			perror("In Iteration no 1 \n");
++		
+ 		/* sleep for specified time */
+ 		sleeptime = count * USECONDS;
+-		usleep(sleeptime);
++		rv = usleep(sleeptime);
+ 
++		if (rv == -1)
++			perror("In Iteration no 1 \n");
+ 		if (gettimeofday(&cur_time, NULL) == -1)
+ 			perror("In Iteration no 1 \n");
+-
+ 		/* Get the actual difference */
+-		actual_s = cur_time.tv_sec - prev_time.tv_sec;
+-		actual_us = cur_time.tv_usec - prev_time.tv_usec;
+-		actual = 1e6 * actual_s + actual_us;
++		timersub(&cur_time, &prev_time, &diff_time);
++		actual = 1e6 * diff_time.tv_sec + diff_time.tv_usec;
++		/* Short sleep will leave delta -ve, which will trip error, so don't check */
+ 		delta = actual - sleeptime;
+ 
+ 		/*  capture the maximum latency observed */

@@ -1,0 +1,22 @@
+Date: Tue, 17 Mar 2020 14:28:38 -0400
+From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+Subject: [PATCH] Added decrement of notify watchers when we dont need
+ watchers.
+Source: COMCAST 5d5d0dda3bfff0f0ce0b5bdcd247a8242d5d5359 Mon Sep 17 00:00:00 2001
+Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+---
+ src/core/path.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/core/path.c.orig b/src/core/path.c
+--- a/src/core/path.c.orig	2023-01-25 12:45:45.101511461 +0000
++++ b/src/core/path.c	2023-01-25 12:46:44.981295273 +0000
+@@ -168,6 +168,8 @@
+         assert(s);
+ 
+         s->event_source = sd_event_source_disable_unref(s->event_source);
++	//This is to clear the notify user count, since the path is unwanted.
++	inotify_rm_watch(s->inotify_fd,s->primary_wd);
+         s->inotify_fd = safe_close(s->inotify_fd);
+ }
+ 

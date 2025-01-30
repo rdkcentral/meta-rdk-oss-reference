@@ -1,0 +1,157 @@
+Date: Feb 09 2024
+From: Sushant Daspute <sushant_daspute@comcast.com>
+Subject: Test build for Kirkstone
+Source: COMCAST
+Signed-off-by: Sushant Daspute <sushant_daspute@comcast.com>
+Index: dropbear-2020.81/configure
+===================================================================
+--- dropbear-2020.81.orig/configure
++++ dropbear-2020.81/configure
+@@ -645,6 +645,8 @@ build_vendor
+ build_cpu
+ build
+ STATIC
++DROPBEAR_LTM_CFLAGS
++LTM_CFLAGS
+ LD
+ OBJEXT
+ EXEEXT
+@@ -725,6 +727,7 @@ CFLAGS
+ LDFLAGS
+ LIBS
+ CPPFLAGS
++LTM_CFLAGS
+ CPP
+ CXX
+ CXXFLAGS
+@@ -1378,6 +1381,8 @@ Some influential environment variables:
+   LIBS        libraries to pass to the linker, e.g. -l<library>
+   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
+               you have headers in a nonstandard directory <include dir>
++  LTM_CFLAGS  CFLAGS for bundled libtommath. Default -O3 -funroll-loops
++              -fomit-frame-pointer
+   CPP         C preprocessor
+   CXX         C++ compiler command
+   CXXFLAGS    C++ compiler flags
+@@ -3171,6 +3176,17 @@ $as_echo "$as_me: No \$CFLAGS set... usi
+ 	CFLAGS="-Os -W -Wall"
+ fi
+ 
++# LTM_CFLAGS is given to ./configure by the user,
++# DROPBEAR_LTM_CFLAGS is substituted in the LTM Makefile.in
++DROPBEAR_LTM_CFLAGS="$LTM_CFLAGS"
++if test -z "$DROPBEAR_LTM_CFLAGS"; then
++       DROPBEAR_LTM_CFLAGS="-O3 -funroll-loops -fomit-frame-pointer"
++fi
++{ $as_echo "%s\n" "$as_me:${as_lineno-$LINENO}: Setting LTM_CFLAGS to $DROPBEAR_LTM_CFLAGS" >&5
++$as_echo "%s\n" "$as_me: Setting LTM_CFLAGS to $DROPBEAR_LTM_CFLAGS" >&6;}
++
++
++
+ { $as_echo "$as_me:${as_lineno-$LINENO}: Checking if compiler '$CC' supports -Wno-pointer-sign" >&5
+ $as_echo "$as_me: Checking if compiler '$CC' supports -Wno-pointer-sign" >&6;}
+ 
+Index: dropbear-2020.81/configure.ac
+===================================================================
+--- dropbear-2020.81.orig/configure.ac
++++ dropbear-2020.81/configure.ac
+@@ -41,6 +41,16 @@ if test -z "$ORIGCFLAGS" && test "$GCC"
+ 	CFLAGS="-Os -W -Wall"
+ fi
+ 
++# LTM_CFLAGS is given to ./configure by the user,
++# DROPBEAR_LTM_CFLAGS is substituted in the LTM Makefile.in
++DROPBEAR_LTM_CFLAGS="$LTM_CFLAGS"
++if test -z "$DROPBEAR_LTM_CFLAGS"; then
++       DROPBEAR_LTM_CFLAGS="-O3 -funroll-loops -fomit-frame-pointer"
++fi
++AC_MSG_NOTICE(Setting LTM_CFLAGS to $DROPBEAR_LTM_CFLAGS)
++AC_ARG_VAR(LTM_CFLAGS, CFLAGS for bundled libtommath. Default -O3 -funroll-loops -fomit-frame-pointer)
++AC_SUBST(DROPBEAR_LTM_CFLAGS)
++
+ AC_MSG_NOTICE([Checking if compiler '$CC' supports -Wno-pointer-sign])
+ DB_TRYADDCFLAGS([-Wno-pointer-sign])
+ 
+Index: dropbear-2020.81/default_options.h
+===================================================================
+--- dropbear-2020.81.orig/default_options.h
++++ dropbear-2020.81/default_options.h
+@@ -121,6 +121,10 @@ IMPORTANT: Some options will require "ma
+  * DSS may be necessary to connect to some systems though
+    is not recommended for new keys */
+ #define DROPBEAR_RSA 1
++/* RSA key generation will be faster with bundled libtommath
++ * if DROPBEAR_DSS is disabled.
++ * https://github.com/mkj/dropbear/issues/174#issuecomment-1267374858
++ */
+ #define DROPBEAR_DSS 1
+ /* ECDSA is significantly faster than RSA or DSS. Compiling in ECC
+  * code (either ECDSA or ECDH) increases binary size - around 30kB
+Index: dropbear-2020.81/libtommath/Makefile.in
+===================================================================
+--- dropbear-2020.81.orig/libtommath/Makefile.in
++++ dropbear-2020.81/libtommath/Makefile.in
+@@ -24,8 +24,14 @@ endif
+ 
+ coverage: LIBNAME:=-Wl,--whole-archive $(LIBNAME)  -Wl,--no-whole-archive
+ 
++# Dropbear sets its own flags below
++IGNORE_SPEED=1
++
+ include $(srcdir)/makefile_include.mk
+ 
++# override makefile_include.mk flags
++LTM_CFLAGS += @DROPBEAR_LTM_CFLAGS@
++
+ %.o: %.c $(HEADERS)
+ ifneq ($V,1)
+ 	@echo "   * ${CC} $@"
+Index: dropbear-2020.81/libtommath/makefile_include.mk
+===================================================================
+--- dropbear-2020.81.orig/libtommath/makefile_include.mk
++++ dropbear-2020.81/libtommath/makefile_include.mk
+@@ -104,7 +104,7 @@ LIBTOOLFLAGS += -no-undefined
+ endif
+ 
+ # add in the standard FLAGS
+-LTM_CFLAGS += $(CFLAGS)
++LTM_CFLAGS := $(CFLAGS) $(LTM_CFLAGS)
+ LTM_LFLAGS += $(LFLAGS)
+ LTM_LDFLAGS += $(LDFLAGS)
+ LTM_LIBTOOLFLAGS += $(LIBTOOLFLAGS)
+Index: dropbear-2020.81/SMALL
+===================================================================
+--- dropbear-2020.81.orig/SMALL
++++ dropbear-2020.81/SMALL
+@@ -50,4 +50,10 @@ deciding.
+ 
+ Of course using small C libraries such as uClibc and dietlibc can also help.
+ 
++---
++
++Libtommath has its own default CFLAGS to improve speed. You can use
++./configure LTM_CFLAGS=-O2
++to reduce size at the expense of speed.
++
+ If you have any queries, mail me and I'll see if I can help.
+Index: dropbear-2020.81/sysoptions.h
+===================================================================
+--- dropbear-2020.81.orig/sysoptions.h
++++ dropbear-2020.81/sysoptions.h
+@@ -150,6 +150,16 @@ If you test it please contact the Dropbe
+ #define DROPBEAR_RSA_SHA256 DROPBEAR_RSA
+ #endif
+ 
++/* Miller-Rabin primality testing is sufficient for RSA but not DSS.
++ * It's a compile-time setting for libtommath, we can get a speedup
++ * for key generation if DSS is disabled.
++ * https://github.com/mkj/dropbear/issues/174#issuecomment-1267374858
++ */
++#ifndef DROPBEAR_DSS
++#define LTM_USE_ONLY_MR 1
++#endif
++
++
+ /* hashes which will be linked and registered */
+ #define DROPBEAR_SHA256 ((DROPBEAR_SHA2_256_HMAC) || (DROPBEAR_ECC_256) \
+  			|| (DROPBEAR_CURVE25519) || (DROPBEAR_DH_GROUP14_SHA256) \

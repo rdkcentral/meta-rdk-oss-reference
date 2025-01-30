@@ -1,0 +1,280 @@
+Date: Mar 21 2023
+From: thulasiram_kadiyala <thulasiram_kadiyala@comcast.com>
+Change-Id: I019cc9ffd66850ec5259f6dfcd9af8ac6c37d2c0
+Reviewed-on: https://chromium-review.googlesource.com/c/breakpad/breakpad/+/3938926
+Reviewed-by: Manoj Gupta <manojgupta@chromium.org>
+Reviewed-by: Joshua Peraza <jperaza@chromium.org>
+Source: https://github.com/google/breakpad/commit/de086a98595f68715c1dce9860f77014a2a1b187
+Signed-off-by: thulasiram_kadiyala <thulasiram_kadiyala@comcast.com>
+
+Index: git/Makefile.am
+===================================================================
+--- git.orig/Makefile.am
++++ git/Makefile.am
+@@ -610,7 +610,8 @@ src_tools_linux_dump_syms_dump_syms_SOUR
+ src_tools_linux_dump_syms_dump_syms_CXXFLAGS = \
+ 	$(RUST_DEMANGLE_CFLAGS)
+ src_tools_linux_dump_syms_dump_syms_LDADD = \
+-	$(RUST_DEMANGLE_LIBS)
++	$(RUST_DEMANGLE_LIBS) \
++	-lz
+ 
+ src_tools_linux_md2core_minidump_2_core_SOURCES = \
+ 	src/common/linux/memory_mapped_file.cc \
+@@ -736,7 +737,8 @@ src_common_dumper_unittest_CPPFLAGS = \
+ src_common_dumper_unittest_LDADD = \
+ 	$(TEST_LIBS) \
+ 	$(RUST_DEMANGLE_LIBS) \
+-	$(PTHREAD_CFLAGS) $(PTHREAD_LIBS)
++	$(PTHREAD_CFLAGS) $(PTHREAD_LIBS) \
++	-lz
+ 
+ src_common_mac_macho_reader_unittest_SOURCES = \
+ 	src/common/dwarf_cfi_to_module.cc \
+Index: git/Makefile.in
+===================================================================
+--- git.orig/Makefile.in
++++ git/Makefile.in
+@@ -2827,7 +2827,8 @@ TESTS = $(check_PROGRAMS) $(check_SCRIPT
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(RUST_DEMANGLE_CFLAGS)
+ 
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@src_tools_linux_dump_syms_dump_syms_LDADD = \
+-@DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(RUST_DEMANGLE_LIBS)
++@DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(RUST_DEMANGLE_LIBS) \
++@DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	-lz
+ 
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@src_tools_linux_md2core_minidump_2_core_SOURCES = \
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	src/common/linux/memory_mapped_file.cc \
+@@ -2957,7 +2958,8 @@ TESTS = $(check_PROGRAMS) $(check_SCRIPT
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@src_common_dumper_unittest_LDADD = \
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(TEST_LIBS) \
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(RUST_DEMANGLE_LIBS) \
+-@DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(PTHREAD_CFLAGS) $(PTHREAD_LIBS)
++@DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	$(PTHREAD_CFLAGS) $(PTHREAD_LIBS) \
++@DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	-lz
+ 
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@src_common_mac_macho_reader_unittest_SOURCES = \
+ @DISABLE_TOOLS_FALSE@@LINUX_HOST_TRUE@	src/common/dwarf_cfi_to_module.cc \
+Index: git/src/common/dwarf_cu_to_module.cc
+===================================================================
+--- git.orig/src/common/dwarf_cu_to_module.cc
++++ git/src/common/dwarf_cu_to_module.cc
+@@ -138,6 +138,10 @@ DwarfCUToModule::FileContext::FileContex
+ }
+ 
+ DwarfCUToModule::FileContext::~FileContext() {
++   for (std::vector<uint8_t *>::iterator i = uncompressed_sections_.begin();
++      i != uncompressed_sections_.end(); ++i) {
++    delete[] *i;
++   }
+ }
+ 
+ void DwarfCUToModule::FileContext::AddSectionToSectionMap(
+@@ -145,6 +149,12 @@ void DwarfCUToModule::FileContext::AddSe
+   section_map_[name] = std::make_pair(contents, length);
+ }
+ 
++void DwarfCUToModule::FileContext::AddManagedSectionToSectionMap(
++    const string& name, uint8_t* contents, uint64_t length) {
++  section_map_[name] = std::make_pair(contents, length);
++  uncompressed_sections_.push_back(contents);
++}
++
+ void DwarfCUToModule::FileContext::ClearSectionMapForTest() {
+   section_map_.clear();
+ }
+Index: git/src/common/dwarf_cu_to_module.h
+===================================================================
+--- git.orig/src/common/dwarf_cu_to_module.h
++++ git/src/common/dwarf_cu_to_module.h
+@@ -42,6 +42,7 @@
+ #include <stdint.h>
+ 
+ #include <string>
++#include <vector>
+ 
+ #include "common/language.h"
+ #include "common/module.h"
+@@ -88,6 +89,10 @@ class DwarfCUToModule: public dwarf2read
+                                 const uint8_t* contents,
+                                 uint64_t length);
+ 
++    void AddManagedSectionToSectionMap(const string& name,
++                                uint8_t* contents,
++                                uint64_t length);
++
+     // Clear the section map for testing.
+     void ClearSectionMapForTest();
+ 
+@@ -120,6 +125,7 @@ class DwarfCUToModule: public dwarf2read
+ 
+     // Inter-compilation unit data used internally by the handlers.
+     scoped_ptr<FilePrivate> file_private_;
++    std::vector<uint8_t *> uncompressed_sections_;
+   };
+ 
+   // An abstract base class for handlers that handle DWARF range lists for
+Index: git/src/common/linux/dump_symbols.cc
+===================================================================
+--- git.orig/src/common/linux/dump_symbols.cc
++++ git/src/common/linux/dump_symbols.cc
+@@ -47,8 +47,8 @@
+ #include <sys/mman.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
++#include <zlib.h>
+ 
+-#include <iostream>
+ #include <set>
+ #include <string>
+ #include <utility>
+@@ -280,6 +280,55 @@ class DumperLineToModule: public DwarfCU
+ };
+ 
+ template<typename ElfClass>
++bool IsCompressedHeader(const typename ElfClass::Shdr* section) {
++  return (section->sh_flags & SHF_COMPRESSED) != 0;
++}
++
++template<typename ElfClass>
++uint32_t GetCompressionHeader(
++    typename ElfClass::Chdr& compression_header,
++    const uint8_t* content, uint64_t size) {
++  const typename ElfClass::Chdr* header =
++    reinterpret_cast<const typename ElfClass::Chdr *>(content);
++
++ if (size < sizeof (*header)) {
++    return 0;
++ }
++
++ compression_header = *header;
++ return sizeof (*header);
++}
++
++std::pair<uint8_t *, uint64_t> UncompressSectionContents(
++    const uint8_t* compressed_buffer, uint64_t compressed_size, uint64_t uncompressed_size) {
++  z_stream stream;
++  memset(&stream, 0, sizeof stream);
++
++  stream.avail_in = compressed_size;
++  stream.avail_out = uncompressed_size;
++  stream.next_in = const_cast<uint8_t *>(compressed_buffer);
++
++  google_breakpad::scoped_array<uint8_t> uncompressed_buffer(
++      new uint8_t[uncompressed_size]);
++
++  int status = inflateInit(&stream);
++  while (stream.avail_in != 0 && status == Z_OK) {
++    stream.next_out =
++      uncompressed_buffer.get() + uncompressed_size - stream.avail_out;
++
++    if ((status = inflate(&stream, Z_FINISH)) != Z_STREAM_END) {
++       break;
++    }
++
++   status = inflateReset(&stream);
++}
++
++return inflateEnd(&stream) != Z_OK || status != Z_OK || stream.avail_out != 0
++  ? std::make_pair(nullptr, 0)
++  : std::make_pair(uncompressed_buffer.release(), uncompressed_size);
++}
++
++template<typename ElfClass>
+ bool LoadDwarf(const string& dwarf_filename,
+                const typename ElfClass::Ehdr* elf_header,
+                const bool big_endian,
+@@ -308,7 +357,31 @@ bool LoadDwarf(const string& dwarf_filen
+                   section->sh_name;
+     const uint8_t* contents = GetOffset<ElfClass, uint8_t>(elf_header,
+                                                            section->sh_offset);
+-    file_context.AddSectionToSectionMap(name, contents, section->sh_size);
++    uint64_t size = section->sh_size;
++
++    if (!IsCompressedHeader<ElfClass>(section)) {
++        file_context.AddSectionToSectionMap(name, contents, size);
++        continue;
++    }
++
++    typename ElfClass::Chdr chdr;
++
++    uint32_t compression_header_size =
++        GetCompressionHeader<ElfClass>(chdr, contents, size);
++
++    if (compression_header_size == 0 || chdr.ch_size == 0) {
++      continue;
++    }
++
++    contents += compression_header_size;
++    size -= compression_header_size;
++
++    std::pair<uint8_t *, uint64_t> uncompressed =
++      UncompressSectionContents(contents, size, chdr.ch_size);
++
++    if (uncompressed.first != nullptr && uncompressed.second != 0) {
++      file_context.AddManagedSectionToSectionMap(name, uncompressed.first, uncompressed.second);
++    }    
+   }
+ 
+   // .debug_ranges and .debug_rnglists reader
+Index: git/src/common/linux/elfutils.h
+===================================================================
+--- git.orig/src/common/linux/elfutils.h
++++ git/src/common/linux/elfutils.h
+@@ -41,6 +41,39 @@
+ 
+ namespace google_breakpad {
+ 
++typedef struct {
++  typedef Elf32_Word Type;
++  typedef Elf32_Word Size;
++  typedef Elf32_Addr Addr;
++
++  static_assert(sizeof (Type) == 4);
++  static_assert(sizeof (Size) == 4);
++  static_assert(sizeof (Addr) == 4);
++
++  Type ch_type;       // Compression type
++  Size ch_size;       // Uncompressed data size in bytes
++  Addr ch_addralign;  // Uncompressed data alignment
++} Elf32_Chdr;
++
++static_assert(sizeof (Elf32_Chdr) == 12);
++
++typedef struct {
++  typedef Elf64_Word  Type;
++  typedef Elf64_Xword Size;
++  typedef Elf64_Addr  Addr;
++
++  static_assert(sizeof (Type) == 4);
++  static_assert(sizeof (Size) == 8);
++  static_assert(sizeof (Addr) == 8);
++
++  Type ch_type;       // Compression type
++  Type ch_reserved;   // Padding
++  Size ch_size;       // Uncompressed data size in bytes
++  Addr ch_addralign;  // Uncompressed data alignment
++} Elf64_Chdr;
++
++static_assert(sizeof (Elf64_Chdr) == 24);
++
+ // Traits classes so consumers can write templatized code to deal
+ // with specific ELF bits.
+ struct ElfClass32 {
+@@ -49,6 +82,7 @@ struct ElfClass32 {
+   typedef Elf32_Nhdr Nhdr;
+   typedef Elf32_Phdr Phdr;
+   typedef Elf32_Shdr Shdr;
++  typedef Elf32_Chdr Chdr;
+   typedef Elf32_Half Half;
+   typedef Elf32_Off Off;
+   typedef Elf32_Sym Sym;
+@@ -66,6 +100,7 @@ struct ElfClass64 {
+   typedef Elf64_Nhdr Nhdr;
+   typedef Elf64_Phdr Phdr;
+   typedef Elf64_Shdr Shdr;
++  typedef Elf64_Chdr Chdr;
+   typedef Elf64_Half Half;
+   typedef Elf64_Off Off;
+   typedef Elf64_Sym Sym;
+

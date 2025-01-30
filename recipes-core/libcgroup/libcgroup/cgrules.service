@@ -1,0 +1,13 @@
+[Unit]
+Description= Start/Stop the CGroups Rules Engine Daemon
+After=basic.target cgconfig.service
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c '/etc/cgred start'
+ExecStop=/bin/sh -c '/etc/cgred stop'
+
+[Install]
+WantedBy=local-fs.target

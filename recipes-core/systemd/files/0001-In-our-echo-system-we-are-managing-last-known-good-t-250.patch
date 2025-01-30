@@ -1,0 +1,25 @@
+Date: Fri, 17 Mar 2023 19:55:30 +0000
+From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Subject: [PATCH] In our echo system we are managing last known good time.
+ Removing setting of time in timesyncd initialization.
+Source: COMCAST 82cb08fa39617908ddd43182fbddfb352017a225 Mon Sep 17 00:00:00 2001
+Recreated from https://gerrit.teamccp.com/#/c/703327/2/recipes-core/systemd/files/0001-In-our-echo-system-we-are-managing-last-known-good-t.patch
+Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+---
+Index: git/src/timesync/timesyncd.c
+===================================================================
+--- git.orig/src/timesync/timesyncd.c
++++ git/src/timesync/timesyncd.c
+@@ -75,11 +75,9 @@ settime:
+                 struct timespec ts;
+                 char date[FORMAT_TIMESTAMP_MAX];
+ 
+-                log_info("System clock time unset or jumped backwards, restoring from recorded timestamp: %s",
++                log_info("System clock time unset or jumped backwards, Skipping resetting time. restoring from recorded timestamp: %s",
+                          format_timestamp(date, sizeof(date), min));
+ 
+-                if (clock_settime(CLOCK_REALTIME, timespec_store(&ts, min)) < 0)
+-                        log_error_errno(errno, "Failed to restore system clock, ignoring: %m");
+         }
+ 
+         return 0;

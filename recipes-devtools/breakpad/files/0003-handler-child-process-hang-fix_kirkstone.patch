@@ -1,0 +1,57 @@
+Date: Wed, 29 Mar 2017 10:33:32 +0300
+From: Alexandr Gavriliuc <agavriliuc@productengine.com>
+Subject: [PATCH] handler child process hang fix
+Jira: WKIT-843: WPEWebProcess breakpad tracer hang
+Source: COMCAST 43caf67714c93b885682166cdfa15a965a3ba4fd Mon Sep 17 00:00:00 2001
+Signed-off-by: Arjun <arjun_daasuramdass@comcast.com>
+---
+
+--- a/src/client/linux/handler/exception_handler.cc	2022-10-30 04:27:58.539083173 +0000
++++ b/src/client/linux/handler/exception_handler.cc	2022-10-30 04:34:55.568992292 +0000
+@@ -424,6 +424,9 @@
+ // static
+ int ExceptionHandler::ThreadEntry(void* arg) {
+   const ThreadArgument* thread_arg = reinterpret_cast<ThreadArgument*>(arg);
++  //COMCAST MODIFICATION BEGIN
++  sys_close(thread_arg->handler->fdes[1]);
++  //COMCAST MODIFICATION END
+ 
+   // Close the write end of the pipe. This allows us to fail if the parent dies
+   // while waiting for the continue signal.
+@@ -559,14 +562,24 @@
+   }
+   //COMCAST MODIFICATION END  
+ 
++  //COMCAST MODIFICATION BEGIN
+   const pid_t child = sys_clone(
+       ThreadEntry, stack, CLONE_FS | CLONE_UNTRACED, &thread_arg, NULL, NULL,
+       NULL);
++  sys_close(fdes[0]);
+   if (child == -1) {
+-    sys_close(fdes[0]);
+     sys_close(fdes[1]);
+     return false;
+   }
++  //COMCAST MODIFICATION END
++  
++  //COMCAST MODIFICATION BEGIN
++  // Uncomment the following line to test the child process read hang
++//#define TEST_CHILD_HANG
++#ifdef TEST_CHILD_HANG
++  kill(getpid(), SIGKILL);
++#endif
++  //COMCAST MODIFICATION END
+ 
+   // Close the read end of the pipe.
+   sys_close(fdes[0]);
+@@ -622,7 +635,9 @@
+   int r;
+   char receivedMessage;
+   r = HANDLE_EINTR(sys_read(fdes[0], &receivedMessage, sizeof(char)));
+-  if (r == -1) {
++  //COMCAST MODIFICATION BEGIN
++  if (r < 1) {
++  //COMCAST MODIFICATION END
+     static const char msg[] = "ExceptionHandler::WaitForContinueSignal "
+                               "sys_read failed:";
+     logger::write(msg, sizeof(msg) - 1);

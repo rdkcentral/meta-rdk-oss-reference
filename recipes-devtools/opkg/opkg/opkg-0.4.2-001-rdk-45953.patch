@@ -1,0 +1,18 @@
+Date: Dec 12, 2023 12:51
+From: Sreejith Ravi <sreejith.ravi@sky.uk>
+Subject: Added to support provides with version
+Source: SKY 179b60088ad681e4109633bffa5b0790d04eb6c9
+Signed-off-by: Sreejith Ravi <sreejith.ravi@sky.uk>
+---
+diff -Naur opkg-0.4.2/libopkg/solvers/libsolv/opkg_solver_libsolv.c opkg-0.4.2_mod/libopkg/solvers/libsolv/opkg_solver_libsolv.c
+--- opkg-0.4.2/libopkg/solvers/libsolv/opkg_solver_libsolv.c	2019-12-16 20:38:38.000000000 +0000
++++ opkg-0.4.2_mod/libopkg/solvers/libsolv/opkg_solver_libsolv.c	2023-12-12 00:53:18.053408941 +0000
+@@ -460,7 +460,7 @@
+                 opkg_msg(DEBUG2, "%s provides %s\n", pkg->name, provide->name);
+                 Id provideId = pool_str2id(pool, provide->name, 1);
+                 solvable_out->provides = repo_addid_dep(repo,
+-                    solvable_out->provides, provideId, 0);
++                    solvable_out->provides, pool_rel2id(pool, provideId, versionId, REL_EQ, 1), 0);
+             }
+         }
+     }

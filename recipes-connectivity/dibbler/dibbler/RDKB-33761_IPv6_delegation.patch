@@ -1,0 +1,92 @@
+Date: Jan 26, 2021
+From: Shirish Shrivastava <Shirish_Shrivastava@cable.comcast.com>
+Source: COMCAST
+Subject: IPv6 Delegation is not giving more than  3 prefixes, even though it is configured to give 8.
+Signed-off-by: Shirish Shrivastava <Shirish_Shrivastava@cable.comcast.com>
+diff --git a/Misc/IPv6Addr.cpp b/Misc/IPv6Addr.cpp
+index e833242..4b886ab 100644
+--- a/Misc/IPv6Addr.cpp
++++ b/Misc/IPv6Addr.cpp
+@@ -50,6 +50,48 @@ TIPv6Addr::TIPv6Addr(const char* prefix, const char* host, int prefixLength) {
+     inet_ntop6(Addr, Plain);
+ }
+ 
++TIPv6Addr::TIPv6Addr(const char* prefix, const char* host, int prefixLength,int pdLen) {
++
++    int offset = prefixLength/8;
++    int i = 0;
++    int j = 0;
++    int multiplier = 0;
++    int maxPref = pdLen - prefixLength;
++    maxPref = 2 << (maxPref -1);
++    if(prefixLength < 64)
++	{
++   	 multiplier = 64 - pdLen;
++	 multiplier = 2 << (multiplier - 1) ;
++	 Log(Debug) << " PD: IP gen - i =  " << i << "Prefix len " << prefixLength << "PD len " << pdLen << "." << LogEnd;
++ 
++	for (j = 0;j<maxPref; j++ )
++	{
++             i += random() % 2;
++
++	}
++ 	Log(Debug) << " PD: IP gen - i =  " << i << " multiplier " << multiplier << " maxPref " << maxPref << "." << LogEnd;
++    //	memmove(Addr, host, 16);  // copy whole host address, but...
++    	memmove(Addr, prefix, 16); // overwrite  with prefix...
++	Log(Debug) << " PD: IP Pref =  " << Plain << " Addr " << Addr << "." << LogEnd;
++     	Addr[offset] = Addr[offset] + multiplier*i;
++	}
++	else
++	{
++	    if (prefixLength%8==0)
++      {
++        memmove(Addr, host, 16);
++        memmove(Addr, prefix, offset);
++        inet_ntop6(Addr, Plain);
++        return;
++      }
++
++      memmove(Addr, host, 16);  // copy whole host address, but...
++      memmove(Addr, prefix, offset); // overwrite first bits with prefix...
++      Addr[offset] = (prefix[offset] & truncRight[prefixLength%8]) | (host[offset] & truncLeft[prefixLength%8]);
++	}
++    inet_ntop6(Addr, Plain);
++Log(Debug) << " PD: IP Plain =  " << Plain << "i" << i << "." << LogEnd;
++}
+ bool TIPv6Addr::linkLocal() {
+     if (this->Addr[0]==0xfe &&
+         this->Addr[1]==0x80)
+diff --git a/Misc/IPv6Addr.h b/Misc/IPv6Addr.h
+index f8fccf7..20604ca 100644
+--- a/Misc/IPv6Addr.h
++++ b/Misc/IPv6Addr.h
+@@ -22,6 +22,7 @@ public:
+     TIPv6Addr(const char* addr, bool plain=false);
+     /* creates address from prefix+host, used in SrvCfgPD */
+     TIPv6Addr(const char* prefix, const char* host, int prefixLength);
++    TIPv6Addr(const char* prefix, const char* host, int prefixLength, int pdLen);
+     char* getAddr();
+     void setAddr(char* addr);
+     char* getPlain();
+diff --git a/SrvCfgMgr/SrvCfgPD.cpp b/SrvCfgMgr/SrvCfgPD.cpp
+index 559002b..7ead661 100644
+--- a/SrvCfgMgr/SrvCfgPD.cpp
++++ b/SrvCfgMgr/SrvCfgPD.cpp
+@@ -190,14 +190,15 @@ List(TIPv6Addr) TSrvCfgPD::getRandomList() {
+ 
+     /// @todo: it's just workaround. Prefix random generation should be implemented for real.
+     if (PD_Count_ == PD_Assigned_ + 1) {
+-        commonPart = new TIPv6Addr(*CommonPool_->getAddrR());
++        //commonPart = new TIPv6Addr(*CommonPool_->getAddrR());
++        commonPart = new TIPv6Addr(*CommonPool_->getAddrL());
+     }
+ 
+     PoolLst_.first();
+     while (range = PoolLst_.get()) {
+               tmp = range->getAddrL();
+               SPtr<TIPv6Addr> x = new TIPv6Addr(tmp->getAddr(), commonPart->getAddr(),
+-                                                CommonPool_->getPrefixLength());
++                                                CommonPool_->getPrefixLength(),getPD_Length());
+               lst.append( x );
+     }
+     return lst;

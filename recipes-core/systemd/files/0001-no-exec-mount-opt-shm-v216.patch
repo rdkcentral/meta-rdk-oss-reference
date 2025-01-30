@@ -1,0 +1,21 @@
+##########################################
+Date: Oct 11, 2021 6:49 PM
+From: ldhana149 <LeenaSunthari_DhanapalRaju@comcast.com>
+Subject: RDKB-36231 : Add no-exec mount option for /dev/shm directory
+Source: COMCAST 7ac0caa220495cf50dceb7364b747ef8b4b83f12 Oct 11, 2021 06:45 PM
+Signed-off-by: ldhana149 <LeenaSunthari_DhanapalRaju@comcast.com>
+##########################################
+
+Index: git/src/core/mount-setup.c
+===================================================================
+--- git.orig/src/core/mount-setup.c
++++ git/src/core/mount-setup.c
+@@ -86,7 +86,7 @@ static const MountPoint mount_table[] =
+         { "tmpfs",      "/dev/shm",                  "tmpfs",      "mode=1777,smackfsroot=*", MS_NOSUID|MS_NODEV|MS_STRICTATIME,
+           use_smack,  MNT_FATAL },
+ #endif
+-        { "tmpfs",      "/dev/shm",                  "tmpfs",      "mode=1777", MS_NOSUID|MS_NODEV|MS_STRICTATIME,
++        { "tmpfs",      "/dev/shm",                  "tmpfs",      "mode=1777", MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_STRICTATIME,
+           NULL,       MNT_FATAL|MNT_IN_CONTAINER },
+         { "devpts",     "/dev/pts",                  "devpts",     "mode=620,gid=" STRINGIFY(TTY_GID), MS_NOSUID|MS_NOEXEC,
+           NULL,       MNT_IN_CONTAINER },

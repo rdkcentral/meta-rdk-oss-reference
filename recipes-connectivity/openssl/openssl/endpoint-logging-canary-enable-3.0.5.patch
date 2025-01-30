@@ -1,0 +1,88 @@
+Date: May 18 2023
+From: Sushant Daspute <sushant_daspute@comcast.com>
+Subject: Openssl canary patch for kirkstone
+Source: COMCAST
+Signed-off-by: Sushant Daspute <sushant_daspute@comcast.com>
+Index: openssl-3.0.5/include/openssl/ssl.h.in
+===================================================================
+--- openssl-3.0.5.orig/include/openssl/ssl.h.in
++++ openssl-3.0.5/include/openssl/ssl.h.in
+@@ -1723,6 +1723,8 @@ __owur X509 *SSL_get1_peer_certificate(c
+ 
+ __owur STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s);
+ 
++void SSL_endpoint_logging(const SSL *s);
++
+ int SSL_canary_cert_chain_logging(STACK_OF(X509) *r);
+ 
+ __owur int SSL_CTX_get_verify_mode(const SSL_CTX *ctx);
+Index: openssl-3.0.5/ssl/build.info
+===================================================================
+--- openssl-3.0.5.orig/ssl/build.info
++++ openssl-3.0.5/ssl/build.info
+@@ -23,7 +23,7 @@ SOURCE[../libssl]=\
+         methods.c   t1_lib.c  t1_enc.c tls13_enc.c \
+         d1_lib.c  record/rec_layer_d1.c d1_msg.c \
+         statem/statem_dtls.c d1_srtp.c \
+-        ssl_lib.c ssl_canary.c ssl_cert.c ssl_sess.c \
++        ssl_lib.c ssl_elog.c ssl_canary.c ssl_cert.c ssl_sess.c \
+         ssl_ciph.c ssl_stat.c ssl_rsa.c \
+         ssl_asn1.c ssl_txt.c ssl_init.c ssl_conf.c  ssl_mcnf.c \
+         bio_ssl.c ssl_err.c ssl_err_legacy.c tls_srp.c t1_trce.c ssl_utst.c \
+Index: openssl-3.0.5/ssl/ssl_elog.c
+===================================================================
+--- /dev/null
++++ openssl-3.0.5/ssl/ssl_elog.c
+@@ -0,0 +1,29 @@
++#include "ssl_local.h"
++#include <systemd/sd-journal.h>
++
++#define ARG_PRIORITY LOG_INFO
++#define LEVEL_PRIORITY 1
++
++void SSL_endpoint_logging(const SSL *s) {
++   if ( s != NULL ) {
++	   const char *endpointname=SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
++	   if ( endpointname != NULL ) {
++		   FILE *CUSTOM_LOG;
++		   int journal_fd;
++
++		   journal_fd = sd_journal_stream_fd("sslendpoint" ,ARG_PRIORITY, LEVEL_PRIORITY);
++		   if(journal_fd >= 0){
++			   CUSTOM_LOG = fdopen(journal_fd, "w");
++			   if(!CUSTOM_LOG) {
++				   fprintf(stderr, "Failed to create file object\n");
++				   close(journal_fd);
++			   }
++			   else {
++				   fprintf(CUSTOM_LOG, "%s", endpointname);
++				   fclose(CUSTOM_LOG);
++			   }
++		   }
++	   }
++   }
++}
++
+Index: openssl-3.0.5/ssl/ssl_lib.c
+===================================================================
+--- openssl-3.0.5.orig/ssl/ssl_lib.c
++++ openssl-3.0.5/ssl/ssl_lib.c
+@@ -1567,7 +1567,8 @@ X509 *SSL_get1_peer_certificate(const SS
+     X509 *r = SSL_get0_peer_certificate(s);
+     if (r != NULL)
+         X509_up_ref(r);
+-
++    /* Get each endpoint/hostname from every secure connection */
++    SSL_endpoint_logging(s);
+     return r;
+ }
+ 
+Index: openssl-3.0.5/util/libssl.num
+===================================================================
+--- openssl-3.0.5.orig/util/libssl.num
++++ openssl-3.0.5/util/libssl.num
+@@ -521,3 +521,4 @@ SSL_set0_tmp_dh_pkey
+ SSL_CTX_set0_tmp_dh_pkey                522	3_0_0	EXIST::FUNCTION:
+ SSL_group_to_name                       523	3_0_0	EXIST::FUNCTION:
+ SSL_canary_cert_chain_logging           32767	3_0_0   EXIST::FUNCTION:
++SSL_endpoint_logging                    32768   3_0_0   EXIST::FUNCTION:

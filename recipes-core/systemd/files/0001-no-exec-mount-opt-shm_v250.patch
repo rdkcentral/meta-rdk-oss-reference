@@ -1,0 +1,22 @@
+Date: Wed, 9 Nov 2022 07:34:44 +0000
+From: mselva006c <mani_selvaraj@comcast.com>
+Subject: [PATCH] DELIA-50903 /dev/shm no-exec option
+Source: COMCAST 58dd101d927f8e0abd1a5b799a78eb309b2b02d5 Mon Sep 17 00:00:00 2001
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ src/shared/mount-setup.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/mount-setup.c b/src/shared/mount-setup.c
+index 7917968497..611c4b0673 100644
+--- a/src/shared/mount-setup.c
++++ b/src/shared/mount-setup.c
+@@ -76,7 +76,7 @@ static const MountPoint mount_table[] = {
+         { "tmpfs",       "/dev/shm",                  "tmpfs",      "mode=1777,smackfsroot=*",                 MS_NOSUID|MS_NODEV|MS_STRICTATIME,
+           mac_smack_use, MNT_FATAL                  },
+ #endif
+-        { "tmpfs",       "/dev/shm",                  "tmpfs",      "mode=1777",                               MS_NOSUID|MS_NODEV|MS_STRICTATIME,
++        { "tmpfs",       "/dev/shm",                  "tmpfs",      "mode=1777",                               MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_STRICTATIME,
+           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
+         { "devpts",      "/dev/pts",                  "devpts",     "mode=620,gid=" STRINGIFY(TTY_GID),        MS_NOSUID|MS_NOEXEC,
+           NULL,          MNT_IN_CONTAINER           },

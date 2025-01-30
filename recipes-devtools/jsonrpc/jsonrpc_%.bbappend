@@ -1,0 +1,5 @@
+EXTRA_OECMAKE += " -DHTTP_SERVER=NO "
+DEPENDS:remove = " libmicrohttpd "
+
+DEPENDS:remove = " hiredis"
+EXTRA_OECMAKE += " -DREDIS_SERVER=NO -DREDIS_CLIENT=NO"

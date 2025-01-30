@@ -1,0 +1,32 @@
+Date: Wed, 15 May 2024 20:44:09 +0000
+From: Scott Angel <scott_angel@cable.comcast.com>
+Subject: [PATCH] Force UTC for lighttpd log messages Force UTC for lighttpd log messages to allow consistent logging.
+Source: 108885dfa3597b4ff4de9a5cdcdca7dc53dcccd7 Mon Sep 17 00:00:00 2001
+Signed-off-by: Scott Angel <scott_angel@comcast.com>
+---
+ src/log.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/log.c b/src/log.c
+index 866ade39..714331a3 100644
+--- a/src/log.c
++++ b/src/log.c
+@@ -124,13 +124,13 @@ static int log_buffer_prepare(buffer *b, server *srv, const char *filename, unsi
+ 		/* cache the generated timestamp */
+ 		if (srv->cur_ts != srv->last_generated_debug_ts) {
+ 			buffer_clear(srv->ts_debug_str);
+-			buffer_append_strftime(srv->ts_debug_str, "%Y-%m-%d %H:%M:%S", localtime(&(srv->cur_ts)));
++			buffer_append_strftime(srv->ts_debug_str, "%Y-%m-%dT%H:%M:%SZ", gmtime(&(srv->cur_ts)));
+ 
+ 			srv->last_generated_debug_ts = srv->cur_ts;
+ 		}
+ 
+ 		buffer_copy_buffer(b, srv->ts_debug_str);
+-		buffer_append_string_len(b, CONST_STR_LEN(": ("));
++		buffer_append_string_len(b, CONST_STR_LEN(" : ("));
+ 		break;
+ 	case ERRORLOG_SYSLOG:
+ 		/* syslog is generating its own timestamps */
+-- 
+2.25.1
+

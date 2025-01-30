@@ -1,0 +1,304 @@
+Date: Oct 5 2024 5:31 AM
+From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Subject: [PATCH] Memory corruption issues on crafted configuration files
+Source: https://github.com/logrotate/logrotate/ 21c614410abe68c894804d0efbae730cb87c14bb
+Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+
+Index: logrotate-3.21.0/config.c
+===================================================================
+--- logrotate-3.21.0.orig/config.c
++++ logrotate-3.21.0/config.c
+@@ -79,15 +79,20 @@ int asprintf(char **string_ptr, const ch
+ #endif
+ 
+ #if !defined(HAVE_STRNDUP)
++static size_t logr__strnlen(const char *s, size_t n)
++{
++    const char *p;
++
++    p = memchr(s, '\0', n);
++    return p ? (size_t)(p - s) : n;
++}
+ char *strndup(const char *s, size_t n)
+ {
+     size_t nAvail;
+     char *p;
+ 
+     /* min() */
+-    nAvail = strlen(s) + 1;
+-    if ( (n + 1) < nAvail)
+-        nAvail = n + 1;
++    nAvail = logr__strnlen(s, n) + 1;
+ 
+     p = malloc(nAvail);
+     if (!p)
+@@ -158,6 +163,7 @@ static char *isolateLine(char **strt, ch
+     char *endtag, *start, *tmp;
+     const char *max = *buf + length;
+     char *key;
++    size_t llen;
+ 
+     start = *strt;
+     endtag = start;
+@@ -166,13 +172,19 @@ static char *isolateLine(char **strt, ch
+     if (max < endtag)
+         return NULL;
+     tmp = endtag - 1;
+-    while (isspace((unsigned char)*endtag))
++    while (endtag >= start && endtag < max && isspace((unsigned char)*endtag))
+         endtag--;
+-    key = strndup(start, (size_t)(endtag - start + 1));
++    llen = (size_t)(endtag - start + 1);
++    if (start + llen > max)
++        llen = (size_t)(max - start);
++    /* Avoid strndup(3) since the buffer might not be NUL-terminated. */
++    key = malloc(llen + 1);
+     if (key == NULL) {
+         message_OOM();
+         return NULL;
+     }
++    memcpy(key, start, llen);
++    key[llen] = '\0';
+     *strt = tmp;
+     return key;
+ }
+@@ -181,7 +193,7 @@ static char *isolateValue(const char *fi
+                           char **startPtr, char **buf, size_t length)
+ {
+     char *chptr = *startPtr;
+-    const char *max = *startPtr + length;
++    const char *max = *buf + length;
+ 
+     while (chptr < max && isblank((unsigned char)*chptr))
+         chptr++;
+@@ -205,6 +217,7 @@ static char *isolateWord(char **strt, ch
+     char *endtag, *start;
+     const char *max = *buf + length;
+     char *key;
++    size_t wlen;
+     start = *strt;
+     while (start < max && isblank((unsigned char)*start))
+         start++;
+@@ -213,11 +226,15 @@ static char *isolateWord(char **strt, ch
+         endtag++;}
+     if (max < endtag)
+         return NULL;
+-    key = strndup(start, (size_t)(endtag - start));
++    wlen = (size_t)(endtag - start);
++    /* Avoid strndup(3) since the buffer might not be NUL-terminated. */
++    key = malloc(wlen + 1);
+     if (key == NULL) {
+         message_OOM();
+         return NULL;
+     }
++    memcpy(key, start, wlen);
++    key[wlen] = '\0';
+     *strt = endtag;
+     return key;
+ }
+@@ -569,6 +586,9 @@ static void freeLogInfo(struct logInfo *
+ {
+     free(log->pattern);
+     free_2d_array(log->files, log->numFiles);
++    log->numFiles = 0;
++    /* realloc of NULL is safe by definition */
++    log->files = NULL;
+     free(log->oldDir);
+     free(log->pre);
+     free(log->post);
+@@ -753,6 +773,9 @@ static int readConfigPath(const char *pa
+         }
+         close(here);
+         free_2d_array(namelist, files_count);
++        files_count = 0;
++	/* realloc of NULL is safe by definition */
++	namelist = NULL;
+     } else {
+         if (copyLogInfo(&defConfigBackup, defConfig)) {
+             freeLogInfo(&defConfigBackup);
+@@ -1144,7 +1167,7 @@ static int readConfigFile(const char *co
+                                 configFile, lineNum);
+                         RAISE_ERROR();
+                     }
+-                    if (!isspace((unsigned char)*start) && *start != '=') {
++                    if (start < buf + length && !isspace((unsigned char)*start) && *start != '=') {
+                         message(MESS_ERROR, "%s:%d keyword '%s' not properly"
+                                 " separated, found %#x\n",
+                                 configFile, lineNum, key, *start);
+@@ -1748,7 +1771,7 @@ static int readConfigFile(const char *co
+                     } else {
+                         message(MESS_ERROR, "%s:%d unknown option '%s' "
+                                 "-- ignoring line\n", configFile, lineNum, key);
+-                        if (*start != '\n')
++                        if (start < buf + length && *start != '\n')
+                             state = STATE_SKIP_LINE;
+                     }
+                 } else if (*start == '/' || *start == '"' || *start == '\''
+@@ -1811,6 +1834,7 @@ static int readConfigFile(const char *co
+                     newlog->numFiles = 0;
+                     for (argNum = 0; argNum < argc; argNum++) {
+                         char **tmp;
++			size_t argLen = strlen(argv[argNum]);
+                         int rc;
+                         glob_t globResult;
+ 
+@@ -1819,6 +1843,12 @@ static int readConfigFile(const char *co
+                             globerr_msg = NULL;
+                         }
+ 
++			if (argLen > 2048) {
++                            message(MESS_ERROR, "%s:%d glob too long (%zu > 2048)\n", configFile, lineNum, argLen);
++                            logerror = 1;
++			    continue;
++			}
++
+                         rc = glob(argv[argNum], GLOB_NOCHECK
+ #ifdef GLOB_TILDE
+                                 | GLOB_TILDE
+@@ -1833,12 +1863,22 @@ static int readConfigFile(const char *co
+                              * set, so store the error message for later. */
+                             rc = asprintf(&globerr_msg, "%s:%d glob failed for %s: %s\n",
+                                           configFile, lineNum, argv[argNum], strerror(glob_errno));
+-                            if (rc == -1)
++                            if (rc == -1) {
++				message_OOM();
+                                 globerr_msg = NULL;
++			    } else {
++				    message(MESS_DEBUG, "%s", globerr_msg);
++			    }
+ 
+                             globResult.gl_pathc = 0;
+                         }
+ 
++			if (globResult.gl_pathc == 0) {
++                            message(MESS_DEBUG, "%s:%d no matches for glob '%s', skipping\n", configFile, lineNum, argv[argNum]);
++                            globfree(&globResult);
++			    continue;
++			}
++
+                         tmp = realloc(newlog->files,
+                                     sizeof(*newlog->files) * (newlog->numFiles +
+                                         globResult.
+@@ -2086,7 +2126,7 @@ duperror:
+                     }
+                     else {
+                         const char *endtag = start - 9;
+-                        while (*endtag != '\n')
++                        while (endtag > scriptStart && *endtag != '\n')
+                             endtag--;
+                         endtag++;
+                         *scriptDest = strndup(scriptStart, (size_t)(endtag - scriptStart));
+@@ -2101,7 +2141,7 @@ duperror:
+                     state = (state & STATE_SKIP_CONFIG) ? STATE_SKIP_CONFIG : STATE_DEFAULT;
+                 }
+                 else {
+-                    state = (*start == '\n' ? 0 : STATE_SKIP_LINE) |
++                    state = (start < buf + length && *start == '\n' ? 0 : STATE_SKIP_LINE) |
+                         STATE_LOAD_SCRIPT |
+                         ((state & STATE_SKIP_CONFIG) ? STATE_SKIP_CONFIG : 0);
+                 }
+@@ -2141,7 +2181,7 @@ duperror:
+                          * pointer is increased by one and, after this,
+                          * "start" points to the beginning of the next line.
+                          */
+-                        if (*start != '\n') {
++                        if (start < buf + length && *start != '\n') {
+                             state = STATE_SKIP_LINE | STATE_SKIP_CONFIG;
+                         }
+                     }
+@@ -2152,7 +2192,7 @@ duperror:
+                         "%s: %d: readConfigFile() unknown state: %#x\n",
+                         configFile, lineNum, state);
+         }
+-        if (*start == '\n') {
++        if (start < buf + length && *start == '\n') {
+             lineNum++;
+         }
+ 
+Index: logrotate-3.21.0/logrotate.c
+===================================================================
+--- logrotate-3.21.0.orig/logrotate.c
++++ logrotate-3.21.0/logrotate.c
+@@ -1647,6 +1647,8 @@ static int prerotateSingleLog(const stru
+     char dext_str[DATEEXT_LEN];
+     char dformat[PATTERN_LEN] = "";
+     char dext_pattern[PATTERN_LEN];
++    const char *final_dformat;
++    size_t ret;
+ 
+     if (!state->doRotate)
+         return 0;
+@@ -1766,19 +1768,17 @@ static int prerotateSingleLog(const stru
+     /* Construct the glob pattern corresponding to the date format */
+     dext_str[0] = '\0';
+     if (log->dateformat) {
+-        char *dext;
++        const char *dext = log->dateformat;
+         size_t i = 0, j = 0;
+         memset(dext_pattern, 0, sizeof(dext_pattern));
+-        dext = log->dateformat;
+         while (*dext == ' ')
+             dext++;
+-        while ((*dext != '\0') && (!hasErrors)) {
++        while (*dext != '\0') {
+             /* Will there be a space for a char and '\0'? */
+-            if (j >= (sizeof(dext_pattern) - 1)) {
++            if (j >= (sizeof(dext_pattern) - 1) || i >= (sizeof(dformat) - 1)) {
+                 message(MESS_ERROR, "Date format %s is too long\n",
+                         log->dateformat);
+-                hasErrors = 1;
+-                break;
++                return 1;
+             }
+             if (*dext == '%') {
+                 switch (*(dext + 1)) {
+@@ -1799,8 +1799,7 @@ static int prerotateSingleLog(const stru
+                         if (j >= (sizeof(dext_pattern) - 1)) {
+                             message(MESS_ERROR, "Date format %s is too long\n",
+                                     log->dateformat);
+-                            hasErrors = 1;
+-                            break;
++                            return 1;
+                         }
+                         dformat[i++] = *(dext++);
+                         dformat[i] = *dext;
+@@ -1814,8 +1813,7 @@ static int prerotateSingleLog(const stru
+                         if (j >= (sizeof(dext_pattern) - 1)) {
+                             message(MESS_ERROR, "Date format %s is too long\n",
+                                     log->dateformat);
+-                            hasErrors = 1;
+-                            break;
++                            return 1;
+                         }
+                         dformat[i++] = *(dext++);
+                         dformat[i] = *dext;
+@@ -1835,21 +1833,27 @@ static int prerotateSingleLog(const stru
+         }
+         dformat[i] = '\0';
+         message(MESS_DEBUG, "Converted '%s' -> '%s'\n", log->dateformat, dformat);
+-        strftime(dext_str, sizeof(dext_str), dformat, &now);
++        final_dformat = dformat;
+     } else {
+         if (log->criterium == ROT_HOURLY) {
+             /* hourly adds another two digits */
+-            strftime(dext_str, sizeof(dext_str), "-%Y%m%d%H", &now);
++            final_dformat = "-%Y%m%d%H";
+             strncpy(dext_pattern, "-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+                     sizeof(dext_pattern));
+         } else {
+             /* The default dateformat and glob pattern */
+-            strftime(dext_str, sizeof(dext_str), "-%Y%m%d", &now);
++            final_dformat = "-%Y%m%d";
+             strncpy(dext_pattern, "-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+                     sizeof(dext_pattern));
+         }
+         dext_pattern[PATTERN_LEN - 1] = '\0';
+     }
++
++    ret = strftime(dext_str, sizeof(dext_str), final_dformat, &now);
++    if (ret == 0) {
++	message(MESS_ERROR, "failed to apply date format '%s'\n", final_dformat);
++	return 1;
++    }
+     message(MESS_DEBUG, "dateext suffix '%s'\n", dext_str);
+     message(MESS_DEBUG, "glob pattern '%s'\n", dext_pattern);

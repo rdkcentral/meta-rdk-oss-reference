@@ -1,0 +1,54 @@
+Date: Mon, 15 Apr 2024 14:26:40 +0000
+From: Torben Thellefsen <torben.thellefsen@sky.uk>
+Subject: [PATCH] Apply upstream patch "netlink: fix empty route index
+ discovery"
+Source: aebb86033105f103385b87664d54ef76e23b7707 Mon Sep 17 00:00:00 2001 
+Originally patch 919981fba64f45e563efddd833bdd01f63afa0a1 from libwebsockets
+Signed-off by: Torben Thellefsen <torben.thellefsen@sky.uk>
+---
+ lib/core-net/route.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/lib/core-net/route.c b/lib/core-net/route.c
+index 6be93d62..80f640c3 100644
+--- a/lib/core-net/route.c
++++ b/lib/core-net/route.c
+@@ -96,11 +96,15 @@ _lws_routing_table_dump(struct lws_context *cx)
+ lws_route_uidx_t
+ _lws_route_get_uidx(struct lws_context *cx)
+ {
++	lws_route_uidx_t ou;
++
+ 	if (!cx->route_uidx)
+ 		cx->route_uidx++;
+
+-	while (1) {
+-		char again = 0;
++	ou = cx->route_uidx;
++
++	do {
++		uint8_t again = 0;
+
+ 		/* Anybody in the table already uses the pt's next uidx? */
+
+@@ -113,17 +117,18 @@ _lws_route_get_uidx(struct lws_context *cx)
+ 				cx->route_uidx++;
+ 				if (!cx->route_uidx)
+ 					cx->route_uidx++;
+-				if (again) {
++				if (cx->route_uidx == ou) {
+ 					assert(0); /* we have filled up the 8-bit uidx space? */
+ 					return 0;
+ 				}
+ 				again = 1;
++				break;
+ 			}
+ 		} lws_end_foreach_dll(d);
+
+ 		if (!again)
+ 			return cx->route_uidx++;
+-	}
++	} while (1);
+ }
+
+ lws_route_t *

@@ -1,0 +1,92 @@
+Date: Dec 2, 2022
+From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Source: COMCAST
+Subject: Re-create patches to fix Kirkstone build error
+Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Index: opkg-0.5.0/libopkg/pkg_extract.c
+===================================================================
+--- opkg-0.5.0.orig/libopkg/pkg_extract.c
++++ opkg-0.5.0/libopkg/pkg_extract.c
+@@ -96,7 +96,7 @@ int pkg_extract_rdm_data_files_to_dir(ch
+         return -1;
+     }
+ 
+-    r = ar_extract_all(ar, dir);
++    r = ar_extract_all(ar, dir, NULL);
+     if (r < 0)
+         opkg_msg(ERROR, "Failed to extract data files from package '%s'.\n",
+                  filename);
+Index: opkg-0.5.0/libopkg/opkg_archive.c
+===================================================================
+--- opkg-0.5.0.orig/libopkg/opkg_archive.c
++++ opkg-0.5.0/libopkg/opkg_archive.c
+@@ -981,7 +981,7 @@ int ar_extract_rdm_all(char *filename, c
+     if (opkg_config->ignore_uid)
+         extract_flags &= ~ARCHIVE_EXTRACT_OWNER;
+ 
+-    r = extract_all(ar, dir, extract_flags);
++    r = extract_all(ar, dir, extract_flags, NULL);
+ 
+  err_cleanup:
+     archive_read_free(ar);
+Index: opkg-0.5.0/libopkg/opkg_download_curl.c
+===================================================================
+--- opkg-0.5.0.orig/libopkg/opkg_download_curl.c
++++ opkg-0.5.0/libopkg/opkg_download_curl.c
+@@ -210,7 +210,12 @@ static int check_file_stamp(const char *
+  *         1 if file needs further downloading.
+  *         -1 if error occurs.
+  */
++
++#ifdef HAVE_RDM
++static int opkg_validate_cached_file(const char *src, const char *cache_location, void *data)
++#else
+ static int opkg_validate_cached_file(const char *src, const char *cache_location)
++#endif
+ {
+     CURLcode res;
+     FILE *file;
+@@ -231,6 +236,9 @@ static int opkg_validate_cached_file(con
+         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &error_code);
+         opkg_msg(ERROR, "Failed to download %s headers: %s.\n", src,
+                  curl_easy_strerror(res));
++#ifdef HAVE_RDM
++	*(long *) data = error_code;
++#endif
+         ret = -1;
+         goto cleanup;
+     }
+@@ -314,7 +322,11 @@ int opkg_download_backend(const char *sr
+ #endif                          /* HAVE_SSLCURL */
+ 
+     if (use_cache) {
++#ifdef HAVE_RDM
++	ret = opkg_validate_cached_file(src, dest, data);
++#else
+         ret = opkg_validate_cached_file(src, dest);
++#endif
+         if (ret <= 0)
+             return ret;
+     } else {
+@@ -336,6 +348,9 @@ int opkg_download_backend(const char *sr
+         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &error_code);
+         opkg_msg(ERROR, "Failed to download %s: %s.\n", src,
+                  curl_easy_strerror(res));
++#ifdef HAVE_RDM
++	*(long *) data = error_code;
++#endif
+         return -1;
+     }
+ 
+@@ -420,6 +435,11 @@ static CURL *opkg_curl_init(curl_progres
+             setopt(CURLOPT_CAINFO, opkg_config->ssl_ca_file);
+         if (opkg_config->ssl_ca_path)
+             setopt(CURLOPT_CAPATH, opkg_config->ssl_ca_path);
++
++#ifdef HAVE_RDM
++	/* Force curl to use TLS version 1.2 or later */
++	setopt(CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
++#endif
+ #endif
+ 
+         if (opkg_config->connect_timeout_ms > 0) {

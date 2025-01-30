@@ -1,0 +1,101 @@
+Date: Tue, 24 Sep 2024 18:01:41 +0000
+From: mselva006c <mani_selvaraj@comcast.com>
+Subject: [PATCH] RDK-52660: Port opkg multithread install pkg for kirkstone.
+port opkg multithread install pkg patch implemented
+in RDK-51396 for kirkstone
+Source: COMCAST ddf469f3962ad4bfdf52e314528a01b71376b8d9 Mon Sep 17 00:00:00 2001
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ libopkg/solvers/libsolv/opkg_solver_libsolv.c | 47 ++++++++++++++++---
+ 1 file changed, 41 insertions(+), 6 deletions(-)
+
+diff --git a/libopkg/solvers/libsolv/opkg_solver_libsolv.c b/libopkg/solvers/libsolv/opkg_solver_libsolv.c
+index d442d3d..298d9c7 100644
+--- a/libopkg/solvers/libsolv/opkg_solver_libsolv.c
++++ b/libopkg/solvers/libsolv/opkg_solver_libsolv.c
+@@ -35,6 +35,7 @@
+ #include "pkg_hash.h"
+ #include "xfuncs.h"
+ #include "sprintf_alloc.h"
++#include <pthread.h>
+ 
+ #define INITIAL_ARCH_LIST_SIZE 4
+ 
+@@ -71,6 +72,7 @@ enum job_action {
+     JOB_DISTUPGRADE
+ };
+ typedef enum job_action job_action_t;
++int gErr;
+ 
+ static libsolv_solver_t *libsolv_solver_new(void);
+ static void libsolv_solver_free(libsolv_solver_t *libsolv_solver);
+@@ -915,11 +917,27 @@ static int libsolv_solver_transaction_preamble(libsolv_solver_t *libsolv_solver,
+     return 0;
+ }
+ 
++void* custom_installer(void* args)
++{
++    int err = 0;
++    pkg_t *pkg = (pkg_t*) args;
++    err = opkg_install_pkg(pkg, NULL);
++    if (err != 0) {
++       gErr = err;
++    }
++}
++#define NUM_THREADS 64
++
+ static int libsolv_solver_execute_transaction(libsolv_solver_t *libsolv_solver)
+ {
+-    int i, ret = 0, err = 0;
++    int i, j, ret = 0, err = 0, count = 0;
+     Transaction *transaction;
+     pkg_vec_t *pkgs;
++    pthread_t threads[NUM_THREADS];
++    for (j =0;j<NUM_THREADS;++j) {
++        threads[j] = 0;
++    }
++    gErr = 0;
+ 
+     transaction = solver_create_transaction(libsolv_solver->solver);
+     pkgs = pkg_vec_alloc();
+@@ -975,11 +993,22 @@ static int libsolv_solver_execute_transaction(libsolv_solver_t *libsolv_solver)
+                     opkg_message(NOTICE, "Installing %s (%s) on %s\n",
+                                  pkg->name, pkg->version, pkg->dest->name);
+                 }
+-                ret = opkg_install_pkg(pkg, NULL);
+-                if (ret) {
+-                    err = -1;
+-                    goto CLEANUP;
+-                }
++                if (count >= NUM_THREADS) {
++                    if (gErr != 0) {
++                       err = gErr;
++                       goto CLEANUP;
++                   }
++                    for (j = 0;j<NUM_THREADS; ++j) {
++                       if (threads[j] != 0) {
++                           pthread_join(threads[j],NULL);
++                       }
++                       threads[j] = 0;
++                    }
++                    count = 0;
++                 }
++                pthread_create(&threads[count],NULL,custom_installer,(void*)pkg);
++                count++;
++
+                 break;
+             case SOLVER_TRANSACTION_UPGRADE:
+                   /* An upgrade due to a package obsoleting another one (SOLVER_TRANSACTION_OBSOLETE_IS_UPGRADE)
+@@ -1041,6 +1070,12 @@ static int libsolv_solver_execute_transaction(libsolv_solver_t *libsolv_solver)
+     }
+ 
+ CLEANUP:
++    for (j =0; j< NUM_THREADS; ++j) {
++       if (threads[j] != 0) {
++          pthread_join(threads[j],NULL);
++       }
++    }
++
+     pkg_vec_free(pkgs);
+     transaction_free(transaction);
+     return err;

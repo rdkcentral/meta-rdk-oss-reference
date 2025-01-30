@@ -1,0 +1,28 @@
+Date: Sun, 6 Aug 2023 04:20:02 +0000
+From: mselva006c <mani_selvaraj@comcast.com>
+Subject: [PATCH] Subject: [PATCH] DELIA-12070: authservice Token expiry issue
+        Modified the ntp-event trigger to reflect the NTP server timings
+        Ensure authservice startup after ntp-event and authservice communications
+Source: COMCAST f5a3f2bc4468f3aec882eaa2801aa8ed2acb7540 Mon Sep 17 00:00:00 2001
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ src/timesync/timesyncd-manager.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/timesync/timesyncd-manager.c b/src/timesync/timesyncd-manager.c
+index c743935bf3..ed97772356 100644
+--- a/src/timesync/timesyncd-manager.c
++++ b/src/timesync/timesyncd-manager.c
+@@ -313,6 +313,8 @@ static int manager_adjust_clock(Manager *m, double offset, int leap_sec) {
+ 
+         /* If touch fails, there isn't much we can do. Maybe it'll work next time. */
+         (void) touch("/run/systemd/timesync/synchronized");
++        log_info("Time response event, set the event flag");
++        touch("/tmp/clock-event");
+         write_string_file("/tmp/ntp_status", "Synchronized", WRITE_STRING_FILE_CREATE);
+         m->drift_freq = tmx.freq;
+ 
+-- 
+2.25.1
+
+

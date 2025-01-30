@@ -1,0 +1,33 @@
+Date: Tue 12 May 15:54:13 BST 2020
+From: thanushree.r <thanushree.r@tataelxsi.co.in>
+Subject: Merge file changes to disable wait online service
+Source: SKY eth_flush Tue 12 May 15:54:13 BST 2020
+Signed-off-by: thanushree.r <thanushree.r@tataelxsi.co.in>
+---
+Index: git/meson.build
+===================================================================
+--- git.orig/meson.build
++++ git/meson.build
+@@ -3485,14 +3485,14 @@ if conf.get('ENABLE_NETWORKD') == 1
+                 install : true,
+                 install_dir : rootlibexecdir)
+ 
+-        executable(
+-                'systemd-networkd-wait-online',
+-                systemd_networkd_wait_online_sources,
+-                include_directories : includes,
+-                link_with : [networkd_link_with],
+-                install_rpath : rootlibexecdir,
+-                install : true,
+-                install_dir : rootlibexecdir)
++#        executable(
++#                'systemd-networkd-wait-online',
++#                systemd_networkd_wait_online_sources,
++#                include_directories : includes,
++#                link_with : [networkd_link_with],
++#                install_rpath : rootlibexecdir,
++#                install : true,
++#                install_dir : rootlibexecdir)
+ 
+         public_programs += executable(
+                 'networkctl',

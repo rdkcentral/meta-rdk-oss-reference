@@ -1,0 +1,26 @@
+Date: Fri, 13 Nov 2020 18:46:15 -0500
+From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+Subject: [PATCH] Added code to cleanup all the xisting watches on path unit,
+before adding a new watch. Although this is not needed this is added as a defence mechanism.
+Source: COMCAST 1886fb87a41e5573dc35d4dc88d4001c5ce3f937 Mon Sep 17 00:00:00 2001
+Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+---
+ src/core/path.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/core/path.c b/src/core/path.c
+index 0dd0d37..dd513ff 100644
+--- a/src/core/path.c
++++ b/src/core/path.c
+@@ -522,6 +522,8 @@ static void path_enter_waiting(Path *p, bool initial, bool recheck) {
+                         return;
+                 }
+ 
++        //Clearing all the watches before adding a new watch.
++        path_unwatch(p);
+         r = path_watch(p);
+         if (r < 0)
+                 goto fail;
+-- 
+2.1.4
+

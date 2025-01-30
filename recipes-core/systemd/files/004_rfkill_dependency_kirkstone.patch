@@ -1,0 +1,20 @@
+Date: Fri 4 June 14:00:00 EST 2021
+From: Chandresh Pitty <Chandresh.Pitty@cable.comcast.com>
+Subject: Delay systemd-rfkill startup on boot
+Source: Comcast systemd-rfkill Fri 4 June 14:00:00 EST 2021
+Signed-off-by: Chandresh Pitty <Chandresh.Pitty@cable.comcast.com>
+---
+Index: git/units/systemd-rfkill.service.in
+===================================================================
+--- git.orig/units/systemd-rfkill.service.in
++++ git/units/systemd-rfkill.service.in
+@@ -13,7 +13,8 @@ Documentation=man:systemd-rfkill.service
+ DefaultDependencies=no
+ BindsTo=sys-devices-virtual-misc-rfkill.device
+ Conflicts=shutdown.target
+-After=sys-devices-virtual-misc-rfkill.device
++After=sys-devices-virtual-misc-rfkill.device systemd-remount-fs.service disk-check.service nvram.service
++Requires=disk-check.service nvram.service
+ Before=shutdown.target
+ 
+ [Service]

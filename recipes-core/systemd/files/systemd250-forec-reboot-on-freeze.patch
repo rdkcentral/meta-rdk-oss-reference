@@ -1,0 +1,42 @@
+Date: Fri, 29 May 2020 17:54:57 +0000
+From: mselva006c <mani_selvaraj@comcast.com>
+Subject: [PATCH] RDK-28776: force reboot on systemd freeze
+        Added a force reboot to ensure the box reboot on systemd freeze
+Source: COMCAST
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ src/core/main.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/src/core/main.c.orig b/src/core/main.c
+--- a/src/core/main.c.orig	2023-01-25 12:32:49.120562240 +0000
++++ b/src/core/main.c	2023-01-25 12:35:22.251892989 +0000
+@@ -205,6 +205,8 @@
+ 
+ _noreturn_ static void freeze_or_exit_or_reboot(void) {
+ 
++	// create a FILE typed pointer
++	FILE *file_pointer;
+         /* If we are running in a container, let's prefer exiting, after all we can propagate an exit code to
+          * the container manager, and thus inform it that something went wrong. */
+         if (detect_container() > 0) {
+@@ -222,6 +224,19 @@
+         }
+ 
+         log_emergency("Freezing execution.");
++        log_info("Systemd went into freeze Mode, we will do a force reboot on next reboot call");
++        // open the file "systemd_freeze_reboot_on" for writing
++        file_pointer = fopen("/tmp/systemd_freeze_reboot_on", "w");
++        if ( file_pointer != NULL )
++        {
++          // Write to the file
++          fprintf(file_pointer, "REBOOT");
++
++          // Close the file
++          fclose(file_pointer);
++        }else {
++           log_error("Failed to open reboot flag file");
++        }
+         sync();
+         freeze();
+ }

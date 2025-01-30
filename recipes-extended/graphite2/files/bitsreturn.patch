@@ -1,0 +1,17 @@
+Date: Jun 14 2022
+From: Sushant Daspute <sushant_daspute@comcast.com>
+Subject: Added return statement in bits.cpp file
+Source: COMCAST
+Signed-off-by: Sushant Daspute <sushant_daspute@comcast.com>
+Index: graphite2-1.3.6/tests/bittwiddling/bits.cpp
+===================================================================
+--- graphite2-1.3.6.orig/tests/bittwiddling/bits.cpp
++++ graphite2-1.3.6/tests/bittwiddling/bits.cpp
+@@ -81,6 +81,7 @@ namespace
+     {
+         if (!std::numeric_limits<T>::is_signed) o.put('u');
+         o << "int" << std::dec << sizeof(T)*8;
++	return o;
+     }
+     
+ 	template<typename T>

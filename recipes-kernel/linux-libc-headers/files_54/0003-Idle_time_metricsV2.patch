@@ -1,0 +1,87 @@
+From d82de9e6772f4d7c92a0164f3accff8cd5fa388d Mon Sep 17 00:00:00 2001
+From: Deekshit Devadas <deekshit.devadas@sky.uk>
+Date: Mon, 30 Oct 2023 19:03:38 +0000
+Subject: [PATCH] RDK-42648: Idle CPU Time metrics V2
+
+Reason for change: Idle Time metrics V2 
+to include - sum idel time, maxt idle time,
+all cpu running time & it's sum , max runtime etc.
+
+Test Procedure: Verify Metrics
+Risks: Low
+Priority: P1
+Signed-off-by: deekshit.devadas <deekshit.devadas@sky.uk>
+
+Change-Id: I39eedeeb65f3ac71643f984557e606e8b8e1be86
+---
+
+diff --git a/include/uapi/linux/prctl.h b/include/uapi/linux/prctl.h
+index a794470c0..41d4709c3 100644
+--- a/include/uapi/linux/prctl.h
++++ b/include/uapi/linux/prctl.h
+@@ -366,12 +366,65 @@ typedef struct {
+ 
+ #define T962X3_NUM_CPUS 4
+ 
++/* define structure(s) used for logging idle metrics */
+ typedef struct {
+ 	unsigned long long metricStartTime;
+ 	unsigned long long metricEndTime;
+ 	unsigned long long idle_time[T962X3_NUM_CPUS];
+ } IDLE_METRICS;
+ 
++typedef struct {
++	unsigned long long sum_idle_time;
++	unsigned long max_idle_time;
++	unsigned long idle_count;
++} PER_CPU_IDLE_METRIC;
++
++/* define structure(s) used for logging idle metrics */
++typedef struct {
++	unsigned long long metricStartTime;
++	unsigned long long metricEndTime;
++	PER_CPU_IDLE_METRIC idle[T962X3_NUM_CPUS];
++	unsigned long long sum_all_cpus_running_time;
++	unsigned long long sum_run_time_lt_1ms;
++	unsigned long long sum_run_time_gt_1ms;
++	unsigned long long sum_run_time_gt_5ms;
++	unsigned long long sum_run_time_gt_10ms;
++	unsigned long long sum_run_time_gt_20ms;
++	unsigned long long sum_run_time_gt_30ms;
++	unsigned long long sum_run_time_gt_40ms;
++	unsigned long long sum_run_time_gt_50ms;
++	unsigned long long sum_run_time_gt_75ms;
++	unsigned long long sum_run_time_gt_100ms;
++	unsigned long max_run_time_lt_1ms;
++	unsigned long max_run_time_gt_1ms;
++	unsigned long max_run_time_gt_5ms;
++	unsigned long max_run_time_gt_10ms;
++	unsigned long max_run_time_gt_20ms;
++	unsigned long max_run_time_gt_30ms;
++	unsigned long max_run_time_gt_40ms;
++	unsigned long max_run_time_gt_50ms;
++	unsigned long max_run_time_gt_75ms;
++	unsigned long max_run_time_gt_100ms;
++	unsigned long max_all_cpus_running_time;
++	unsigned long count;
++	unsigned long run_time_gt_1ms;
++	unsigned long run_time_gt_5ms;
++	unsigned long run_time_gt_10ms;
++	unsigned long run_time_gt_20ms;
++	unsigned long run_time_gt_30ms;
++	unsigned long run_time_gt_40ms;
++	unsigned long run_time_gt_50ms;
++	unsigned long run_time_gt_75ms;
++	unsigned long run_time_gt_100ms;
++} IDLE_METRICS_V2;
++
+ #define PR_GET_IDLE_METRICS		104
++#define PR_GET_IDLE_METRICS_VERSION	105
++
++typedef enum {
++	IDLE_METRICS_VERSION_V1 = 0,
++	IDLE_METRICS_VERSION_V2,
++	IDLE_METRICS_VERSION_NUM_VERSIONS
++} IDLE_METRICS_VERSION;
+ 
+ #endif /* _LINUX_PRCTL_H */

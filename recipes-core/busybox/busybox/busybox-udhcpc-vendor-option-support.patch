@@ -1,0 +1,303 @@
+Date: 2021-06-02 15:07:46 +0200
+From: Denys Vlasenko <vda.linux@googlemail.com>
+Subject: [PATCH] RDK-43295: Add support for the vendor option
+
+    1. udhcpc: remove deprecated -H/-h HOSTNAME options (9 years), deprecate -V VENDOR
+    2. udhcpc: include client-id option in DECLINEs, even if it's a custom -x 61:HEX option
+          client_data.vendorclass, .hostname and .fqdn probably need the same treatment:
+          just insert them into the list of -x opts, get rid of
+
+        if (client_data.vendorclass)
+                udhcp_add_binary_option(packet, client_data.vendorclass);
+        if (client_data.hostname)
+                udhcp_add_binary_option(packet, client_data.hostname);
+        if (client_data.fqdn)
+                udhcp_add_binary_option(packet, client_data.fqdn);
+                
+    3. udhcpc: revert deprecation message for -V
+          "-x vendor:VENDOR" will not be a trivial replacement of it:
+
+          (1) by default, we do send a vendor string ("udhcp BB_VER"),
+          will need code to preserve the default.
+
+          (2) -V '' currently disables vendor string. -x vendor:''
+          would not easily achieve that: it adds no option at all
+          (string options can't be empty), and default (1) would trigger.
+          To avoid that, we will need yet another hack to detect -x vendor:'' and interpret that as "no vendor string at all".
+
+          IOW: removing -V is likely to increase code size, not decrease.
+
+Source: BUSYBOX 698cdef538f51bb85b68d591b1e42eb6b04d891c 2021-06-02 15:07:46 +0200
+Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
+---
+diff -ruPN a/networking/udhcp/common.c b/networking/udhcp/common.c
+--- a/networking/udhcp/common.c	2023-07-31 13:39:13.844141334 +0000
++++ b/networking/udhcp/common.c	2023-07-31 14:22:33.078693784 +0000
+@@ -49,6 +49,7 @@
+ 	{ OPTION_U32                              , 0x33 }, /* DHCP_LEASE_TIME    */
+ 	{ OPTION_IP                               , 0x36 }, /* DHCP_SERVER_ID     */
+ 	{ OPTION_STRING                           , 0x38 }, /* DHCP_ERR_MESSAGE   */
++	{ OPTION_STRING                           , 0x3c }, /* DHCP_VENDOR        */
+ //TODO: must be combined with 'sname' and 'file' handling:
+ 	{ OPTION_STRING_HOST                      , 0x42 }, /* DHCP_TFTP_SERVER_NAME */
+ 	{ OPTION_STRING                           , 0x43 }, /* DHCP_BOOT_FILE     */
+@@ -83,7 +84,6 @@
+ 	{ OPTION_U8                               , 0x35 }, /* DHCP_MESSAGE_TYPE  */
+ 	{ OPTION_U16                              , 0x39 }, /* DHCP_MAX_SIZE      */
+ //looks like these opts will work just fine even without these defs:
+-//	{ OPTION_STRING                           , 0x3c }, /* DHCP_VENDOR        */
+ //	/* not really a string: */
+ //	{ OPTION_STRING                           , 0x3d }, /* DHCP_CLIENT_ID     */
+ 	{ 0, 0 } /* zeroed terminating entry */
+@@ -120,6 +120,7 @@
+ 	"lease" "\0"            /* DHCP_LEASE_TIME      */
+ 	"serverid" "\0"         /* DHCP_SERVER_ID       */
+ 	"message" "\0"          /* DHCP_ERR_MESSAGE     */
++	"vendor" "\0"           /* DHCP_VENDOR          */
+ 	"tftp" "\0"             /* DHCP_TFTP_SERVER_NAME*/
+ 	"bootfile" "\0"         /* DHCP_BOOT_FILE       */
+ //	"userclass" "\0"        /* DHCP_USER_CLASS      */
+@@ -398,6 +399,40 @@
+ 	return 1;
+ }
+ 
++void* FAST_FUNC udhcp_insert_new_option(
++        struct option_set **opt_list,
++        unsigned code,
++        unsigned length,
++        bool dhcpv6)
++{
++    IF_NOT_UDHCPC6(bool dhcpv6 = 0;)
++    struct option_set *new, **curr;
++
++    log2("attaching option %02x to list", code);
++    new = xmalloc(sizeof(*new));
++    if (!dhcpv6) {
++        new->data = xzalloc(length + OPT_DATA);
++        new->data[OPT_CODE] = code;
++        new->data[OPT_LEN] = length;
++    } else {
++        new->data = xzalloc(length + D6_OPT_DATA);
++        new->data[D6_OPT_CODE] = code >> 8;
++        new->data[D6_OPT_CODE + 1] = code & 0xff;
++        new->data[D6_OPT_LEN] = length >> 8;
++        new->data[D6_OPT_LEN + 1] = length & 0xff;
++    }
++
++    curr = opt_list;
++//FIXME: DHCP6 codes > 255!!
++    while (*curr && (*curr)->data[OPT_CODE] < code)
++        curr = &(*curr)->next;
++
++    new->next = *curr;
++    *curr = new;
++
++    return new->data;
++}
++
+ /* udhcp_str2optset:
+  * Parse string option representation to binary form and add it to opt_list.
+  * Called to parse "udhcpc -x OPTNAME:OPTVAL"
+diff -ruPN a/networking/udhcp/common.h b/networking/udhcp/common.h
+--- a/networking/udhcp/common.h	2023-07-31 14:19:34.286945457 +0000
++++ b/networking/udhcp/common.h	2023-07-31 14:22:54.861235913 +0000
+@@ -292,6 +292,16 @@
+ 
+ /* 2nd param is "uint32_t*" */
+ int FAST_FUNC udhcp_str2nip(const char *str, void *arg);
++
++#if !ENABLE_UDHCPC6
++#define udhcp_insert_new_option(opt_list, code, length, dhcpv6) \
++    udhcp_insert_new_option(opt_list, code, length)
++#endif
++void* FAST_FUNC udhcp_insert_new_option(struct option_set **opt_list,
++        unsigned code,
++        unsigned length,
++        bool dhcpv6);
++
+ /* 2nd param is "struct option_set**" */
+ #if !ENABLE_UDHCPC6
+ #define udhcp_str2optset(str, arg, optflags, option_strings, dhcpv6) \
+diff -ruPN a/networking/udhcp/dhcpc.c b/networking/udhcp/dhcpc.c
+--- a/networking/udhcp/dhcpc.c	2023-07-31 13:40:10.754602288 +0000
++++ b/networking/udhcp/dhcpc.c	2023-07-31 15:49:58.512863252 +0000
+@@ -57,8 +57,7 @@
+ #if ENABLE_LONG_OPTS
+ static const char udhcpc_longopts[] ALIGN1 =
+ 	"clientid-none\0"  No_argument       "C"
+-	"vendorclass\0"    Required_argument "V"
+-	"hostname\0"       Required_argument "H"
++	"vendorclass\0"    Required_argument "V" //deprecated
+ 	"fqdn\0"           Required_argument "F"
+ 	"interface\0"      Required_argument "i"
+ 	"now\0"            No_argument       "n"
+@@ -86,29 +85,27 @@
+ enum {
+ 	OPT_C = 1 << 0,
+ 	OPT_V = 1 << 1,
+-	OPT_H = 1 << 2,
+-	OPT_h = 1 << 3,
+-	OPT_F = 1 << 4,
+-	OPT_i = 1 << 5,
+-	OPT_n = 1 << 6,
+-	OPT_p = 1 << 7,
+-	OPT_q = 1 << 8,
+-	OPT_R = 1 << 9,
+-	OPT_r = 1 << 10,
+-	OPT_s = 1 << 11,
+-	OPT_T = 1 << 12,
+-	OPT_t = 1 << 13,
+-	OPT_S = 1 << 14,
+-	OPT_A = 1 << 15,
+-	OPT_O = 1 << 16,
+-	OPT_o = 1 << 17,
+-	OPT_x = 1 << 18,
+-	OPT_f = 1 << 19,
+-	OPT_B = 1 << 20,
+-	OPT_D = 1 << 21,
++	OPT_F = 1 << 2,
++	OPT_i = 1 << 3,
++	OPT_n = 1 << 4,
++	OPT_p = 1 << 5,
++	OPT_q = 1 << 6,
++	OPT_R = 1 << 7,
++	OPT_r = 1 << 8,
++	OPT_s = 1 << 9,
++	OPT_T = 1 << 10,
++	OPT_t = 1 << 11,
++	OPT_S = 1 << 12,
++	OPT_A = 1 << 13,
++	OPT_O = 1 << 14,
++	OPT_o = 1 << 15,
++	OPT_x = 1 << 16,
++	OPT_f = 1 << 17,
++	OPT_B = 1 << 18,
++	OPT_D = 1 << 19,
+ /* The rest has variable bit positions, need to be clever */
+-	OPTBIT_B = 20,
+-	OPTBIT_D = 21,
++	OPTBIT_B = 18,
++	OPTBIT_D = 19,
+ 	USE_FOR_MMU(             OPTBIT_b,)
+ 	IF_FEATURE_UDHCPC_ARPING(OPTBIT_a,)
+ 	IF_FEATURE_UDHCP_PORT(   OPTBIT_P,)
+@@ -646,10 +643,6 @@
+ 		packet->options[end + OPT_DATA + len] = DHCP_END;
+ 	}
+ 
+-	if (client_data.vendorclass)
+-		udhcp_add_binary_option(packet, client_data.vendorclass);
+-	if (client_data.hostname)
+-		udhcp_add_binary_option(packet, client_data.hostname);
+ 	if (client_data.fqdn)
+ 		udhcp_add_binary_option(packet, client_data.fqdn);
+ 
+@@ -729,7 +722,7 @@
+ 		udhcp_add_simple_option(&packet, DHCP_REQUESTED_IP, requested);
+ 
+ 	/* Add options: maxsize,
+-	 * optionally: hostname, fqdn, vendorclass,
++	 * optionally: fqdn,
+ 	 * "param req" option according to -O, options specified with -x
+ 	 */
+ 	add_client_options(&packet);
+@@ -772,7 +765,7 @@
+ 	udhcp_add_simple_option(&packet, DHCP_SERVER_ID, server);
+ 
+ 	/* Add options: maxsize,
+-	 * optionally: hostname, fqdn, vendorclass,
++	 * optionally: fqdn,
+ 	 * "param req" option according to -O, and options specified with -x
+ 	 */
+ 	add_client_options(&packet);
+@@ -813,7 +806,7 @@
+ 	packet.ciaddr = ciaddr;
+ 
+ 	/* Add options: maxsize,
+-	 * optionally: hostname, fqdn, vendorclass,
++	 * optionally: fqdn,
+ 	 * "param req" option according to -O, and options specified with -x
+ 	 */
+ 	add_client_options(&packet);
+@@ -1248,7 +1241,7 @@
+ int udhcpc_main(int argc UNUSED_PARAM, char **argv)
+ {
+ 	uint8_t *message;
+-	const char *str_V, *str_h, *str_F, *str_r;
++	const char *str_V, *str_F, *str_r;
+ 	IF_FEATURE_UDHCPC_ARPING(const char *str_a = "2000";)
+ 	IF_FEATURE_UDHCP_PORT(char *str_P;)
+ 	void *clientid_mac_ptr;
+@@ -1284,14 +1277,14 @@
+ 	/* Parse command line */
+ 	opt = getopt32long(argv, "^"
+ 		/* O,x: list; -T,-t,-A take numeric param */
+-		"CV:H:h:F:i:np:qRr:s:T:+t:+SA:+O:*ox:*fBD"
++		"CV:F:i:np:qRr:s:T:+t:+SA:+O:*ox:*fBD"
+ 		USE_FOR_MMU("b")
+ 		IF_FEATURE_UDHCPC_ARPING("a::")
+ 		IF_FEATURE_UDHCP_PORT("P:")
+ 		"v"
+ 		"\0" IF_UDHCP_VERBOSE("vv") /* -v is a counter */
+ 		, udhcpc_longopts
+-		, &str_V, &str_h, &str_h, &str_F
++		, &str_V, &str_F
+ 		, &client_data.interface, &client_data.pidfile /* i,p */
+ 		, &str_r /* r */
+ 		, &client_data.script /* s */
+@@ -1302,11 +1295,6 @@
+ 		IF_FEATURE_UDHCP_PORT(, &str_P)
+ 		IF_UDHCP_VERBOSE(, &dhcp_verbose)
+ 	);
+-	if (opt & (OPT_h|OPT_H)) {
+-		//msg added 2011-11
+-		bb_error_msg("option -h NAME is deprecated, use -x hostname:NAME");
+-		client_data.hostname = alloc_dhcp_option(DHCP_HOST_NAME, str_h, 0);
+-	}
+ 	if (opt & OPT_F) {
+ 		/* FQDN option format: [0x51][len][flags][0][0]<fqdn> */
+ 		client_data.fqdn = alloc_dhcp_option(DHCP_FQDN, str_F, 3);
+@@ -1356,7 +1344,14 @@
+ 		);
+ 		free(optstr);
+ 	}
+-
++	if (str_V[0] != '\0') {
++		char *p;
++		unsigned len = strnlen(str_V, 254);
++		p = udhcp_insert_new_option(
++				&client_data.options, DHCP_VENDOR,
++				len, /*dhcp6:*/ 0);
++		memcpy(p + OPT_DATA, str_V, len); /* do not store NUL byte */
++	}
+ 	if (udhcp_read_interface(client_data.interface,
+ 			&client_data.ifindex,
+ 			NULL,
+@@ -1373,15 +1368,6 @@
+ 		clientid_mac_ptr = client_data.clientid + OPT_DATA+1;
+ 		memcpy(clientid_mac_ptr, client_data.client_mac, 6);
+ 	}
+-	if (str_V[0] != '\0') {
+-		// can drop -V, str_V, client_data.vendorclass,
+-		// but need to add "vendor" to the list of recognized
+-		// string opts for this to work;
+-		// and need to tweak add_client_options() too...
+-		// ...so the question is, should we?
+-		//bb_error_msg("option -V VENDOR is deprecated, use -x vendor:VENDOR");
+-		client_data.vendorclass = alloc_dhcp_option(DHCP_VENDOR, str_V, 0);
+-	}
+ 
+ #if !BB_MMU
+ 	/* on NOMMU reexec (i.e., background) early */
+diff -ruPN a/networking/udhcp/dhcpc.h b/networking/udhcp/dhcpc.h
+--- a/networking/udhcp/dhcpc.h	2023-07-31 13:40:14.158279115 +0000
++++ b/networking/udhcp/dhcpc.h	2023-07-31 13:47:28.426588173 +0000
+@@ -18,8 +18,6 @@
+ 	const char *script;             /* User script to run at dhcp events */
+ 	struct option_set *options;     /* list of DHCP options to send to server */
+ 	uint8_t *clientid;              /* Optional client id to use */
+-	uint8_t *vendorclass;           /* Optional vendor class-id to use */
+-	uint8_t *hostname;              /* Optional hostname to use */
+ 	uint8_t *fqdn;                  /* Optional fully qualified domain name to use */
+ 
+ 	uint16_t first_secs;

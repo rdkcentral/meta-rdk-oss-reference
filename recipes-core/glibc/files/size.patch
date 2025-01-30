@@ -1,0 +1,21 @@
+Date: Aug 28 2023
+From: smuthu545 <Sindhuja_Muthukrishnan@comcast.com>
+Subject: 1.Integrate heaptrack and check
+2. Check if backtraces are unwinding properly
+Source: COMCAST
+Signed-off-by: smuthu545 <Sindhuja_Muthukrishnan@comcast.com>
+diff --git a/sysdeps/unix/sysv/linux/timer_routines.c b/sysdeps/unix/sysv/linux/timer_routines.c
+index 8f0a2f63..2d5a94f7 100644
+--- a/sysdeps/unix/sysv/linux/timer_routines.c
++++ b/sysdeps/unix/sysv/linux/timer_routines.c
+@@ -129,8 +129,9 @@ __timer_start_helper_thread (void)
+      and should go away automatically when canceled.  */
+   pthread_attr_t attr;
+   __pthread_attr_init (&attr);
+-  __pthread_attr_setstacksize (&attr, __pthread_get_minstack (&attr));
++  //__pthread_attr_setstacksize (&attr, __pthread_get_minstack (&attr));
+
++   __pthread_attr_setstacksize (&attr, ( 2 * 1024 * 1024));
+   /* Block all signals in the helper thread but SIGSETXID.  */
+   sigset_t ss;
+   __sigfillset (&ss);

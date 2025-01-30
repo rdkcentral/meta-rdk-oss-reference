@@ -1,0 +1,6 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/files_54:"
+SRC_URI += "file://v4l2.patch"
+SRC_URI += "file://0001-install-dma-buf.patch"
+SRC_URI:append = " file://0002-av-metrics-headers.patch "
+SRC_URI:append = " file://0003-Idle_time_metricsV2.patch "
+SRC_URI:append = " file://0004-idle-metrics-v3.patch "

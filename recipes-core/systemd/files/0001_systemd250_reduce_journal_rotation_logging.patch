@@ -1,0 +1,37 @@
+Date: Oct 19 2023
+From: mselva006c <mani_selvaraj@comcast.com>
+Subject: The journal rotation log messages are flooding on console as the default log level for systemd journal is "info".
+Move the rotation log message to "debug" to avoid these logs messages getting printed by default.
+Source: COMCAST
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
+index 8fb363c4f7..30c1f45916 100644
+--- a/src/journal/journald-server.c
++++ b/src/journal/journald-server.c
+@@ -824,8 +824,8 @@ static void write_to_journal(Server *s, uid_t uid, struct iovec *iovec, size_t n
+                 if (!f)
+                         return;
+
+-                if (journal_file_rotate_suggested(f->file, s->max_file_usec, LOG_INFO)) {
+-                        log_info("%s: Journal header limits reached or header out-of-date, rotating.", f->file->path);
++                if (journal_file_rotate_suggested(f->file, s->max_file_usec, LOG_DEBUG)) {
++                        log_debug("%s: Journal header limits reached or header out-of-date, rotating.", f->file->path);
+                         rotate = true;
+                 }
+         }
+
+
+diff --git a/src/journal-remote/journal-remote-write.c b/src/journal-remote/journal-remote-write.c
+index b82cb10118..f0f4b27598 100644
+--- a/src/journal-remote/journal-remote-write.c
++++ b/src/journal-remote/journal-remote-write.c
+@@ -69,7 +69,7 @@ int writer_write(Writer *w,
+         assert(iovw->count > 0);
+
+         if (journal_file_rotate_suggested(w->journal->file, 0, LOG_DEBUG)) {
+-                log_info("%s: Journal header limits reached or header out-of-date, rotating",
++                log_debug("%s: Journal header limits reached or header out-of-date, rotating",
+                          w->journal->file->path);
+                 r = do_rotate(&w->journal, w->mmap, compress, seal);
+                 if (r < 0)
+

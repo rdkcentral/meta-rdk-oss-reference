@@ -1,0 +1,23 @@
+Date: Jun 27, 2022 6:00 PM
+From: nhanas001c <Naveenkumar_Hanasi@comcast.com>
+Subject: LTP Package patch
+         Remove the CPU usage tests from the end of the cgroups checks in the Fujitsu set
+ 	these tests are thrown off by some background RDK elements which lead to failures
+ 	when monitoring performance
+	 Also remove teh first test, which is thrown off when pids are not in the default 
+ 	set, which is a side effect of some RDK tasks
+Source: RED 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
+---
+diff -ur git.orig/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh git/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh
+--- git.orig/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh	2022-05-05 11:22:24.339666844 +0100
++++ git/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh	2022-05-05 11:25:13.168547290 +0100
+@@ -687,7 +687,7 @@
+ # test
+ do_test ()
+ {
+-	for i in $(seq 1 $TST_TOTAL)
++	for i in $(seq 2 18)
+ 	do
+ 		setup || {
+ 			tst_resm TFAIL "case$i    FAIL"

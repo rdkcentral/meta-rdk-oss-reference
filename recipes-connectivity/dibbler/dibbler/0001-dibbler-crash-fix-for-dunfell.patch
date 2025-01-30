@@ -1,0 +1,30 @@
+Date: Jan 19, 2017 9:32 PM
+From: Balaji Punnuru <balaji_punnuru@cable.comcast.com> 
+Subject: [PATCH] DELIA-15649: Fixed dibbler crash.
+	Added a NULL pointer check before accessing the pointer.
+Source: COMCAST 3a76ea4df33befce05f52b8dff016a8488c7a14a Apr 24, 2017 5:38 PM
+Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com> 
+
+---
+ Messages/Msg.cpp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/Messages/Msg.cpp b/Messages/Msg.cpp
+index 82870fdb..8c739b06 100644
+--- a/Messages/Msg.cpp
++++ b/Messages/Msg.cpp
+@@ -73,8 +73,12 @@ int TMsg::getSize()
+     for (opt = Options.begin(); opt!=Options.end(); ++opt)
+     {
+        Log(Info) << "### CPE Debug - Option with index  " << optionCount++ << LogEnd ;
+-       Log(Info) << "### CPE Debug - Option with type " << (*opt)->getOptType() << LogEnd ;
+-       pktsize += (*opt)->getSize();
++        if ( (*opt) != NULL)
++        {
++           Log(Info) << "### CPE Debug - Option with type " << (*opt)->getOptType() << LogEnd ;
++           pktsize += (*opt)->getSize();
++        }
++       
+     }
+     Log(Info) << "### CPE Debug - Packet size of option (Add 4) " << pktsize << LogEnd ;
+ 
