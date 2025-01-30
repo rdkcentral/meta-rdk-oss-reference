@@ -1,0 +1,33 @@
+Index: NetworkManager-1.43.7/data/NetworkManager.service.in
+===================================================================
+--- NetworkManager-1.43.7.orig/data/NetworkManager.service.in
++++ NetworkManager-1.43.7/data/NetworkManager.service.in
+@@ -3,7 +3,7 @@ Description=Network Manager
+ Documentation=man:NetworkManager(8)
+ Wants=network.target
+ After=network-pre.target dbus.service
+-Before=network.target @DISTRO_NETWORK_SERVICE@
++Before=network.target @DISTRO_NETWORK_SERVICE@ wpa_supplicant.service
+ BindsTo=dbus.service
+
+ [Service]
+@@ -11,6 +11,7 @@ Type=dbus
+ BusName=org.freedesktop.NetworkManager
+ ExecReload=/usr/bin/busctl call org.freedesktop.NetworkManager /org/freedesktop/NetworkManager org.freedesktop.NetworkManager Reload u 0
+ #ExecReload=/bin/kill -HUP $MAINPID
++ExecStartPre= /bin/sh -c 'if [ ! -d /opt/NetworkManager/system-connections ];then mkdir -p /opt/NetworkManager/system-connections; fi'
+ ExecStart=@sbindir@/NetworkManager --no-daemon
+ Restart=on-failure
+ # NM doesn't want systemd to kill its children for it
+Index: NetworkManager-1.43.7/tools/meson-post-install.sh
+===================================================================
+--- NetworkManager-1.43.7.orig/tools/meson-post-install.sh
++++ NetworkManager-1.43.7/tools/meson-post-install.sh
+@@ -21,7 +21,6 @@ if [ -x "${DESTDIR}${nm_bindir}/nmtui" ]
+ fi
+
+ for dir in "${nm_pkgconfdir}/conf.d" \
+-           "${nm_pkgconfdir}/system-connections" \
+            "${nm_pkgconfdir}/dispatcher.d/no-wait.d" \
+            "${nm_pkgconfdir}/dispatcher.d/pre-down.d" \
+            "${nm_pkgconfdir}/dispatcher.d/pre-up.d" \

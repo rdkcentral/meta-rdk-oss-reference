@@ -1,0 +1,45 @@
+Date: Oct 30, 2017 10:49 AM 
+From: gkumar <Ganesh_Kumar@comcast.com>
+Subject: [PATCH] DELIA-24062: systemd-tmpfiles-setup failed state
+	Removed unnecessary some of the systemd tmpfiles to be created in boot up.
+	Boot up and check AV in morty build.
+Source: COMCAST 877c99264a7a63c2aacbe355c4881f2cddc7bf3d Jan 8, 2018 11:00 AM
+Signed-off-by: gkumar <Ganesh_Kumar@comcast.com>
+---
+
+diff --git a/tmpfiles.d/etc.conf.m4 b/tmpfiles.d/etc.conf.m4
+index ef7b9b954..0277f274d 100644
+--- a/tmpfiles.d/etc.conf.m4
++++ b/tmpfiles.d/etc.conf.m4
+@@ -8,8 +8,8 @@
+ # See tmpfiles.d(5) for details
+ 
+ L /etc/os-release - - - - ../usr/lib/os-release
+-L /etc/localtime - - - - ../usr/share/zoneinfo/UTC
+-L+ /etc/mtab - - - - ../proc/self/mounts
++#L /etc/localtime - - - - ../usr/share/zoneinfo/UTC
++#L+ /etc/mtab - - - - ../proc/self/mounts
+ m4_ifdef(`HAVE_SMACK_RUN_LABEL',
+ t /etc/mtab - - - - security.SMACK64=_
+ )m4_dnl
+diff --git a/tmpfiles.d/systemd-nspawn.conf b/tmpfiles.d/systemd-nspawn.conf
+index 9fa3878d6..0f71a86fe 100644
+--- a/tmpfiles.d/systemd-nspawn.conf
++++ b/tmpfiles.d/systemd-nspawn.conf
+@@ -7,7 +7,7 @@
+
+ # See tmpfiles.d(5) for details
+
+-Q /var/lib/machines 0700 - - -
++#Q /var/lib/machines 0700 - - -
+
+ # Remove old temporary snapshots, but only at boot. Ideally we'd have
+ # "self-destroying" btrfs snapshots that go away if the last last
+@@ -19,5 +19,5 @@ Q /var/lib/machines 0700 - - -
+ # systemd-nspawn --ephemeral places snapshots) we are more strict, to
+ # avoid removing unrelated temporary files.
+
+-R! /var/lib/machines/.#*
+-R! /.#machine.*
++#R! /var/lib/machines/.#*
++#R! /.#machine.*

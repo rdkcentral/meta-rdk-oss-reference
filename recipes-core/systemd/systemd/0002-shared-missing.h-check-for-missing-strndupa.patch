@@ -1,0 +1,112 @@
+From f6e7e2e5f4685782b9d842d1c8f1f2c126e0c2bb Mon Sep 17 00:00:00 2001
+From: Emil Renner Berthing <systemd@esmil.dk>
+Date: Thu, 18 Sep 2014 15:24:49 +0200
+Subject: [PATCH 02/17] shared/missing.h: check for missing strndupa
+
+Upstream-Status: Inappropriate [musl specific]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ configure.ac                |  2 ++
+ src/basic/missing_syscall.h | 13 +++++++++++++
+ src/basic/mkdir.c           |  1 +
+ src/shared/pager.c          |  1 +
+ src/shared/uid-range.c      |  1 +
+ src/test/test-hexdecoct.c   |  1 +
+ 6 files changed, 19 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 486e574..4b2a590 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -319,6 +319,7 @@ AC_CHECK_DECLS([
+         pivot_root,
+         canonicalize_file_name,
+         name_to_handle_at,
++        strndupa,
+         setns,
+         getrandom,
+         renameat2,
+@@ -328,6 +329,7 @@ AC_CHECK_DECLS([
+         copy_file_range],
+         [], [], [[
+ #include <stdlib.h>
++#include <string.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <sys/mount.h>
+diff --git a/src/basic/missing_syscall.h b/src/basic/missing_syscall.h
+index ae1e1de..6e67a0a 100644
+--- a/src/basic/missing_syscall.h
++++ b/src/basic/missing_syscall.h
+@@ -38,6 +38,19 @@ static inline char *canonicalize_file_name(const char *path) {
+ 
+ /* ======================================================================= */
+ 
++#if !HAVE_DECL_STRNDUPA
++#define strndupa(s, n) \
++  ({ \
++    const char *__old = (s); \
++    size_t __len = strnlen(__old, (n)); \
++    char *__new = (char *)alloca(__len + 1); \
++    __new[__len] = '\0'; \
++    (char *)memcpy(__new, __old, __len); \
++  })
++#endif
++
++/* ======================================================================= */
++
+ #if !HAVE_DECL_MEMFD_CREATE
+ #  ifndef __NR_memfd_create
+ #    if defined __x86_64__
+diff --git a/src/basic/mkdir.c b/src/basic/mkdir.c
+index 6b1a984..62e9b08 100644
+--- a/src/basic/mkdir.c
++++ b/src/basic/mkdir.c
+@@ -24,6 +24,7 @@
+ 
+ #include "fs-util.h"
+ #include "macro.h"
++#include "missing.h"
+ #include "mkdir.h"
+ #include "path-util.h"
+ #include "stat-util.h"
+diff --git a/src/shared/pager.c b/src/shared/pager.c
+index c16bc02..219a041 100644
+--- a/src/shared/pager.c
++++ b/src/shared/pager.c
+@@ -32,6 +32,7 @@
+ #include "locale-util.h"
+ #include "log.h"
+ #include "macro.h"
++#include "missing.h"
+ #include "pager.h"
+ #include "process-util.h"
+ #include "signal-util.h"
+diff --git a/src/shared/uid-range.c b/src/shared/uid-range.c
+index b6ec474..e5a87e6 100644
+--- a/src/shared/uid-range.c
++++ b/src/shared/uid-range.c
+@@ -22,6 +22,7 @@
+ #include <string.h>
+ 
+ #include "macro.h"
++#include "missing.h"
+ #include "uid-range.h"
+ #include "user-util.h"
+ 
+diff --git a/src/test/test-hexdecoct.c b/src/test/test-hexdecoct.c
+index 276f25d..eec9e43 100644
+--- a/src/test/test-hexdecoct.c
++++ b/src/test/test-hexdecoct.c
+@@ -20,6 +20,7 @@
+ #include "alloc-util.h"
+ #include "hexdecoct.h"
+ #include "macro.h"
++#include "missing.h"
+ #include "string-util.h"
+ 
+ static void test_hexchar(void) {
+-- 
+1.9.1
+

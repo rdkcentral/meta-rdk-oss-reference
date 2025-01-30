@@ -1,0 +1,36 @@
+Date: Jan 25, 2016 10:26 PM
+
+From: I8d5227793972c172f58f68857467cd465ec52482 Jan 26, 2016 2:44 AM 
+
+Subject: [PATCH] DELIA-12279: Box is stuck at bootup as Time Syncd Service keeps on restarting
+
+	Open source code was not checking the NULL pointer and was causing the signal 11
+	Ensure the NTP crashes in rack/stability and cox setp
+        Ensure NTP is not crashing after gateay connection lost
+	
+Source: COMCAST
+
+License: LGPL-2.1-or-later
+
+Upstream-Status: Pending
+
+Signed-off-by: Vinu Palackal <Vinu_P@cable.comcast.com>
+---
+
+Index: git/src/timesync/timesyncd-server.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-server.c
++++ git/src/timesync/timesyncd-server.c
+@@ -145,7 +145,11 @@ ServerName *server_name_free(ServerName
+ 
+ void server_name_flush_addresses(ServerName *n) {
+         assert(n);
+-
++        log_info("Entry: server_name_flush_addresses");
++         
++        if (!(n->addresses))
++               return;
+         while (n->addresses)
+                 server_address_free(n->addresses);
++        log_info("Exit: server_name_flush_addresses");
+ }

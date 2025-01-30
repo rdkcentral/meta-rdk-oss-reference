@@ -1,0 +1,44 @@
+From bf765bec1b5b19c1977935e80949fc5c5ae85437 Mon Sep 17 00:00:00 2001
+From: Emil Renner Berthing <systemd@esmil.dk>
+Date: Thu, 18 Sep 2014 15:24:50 +0200
+Subject: [PATCH 06/17] shared/missing.h: check for missing __compar_fn_t
+ typedef
+
+Upstream-Status: Inappropriate [musl specific]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/basic/missing.h | 6 ++++++
+ src/basic/strbuf.c  | 1 +
+ 2 files changed, 7 insertions(+)
+
+diff --git a/src/basic/missing.h b/src/basic/missing.h
+index e0c875c..b45c941 100644
+--- a/src/basic/missing.h
++++ b/src/basic/missing.h
+@@ -1019,4 +1019,10 @@ typedef int32_t key_serial_t;
+ #define exp10(x) (exp((x) * log(10)))
+ #endif /* __UCLIBC__ */
+ 
++#ifndef __COMPAR_FN_T
++#define __COMPAR_FN_T
++typedef int (*__compar_fn_t)(const void *, const void *);
++typedef __compar_fn_t comparison_fn_t;
++#endif
++
+ #include "missing_syscall.h"
+diff --git a/src/basic/strbuf.c b/src/basic/strbuf.c
+index 4bef87d..e2672b9 100644
+--- a/src/basic/strbuf.c
++++ b/src/basic/strbuf.c
+@@ -23,6 +23,7 @@
+ 
+ #include "alloc-util.h"
+ #include "strbuf.h"
++#include "missing.h"
+ 
+ /*
+  * Strbuf stores given strings in a single continuous allocated memory
+-- 
+1.9.1
+

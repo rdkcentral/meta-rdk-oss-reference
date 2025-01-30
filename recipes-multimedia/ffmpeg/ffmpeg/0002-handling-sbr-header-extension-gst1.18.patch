@@ -1,0 +1,47 @@
+From 58d5846945ef89b9063f8c82b84f9851454f2858 Mon Sep 17 00:00:00 2001
+From: Tony Paul <Tony_Paul@comcast.com>
+Date: Tue, 16 Nov 2021 10:40:53 +0000
+Subject: rm15214 Garbled audio fix for Xumo App
+Source: SKY
+License: CLOSED
+Upstream-Status: Pending
+Signed-off-by: Aishwariya B <aishwariya.b@tataelxsi.co.in>
+---
+ libavcodec/aacdec_template.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/libavcodec/aacdec_template.c b/libavcodec/aacdec_template.c
+index 8b46ce6c42..b02abf8327 100644
+--- a/libavcodec/aacdec_template.c
++++ b/libavcodec/aacdec_template.c
+@@ -3123,6 +3123,7 @@ static int aac_decode_frame_int(AVCodecContext *avctx, void *data,
+     AACContext *ac = avctx->priv_data;
+     ChannelElement *che = NULL, *che_prev = NULL;
+     enum RawDataBlockType elem_type, che_prev_type = TYPE_END;
++    SpectralBandReplication *sbr = NULL;
+     int err, elem_id;
+     int samples = 0, multiplier, audio_found = 0, pce_found = 0;
+     int is_dmono, sce_count = 0;
+@@ -3279,6 +3280,20 @@ static int aac_decode_frame_int(AVCodecContext *avctx, void *data,
+         return 0;
+     }
+
++    //If SBR was found before the first channel element, we need to apply sbr extension decode here.
++    sbr = &che_prev->sbr;
++    if(ac->oc[1].m4ac.ext_object_type == 5 )
++    {
++        if (!sbr->sample_rate){
++                sbr->sample_rate = 2 * ac->oc[1].m4ac.sample_rate;
++               av_log(avctx, AV_LOG_DEBUG, "Applying sample rate for SBR as sample rate was not set by ff_decode_sbr_extension\n");
++       }
++
++        if (!ac->oc[1].m4ac.ext_sample_rate) {
++                ac->oc[1].m4ac.ext_sample_rate = 2 * ac->oc[1].m4ac.sample_rate;
++       }
++    }
++
+     multiplier = (ac->oc[1].m4ac.sbr == 1) ? ac->oc[1].m4ac.ext_sample_rate > ac->oc[1].m4ac.sample_rate : 0;
+     samples <<= multiplier;
+
+--
+2.25.1

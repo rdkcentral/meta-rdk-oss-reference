@@ -1,0 +1,14 @@
+
+TUNE_CCARGS_append_krogoth = " -fomit-frame-pointer"
+TUNE_CCARGS_append_morty = " -fomit-frame-pointer"
+
+do_install_append_morty() {
+        rm -f ${D}${bindir}/gencat
+        rm -f ${D}${bindir}/getent
+        rm -f ${D}${bindir}/getconf
+        rm -f ${D}${bindir}/iconv
+}
+
+# Fix for RDK-48882
+do_stash_locale[sstate-outputdirs] = "${COMPONENTS_DIR}/${PACKAGE_ARCH}/${MLPREFIX}glibc-stash-locale"
+do_stash_locale[sstate-fixmedir] = "${COMPONENTS_DIR}/${PACKAGE_ARCH}/${MLPREFIX}glibc-stash-locale"

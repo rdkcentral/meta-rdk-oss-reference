@@ -1,0 +1,49 @@
+Date: Mon 27 Jan 12:46:00 GMT 2025
+From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Subject: Add logging mechanism to logrotate
+Source: COMCAST
+Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Index: logrotate-3.21.0/logrotate.c
+===================================================================
+--- logrotate-3.21.0.orig/logrotate.c
++++ logrotate-3.21.0/logrotate.c
+@@ -443,7 +443,7 @@ static struct logState *newState(const c
+     struct logState *new;
+     time_t lr_time;
+
+-    message(MESS_DEBUG, "Creating new state\n");
++    //message(MESS_DEBUG, "Creating new state\n");
+
+     localtime_r(&nowSecs, &now);
+
+@@ -1454,6 +1454,10 @@ static int findNeedRotating(const struct
+             message(MESS_DEBUG, "  log does not need rotating "
+                     "(log size is below the 'size' threshold)\n");
+         }
++        else
++        {
++              message(MESS_DEBUG, "  log size is more than threshold size%jd: \n", (intmax_t)log->threshold);
++        }
+     } else if (difftime(mktime(&state->lastRotated), mktime(&now)) > (25 * 3600)) {
+         /* 25 hours allows for DST changes as well as geographical moves */
+         message(MESS_ERROR,
+
+Index: logrotate-3.21.0/config.c
+===================================================================
+--- logrotate-3.21.0.orig/config.c
++++ logrotate-3.21.0/config.c
+@@ -1910,10 +1910,10 @@ static int readConfigFile(const char *co
+                                                 globResult.gl_pathv[glob_count])) {
+                                         if (log->flags & LOG_FLAG_IGNOREDUPLICATES) {
+                                             add_file = 0;
+-                                            message(MESS_DEBUG,
+-                                                    "%s:%d ignore duplicate log entry for %s\n",
+-                                                    configFile, lineNum,
+-                                                    globResult.gl_pathv[glob_count]);
++//                                            message(MESS_DEBUG,
++//                                                    "%s:%d ignore duplicate log entry for %s\n",
++//                                                    configFile, lineNum,
++//                                                    globResult.gl_pathv[glob_count]);
+                                         } else {
+                                             message(MESS_ERROR,
+                                                     "%s:%d duplicate log entry for %s\n",

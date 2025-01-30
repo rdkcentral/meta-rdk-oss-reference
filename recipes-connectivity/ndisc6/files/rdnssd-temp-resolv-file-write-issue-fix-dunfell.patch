@@ -1,0 +1,85 @@
+Date: Wed, 1 Nov 2017 15:20:55 -0400
+
+From: 31bdf52dd1b753263a1fb52593a274b38094ab01 Mon Sep 17 00:00:00 2001
+
+Subject: [PATCH] Added Log entry for empty resolver entries.
+
+	This is to support dynamic DNS update for SLAAC
+
+Source: COMCAST
+
+License: LGPL-2.0-or-later
+
+Upstream-Status: Pending
+
+Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+---
+ rdnssd/rdnssd.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/rdnss/rdnssd.c b/rdnss/rdnssd.c
+index 4ac8bd1..8590bc3 100644
+--- a/rdnss/rdnssd.c
++++ b/rdnss/rdnssd.c
+@@ -91,10 +91,9 @@ static void write_resolv(const char *resolvpath)
+ 	FILE *resolv;
+ 	int rval;
+ 	char tmpfile[strlen(resolvpath) + sizeof(".tmp")];
+-
+-	sprintf(tmpfile, "%s.tmp", resolvpath);
+-
+-	resolv = fopen(tmpfile, "w");
++        int a;
++        
++	resolv = fopen(resolvpath, "w");
+ 
+ 	if (! resolv) {
+ 		syslog (LOG_ERR, _("Cannot write %s: %m"), tmpfile);
+@@ -111,6 +110,9 @@ static void write_resolv(const char *resolvpath)
+ 		fprintf(resolv, "\n");
+ 	}
+ 
++        if (servers.count == 0) {
++	    syslog (LOG_ERR, _("DNS Server information is Empty : %m"));
++        }
+ 	for (size_t i = 0; i < servers.count; i++) {
+ 		char addr[INET6_ADDRSTRLEN];
+ 		inet_ntop(AF_INET6, &servers.list[i].addr, addr, INET6_ADDRSTRLEN);
+@@ -124,12 +126,6 @@ static void write_resolv(const char *resolvpath)
+ 	}
+ 
+ 	fclose(resolv);
+-
+-	rval = rename(tmpfile, resolvpath);
+-
+-	if (rval == -1)
+-		syslog(LOG_ERR, _("Cannot write %s: %m"), tmpfile);
+-
+ }
+ 
+ static void trim_expired (void)
+@@ -517,7 +513,8 @@ static int worker (int pipe, const char *resolvpath, const char *username)
+ 			ts.tv_nsec = 0;
+ 		}
+ 
+-		if (ppoll (&pfd, 1, servers.count ? &ts : NULL, &emptyset) < 0)
++		rval = ppoll (&pfd, 1, servers.count ? &ts : NULL, &emptyset);
++		if (rval < 0)
+ 		{
+ 			if (errno == EINTR)
+ 				continue;
+@@ -535,6 +532,11 @@ static int worker (int pipe, const char *resolvpath, const char *username)
+ 			 * TODO: send unsoliticited RS to avoid this hack */
+ 			ready = true;
+ 		}
++                if (rval == 0)
++                {
++                        /* Trim out the expired entries */
++			ready = true;
++                }
+ 	}
+ 
+ 	close (sock);
+-- 
+2.1.4
+

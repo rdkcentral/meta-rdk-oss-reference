@@ -1,0 +1,23 @@
+##########################################
+Date: December 8, 2021 1:45 PM
+From: 69facf5b1bfac461ff6d2a473b948825331a4443
+Subject: DELIA-50903 /dev/shm no-exec option
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: Praveen_KumarThangamariappan@comcast.com
+##########################################
+Index: git/src/core/mount-setup.c
+===================================================================
+--- git.orig/src/core/mount-setup.c
++++ git/src/core/mount-setup.c
+@@ -74,7 +74,7 @@ static const MountPoint mount_table[] =
+         { "tmpfs",       "/dev/shm",                  "tmpfs",      "mode=1777,smackfsroot=*", MS_NOSUID|MS_NODEV|MS_STRICTATIME,
+           mac_smack_use, MNT_FATAL                  },
+ #endif
+-        { "tmpfs",       "/dev/shm",                  "tmpfs",      "mode=1777",               MS_NOSUID|MS_NODEV|MS_STRICTATIME,
++        { "tmpfs",       "/dev/shm",                  "tmpfs",      "mode=1777",               MS_NOSUID|MS_NODEV|MS_NOEXEC|MS_STRICTATIME,
+           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
+         { "devpts",      "/dev/pts",                  "devpts",     "mode=620,gid=" STRINGIFY(TTY_GID), MS_NOSUID|MS_NOEXEC,
+           NULL,          MNT_IN_CONTAINER           },
+

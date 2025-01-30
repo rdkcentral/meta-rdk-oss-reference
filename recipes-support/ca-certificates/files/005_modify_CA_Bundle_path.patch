@@ -1,0 +1,44 @@
+Date: Oct 8, 2018 7:39 PM
+
+From: 02060561db73c28bcb9dff8d241c2275c6ad9b47 Mar 22, 2019 2:49 PM
+
+Subject: [PATCH] RDKALL-1221: Create separate CA bundles for browser apps
+
+	as below removed cacert.pem as redundant heavy dust
+        install browser based certs as per definition for browser
+        based apps separately.
+
+Source: COMCAST
+
+License: LGPL-2.0-or-later
+
+Upstream-Status: Pending
+
+Signed-off-by: Kulbhushan Arora <Kulbhushan_Arora@comcast.com>
+---
+
+--- a/sbin/update-ca-certificates_org     2018-07-13 11:56:03.726042507 +0000
++++ b/sbin/update-ca-certificates 2018-07-13 11:58:03.227312666 +0000
+@@ -26,6 +26,7 @@
+ default=0
+ CERTSCONF=$SYSROOT/etc/ca-certificates.conf
+ CERTSDIR=$SYSROOT/usr/share/ca-certificates
++CERTSDIRBUNDLE=$SYSROOT/usr/share/ca-certificates/ca-certificates.crt
+ LOCALCERTSDIR=$SYSROOT/usr/local/share/ca-certificates
+ CERTBUNDLE=ca-certificates.crt
+ ETCCERTSDIR=$SYSROOT/etc/ssl/certs
+@@ -266,9 +267,11 @@
+ fi
+
+ chmod 0644 "$TEMPBUNDLE"
+-mv -f "$TEMPBUNDLE" "$CERTBUNDLE"
++mv -f "$TEMPBUNDLE" "$CERTSDIRBUNDLE"
++ln -sf "${CERTSDIRBUNDLE##$SYSROOT}" "$CERTBUNDLE"
+ # Restore proper SELinux label after moving the file
+-[ -x /sbin/restorecon ] && /sbin/restorecon "$CERTBUNDLE" >/dev/null 2>&1
++[ -x /sbin/restorecon ] && /sbin/restorecon "$CERTSDIRBUNDLE" >/dev/null 2>&1
++
+
+ echo "$ADDED_CNT added, $REMOVED_CNT removed; done."
+
+

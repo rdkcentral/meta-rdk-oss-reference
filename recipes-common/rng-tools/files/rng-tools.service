@@ -1,0 +1,11 @@
+[Unit]
+Description=RNG Tools Daemon
+Before=shutdown.target
+Conflicts=shutdown.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/rngd -b -o /dev/random
+
+[Install]
+WantedBy=multi-user.target

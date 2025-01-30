@@ -1,0 +1,70 @@
+From 588ac55d54b437c79a59fb32868ebade7a536c8f Mon Sep 17 00:00:00 2001
+From: Andre McCurdy <armccurdy@gmail.com>
+Date: Fri, 29 Sep 2017 13:12:17 -0700
+Subject: [PATCH 15/17] fix misc missing includes
+
+Upstream-Status: Pending
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/libsystemd/sd-event/test-event.c | 2 ++
+ src/machine/operation.c              | 2 ++
+ src/nspawn/nspawn-network.c          | 1 +
+ src/nspawn/nspawn-stub-pid1.c        | 2 +-
+ 4 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/libsystemd/sd-event/test-event.c b/src/libsystemd/sd-event/test-event.c
+index 2891144..e44c5e2 100644
+--- a/src/libsystemd/sd-event/test-event.c
++++ b/src/libsystemd/sd-event/test-event.c
+@@ -17,6 +17,8 @@
+   along with systemd; If not, see <http://www.gnu.org/licenses/>.
+ ***/
+ 
++#include <wait.h>
++
+ #include "sd-event.h"
+ 
+ #include "fd-util.h"
+diff --git a/src/machine/operation.c b/src/machine/operation.c
+index e6ddc41..7e9706a 100644
+--- a/src/machine/operation.c
++++ b/src/machine/operation.c
+@@ -17,6 +17,8 @@
+   along with systemd; If not, see <http://www.gnu.org/licenses/>.
+ ***/
+ 
++#include <wait.h>
++
+ #include "alloc-util.h"
+ #include "fd-util.h"
+ #include "operation.h"
+diff --git a/src/nspawn/nspawn-network.c b/src/nspawn/nspawn-network.c
+index 8da47a2..607f808 100644
+--- a/src/nspawn/nspawn-network.c
++++ b/src/nspawn/nspawn-network.c
+@@ -19,6 +19,7 @@
+ 
+ #include <linux/veth.h>
+ #include <net/if.h>
++#include <sys/file.h>
+ 
+ #include "libudev.h"
+ #include "sd-id128.h"
+diff --git a/src/nspawn/nspawn-stub-pid1.c b/src/nspawn/nspawn-stub-pid1.c
+index 2de87e3..2511258 100644
+--- a/src/nspawn/nspawn-stub-pid1.c
++++ b/src/nspawn/nspawn-stub-pid1.c
+@@ -17,8 +17,8 @@
+   along with systemd; If not, see <http://www.gnu.org/licenses/>.
+ ***/
+ 
++#include <unistd.h>
+ #include <sys/reboot.h>
+-#include <sys/unistd.h>
+ #include <sys/wait.h>
+ 
+ #include "fd-util.h"
+-- 
+1.9.1
+

@@ -1,0 +1,50 @@
+Date: May 7, 2020 1:41 AM
+From: NA 
+Subject: morty dunfell compatibility
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: sohail <sohail_ahmad@comcast.com>
+--- a/src/client/linux/handler/exception_handler.cc	2023-04-13 15:14:33.528858993 +0000
++++ b/src/client/linux/handler/exception_handler.cc	2023-04-13 15:15:32.591103502 +0000
+@@ -557,16 +560,26 @@
+       HANDLE_EINTR(sys_write(log_file, msg_before_clone, strlen(msg_before_clone)));
+     }
+   }
+-  //COMCAST MODIFICATION END  
+-
++  //COMCAST MODIFICATION END
++  //COMCAST MODIFICATION BEGIN
+   const pid_t child = sys_clone(
+       ThreadEntry, stack, CLONE_FS | CLONE_UNTRACED, &thread_arg, NULL, NULL,
+       NULL);
++  sys_close(fdes[0]);
+   if (child == -1) {
+-    sys_close(fdes[0]);
+     sys_close(fdes[1]);
+     return false;
+   }
++  //COMCAST MODIFICATION END
++
++
++  //COMCAST MODIFICATION BEGIN
++  // Uncomment the following line to test the child process read hang
++//#define TEST_CHILD_HANG
++#ifdef TEST_CHILD_HANG
++  kill(getpid(), SIGKILL);
++#endif
++  //COMCAST MODIFICATION END
+ 
+   // Close the read end of the pipe.
+   sys_close(fdes[0]);
+@@ -622,7 +635,9 @@
+   int r;
+   char receivedMessage;
+   r = HANDLE_EINTR(sys_read(fdes[0], &receivedMessage, sizeof(char)));
+-  if (r == -1) {
++  //COMCAST MODIFICATION BEGIN
++  if (r < 1) {
++  //COMCAST MODIFICATION END  
+     static const char msg[] = "ExceptionHandler::WaitForContinueSignal "
+                               "sys_read failed:";
+     logger::write(msg, sizeof(msg) - 1);

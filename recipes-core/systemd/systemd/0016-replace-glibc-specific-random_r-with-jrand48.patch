@@ -1,0 +1,95 @@
+From d18a5681006e03c5c3de6a4cb6534caeca276058 Mon Sep 17 00:00:00 2001
+From: Andre McCurdy <armccurdy@gmail.com>
+Date: Fri, 29 Sep 2017 12:29:44 -0700
+Subject: [PATCH 16/17] replace glibc specific random_r with jrand48
+
+Upstream-Status: Inappropriate [upstream has a different solution]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/libsystemd-network/sd-ipv4ll.c | 32 +++++++++++---------------------
+ 1 file changed, 11 insertions(+), 21 deletions(-)
+
+diff --git a/src/libsystemd-network/sd-ipv4ll.c b/src/libsystemd-network/sd-ipv4ll.c
+index 2a06418..751f023 100644
+--- a/src/libsystemd-network/sd-ipv4ll.c
++++ b/src/libsystemd-network/sd-ipv4ll.c
+@@ -42,13 +42,16 @@
+ #define IPV4LL_DONT_DESTROY(ll) \
+         _cleanup_(sd_ipv4ll_unrefp) _unused_ sd_ipv4ll *_dont_destroy_##ll = sd_ipv4ll_ref(ll)
+ 
++struct random_data_48 {
++        unsigned short xsubi[3];
++};
++
+ struct sd_ipv4ll {
+         unsigned n_ref;
+ 
+         sd_ipv4acd *acd;
+         be32_t address; /* the address pushed to ACD */
+-        struct random_data *random_data;
+-        char *random_data_state;
++        struct random_data_48 *random_data;
+ 
+         /* External */
+         be32_t claimed_address;
+@@ -79,7 +82,6 @@ sd_ipv4ll *sd_ipv4ll_unref(sd_ipv4ll *ll) {
+         sd_ipv4acd_unref(ll->acd);
+ 
+         free(ll->random_data);
+-        free(ll->random_data_state);
+         free(ll);
+ 
+         return NULL;
+@@ -194,32 +196,22 @@ int sd_ipv4ll_get_address(sd_ipv4ll *ll, struct in_addr *address) {
+ }
+ 
+ int sd_ipv4ll_set_address_seed(sd_ipv4ll *ll, unsigned seed) {
+-        _cleanup_free_ struct random_data *random_data = NULL;
+-        _cleanup_free_ char *random_data_state = NULL;
+-        int r;
++        _cleanup_free_ struct random_data_48 *random_data = NULL;
+ 
+         assert_return(ll, -EINVAL);
+ 
+-        random_data = new0(struct random_data, 1);
++        random_data = new0(struct random_data_48, 1);
+         if (!random_data)
+                 return -ENOMEM;
+ 
+-        random_data_state = new0(char, 128);
+-        if (!random_data_state)
+-                return -ENOMEM;
+-
+-        r = initstate_r(seed, random_data_state, 128, random_data);
+-        if (r < 0)
+-                return r;
++        random_data->xsubi[0] = seed;
++        random_data->xsubi[1] = seed >> 16;
++        random_data->xsubi[2] = seed ^ (seed >> 16);
+ 
+         free(ll->random_data);
+         ll->random_data = random_data;
+         random_data = NULL;
+ 
+-        free(ll->random_data_state);
+-        ll->random_data_state = random_data_state;
+-        random_data_state = NULL;
+-
+         return 0;
+ }
+ 
+@@ -272,9 +264,7 @@ static int ipv4ll_pick_address(sd_ipv4ll *ll) {
+         assert(ll->random_data);
+ 
+         do {
+-                r = random_r(ll->random_data, &random);
+-                if (r < 0)
+-                        return r;
++                random = (int32_t) jrand48(ll->random_data->xsubi);
+                 addr = htonl((random & 0x0000FFFF) | IPV4LL_NETWORK);
+         } while (addr == ll->address ||
+                 (ntohl(addr) & 0x0000FF00) == 0x0000 ||
+-- 
+1.9.1
+

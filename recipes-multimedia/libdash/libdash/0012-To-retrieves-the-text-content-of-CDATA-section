@@ -1,0 +1,32 @@
+From 85e2a6fdac851557f468d512b1896b26550ddd3c Mon Sep 17 00:00:00 2001
+From: bmaria645 <Bhuvaneswari_Mariappan@comcast.com>
+Date: Fri, 11 Aug 2023 17:17:16 +0000
+Subject: [PATCH] 0012-To retrieves the text content of CDATA section
+
+---
+ libdash/source/xml/Node.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libdash/source/xml/Node.cpp b/libdash/source/xml/Node.cpp
+index 287e617..95a5201 100644
+--- a/libdash/source/xml/Node.cpp
++++ b/libdash/source/xml/Node.cpp
+@@ -843,7 +843,7 @@ bool                                        Node::HasText               ()  cons
+ }
+ std::string                                 Node::GetText               () const
+ {
+-    if(this->type == 3)
++    if(this->type == 3 || this->type ==4 ) //XML_CDATA_SECTION_NODE (int)	4
+         return this->text;
+     else
+     {
+@@ -1022,4 +1022,4 @@ void                                        Node::SetCommonValuesForMSeg(dash::m
+         }
+     }
+ 
+-}
+\ No newline at end of file
++}
+-- 
+2.17.1
+

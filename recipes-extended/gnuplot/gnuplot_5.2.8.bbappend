@@ -1,0 +1,1 @@
+DEPENDS_remove = "${@bb.utils.contains('PACKAGECONFIG','qt5','qtsvg','',d)}"

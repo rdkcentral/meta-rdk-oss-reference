@@ -1,0 +1,87 @@
+Index: opkg-0.4.2/libopkg/solvers/libsolv/opkg_solver_libsolv.c
+===================================================================
+--- opkg-0.4.2.orig/libopkg/solvers/libsolv/opkg_solver_libsolv.c
++++ opkg-0.4.2/libopkg/solvers/libsolv/opkg_solver_libsolv.c
+@@ -35,6 +35,7 @@
+ #include "pkg_hash.h"
+ #include "xfuncs.h"
+ #include "sprintf_alloc.h"
++#include <pthread.h>
+ 
+ #define INITIAL_ARCH_LIST_SIZE 4
+ 
+@@ -71,6 +72,7 @@ enum job_action {
+     JOB_DISTUPGRADE
+ };
+ typedef enum job_action job_action_t;
++int gErr;
+ 
+ static libsolv_solver_t *libsolv_solver_new(void);
+ static void libsolv_solver_free(libsolv_solver_t *libsolv_solver);
+@@ -885,11 +887,27 @@ static int libsolv_solver_transaction_pr
+     return 0;
+ }
+ 
++void* custom_installer(void* args)
++{
++    int err = 0;
++    pkg_t *pkg = (pkg_t*) args;
++    err = opkg_install_pkg(pkg);
++    if (err != 0) {
++       gErr = err;
++    }
++}
++#define NUM_THREADS 64
+ static int libsolv_solver_execute_transaction(libsolv_solver_t *libsolv_solver)
+ {
+-    int i, ret = 0, err = 0;
++    int i, j,ret = 0, err = 0, count = 0;
+     Transaction *transaction;
+     pkg_vec_t *pkgs;
++    pthread_t threads[NUM_THREADS];
++    for (j =0;j<NUM_THREADS;++j) {
++        threads[j] = 0;
++    }
++    gErr = 0;
++ 
+ 
+     transaction = solver_create_transaction(libsolv_solver->solver);
+     pkgs = pkg_vec_alloc();
+@@ -953,11 +971,21 @@ static int libsolv_solver_execute_transa
+                     opkg_message(NOTICE, "Installing %s (%s) on %s\n",
+                                  pkg->name, pkg->version, pkg->dest->name);
+                 }
+-                ret = opkg_install_pkg(pkg);
+-                if (ret) {
+-                    err = -1;
+-                    goto CLEANUP;
++                if (count >= NUM_THREADS) {
++                    if (gErr != 0) {
++                       err = gErr;
++                       goto CLEANUP;
++		    }
++                    for (j = 0;j<NUM_THREADS; ++j) {
++                       if (threads[j] != 0) {
++                           pthread_join(threads[j],NULL);
++                       }
++                       threads[j] = 0;
++                    }
++                    count = 0;
+                 }
++                pthread_create(&threads[count],NULL,custom_installer,(void*)pkg);
++                count++;
+                 break;
+             case SOLVER_TRANSACTION_UPGRADE:
+                 old = pkg_hash_fetch_installed_by_name(pkg->name);
+@@ -999,6 +1027,11 @@ static int libsolv_solver_execute_transa
+     }
+ 
+ CLEANUP:
++    for (j =0; j< NUM_THREADS; ++j) {
++       if (threads[j] != 0) {
++          pthread_join(threads[j],NULL);
++       }
++    }
+     pkg_vec_free(pkgs);
+     transaction_free(transaction);
+     return err;

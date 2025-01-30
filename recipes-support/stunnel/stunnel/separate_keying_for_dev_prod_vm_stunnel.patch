@@ -1,0 +1,61 @@
+From 86597c1c363141c358a26d1ecace347aeefc34d2 Mon Sep 17 00:00:00 2001
+From: Sohail Ahmad <sohail_ahmad@comcast.com>
+Date: Wed, 14 Jun 2023 09:22:57 +0000
+Subject: [PATCH] From: Sohail Ahmad <sohail_ahmad@comcast.com>
+
+Date: Wed, 14 june 2023 06:15:39 +0000
+Subject: Comcast
+Signed-off-by: Sohail Ahmad <sohail_ahmad@comcast.com>
+---
+ src/verify.c | 31 +++++++++++++++++++++++++------
+ 1 file changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/src/verify.c b/src/verify.c
+index ac52b65..7495413 100644
+--- a/src/verify.c
++++ b/src/verify.c
+@@ -306,19 +306,38 @@ NOEXPORT int cert_check_subject(CLI *c, X509_STORE_CTX *callback_ctx) {
+     X509 *cert=X509_STORE_CTX_get_current_cert(callback_ctx);
+     NAME_LIST *ptr;
+     char *peername=NULL;
++    GENERAL_NAMES *san_names;
+
+     if(!c->opt->check_host && !c->opt->check_email && !c->opt->check_ip) {
+         s_log(LOG_INFO, "CERT: No subject checks configured");
+         return 1; /* accept */
+     }
+
+-    for(ptr=c->opt->check_host; ptr; ptr=ptr->next)
+-        if(X509_check_host(cert, ptr->name, 0, 0, &peername)>0) {
+-            s_log(LOG_INFO, "CERT: Host name \"%s\" matched with \"%s\"",
+-                ptr->name, peername);
+-            OPENSSL_free(peername);
+-            return 1; /* accept */
++    san_names = X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
++    if (san_names) {
++        s_log(LOG_INFO, "CERT: SAN fileds present in certificate, Allow connection based on device type");
++        for(ptr=c->opt->check_host; ptr; ptr=ptr->next){
++            if(!X509_check_host(cert, ptr->name, 0, 0, &peername)>0) {
++               s_log(LOG_INFO, "CERT: Host name \"%s\" not matched with \"%s\"\n",
++                       ptr->name, peername);
++                OPENSSL_free(peername);
++                return 0; /* reject */
++            }
++            if (!ptr->next){
++                OPENSSL_free(peername);
++               s_log(LOG_INFO, "CERT: Host name matches with CN and SAN allowing connection\n");
++                return 1; /* accept */
++            }
+         }
++    } else {
++        s_log(LOG_INFO, "CERT: SAN fileds not present in certificate, Allow connection if CN is matched");
++       for(ptr=c->opt->check_host; ptr; ptr=ptr->next)
++           if(X509_check_host(cert, ptr->name, 0, 0, &peername)>0) {
++               s_log(LOG_INFO, "CERT: Host name \"%s\" matched with \"%s\"",ptr->name, peername);
++               OPENSSL_free(peername);
++               return 1; /* accept */
++       }
++    }
+
+     for(ptr=c->opt->check_email; ptr; ptr=ptr->next)
+         if(X509_check_email(cert, ptr->name, 0, 0)>0) {

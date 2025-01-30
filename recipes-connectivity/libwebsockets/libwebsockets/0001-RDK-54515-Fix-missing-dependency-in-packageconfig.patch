@@ -1,0 +1,68 @@
+From 3a3fed0f82e20b28cda70456b284a5b3ef778078 Mon Sep 17 00:00:00 2001
+From: mselva006c <mani_selvaraj@comcast.com>
+Date: Wed, 20 Nov 2024 18:44:38 +0000
+Subject: [PATCH] RDK-54515: Fix missing dependency in packageconfig
+
+Reason for change: Fix missing dependencies for libwebsockets in packageconfig
+
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ CMakeLists.txt | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 471a8791..7eee320d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2779,6 +2779,31 @@ if (LWS_WITH_SECURE_STREAMS)
+ endif()
+ 
+ if (UNIX)
++# figure out pkfcfg required libs here
++set(lws_requires "")
++if (LWS_HAVE_LIBCAP)
++        if (NOT lws_requires STREQUAL "")
++                set(lws_requires "${lws_requires},libcap")
++        else()
++                set(lws_requires "libcap")
++        endif()
++endif()
++
++if (LWS_WITH_LIBUV)
++        if (NOT lws_requires STREQUAL "")
++                set(lws_requires "${lws_requires},libuv")
++        else()
++                set(lws_requires "libuv")
++        endif()
++endif()
++
++if (LWS_WITH_SSL)
++        if (NOT lws_requires STREQUAL "")
++                set(lws_requires "${lws_requires},libssl,libcrypto")
++        else()
++                set(lws_requires "libssl,libcrypto")
++        endif()
++endif()
+ 
+ # Generate and install pkgconfig.
+ # (This is not indented, because the tabs will be part of the output)
+@@ -2795,6 +2820,9 @@ Version: ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_P
+ Libs: -L\${libdir} -lwebsockets
+ Cflags: -I\${includedir}"
+ )
++if (NOT ${lws_requires} STREQUAL "")
++        file(APPEND "${PROJECT_BINARY_DIR}/libwebsockets.pc" "\nRequires: ${lws_requires}")
++endif()
+ 
+ 	install(FILES "${PROJECT_BINARY_DIR}/libwebsockets.pc"
+ 		DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+@@ -2814,6 +2842,9 @@ Libs.private:
+ Cflags: -I\${includedir}"
+ )
+ 
++if (NOT ${lws_requires} STREQUAL "")
++        file(APPEND "${PROJECT_BINARY_DIR}/libwebsockets_static.pc" "\nRequires: ${lws_requires}")
++endif()
+ 	install(FILES "${PROJECT_BINARY_DIR}/libwebsockets_static.pc"
+ 		DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+ 

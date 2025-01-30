@@ -1,0 +1,102 @@
+Date: May 7, 2020 1:41 AM
+From: NA 
+Subject: morty dunfell compatibility
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: sohail <sohail_ahmad@comcast.com>
+diff --git a/src/client/linux/handler/exception_handler.cc b/src/client/linux/handler/exception_handler.cc
+index b895f6d7..d1262cc4 100644
+--- a/src/client/linux/handler/exception_handler.cc
++++ b/src/client/linux/handler/exception_handler.cc
+@@ -226,6 +226,9 @@ ExceptionHandler::ExceptionHandler(const MinidumpDescriptor& descriptor,
+       callback_(callback),
+       callback_context_(callback_context),
+       minidump_descriptor_(descriptor),
++      //COMCAST MODIFICATION BEGIN
++      receiver_breakpad_logging_(false),
++      //COMCAST MODIFICATION END	
+       crash_handler_(NULL) {
+   if (server_fd >= 0)
+     crash_generation_client_.reset(CrashGenerationClient::TryCreate(server_fd));
+@@ -493,6 +496,11 @@ bool ExceptionHandler::SimulateSignalDelivery(int sig) {
+   getcontext(&context);
+   return HandleSignal(sig, &siginfo, &context);
+ }
++//COMCAST MODIFICATION BEGIN
++void ExceptionHandler::setReceiverBreakpadLogging(bool receiver_breakpad_logging) {
++    receiver_breakpad_logging_ = receiver_breakpad_logging;
++ }
++//COMCAST MODIFICATION END
+ 
+ // This function may run in a compromised context: see the top of the file.
+ bool ExceptionHandler::GenerateDump(CrashContext *context) {
+@@ -534,6 +542,22 @@ bool ExceptionHandler::GenerateDump(CrashContext *context) {
+     // Ensure fdes[0] and fdes[1] are invalid file descriptors.
+     fdes[0] = fdes[1] = -1;
+   }
++  //COMCAST MODIFICATION BEGIN
++  const int OPEN_FAILED = -1;
++  const char* log_fname = "/opt/logs/receiver.log";
++  const char* msg_before_clone = "##BREAKPAD_PRE_CLONE##\n";
++  const char* msg_after_clone = "##BREAKPAD_POST_CLONE##\n";
++  const char* msg_after_waitpid = "##BREAKPAD_POST_WAITPID##\n";
++
++  int log_file = OPEN_FAILED;
++  if (receiver_breakpad_logging_) {
++    log_file = HANDLE_EINTR( sys_open(log_fname, O_RDWR | O_APPEND | O_SYNC | O_CREAT, 0666) );
++
++    if (OPEN_FAILED != log_file) {
++      HANDLE_EINTR(sys_write(log_file, msg_before_clone, strlen(msg_before_clone)));
++    }
++  }
++  //COMCAST MODIFICATION END  
+ 
+   const pid_t child = sys_clone(
+       ThreadEntry, stack, CLONE_FS | CLONE_UNTRACED, &thread_arg, NULL, NULL,
+@@ -549,9 +573,20 @@ bool ExceptionHandler::GenerateDump(CrashContext *context) {
+   // Allow the child to ptrace us
+   sys_prctl(PR_SET_PTRACER, child, 0, 0, 0);
+   SendContinueSignalToChild();
++  //COMCAST MODIFICATION BEGIN
++  if (receiver_breakpad_logging_ && OPEN_FAILED != log_file) {
++    HANDLE_EINTR(sys_write(log_file, msg_after_clone, strlen(msg_after_clone)));
++  }
++  //COMCAST MODIFICATION END  
+   int status = 0;
+   const int r = HANDLE_EINTR(sys_waitpid(child, &status, __WALL));
+ 
++  //COMCAST MODIFICATION BEGIN
++  if(receiver_breakpad_logging_ && OPEN_FAILED != log_file){
++    HANDLE_EINTR(sys_write(log_file, msg_after_waitpid, strlen(msg_after_waitpid)));
++    HANDLE_EINTR(sys_close(log_file));
++  }
++  //COMCAST MODIFICATION END
+   sys_close(fdes[1]);
+ 
+   if (r == -1) {
+diff --git a/src/client/linux/handler/exception_handler.h b/src/client/linux/handler/exception_handler.h
+index f44483ff..0544f109 100644
+--- a/src/client/linux/handler/exception_handler.h
++++ b/src/client/linux/handler/exception_handler.h
+@@ -226,7 +226,9 @@ class ExceptionHandler {
+ 
+   // Report a crash signal from an SA_SIGINFO signal handler.
+   bool HandleSignal(int sig, siginfo_t* info, void* uc);
+-
++  //COMCAST MODIFICATION BEGIN 
++  void setReceiverBreakpadLogging(bool receiver_breakpad_logging); 
++  //COMCAST MODIFICATION END 
+  private:
+   // Save the old signal handlers and install new ones.
+   static bool InstallHandlersLocked();
+@@ -251,6 +253,9 @@ class ExceptionHandler {
+ 
+   MinidumpDescriptor minidump_descriptor_;
+ 
++  //COMCAST MODIFICATION BEGIN
++  bool receiver_breakpad_logging_;
++  //COMCAST MODIFICATION END  
+   // Must be volatile. The compiler is unaware of the code which runs in
+   // the signal handler which reads this variable. Without volatile the
+   // compiler is free to optimise away writes to this variable which it

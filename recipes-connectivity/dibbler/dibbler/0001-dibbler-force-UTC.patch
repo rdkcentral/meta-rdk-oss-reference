@@ -1,0 +1,79 @@
+From ef484a39516a37910eb7dc749f4c19be9bc412d3 Mon Sep 17 00:00:00 2001
+From: Scott Angel <scott_angel@cable.comcast.com>
+Date: Thu, 9 May 2024 16:30:56 +0000
+Subject: [PATCH] Force UTC and ISO 8601 for dibbler messages Force
+ UTC and ISO 8601 for dibbler messages
+
+Upstream-Status: Inappropriate [oe-core specific]
+
+Signed-off-by: Scott Angel <scott_angel@comcast.com>
+---
+ Misc/Logger.cpp    | 21 ++++++++++++++-------
+ Port-linux/utils.c |  2 +-
+ 2 files changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/Misc/Logger.cpp b/Misc/Logger.cpp
+index ac2baa59..480178e3 100644
+--- a/Misc/Logger.cpp
++++ b/Misc/Logger.cpp
+@@ -12,6 +12,7 @@
+ #include <iomanip>
+ #include <fstream>
+ #include <string>
++#include <cstring>
+ #include <sstream>
+ #include <time.h>
+ #include "Logger.h"
+@@ -106,10 +107,15 @@ namespace logger {
+ 			           LOG_DEBUG};
+ 	logger::curSyslogEntry = syslogLevel[logger::curLogEntry - 1];
+ #endif
++	struct timespec ts;
++	memset(&ts, 0, sizeof(ts));
++	clock_gettime(CLOCK_REALTIME, &ts);
++	struct tm * now = gmtime( &ts.tv_sec );
++	char milliseconds[4];
++
++    	// Format the milliseconds
++    	snprintf(milliseconds, sizeof(milliseconds), "%03d", (int)(ts.tv_nsec/1000000));
+ 
+-	time_t teraz;
+-	teraz = time(NULL);
+-	struct tm * now = localtime( &teraz );
+ 	if (color && (logmode==LOGMODE_FULL || logmode==LOGMODE_SHORT) )
+ 	{
+ 	    buffer << colors[x-1];
+@@ -117,12 +123,13 @@ namespace logger {
+ 
+ 	switch(logmode) {
+ 	case LOGMODE_FULL:
+-	    buffer << (1900+now->tm_year) << ".";
+-	    buffer.width(2); buffer.fill('0'); buffer << now->tm_mon+1 << ".";
+-	    buffer.width(2); buffer.fill('0'); buffer << now->tm_mday  << " ";
++	    buffer << (1900+now->tm_year) << "-";
++	    buffer.width(2); buffer.fill('0'); buffer << now->tm_mon+1 << "-";
++	    buffer.width(2); buffer.fill('0'); buffer << now->tm_mday  << "T";
+ 	    buffer.width(2);    buffer.fill('0'); buffer << now->tm_hour  << ":";
+ 	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_min   << ":";
+-	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_sec;
++	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_sec   << ".";
++	    buffer.width(3);    buffer.fill('0'); buffer << milliseconds << "Z";
+ 	    break;
+ 	case LOGMODE_SHORT:
+ 	    buffer.width(2);	buffer.fill('0'); buffer << now->tm_min   << ":";
+diff --git a/Port-linux/utils.c b/Port-linux/utils.c
+index df421fa6..267ec817 100644
+--- a/Port-linux/utils.c
++++ b/Port-linux/utils.c
+@@ -521,7 +521,7 @@ int print_timestamp(FILE *fp)
+ 	memset(&tv, 0, sizeof(tv));
+ 	gettimeofday(&tv, NULL);
+ 
+-	tstr = asctime(localtime(&tv.tv_sec));
++	tstr = asctime(gmtime(&tv.tv_sec));
+ 	tstr[strlen(tstr)-1] = 0;
+ 	fprintf(fp, "Timestamp: %s %lu usec\n", tstr, tv.tv_usec);
+ 	return 0;
+-- 
+2.25.1
+

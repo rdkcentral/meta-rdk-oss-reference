@@ -1,0 +1,54 @@
+From 86597c1c363141c358a26d1ecace347aeefc34d2 Mon Sep 17 00:00:00 2001
+From: Sohail Ahmad <sohail_ahmad@comcast.com>
+Date: Wed, 14 Jun 2023 09:22:57 +0000
+Subject: [PATCH] From: Sohail Ahmad <sohail_ahmad@comcast.com>
+
+Date: Wed, 14 june 2023 06:15:39 +0000
+Subject: Comcast
+Signed-off-by: Sohail Ahmad <sohail_ahmad@comcast.com>
+Index: stunnel-5.40/src/verify.c
+===================================================================
+--- stunnel-5.40.orig/src/verify.c
++++ stunnel-5.40/src/verify.c
+@@ -293,18 +293,32 @@ NOEXPORT int cert_check_subject(CLI *c,
+     X509 *cert=X509_STORE_CTX_get_current_cert(callback_ctx);
+     NAME_LIST *ptr;
+     char *peername=NULL;
++    GENERAL_NAMES *san_names;
+ 
+     if(c->opt->check_host) {
+-        for(ptr=c->opt->check_host; ptr; ptr=ptr->next)
+-            if(X509_check_host(cert, ptr->name, 0, 0, &peername)>0)
+-                break;
+-        if(!ptr) {
+-            s_log(LOG_WARNING, "CERT: No matching host name found");
+-            return 0; /* reject */
++        san_names = X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
++        if (san_names) {
++            s_log(LOG_INFO, "CERT: SAN fileds present in certificate, Allow connection based on device type");
++            for(ptr=c->opt->check_host; ptr; ptr=ptr->next){
++                if(!X509_check_host(cert, ptr->name, 0, 0, &peername)>0) {
++                    s_log(LOG_INFO, "CERT: Host name \"%s\" not matched with \"%s\"\n",
++                       ptr->name, peername);
++                    OPENSSL_free(peername);
++                    return 0; /* reject */
++                }
++                if (!ptr->next){
++                    OPENSSL_free(peername);
++                    s_log(LOG_INFO, "CERT: Host name matches with CN and SAN allowing connection\n");
++                }
++            }
++        } else {
++            s_log(LOG_INFO, "CERT: SAN fileds not present in certificate, Allow connection if CN is matched");
++            for(ptr=c->opt->check_host; ptr; ptr=ptr->next)
++                if(X509_check_host(cert, ptr->name, 0, 0, &peername)>0) {
++                   s_log(LOG_INFO, "CERT: Host name \"%s\" matched with \"%s\"",ptr->name, peername);
++                   OPENSSL_free(peername);
++            }
+         }
+-        s_log(LOG_INFO, "CERT: Host name \"%s\" matched with \"%s\"",
+-            ptr->name, peername);
+-        OPENSSL_free(peername);
+     }
+ 
+     if(c->opt->check_email) {

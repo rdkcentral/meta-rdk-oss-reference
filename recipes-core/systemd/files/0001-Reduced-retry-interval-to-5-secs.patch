@@ -1,0 +1,37 @@
+Date: May 25, 2021 11:08 AM
+From 6d0a36bd82bf1fac536980413e756db568981a4c Mon Sep 17 00:00:00 2001
+From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+Subject: [PATCH] Reduced retry interval to 5 secs.
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+
+Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
+---
+ src/timesync/timesyncd-manager.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/timesync/timesyncd-manager.c b/src/timesync/timesyncd-manager.c
+index d5e16db..b62c1c6 100644
+--- a/src/timesync/timesyncd-manager.c
++++ b/src/timesync/timesyncd-manager.c
+@@ -59,7 +59,7 @@
+  * "A client MUST NOT under any conditions use a poll interval less
+  * than 15 seconds."
+  */
+-#define NTP_POLL_INTERVAL_MIN_SEC       32
++#define NTP_POLL_INTERVAL_MIN_SEC       16
+ #define NTP_POLL_INTERVAL_MAX_SEC       2048
+ 
+ /*
+@@ -92,7 +92,7 @@
+  */
+ #define OFFSET_1900_1970        UINT64_C(2208988800)
+ 
+-#define RETRY_USEC (30*USEC_PER_SEC)
++#define RETRY_USEC (5*USEC_PER_SEC)
+ #define RATELIMIT_INTERVAL_USEC (10*USEC_PER_SEC)
+ #define RATELIMIT_BURST 10
+ 
+-- 
+2.1.4

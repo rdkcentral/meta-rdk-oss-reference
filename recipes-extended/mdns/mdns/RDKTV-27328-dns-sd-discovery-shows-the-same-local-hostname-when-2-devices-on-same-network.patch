@@ -1,0 +1,85 @@
+Date: Jun 19, 2024
+From: rgangi643 <ramakrishna_gangisetty@comcast.com>
+Source: COMCAST
+Subject: mDNSResponder branch changed from 1790 to  1556
+Signed-off-by: rgangi643 <ramakrishna_gangisetty@comcast.com>
+Index: git/mDNSPosix/mDNSPosix.c
+===================================================================
+--- git.orig/mDNSPosix/mDNSPosix.c
++++ git/mDNSPosix/mDNSPosix.c
+@@ -164,6 +164,42 @@ mDNSlocal void SockAddrTomDNSAddr(const
+ #pragma mark ***** Send and Receive
+ #endif
+ 
++#define MAC_ADDRESS_SIZE 18
++char* getMacAddress(const char* interface)
++{
++   struct ifreq ifr;
++   int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
++   if (sockfd < 0)
++   {
++       LogMsg("Socket creation failed");
++       return NULL;
++   }
++   strncpy(ifr.ifr_name, interface, IFNAMSIZ - 1);
++   ifr.ifr_name[IFNAMSIZ - 1] = '\0';
++
++   if (ioctl(sockfd, SIOCGIFHWADDR, &ifr) != 0)
++   {
++       LogMsg("IOCTL error");
++       close(sockfd);
++       return NULL;
++   }
++   char* macAddress = (char*)malloc(MAC_ADDRESS_SIZE);
++   if (!macAddress)
++   {
++	LogMsg("Memory allocation failed");
++	close(sockfd);
++	return NULL;
++   }
++   snprintf(macAddress, MAC_ADDRESS_SIZE, "%02x%02x%02x%02x%02x%02x",
++		   (unsigned char)ifr.ifr_hwaddr.sa_data[0],
++		   (unsigned char)ifr.ifr_hwaddr.sa_data[1],
++		   (unsigned char)ifr.ifr_hwaddr.sa_data[2],
++		   (unsigned char)ifr.ifr_hwaddr.sa_data[3],
++		   (unsigned char)ifr.ifr_hwaddr.sa_data[4],
++		   (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
++   close(sockfd);
++   return macAddress;
++}
+ // mDNS core calls this routine when it needs to send a packet.
+ mDNSexport mStatus mDNSPlatformSendUDP(const mDNS *const m, const void *const msg, const mDNSu8 *const end,
+                                        mDNSInterfaceID InterfaceID, UDPSocket *src, const mDNSAddr *dst,
+@@ -921,6 +957,32 @@ mDNSlocal void GetUserSpecifiedRFC1034Co
+     gethostname((char *)(&namelabel->c[1]), MAX_DOMAIN_LABEL);
+     while (len < MAX_DOMAIN_LABEL && namelabel->c[len+1] && namelabel->c[len+1] != '.') len++;
+     namelabel->c[0] = len;
++
++    // Append MAC address to the hostname
++    char macAddress[MAC_ADDRESS_SIZE];
++    char* ethernetMacAddr = getMacAddress("eth0");
++    if (ethernetMacAddr != NULL)
++    {
++	strcpy(macAddress, ethernetMacAddr);
++	free(ethernetMacAddr);
++    }
++    else
++    {
++	char *wifiMacAddr = getMacAddress("wlan0");
++	if (wifiMacAddr != NULL)
++	{
++	    strcpy(macAddress, wifiMacAddr);
++	    free(wifiMacAddr);
++	}
++    }
++    if (macAddress[0] != '\0')
++    {
++	LogMsg("Append MAC address to the hostname %s", macAddress);
++	strcat((char *)&namelabel->c[1], "-");
++	strcat((char *)&namelabel->c[1], macAddress);
++	len += 1 + strlen(macAddress);
++	namelabel->c[0] = len;
++    }
+ }
+ 
+ // On OS X this gets the text of the field labelled "Computer Name" in the Sharing Prefs Control Panel

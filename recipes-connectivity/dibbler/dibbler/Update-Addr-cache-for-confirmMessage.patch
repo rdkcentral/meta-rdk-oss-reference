@@ -1,0 +1,126 @@
+Date: Fri, 9 Aug 2019 23:52:54 +0000
+
+From: 3764aa50c5a51ecee012394fa4f29dea76e915eb Mon Sep 17 00:00:00 2001
+
+Subject: [PATCH 1/1] Update-Addr-cache-for-confirmMessage
+
+	If the requested address is valid on this interface,
+        then register this address for this client (DUID).
+        And update Server Address database.
+
+Source: COMCAST
+
+License: LGPL-2.0-or-later
+
+Upstream-Status: Pending
+
+Signed-off-by: Tarun Saha <tarun_saha@comcast.com> 
+---
+ SrvMessages/SrvMsgReply.cpp | 10 ++++++++
+ SrvOptions/SrvOptIA_NA.cpp  | 56 +++++++++++++++++++++++++++++++++++++++++++++
+ SrvOptions/SrvOptIA_NA.h    |  1 +
+ 3 files changed, 67 insertions(+)
+
+diff --git a/SrvMessages/SrvMsgReply.cpp b/SrvMessages/SrvMsgReply.cpp
+index 41b27c1..ed4898a 100644
+--- a/SrvMessages/SrvMsgReply.cpp
++++ b/SrvMessages/SrvMsgReply.cpp
+@@ -88,6 +88,16 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
+ 
+                 SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
+                 onLink = cfgIface->confirmAddress(IATYPE_IA, optAddr->getAddr());
++
++                if (onLink == ADDRSTATUS_YES) {
++                    /**
++                     * If the requested address is valid on this interface,
++                     * then register this address for this client (DUID).
++                     * And update Server Address database.
++                     */
++                    ia->assignConfirmAddr(ClientDUID, this->getRemoteAddr(), optAddr);
++                }
++
+                 checkCnt++;
+             }
+             break;
+diff --git a/SrvOptions/SrvOptIA_NA.cpp b/SrvOptions/SrvOptIA_NA.cpp
+index 2ccae29..e7a1031 100644
+--- a/SrvOptions/SrvOptIA_NA.cpp
++++ b/SrvOptions/SrvOptIA_NA.cpp
+@@ -372,6 +372,62 @@ bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t vali
+     return true;
+ }
+ 
++/// @brief Assign requested address for this client received in CONFIRM message.
++///
++/// This method updates server address database for this client
++///
++/// @param cli_ID client's DUID received in CONFIRM message
++/// @param remoteAddr client's link-local address
++/// @optAddr IA address received in CONFIRM message
++///
++/// @return void
++void TSrvOptIA_NA::assignConfirmAddr(SPtr<TDUID> cli_ID, SPtr<TIPv6Addr> remoteAddr, SPtr<TSrvOptIAAddress> optAddr)
++{
++    SPtr<TIPv6Addr> cliAddr = optAddr->getAddr();
++    uint32_t pref = 0;
++    uint32_t valid = 0;
++    T1_ = 0;
++    T2_ = 0;
++    ClntDuid = cli_ID;
++    ClntAddr = remoteAddr;
++
++    // Try to find an addr class for the requested address on this interface.
++    SPtr<TSrvCfgAddrClass> cfgClass = SrvCfgMgr().getClassByAddr(Iface, cliAddr);
++    if (cfgClass) {
++
++        // Address belongs to a class on this interaface, i.e. In-pool assignemnt.
++        // Configure IA & IA_NA parameters acoording to address class/pool.
++        pref = cfgClass->getPref(pref);
++        valid = cfgClass->getValid(valid);
++
++        T1_ = cfgClass->getT1(T1_);
++        T2_ = cfgClass->getT2(T2_);
++
++    } else {
++
++        // Address Class not found for requested address. This is an out-of-pool assignment.
++        // Need to pick the values of IA parameter from interface.
++        SPtr<TSrvCfgIface> cfgIface = SrvCfgMgr().getIfaceByID(Iface);
++        if (!cfgIface) {
++            return;
++        }
++
++        // Configure IA & IA_NA parameters acoording to interface config.
++        pref = cfgIface->getPref(pref);
++        valid = cfgIface->getValid(valid);
++
++        T1_ = cfgIface->getT1(T1_);
++        T2_ = cfgIface->getT2(T2_);
++    }
++
++    // Register this address as allocated to this client (DUID)
++    SrvAddrMgr().addClntAddr(ClntDuid, ClntAddr, Iface, IAID_, T1_, T2_, cliAddr, pref, valid, false);
++    SrvCfgMgr().addClntAddr(this->Iface, cliAddr);
++
++    // Add client address-DUID pair to server-cache
++    SrvAddrMgr().addCachedEntry(ClntDuid, cliAddr, IATYPE_IA);
++}
++
+ /// @brief tries to find address reserved for this particular client 
+ ///
+ /// @return fixed address (if found)
+diff --git a/SrvOptions/SrvOptIA_NA.h b/SrvOptions/SrvOptIA_NA.h
+index b4ab0f7..b8f6419 100644
+--- a/SrvOptions/SrvOptIA_NA.h
++++ b/SrvOptions/SrvOptIA_NA.h
+@@ -39,6 +39,7 @@ class TSrvOptIA_NA : public TOptIA_NA
+     void rebind(SPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
+     void release(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
+     void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
++    void assignConfirmAddr(SPtr<TDUID> cli_ID, SPtr<TIPv6Addr> remoteAddr, SPtr<TSrvOptIAAddress> optAddr);
+     bool doDuties();
+  private:
+     bool assignCachedAddr(bool quiet);
+-- 
+2.16.2
+

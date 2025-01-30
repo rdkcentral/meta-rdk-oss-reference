@@ -1,0 +1,139 @@
+Date: Thu 20 Nov 2020
+From: pkappe316 <Prakash_KAPPESANNANAGAPPA@comcast.com>
+Subject: Logging cert details for canary tool.
+Source: COMCAST
+Signed-off-by: pkappe316 <Prakash_KAPPESANNANAGAPPA@comcast.com>
+diff --git a/lib/vtls/openssl.c b/lib/vtls/openssl.c
+index d679eb4..1dd213c 100644
+--- a/lib/vtls/openssl.c
++++ b/lib/vtls/openssl.c
+@@ -226,6 +226,8 @@ struct ssl_backend_data {
+ #define OCSPSTAPLECA "/tmp/.EnableOCSPCA"
+ #endif
+
++#define CUSTOM_LOG "/opt/logs/netstat.log"
++
+ #ifdef ENABLE_SSLKEYLOGFILE
+ /* The fp for the open SSLKEYLOGFILE, or NULL if not open */
+ static FILE *keylog_file_fp;
+@@ -1715,10 +1717,10 @@ end:
+     return req;
+ }
+
+-char *SaveCerts(SSL* ssl, char *issuercert, char *servercert)
++char *SaveCerts(SSL* ssl, char *issuercert, char *servercert, STACK_OF(X509) *cert)
+ {
+     X509 *peer = NULL;
+-    STACK_OF(X509) *cert = NULL;
++    //STACK_OF(X509) *cert = NULL;
+     STACK_OF(OPENSSL_STRING) *aia = NULL;
+     BIO *outbio, *issuerbio, *servercertbio;
+     char *ocsp_uri;
+@@ -1738,7 +1740,7 @@ char *SaveCerts(SSL* ssl, char *issuercert, char *servercert)
+     }
+
+     /* Get issuer/intermediate certs and store it in pem file*/
+-    cert = SSL_get_peer_cert_chain(ssl);
++    //cert = SSL_get_peer_cert_chain(ssl);
+     if (cert != NULL) {
+         STACK_OF(X509) *r_sk = sk_X509_new_null();
+         sk_X509_push(r_sk, sk_X509_value(cert, 0));
+@@ -1935,7 +1937,7 @@ end:
+     return resp;
+ }
+
+-static CURLcode verifyStatusDirectlyFromCA(struct connectdata *conn, struct ssl_connect_data *connssl)
++static CURLcode verifyStatusDirectlyFromCA(struct connectdata *conn, struct ssl_connect_data *connssl, STACK_OF(X509) *ch1)
+ {
+     int i, ocsp_status, timeout=2;
+     char *ocsp_uri = NULL;
+@@ -1946,7 +1948,7 @@ static CURLcode verifyStatusDirectlyFromCA(struct connectdata *conn, struct ssl_
+     OCSP_REQUEST *request   = NULL;
+     OCSP_BASICRESP *br1      = NULL;
+     X509_STORE     *st1      = NULL;
+-    STACK_OF(X509) *ch1      = NULL;
++    //STACK_OF(X509) *ch1      = NULL;
+     BIO *outbio = NULL, *issuerbio, *servercertbio;
+     char issuercertname[] = "/tmp/issuerXXXXXX";
+     char servercertname[] = "/tmp/serverXXXXXX";
+@@ -1961,7 +1963,7 @@ static CURLcode verifyStatusDirectlyFromCA(struct connectdata *conn, struct ssl_
+
+     outbio = BIO_new_fp(stdout, BIO_NOCLOSE);
+
+-    ocsp_uri = SaveCerts(BACKEND->handle, issuercertname, servercertname);
++    ocsp_uri = SaveCerts(BACKEND->handle, issuercertname, servercertname, ch1);
+     if(!ocsp_uri)
+        goto end;
+
+@@ -1989,7 +1991,7 @@ static CURLcode verifyStatusDirectlyFromCA(struct connectdata *conn, struct ssl_
+        goto end;
+     }
+
+-    ch1 = SSL_get_peer_cert_chain(BACKEND->handle);
++    //ch1 = SSL_get_peer_cert_chain(BACKEND->handle);
+     st1 = SSL_CTX_get_cert_store(BACKEND->ctx);
+
+     #if ((OPENSSL_VERSION_NUMBER <= 0x1000201fL) /* Fixed after 1.0.2a */ || \
+@@ -2083,11 +2085,12 @@ static CURLcode verifystatus(struct connectdata *conn,
+   STACK_OF(X509) *ch = NULL;
+
+   long len = SSL_get_tlsext_status_ocsp_resp(BACKEND->handle, &p);
++  ch = SSL_get_peer_cert_chain(BACKEND->handle);
+
+   if(!p) {
+    if(access(OCSPSTAPLECA, F_OK) != -1) {
+        failf(data, "No OCSP response received, getting response from CA");
+-       result = verifyStatusDirectlyFromCA(conn, connssl);
++       result = verifyStatusDirectlyFromCA(conn, connssl, ch);
+        goto end;
+     } else {
+        failf(data, "No OCSP response received, ocsp staple soft fail support");
+@@ -2118,7 +2121,6 @@ static CURLcode verifystatus(struct connectdata *conn,
+     goto end;
+   }
+
+-  ch = SSL_get_peer_cert_chain(BACKEND->handle);
+   st = SSL_CTX_get_cert_store(BACKEND->ctx);
+
+ #if ((OPENSSL_VERSION_NUMBER <= 0x1000201fL) /* Fixed after 1.0.2a */ || \
+@@ -3089,6 +3091,7 @@ static CURLcode ossl_connect_step2(struct connectdata *conn, int sockindex)
+
+   ERR_clear_error();
+
++  BIO *outbio = BIO_new_file(CUSTOM_LOG, "a");
+   err = SSL_connect(BACKEND->handle);
+   /* If keylogging is enabled but the keylog callback is not supported then log
+      secrets here, immediately after SSL_connect by using tap_ssl_key. */
+@@ -3140,6 +3143,8 @@ static CURLcode ossl_connect_step2(struct connectdata *conn, int sockindex)
+           snprintf(error_buffer, sizeof(error_buffer),
+                    "SSL certificate problem: %s",
+                    X509_verify_cert_error_string(lerr));
++          BIO_printf(outbio, "SSL certificate issue: %s\t Endpoint:%s\n",X509_verify_cert_error_string(lerr), conn->host.dispname);
++          BIO_free(outbio);
+         }
+         else
+           /* strcpy() is fine here as long as the string fits within
+@@ -3635,6 +3640,7 @@ static CURLcode servercert(struct connectdata *conn,
+     BIO_free(mem);
+     return 0;
+   }
++  BIO *outbio = BIO_new_file(CUSTOM_LOG, "a");
+
+   BACKEND->server_cert = SSL_get_peer_certificate(BACKEND->handle);
+   if(!BACKEND->server_cert) {
+@@ -3746,6 +3752,7 @@ static CURLcode servercert(struct connectdata *conn,
+     }
+     else
+       infof(data, " SSL certificate verify ok.\n");
++      BIO_printf(outbio, "Connection: %s\t Endpoint:%s\n", X509_verify_cert_error_string(lerr), conn->host.dispname);
+   }
+
+ #if (OPENSSL_VERSION_NUMBER >= 0x0090808fL) && !defined(OPENSSL_NO_TLSEXT) && \
+@@ -3777,6 +3784,7 @@ static CURLcode servercert(struct connectdata *conn,
+   X509_free(BACKEND->server_cert);
+   BACKEND->server_cert = NULL;
+   connssl->connecting_state = ssl_connect_done;
++  BIO_free(outbio);
+
+   return result;
+ }

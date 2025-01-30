@@ -1,0 +1,41 @@
+From af72a39233dd764e452e2bf0c32ab7a191b0c97b Mon Sep 17 00:00:00 2001
+From: Andre McCurdy <armccurdy@gmail.com>
+Date: Fri, 29 Sep 2017 12:38:08 -0700
+Subject: [PATCH 14/17] ethtool-util.c: include netinet/if_ether.h before
+ linux/if_ether.h
+
+ | In file included from ../git/src/basic/missing.h:34:0,
+ |                  from ../git/src/basic/util.h:46,
+ |                  from ../git/src/udev/net/ethtool-util.c:30:
+ | /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/netinet/if_ether.h:101:8: error: redefinition of 'struct ethhdr'
+ |  struct ethhdr {
+ |         ^~~~~~
+ | In file included from /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/linux/ethtool.h:18:0,
+ |                  from ../git/src/udev/net/ethtool-util.c:22:
+ | /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/linux/if_ether.h:143:8: note: originally defined here
+ |  struct ethhdr {
+ |         ^~~~~~
+ | make[2]: *** [src/udev/net/libudev_core_la-ethtool-util.lo] Error 1
+
+Upstream-Status: Inappropriate [musl specific]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/udev/net/ethtool-util.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/udev/net/ethtool-util.c b/src/udev/net/ethtool-util.c
+index c00ff79..bca5ecb 100644
+--- a/src/udev/net/ethtool-util.c
++++ b/src/udev/net/ethtool-util.c
+@@ -19,6 +19,7 @@
+ 
+ #include <net/if.h>
+ #include <sys/ioctl.h>
++#include <netinet/if_ether.h>
+ #include <linux/ethtool.h>
+ #include <linux/sockios.h>
+ 
+-- 
+1.9.1
+

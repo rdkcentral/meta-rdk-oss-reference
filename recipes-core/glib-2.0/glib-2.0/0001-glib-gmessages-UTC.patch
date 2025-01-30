@@ -1,0 +1,57 @@
+From ff60a2af14eb93e9702e765586bf147fe5299e99 Mon Sep 17 00:00:00 2001
+From: Scott Angel <scott_angel@cable.comcast.com>
+Date: Tue, 7 May 2024 17:44:24 +0000
+Subject: [PATCH] Force UTC and ISO 8601 for gmessages
+
+Force UTC and ISO 8601 for gmessages to allow consistent logging.
+
+Upstream-Status: Inappropriate [oe-core specific]
+Signed-off-by: Scott Angel <scott_angel@comcast.com>
+---
+ glib/gmessages.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/glib/gmessages.c b/glib/gmessages.c
+index bb1ab8f84..d0a6b287b 100644
+--- a/glib/gmessages.c
++++ b/glib/gmessages.c
+@@ -2244,6 +2244,18 @@ g_log_writer_format_fields (GLogLevelFlags   log_level,
+   mklevel_prefix (level_prefix, log_level, use_color);
+ 
+   gstring = g_string_new (NULL);
++
++  /* Timestamp */
++  now = g_get_real_time ();
++  now_secs = (time_t) (now / 1000000);
++  now_tm = gmtime (&now_secs);
++  strftime (time_buf, sizeof (time_buf), "%Y-%m-%dT%H:%M:%S", now_tm);
++
++  g_string_append_printf (gstring, "%s%s.%03dZ%s : ",
++                          use_color ? "\033[34m" : "",
++                          time_buf, (gint) ((now / 1000) % 1000),
++                          color_reset (use_color));
++
+   if (log_level & ALERT_LEVELS)
+     g_string_append (gstring, "\n");
+   if (!log_domain)
+@@ -2270,17 +2282,6 @@ g_log_writer_format_fields (GLogLevelFlags   log_level,
+ 
+   g_string_append (gstring, ": ");
+ 
+-  /* Timestamp */
+-  now = g_get_real_time ();
+-  now_secs = (time_t) (now / 1000000);
+-  now_tm = localtime (&now_secs);
+-  strftime (time_buf, sizeof (time_buf), "%H:%M:%S", now_tm);
+-
+-  g_string_append_printf (gstring, "%s%s.%03d%s: ",
+-                          use_color ? "\033[34m" : "",
+-                          time_buf, (gint) ((now / 1000) % 1000),
+-                          color_reset (use_color));
+-
+   if (message == NULL)
+     {
+       g_string_append (gstring, "(NULL) message");
+-- 
+2.25.1
+

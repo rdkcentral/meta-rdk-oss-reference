@@ -1,0 +1,83 @@
+From 21e1b3b03d1430eb010784b1767209dd4c878fb4 Mon Sep 17 00:00:00 2001
+From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Date: Fri, 17 Mar 2023 19:50:18 +0000
+Subject: [PATCH] Added Extra  information fro NTP Status.
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+
+Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+
+Recreated from https://gerrit.teamccp.com/#/c/597359/2/recipes-core/systemd/files/0001-Added-Extra-information-fro-NTP-Status.patch
+---
+
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c
++++ git/src/timesync/timesyncd-manager.c
+@@ -29,6 +29,7 @@
+ #include "timesyncd-conf.h"
+ #include "timesyncd-manager.h"
+ #include "util.h"
++#include "fileio.h"
+ 
+ #ifndef ADJ_SETOFFSET
+ #define ADJ_SETOFFSET                   0x0100  /* add 'time' to current time */
+@@ -90,6 +91,7 @@ static int manager_timeout(sd_event_sour
+ 
+         server_address_pretty(m->current_server_address, &pretty);
+         log_info("Timed out waiting for reply from %s (%s).", strna(pretty), m->current_server_name->string);
++        write_string_file("/tmp/ntp_status", "Error (Timeout)", WRITE_STRING_FILE_CREATE);
+ 
+         return manager_connect(m);
+ }
+@@ -140,6 +142,7 @@ static int manager_send_request(Manager
+                 log_debug("Sent NTP request to %s (%s).", strna(pretty), m->current_server_name->string);
+         } else {
+                 log_debug_errno(errno, "Sending NTP request to %s (%s) failed: %m", strna(pretty), m->current_server_name->string);
++		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
+                 return manager_connect(m);
+         }
+ 
+@@ -493,6 +496,7 @@ static int manager_receive_response(sd_e
+         if (be32toh(ntpmsg.origin_time.sec) != graceful_add_offset_1900_1970(m->trans_time.tv_sec) ||
+             be32toh(ntpmsg.origin_time.frac) != (unsigned long) m->trans_time.tv_nsec) {
+                 log_debug("Invalid reply; not our transmit time. Ignoring.");
++		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
+                 return 0;
+         }
+ 
+@@ -501,28 +505,33 @@ static int manager_receive_response(sd_e
+         if (be32toh(ntpmsg.recv_time.sec) < TIME_EPOCH + OFFSET_1900_1970 ||
+             be32toh(ntpmsg.trans_time.sec) < TIME_EPOCH + OFFSET_1900_1970) {
+                 log_debug("Invalid reply, returned times before epoch. Ignoring.");
++		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
+                 return manager_connect(m);
+         }
+ 
+         if (NTP_FIELD_LEAP(ntpmsg.field) == NTP_LEAP_NOTINSYNC ||
+             ntpmsg.stratum == 0 || ntpmsg.stratum >= 16) {
+                 log_debug("Server is not synchronized. Disconnecting.");
++		write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
+                 return manager_connect(m);
+         }
+ 
+         if (!IN_SET(NTP_FIELD_VERSION(ntpmsg.field), 3, 4)) {
+                 log_debug("Response NTPv%d. Disconnecting.", NTP_FIELD_VERSION(ntpmsg.field));
++		write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
+                 return manager_connect(m);
+         }
+ 
+         if (NTP_FIELD_MODE(ntpmsg.field) != NTP_MODE_SERVER) {
+                 log_debug("Unsupported mode %d. Disconnecting.", NTP_FIELD_MODE(ntpmsg.field));
++		write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
+                 return manager_connect(m);
+         }
+ 
+         root_distance = ntp_ts_short_to_d(&ntpmsg.root_delay) / 2 + ntp_ts_short_to_d(&ntpmsg.root_dispersion);
+         if (root_distance > (double) m->root_distance_max_usec / (double) USEC_PER_SEC) {
+                 log_info("Server has too large root distance. Disconnecting.");
++		write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
+                 return manager_connect(m);
+         }
+ 

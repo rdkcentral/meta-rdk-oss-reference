@@ -1,0 +1,23 @@
+Date: May 21, 2018 8:08 PM
+From: dwolaver <David_Wolaver@cable.comcast.com>
+Subject: [PATCH] Integrating gperftools for memory leak detection.
+Source: COMCAST 75219ff2f6dc8b75ffdb308a11d1f67382f25749 Jul 5, 2018 8:35 PM
+Signed-off-by: dwolaver <David_Wolaver@cable.comcast.com>
+---
+
+Index: gperftools-2.6/src/heap-checker.cc
+===================================================================
+--- gperftools-2.6.orig/src/heap-checker.cc	2015-10-01 11:02:57.000000000 -0400
++++ gperftools-2.6/src/heap-checker.cc	2018-05-08 17:27:35.552000000 -0400
+@@ -2310,8 +2310,9 @@
+ // This function is executed after all global object destructors run.
+ void HeapLeakChecker_AfterDestructors() {
+   { SpinLockHolder l(&heap_checker_lock);
+-    // can get here (via forks?) with other pids
+-    if (heap_checker_pid != getpid()) return;
++    // DO NOT check the pid here as calls to fork will result in different pids
++    // Each process will diverge and needs to run heap check upon exit.
++    //if (heap_checker_pid != getpid()) return;
+   }
+   if (FLAGS_heap_check_after_destructors) {
+     if (HeapLeakChecker::DoMainHeapCheck()) {

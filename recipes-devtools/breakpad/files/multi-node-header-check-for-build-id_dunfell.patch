@@ -1,0 +1,38 @@
+Date: May 7, 2020 1:41 AM
+From: NA 
+Subject: morty dunfell compatibility
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: sohail <sohail_ahmad@comcast.com>
+diff --git a/src/common/linux/elfutils.cc b/src/common/linux/elfutils.cc
+index 9532d5ad..4f9b64fb 100644
+--- a/src/common/linux/elfutils.cc
++++ b/src/common/linux/elfutils.cc
+@@ -81,6 +81,7 @@ void FindElfClassSegment(const char *elf_base,
+                          wasteful_vector<ElfSegment> *segments) {
+   typedef typename ElfClass::Ehdr Ehdr;
+   typedef typename ElfClass::Phdr Phdr;
++  typedef typename ElfClass::Nhdr Nhdr;  
+ 
+   assert(elf_base);
+   assert(segments);
+@@ -94,11 +95,15 @@ void FindElfClassSegment(const char *elf_base,
+     GetOffset<ElfClass, Phdr>(elf_header, elf_header->e_phoff);
+ 
+   for (int i = 0; i < elf_header->e_phnum; ++i) {
++    const Nhdr* note_header = reinterpret_cast<const Nhdr*>(elf_base + phdrs[i].p_offset);
+     if (phdrs[i].p_type == segment_type) {
+       ElfSegment seg = {};
+-      seg.start = elf_base + phdrs[i].p_offset;
+-      seg.size = phdrs[i].p_filesz;
+-      segments->push_back(seg);
++       if (note_header->n_type == NT_GNU_BUILD_ID)
++         {
++            seg.start = elf_base + phdrs[i].p_offset;
++            seg.size = phdrs[i].p_filesz;
++	    segments->push_back(seg);
++         }      
+     }
+   }
+ }

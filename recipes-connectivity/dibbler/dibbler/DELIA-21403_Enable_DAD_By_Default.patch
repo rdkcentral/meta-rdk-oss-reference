@@ -1,0 +1,114 @@
+Date: Jul 7, 2017 11:26 PM
+ 
+From: 2806c3fd7bf6f4b90bdd2bf2dfb8935ac32b7112 Jul 12, 2017 4:37 AM
+
+Subject: [PATCH] DELIA-21403 : Adding the patch for addressing DAD check failure
+
+	Back porting fixes from latest opensource dibbler version - 1.0.2RC1
+	Please refer to change log in below link :
+	https://github.com/tomaszmrugalski/dibbler/commit/00d4c4f2fa7c3d4b6cbeea111e8b2c7eee56150b
+	This patch is for enabling kernel to add address even without prefered life time to cache.
+	This enables Duplicate Address Detection (DAD) in dibbler.
+	
+Source: GITHUB 
+
+License: LGPL-2.0-or-later
+
+Upstream-Status: Submitted [ https://github.com/tomaszmrugalski/dibbler/commit/00d4c4f2fa7c3d4b6cbeea111e8b2c7eee56150b ]
+
+Signed-off-by: skv01 <Shibu_KV@cable.comcast.com> 
+---
+
+diff --git a/ClntCfgMgr/ClntCfgIface.cpp b/ClntCfgMgr/ClntCfgIface.cpp
+index e3a0443..b0f375e 100644
+--- a/ClntCfgMgr/ClntCfgIface.cpp
++++ b/ClntCfgMgr/ClntCfgIface.cpp
+@@ -513,6 +513,10 @@ void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout,
+  * @param sendAlways should this option be always sent? Even when already configured?
+  */
+ void TClntCfgIface::addExtraOption(int opttype, TOpt::EOptionLayout layout, bool sendAlways) {
++    if (!this) {
++        Log(Error) << "Option " << opttype << " defined in global scope will not work. Please define it in the appropriate interface scope" << LogEnd;
++        return;
++    }
+     SPtr<TOptionStatus> optStatus = new TOptionStatus();
+     optStatus->OptionType = opttype;
+     optStatus->Always = sendAlways;
+diff --git a/ClntMessages/ClntMsg.cpp b/ClntMessages/ClntMsg.cpp
+index 0cf5dce..e3469fa 100644
+--- a/ClntMessages/ClntMsg.cpp
++++ b/ClntMessages/ClntMsg.cpp
+@@ -525,7 +525,7 @@ void TClntMsg::appendRequestedOptions() {
+ 	Options.push_back( (Ptr*) optReconfigure);
+     }
+ 
+-    SPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(iface, this);
++    SPtr<TClntOptOptionRequest> optORO = new TClntOptOptionRequest(OPTION_ORO, this);
+ 
+     if (iface->getUnicast()) {
+ 	optORO->addOption(OPTION_UNICAST);
+diff --git a/Misc/Portable.h b/Misc/Portable.h
+index a33a2dd..fbb793f 100644
+--- a/Misc/Portable.h
++++ b/Misc/Portable.h
+@@ -90,6 +90,19 @@ struct iface {
+ 
+ #define MAX_LINK_STATE_CHANGES_AT_ONCE 16
+ 
++
++/* This constant defines whether addresses configured on Linux are added with
++   preferred and valid lifetimes. There seems to be a bug in the kernel that
++   adds the addresses with lifetimes only if they're not duplicated, whereas
++   the expected behavior is the kernel to add them always, but report them as
++   duplicate if needed. This causes the client to get confused if the address
++   is duplicate.
++
++   Since adding the address without lifetimes in a safer bet (the Duplicate Address
++   Detection will work), this is the default. If you really need to add adresses
++   with lifetimes, please set this to 1, but be aware that DAD may not work. */
++#define ADD_ADDRESSES_WITH_LIFETIMES 0
++
+ struct link_state_notify_t
+ {
+     int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. 
+diff --git a/Misc/Portable.h.in b/Misc/Portable.h.in
+index b9c33bf..16f76b2 100644
+--- a/Misc/Portable.h.in
++++ b/Misc/Portable.h.in
+@@ -90,6 +90,19 @@ struct iface {
+ 
+ #define MAX_LINK_STATE_CHANGES_AT_ONCE 16
+ 
++/* This constant defines whether addresses configured on Linux are added with
++   preferred and valid lifetimes. There seems to be a bug in the kernel that
++   adds the addresses with lifetimes only if they're not duplicated, whereas
++   the expected behavior is the kernel to add them always, but report them as
++   duplicate if needed. This causes the client to get confused if the address
++   is duplicate.
++
++   Since adding the address without lifetimes in a safer bet (the Duplicate Address
++   Detection will work), this is the default. If you really need to add adresses
++   with lifetimes, please set this to 1, but be aware that DAD may not work. */
++#define ADD_ADDRESSES_WITH_LIFETIMES 0
++
++
+ struct link_state_notify_t
+ {
+     int ifindex[MAX_LINK_STATE_CHANGES_AT_ONCE]; /* indexes of interfaces that has changed. 
+diff --git a/Port-linux/lowlevel-linux.c b/Port-linux/lowlevel-linux.c
+index f48e976..7221d87 100644
+--- a/Port-linux/lowlevel-linux.c
++++ b/Port-linux/lowlevel-linux.c
+@@ -405,10 +405,12 @@ int ipaddr_add_or_del(const char * addr, const char *ifacename, int prefixLen,
+     addattr_l(&req.n, sizeof(req), IFA_LOCAL, &lcl.data, lcl.bytelen);
+     local_len = lcl.bytelen;
+ 
++#if ADD_ADDRESSES_WITH_LIFETIMES > 0
+     memset(&ci, 0, sizeof(ci));
+     ci.ifa_valid = valid;
+     ci.ifa_prefered = preferred;
+     addattr_l(&req.n, sizeof(req), IFA_CACHEINFO, &ci, sizeof(ci));
++#endif
+     
+     if (peer_len == 0 && local_len) {
+ 	/* peer = lcl; */

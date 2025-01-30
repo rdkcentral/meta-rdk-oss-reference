@@ -1,0 +1,23 @@
+Date: Mon 26 Dec 2022
+From: sroy040 <surajeet_roy@comcast.com>
+Subject: Dropbear is not following Telemetry init/unint process
+Source: COMCAST
+Signed-off-by: sroy040 <surajeet_roy@comcast.com>
+Index: dropbear-2019.78/svr-authpubkey.c
+===================================================================
+--- dropbear-2019.78.orig/svr-authpubkey.c
++++ dropbear-2019.78/svr-authpubkey.c
+@@ -152,11 +152,13 @@ void svr_auth_pubkey(int valid_user) {
+ 	/* ... and finally verify the signature */
+ 	fp = sign_key_fingerprint(keyblob, keybloblen);
+ 	if (buf_verify(ses.payload, key, signbuf) == DROPBEAR_SUCCESS) {
++		ssh_logging("SSH_connection_split %s\n", ses.authstate.pw_name);
+ 		dropbear_log(LOG_NOTICE,
+ 				"Pubkey auth succeeded for '%s' with key %s from %s",
+ 				ses.authstate.pw_name, fp, svr_ses.addrstring);
+ 		send_msg_userauth_success();
+ 	} else {
++		ssh_logging("Illegal_SSH_connection %s\n", ses.authstate.pw_name);
+ 		dropbear_log(LOG_WARNING,
+ 				"Pubkey auth bad signature for '%s' with key %s from %s",
+ 				ses.authstate.pw_name, fp, svr_ses.addrstring);

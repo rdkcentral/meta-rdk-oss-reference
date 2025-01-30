@@ -1,0 +1,46 @@
+Date: Fri, 29 May 2020 17:40:37 +0000
+From: mselva006c <mani_selvaraj@comcast.com>
+Subject: [PATCH] RDK-28776: systemd-tmpfiles-setup failed state
+        Removed unnecessary some of the systemd tmpfiles to be created in boot up.
+        Boot up and check AV in morty build.
+Source: COMCAST c16f5528bd8fbe0f5f5f049b9179b312d1837d23 Mon Sep 17 00:00:00 2001
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ tmpfiles.d/etc.conf.in         | 2 +-
+ tmpfiles.d/systemd-nspawn.conf | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/tmpfiles.d/etc.conf.in.orig b/tmpfiles.d/etc.conf.in
+--- a/tmpfiles.d/etc.conf.in.orig 2023-01-25 12:17:29.445089307 +0000
++++ b/tmpfiles.d/etc.conf.in      2023-01-25 12:18:05.768879186 +0000
+@@ -8,7 +8,7 @@
+ # See tmpfiles.d(5) for details
+
+ L /etc/os-release - - - - ../usr/lib/os-release
+-L+ /etc/mtab - - - - ../proc/self/mounts
++#L+ /etc/mtab - - - - ../proc/self/mounts
+ {% if HAVE_SMACK_RUN_LABEL %}
+ t /etc/mtab - - - - security.SMACK64=_
+ {% endif %}
+
+diff --git a/tmpfiles.d/systemd-nspawn.conf b/tmpfiles.d/systemd-nspawn.conf
+index 78bd1c670e..88570e5cfc 100644
+--- a/tmpfiles.d/systemd-nspawn.conf
++++ b/tmpfiles.d/systemd-nspawn.conf
+@@ -7,7 +7,7 @@
+ 
+ # See tmpfiles.d(5) for details
+ 
+-Q /var/lib/machines 0700 - - -
++#Q /var/lib/machines 0700 - - -
+ 
+ # Remove old temporary snapshots, but only at boot. Ideally we'd have
+ # "self-destroying" btrfs snapshots that go away if the last
+@@ -19,5 +19,5 @@ Q /var/lib/machines 0700 - - -
+ # systemd-nspawn --ephemeral places snapshots) we are more strict, to
+ # avoid removing unrelated temporary files.
+ 
+-R! /var/lib/machines/.#*
+-R! /.#machine.*
++#R! /var/lib/machines/.#*
++#R! /.#machine.*

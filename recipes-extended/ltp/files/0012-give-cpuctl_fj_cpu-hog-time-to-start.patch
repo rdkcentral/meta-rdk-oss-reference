@@ -1,0 +1,105 @@
+Date: Jun 27, 2022 6:00 PM
+From: 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Subject: LTP Package patch
+
+	 When running this test on an underpowered/busy system then the cpuctl_fj_cpu-hog exeecutable
+ 	sometimes does not have time to startup before the first signal is thrown at it. This results
+ 	in a failed test, since the first signal without an established handler shuts down the task.
+ 	Introduce a delay immediately after launch to allow the SIGUSR1 handler to be established
+
+Source: RED
+License: GPLv2
+Upstream-Status: Pending
+Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
+---
+diff -ur git.old/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh git/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh
+--- git.old/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh	2022-05-05 13:23:40.518042337 +0100
++++ git/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh	2022-05-05 13:28:49.066531522 +0100
+@@ -283,6 +283,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -311,6 +312,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -339,6 +341,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -367,6 +370,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -395,6 +399,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -423,6 +428,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -453,6 +459,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -481,6 +488,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -509,6 +517,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -538,6 +547,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 
+@@ -566,6 +576,7 @@
+ 
+ 	./cpuctl_fj_cpu-hog &
+ 	pid=$!
++	sleep $SLEEP_SEC
+ 
+ 	echo $pid > $CPUCTL/tmp/tasks
+ 

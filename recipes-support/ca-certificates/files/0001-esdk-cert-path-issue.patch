@@ -1,0 +1,37 @@
+From: c43c2d95b9c97f3d6a966ee5cdfdde9d62d75ed8 Mon Sep 17 00:00:00 2001
+Date: Fri, 17 Dec 2021 21:00:07 +0000
+Subject: [PATCH] esdk cert path issue
+
+        The esdk installation and git secure checkout for some of the
+opensource repos were failing due to broken ca-certificates.crt softlink
+with comcast specific changes.
+Source: COMCAST
+License: LGPL-2.0-or-later
+Upstream-Status: Not Required
+Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
+---
+ sbin/update-ca-certificates | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/sbin/update-ca-certificates b/sbin/update-ca-certificates
+index cea7a26..8dfc66d 100755
+--- a/sbin/update-ca-certificates
++++ b/sbin/update-ca-certificates
+@@ -26,6 +26,7 @@ fresh=0
+ default=0
+ CERTSCONF=$SYSROOT/etc/ca-certificates.conf
+ CERTSDIR=$SYSROOT/usr/share/ca-certificates
++FSROOT=../../../ # to get from $ETCCERTSDIR to the root of the file system
+ CERTSDIRBUNDLE=$SYSROOT/usr/share/ca-certificates/ca-certificates.crt
+ LOCALCERTSDIR=$SYSROOT/usr/local/share/ca-certificates
+ CERTBUNDLE=ca-certificates.crt
+@@ -227,7 +228,8 @@ fi
+ 
+ chmod 0644 "$TEMPBUNDLE"
+ mv -f "$TEMPBUNDLE" "$CERTSDIRBUNDLE"
+-ln -sf "${CERTSDIRBUNDLE##$SYSROOT}" "$CERTBUNDLE"
++CERTSDIRBUNDLE_LN="$(echo ${CERTSDIRBUNDLE} | sed -e "s|^$SYSROOT||" -e "s|^/|$FSROOT|" )"
++ln -sf "${CERTSDIRBUNDLE_LN}" "$CERTBUNDLE"
+ # Restore proper SELinux label after moving the file
+ [ -x /sbin/restorecon ] && /sbin/restorecon "$CERTSDIRBUNDLE" >/dev/null 2>&1
+ 

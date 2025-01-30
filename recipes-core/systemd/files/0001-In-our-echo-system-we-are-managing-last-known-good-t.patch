@@ -1,0 +1,31 @@
+From 82cb08fa39617908ddd43182fbddfb352017a225 Mon Sep 17 00:00:00 2001
+From: Balaji Punnuru <Balaji_Punnuru@comcast.com>
+Date: Tue, 25 Oct 2022 15:16:30 -0400
+Subject: [PATCH] In our echo system we are managing last known good time.
+ Removing setting of time in timesyncd initialization.
+
+Signed-off-by: Balaji Punnuru <Balaji_Punnuru@comcast.com>
+---
+ src/timesync/timesyncd.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/timesync/timesyncd.c b/src/timesync/timesyncd.c
+index b67d672a6a..40c423f974 100644
+--- a/src/timesync/timesyncd.c
++++ b/src/timesync/timesyncd.c
+@@ -70,11 +70,9 @@ static int load_clock_timestamp(uid_t uid, gid_t gid) {
+                 struct timespec ts;
+                 char date[FORMAT_TIMESTAMP_MAX];
+ 
+-                log_info("System clock time unset or jumped backwards, restoring from recorded timestamp: %s",
++                log_info("System clock time unset or jumped backwards, Skipping resetting time. restoring from recorded timestamp: %s",
+                          format_timestamp(date, sizeof(date), min));
+ 
+-                if (clock_settime(CLOCK_REALTIME, timespec_store(&ts, min)) < 0)
+-                        log_error_errno(errno, "Failed to restore system clock: %m");
+         }
+ 
+         return 0;
+-- 
+2.32.1 (Apple Git-133)
+

@@ -1,0 +1,12 @@
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c
++++ git/src/timesync/timesyncd-manager.c
+@@ -664,6 +664,7 @@ static int manager_receive_response(sd_e
+                   m->samples_jitter, spike ? " spike" : "",
+                   m->poll_interval_usec / USEC_PER_SEC);
+
++        touch("/tmp/systimemgr/ntp");
+         if (!spike) {
+                 m->sync = true;
+                 r = manager_adjust_clock(m, offset, leap_sec);

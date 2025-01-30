@@ -1,0 +1,28 @@
+diff --git a/src/client/linux/handler/minidump_descriptor.cc b/src/client/linux/handler/minidump_descriptor.cc
+index bd94474e..99023933 100644
+--- a/src/client/linux/handler/minidump_descriptor.cc
++++ b/src/client/linux/handler/minidump_descriptor.cc
+@@ -28,6 +28,7 @@
+ // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ 
+ #include "client/linux/handler/minidump_descriptor.h"
+ 
+@@ -92,6 +93,15 @@ void MinidumpDescriptor::UpdatePath() {
+   path_.clear();
+   path_ = directory_ + "/" + guid_str + ".dmp";
+   c_path_ = path_.c_str();
++
++  char* guid_str_env = getenv("BREAKPAD_GUID");
++  if (guid_str_env) {
++      path_ = directory_ + "/" + guid_str_env + ".dmp";
++      c_path_ = path_.c_str();
++  }
++
++ // fprintf(stderr, "Breakpad: minidump location: [%s]\n", c_path_);
++  
+ }
+ 
+ }  // namespace google_breakpad

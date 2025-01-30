@@ -1,0 +1,113 @@
+Date: Jun 27, 2022 6:00 PM
+From: 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Subject: LTP Package patch
+         
+         Check the new vairable return value
+         
+Source: RED
+License: GPLv2
+Upstream-Status: Pending
+Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
+---
+diff -ur git.orig/pan/ltp-pan.c git/pan/ltp-pan.c
+--- git.orig/pan/ltp-pan.c	2022-04-27 15:15:41.172624937 +0000
++++ git/pan/ltp-pan.c	2022-04-27 15:22:03.612521228 +0000
+@@ -121,7 +121,7 @@
+ static void write_test_start(struct tag_pgrp *running, int no_kmsg);
+ static void write_test_end(struct tag_pgrp *running, const char *init_status,
+ 			   time_t exit_time, char *term_type, int stat_loc,
+-			   int term_id, struct tms *tms1, struct tms *tms2);
++			   int term_id, struct tms *tms1, struct tms *tms2, int isfail);
+ 
+ //wjh
+ static char PAN_STOP_FILE[] = "PAN_STOP_FILE";
+@@ -726,6 +726,7 @@
+ 	int signaled = 0;
+ 	struct tms tms1, tms2;
+ 	clock_t tck;
++	int isfail = 0;
+ 
+ 	check_orphans(orphans, 0);
+ 
+@@ -824,8 +825,10 @@
+ 						} else if (w != 0) {
+ 							++*failcnt;
+ 							result_str = "FAIL";
++							isfail = 1;
+ 						} else {
+ 							result_str = "PASS";
++							isfail = 0;
+ 						}
+ 
+ 						fprintf(logfile,
+@@ -863,7 +866,7 @@
+ 				if (!quiet_mode)
+ 					write_test_end(running + i, "ok", t,
+ 						       status, stat_loc, w,
+-						       &tms1, &tms2);
++						       &tms1, &tms2, isfail);
+ 
+ 				/* If signaled and we weren't expecting
+ 				 * this to be stopped then the proc
+@@ -1074,6 +1077,7 @@
+ 		int termid;
+ 		char *termtype;
+ 		struct tms notime = { 0, 0, 0, 0 };
++		int isfail = 0;
+ 
+ 		if (read(errpipe[0], errbuf, errlen) < 0)
+ 			fprintf(stderr, "Failed to read from errpipe[0]\n");
+@@ -1105,8 +1109,12 @@
+ 					termtype, termid,
+ 					(status & 0200) ? "yes" : "no", 0, 0);
+ 			} else {
+-				if (termid != 0)
++				if (termid != 0) {
+ 					++ * failcnt;
++					isfail = 1;
++				} else {
++					isfail = 0;
++				}
+ 
+ 				fprintf(logfile, ResultFmt" %-5d\n",
+ 					colle->name,
+@@ -1118,7 +1126,7 @@
+ 
+ 		if (!quiet_mode) {
+ 			write_test_end(active, errbuf, end_time, termtype,
+-				       status, termid, &notime, &notime);
++				       status, termid, &notime, &notime, isfail);
+ 		}
+ 		if (capturing) {
+ 			close(c_stdout);
+@@ -1393,6 +1401,7 @@
+ 		     "<<<test_start>>>", running->cmd->name, running->mystime,
+ 		     running->cmd->cmdline, "", "exit", "<<<test_output>>>");
+ 	}
++	printf("\n<LAVA_SIGNAL_STARTTC %s>\n", running->cmd->name);
+ 	fflush(stdout);
+ 	if (no_kmsg)
+ 		return;
+@@ -1407,7 +1416,7 @@
+ static void
+ write_test_end(struct tag_pgrp *running, const char *init_status,
+ 	       time_t exit_time, char *term_type, int stat_loc,
+-	       int term_id, struct tms *tms1, struct tms *tms2)
++	       int term_id, struct tms *tms1, struct tms *tms2, int isfail)
+ {
+ 	if (!strcmp(reporttype, "rts")) {
+ 		printf
+@@ -1420,6 +1429,13 @@
+ 		     (int)(tms2->tms_cstime - tms1->tms_cstime),
+ 		     "<<<test_end>>>");
+ 	}
++
++	printf("\n<LAVA_SIGNAL_ENDTC %s>\n", running->cmd->name);
++        if (isfail) {
++		printf("\n<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=%s RESULT=fail>\n", running->cmd->name);
++	} else {
++		printf("\n<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=%s RESULT=pass>\n", running->cmd->name);
++	}
+ 	fflush(stdout);
+ }
+ 

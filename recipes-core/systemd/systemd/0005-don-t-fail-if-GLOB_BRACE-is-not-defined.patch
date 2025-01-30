@@ -1,0 +1,55 @@
+From 63de2c6e14b2e8e0058f31c22f4def7a36446930 Mon Sep 17 00:00:00 2001
+From: Emil Renner Berthing <systemd@esmil.dk>
+Date: Thu, 18 Sep 2014 15:24:44 +0200
+Subject: [PATCH 05/17] don't fail if GLOB_BRACE is not defined
+
+If the standard library doesn't provide brace
+expansion users just won't get it.
+
+Upstream-Status: Inappropriate [musl specific]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/basic/glob-util.c   | 7 +++++++
+ src/tmpfiles/tmpfiles.c | 7 +++++++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/src/basic/glob-util.c b/src/basic/glob-util.c
+index 007198c..348dbe5 100644
+--- a/src/basic/glob-util.c
++++ b/src/basic/glob-util.c
+@@ -24,6 +24,13 @@
+ #include "macro.h"
+ #include "strv.h"
+ 
++/* Don't fail if the standard library
++ * doesn't provide brace expansion */
++
++#ifndef GLOB_BRACE
++#define GLOB_BRACE 0
++#endif
++
+ int glob_exists(const char *path) {
+         _cleanup_globfree_ glob_t g = {};
+         int k;
+diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+index 2053d35..7e0c677 100644
+--- a/src/tmpfiles/tmpfiles.c
++++ b/src/tmpfiles/tmpfiles.c
+@@ -77,6 +77,13 @@
+  * properly owned directories beneath /tmp, /var/tmp, /run, which are
+  * volatile and hence need to be recreated on bootup. */
+ 
++/* Don't fail if the standard library
++ * doesn't provide brace expansion */
++
++#ifndef GLOB_BRACE
++#define GLOB_BRACE 0
++#endif
++
+ typedef enum ItemType {
+         /* These ones take file names */
+         CREATE_FILE = 'f',
+-- 
+1.9.1
+

@@ -1,0 +1,41 @@
+From 299ef333abf97d906ebb0f11e94e2fbfcb0b7f84 Mon Sep 17 00:00:00 2001
+From: Andre McCurdy <armccurdy@gmail.com>
+Date: Thu, 28 Sep 2017 19:26:18 -0700
+Subject: [PATCH 13/17] netlink-types.c: include netinet/if_ether.h before
+ linux/if_ether.h
+
+ | In file included from /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/net/ethernet.h:10:0,
+ |                  from ../git/src/basic/missing.h:34,
+ |                  from ../git/src/libsystemd/sd-netlink/netlink-types.c:34:
+ | /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/netinet/if_ether.h:101:8: error: redefinition of 'struct ethhdr'
+ |  struct ethhdr {
+ |         ^~~~~~
+ | In file included from /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/linux/if_bridge.h:17:0,
+ |                  from ../git/src/libsystemd/sd-netlink/netlink-types.c:26:
+ | /.../tmp/sysroots/raspberrypi-rdk-broadband-musl/usr/include/linux/if_ether.h:143:8: note: originally defined here
+ |  struct ethhdr {
+ |         ^~~~~~
+ | make[2]: *** [src/libsystemd/sd-netlink/libsystemd_la-netlink-types.lo] Error 1
+
+Upstream-Status: Inappropriate [musl specific]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/libsystemd/sd-netlink/netlink-types.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/libsystemd/sd-netlink/netlink-types.c b/src/libsystemd/sd-netlink/netlink-types.c
+index 3a4bac2..22ba5bd 100644
+--- a/src/libsystemd/sd-netlink/netlink-types.c
++++ b/src/libsystemd/sd-netlink/netlink-types.c
+@@ -19,6 +19,7 @@
+ 
+ #include <stdint.h>
+ #include <sys/socket.h>
++#include <netinet/if_ether.h>
+ #include <linux/netlink.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/in6.h>
+-- 
+1.9.1
+

@@ -1,0 +1,168 @@
+diff --git a/crypto/ocsp/ocsp_prn.c b/crypto/ocsp/ocsp_prn.c
+index 47d5f83..5fab5ec 100644
+--- a/crypto/ocsp/ocsp_prn.c
++++ b/crypto/ocsp/ocsp_prn.c
+@@ -69,6 +69,8 @@
+ #include <openssl/ocsp.h>
+ #include <openssl/pem.h>
+
++#define CUSTOM_LOG "/opt/logs/netstat.log"
++
+ static int ocsp_certid_print(BIO *bp, OCSP_CERTID *a, int indent)
+ {
+     BIO_printf(bp, "%*sCertificate ID:\n", indent, "");
+@@ -114,11 +116,14 @@ const char *OCSP_response_status_str(long s)
+
+ const char *OCSP_cert_status_str(long s)
+ {
++    BIO *outbio = BIO_new_file(CUSTOM_LOG, "a");
+     static const OCSP_TBLSTR cstat_tbl[] = {
+         {V_OCSP_CERTSTATUS_GOOD, "good"},
+         {V_OCSP_CERTSTATUS_REVOKED, "revoked"},
+         {V_OCSP_CERTSTATUS_UNKNOWN, "unknown"}
+     };
++    BIO_printf(outbio, "cert_status: %s\n", table2string(s, cstat_tbl, 3));
++    BIO_free(outbio);
+     return table2string(s, cstat_tbl, 3);
+ }
+
+diff --git a/ssl/Makefile b/ssl/Makefile
+index 5dc5a24..0abebc9 100644
+--- a/ssl/Makefile
++++ b/ssl/Makefile
+@@ -28,7 +28,7 @@ LIBSRC=	\
+ 	t1_meth.c   t1_srvr.c t1_clnt.c  t1_lib.c  t1_enc.c t1_ext.c \
+ 	d1_meth.c   d1_srvr.c d1_clnt.c  d1_lib.c  d1_pkt.c \
+ 	d1_both.c d1_srtp.c \
+-	ssl_lib.c ssl_err2.c ssl_cert.c ssl_sess.c \
++	ssl_lib.c ssl_canary.c ssl_err2.c ssl_cert.c ssl_sess.c \
+ 	ssl_ciph.c ssl_stat.c ssl_rsa.c \
+ 	ssl_asn1.c ssl_txt.c ssl_algs.c ssl_conf.c \
+ 	bio_ssl.c ssl_err.c kssl.c t1_reneg.c tls_srp.c t1_trce.c ssl_utst.c
+@@ -39,7 +39,7 @@ LIBOBJ= \
+ 	t1_meth.o   t1_srvr.o t1_clnt.o  t1_lib.o  t1_enc.o t1_ext.o \
+ 	d1_meth.o   d1_srvr.o d1_clnt.o  d1_lib.o  d1_pkt.o \
+ 	d1_both.o d1_srtp.o\
+-	ssl_lib.o ssl_err2.o ssl_cert.o ssl_sess.o \
++	ssl_lib.o ssl_canary.o ssl_err2.o ssl_cert.o ssl_sess.o \
+ 	ssl_ciph.o ssl_stat.o ssl_rsa.o \
+ 	ssl_asn1.o ssl_txt.o ssl_algs.o ssl_conf.o \
+ 	bio_ssl.o ssl_err.o kssl.o t1_reneg.o tls_srp.o t1_trce.o ssl_utst.o
+@@ -837,6 +837,26 @@ ssl_lib.o: ../include/openssl/stack.h ../include/openssl/symhacks.h
+ ssl_lib.o: ../include/openssl/tls1.h ../include/openssl/x509.h
+ ssl_lib.o: ../include/openssl/x509_vfy.h ../include/openssl/x509v3.h kssl_lcl.h
+ ssl_lib.o: ssl_lib.c ssl_locl.h
++ssl_canary.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
++ssl_canary.o: ../include/openssl/buffer.h ../include/openssl/comp.h
++ssl_canary.o: ../include/openssl/crypto.h ../include/openssl/dsa.h
++ssl_canary.o: ../include/openssl/dtls1.h ../include/openssl/e_os2.h
++ssl_canary.o: ../include/openssl/ec.h ../include/openssl/ecdh.h
++ssl_canary.o: ../include/openssl/ecdsa.h ../include/openssl/err.h
++ssl_canary.o: ../include/openssl/evp.h ../include/openssl/hmac.h
++ssl_canary.o: ../include/openssl/kssl.h ../include/openssl/lhash.h
++ssl_canary.o: ../include/openssl/obj_mac.h ../include/openssl/objects.h
++ssl_canary.o: ../include/openssl/opensslconf.h ../include/openssl/opensslv.h
++ssl_canary.o: ../include/openssl/ossl_typ.h ../include/openssl/pem.h
++ssl_canary.o: ../include/openssl/pem2.h ../include/openssl/pkcs7.h
++ssl_canary.o: ../include/openssl/pqueue.h ../include/openssl/rsa.h
++ssl_canary.o: ../include/openssl/safestack.h ../include/openssl/sha.h
++ssl_canary.o: ../include/openssl/srtp.h ../include/openssl/ssl.h
++ssl_canary.o: ../include/openssl/ssl2.h ../include/openssl/ssl23.h
++ssl_canary.o: ../include/openssl/ssl3.h ../include/openssl/stack.h
++ssl_canary.o: ../include/openssl/symhacks.h ../include/openssl/tls1.h
++ssl_canary.o: ../include/openssl/x509.h ../include/openssl/x509_vfy.h ssl.h
++ssl_canary.o: ssl_canary.c
+ ssl_rsa.o: ../e_os.h ../include/openssl/asn1.h ../include/openssl/bio.h
+ ssl_rsa.o: ../include/openssl/buffer.h ../include/openssl/comp.h
+ ssl_rsa.o: ../include/openssl/crypto.h ../include/openssl/dsa.h
+diff --git a/ssl/ssl.h b/ssl/ssl.h
+index 3cf96a2..cbb59e0 100644
+--- a/ssl/ssl.h
++++ b/ssl/ssl.h
+@@ -2253,6 +2253,7 @@ SSL_SESSION *d2i_SSL_SESSION(SSL_SESSION **a, const unsigned char **pp,
+ X509 *SSL_get_peer_certificate(const SSL *s);
+ # endif
+
++int SSL_canary_cert_chain_logging(STACK_OF(X509) *r);
+ STACK_OF(X509) *SSL_get_peer_cert_chain(const SSL *s);
+
+ int SSL_CTX_get_verify_mode(const SSL_CTX *ctx);
+diff --git b/ssl/ssl_canary.c b/ssl/ssl_canary.c
+new file mode 100644
+index 0000000..3e90f52
+--- /dev/null
++++ b/ssl/ssl_canary.c
+@@ -0,0 +1,48 @@
++#include <stdio.h>
++#include "ssl_locl.h"
++
++#define CUSTOM_LOG "/opt/logs/netstat.log"
++
++int SSL_canary_cert_chain_logging(STACK_OF(X509) *r) {
++    char buf[BUFSIZ], *str = NULL;
++    int i = 0, j = 0;
++    BIO *outbio = BIO_new_file(CUSTOM_LOG, "a");
++    if (r != NULL) {
++        for (i = 0; i < sk_X509_num(r); i++) {
++            if (i == 0) {
++                X509_NAME *subj = X509_get_subject_name(sk_X509_value(r, i));
++                for (j = 0; j < X509_NAME_entry_count(subj); j++) {
++                    X509_NAME_ENTRY *e = X509_NAME_get_entry(subj, j);
++                    ASN1_STRING *d = X509_NAME_ENTRY_get_data(e);
++                    str = ASN1_STRING_data(d);
++                    if(str != NULL) {
++                        if(j == X509_NAME_entry_count(subj) - 1) {
++                            BIO_printf(outbio, "\nEnd point connection :%s\n", str);
++                        }
++                    }
++                }
++            }
++
++            X509_NAME_oneline(X509_get_subject_name(sk_X509_value(r, i)),
++                    buf, sizeof(buf));
++            BIO_printf(outbio, "%2d s:%s\n", i, buf);
++            X509_NAME_oneline(X509_get_issuer_name(sk_X509_value(r, i)),
++                    buf, sizeof(buf));
++            BIO_printf(outbio, "   i:%s\n", buf);
++            BIO_printf(outbio, "+++++++certificate validity++++++\n");
++            BIO_printf(outbio, " notBefore: ");
++            ASN1_TIME_print(outbio, X509_get_notBefore(sk_X509_value(r, i)));
++            BIO_printf(outbio, "\n notAfter : ");
++            ASN1_TIME_print(outbio, X509_get_notAfter(sk_X509_value(r, i)));
++            if(str != NULL) {
++                BIO_printf(outbio, "   End_point :%s\n", str);
++            }
++            if (X509_cmp_current_time(X509_get_notAfter(sk_X509_value(r, i))) == -1) {
++                BIO_printf(outbio, "\n Certificate is expired/revoked for End_point :%s\n", str);
++            }
++        }
++    }
++    BIO_printf(outbio, "Length of the Cert chain: %d\n", i);
++    BIO_free(outbio);
++    return 0;
++}
+diff --git a/ssl/ssl_lib.c b/ssl/ssl_lib.c
+index 3a6c1b1..917591e 100644
+--- a/ssl/ssl_lib.c
++++ b/ssl/ssl_lib.c
+@@ -886,6 +886,7 @@ int SSL_pending(const SSL *s)
+ X509 *SSL_get_peer_certificate(const SSL *s)
+ {
+     X509 *r;
++    STACK_OF(X509) *certchain;
+
+     if ((s == NULL) || (s->session == NULL))
+         r = NULL;
+@@ -896,6 +897,12 @@ X509 *SSL_get_peer_certificate(const SSL *s)
+         return (r);
+
+     CRYPTO_add(&r->references, 1, CRYPTO_LOCK_X509);
++    if ((s == NULL) || (s->session == NULL)
++        || (s->session->sess_cert == NULL))
++        certchain = NULL;
++    else
++        certchain = s->session->sess_cert->cert_chain;
++    SSL_canary_cert_chain_logging(certchain);
+
+     return (r);
+ }

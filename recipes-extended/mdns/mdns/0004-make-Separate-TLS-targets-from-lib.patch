@@ -1,0 +1,58 @@
+From 22316f200803225f2d375ae5c36ffead59e2f6b8 Mon Sep 17 00:00:00 2001
+From: Alex Kiernan <alex.kiernan@gmail.com>
+Date: Mon, 5 Dec 2022 15:14:26 +0000
+Subject: [PATCH 4/6] make: Separate TLS targets from libraries
+
+There are dependencies on TLSOBJS, which fails when `-lmbedtls` is
+listed as a dependency, so separate it out.
+
+Upstream-Status: Pending
+Signed-off-by: Alex Kiernan <alex.kiernan@gmail.com>
+Index: git/mDNSPosix/Makefile
+===================================================================
+--- git.orig/mDNSPosix/Makefile
++++ git/mDNSPosix/Makefile
+@@ -112,10 +112,12 @@ ifeq ($(findstring linux,$(os)),linux)
+ ifeq ($(tls), no)
+ CFLAGS_OS = -D_GNU_SOURCE -DHAVE_IPV6 -DNOT_HAVE_SA_LEN -DUSES_NETLINK -DHAVE_LINUX -DTARGET_OS_LINUX -ftabstop=4 -Wno-expansion-to-defined
+ TLSOBJS =
++TLSLIBS =
+ else
+ CFLAGS_OS = -D_GNU_SOURCE -DHAVE_IPV6 -DNOT_HAVE_SA_LEN -DUSES_NETLINK -DHAVE_LINUX -DTARGET_OS_LINUX -DPOSIX_HAS_TLS -ftabstop=4 -Wno-expansion-to-defined
+ TLSOBJS = $(OBJDIR)/mbedtls.c.o
+-LINKOPTS += -Wl,--start-group -lmbedtls -lmbedcrypto -lmbedx509 -Wl,--end-group
++TLSLIBS = -lmbedtls -lmbedcrypto
++#LINKOPTS += -Wl,--start-group -lmbedtls -lmbedcrypto -lmbedx509 -Wl,--end-group
+ endif
+ LD = $(CC)
+ SOOPTS = -shared
+@@ -275,7 +277,7 @@ Daemon: setup $(BUILDDIR)/mdnsd
+ 	@echo "Responder daemon done"
+ 
+ $(BUILDDIR)/mdnsd: $(DAEMONOBJS)
+-	$(CC) -o $@ $+ $(LINKOPTS)
++	$(CC) -o $@ $+ $(LINKOPTS) $(TLSLIBS)
+ 	$(STRIP) $@
+ 
+ # libdns_sd target builds the client library
+@@ -494,16 +496,16 @@ dnsextd: setup $(BUILDDIR)/dnsextd
+ 	@echo "dnsextd done"
+ 
+ $(BUILDDIR)/mDNSClientPosix:         $(APPOBJ) $(TLSOBJS)     $(OBJDIR)/Client.c.o
+-	$(CC) $+ -o $@ $(LINKOPTS)
++	$(CC) $+ -o $@ $(LINKOPTS) $(TLSLIBS)
+ 
+ $(BUILDDIR)/mDNSResponderPosix:      $(COMMONOBJ) $(TLSOBJS)  $(OBJDIR)/Responder.c.o
+-	$(CC) $+ -o $@ $(LINKOPTS)
++	$(CC) $+ -o $@ $(LINKOPTS) $(TLSLIBS)
+ 
+ $(BUILDDIR)/mDNSProxyResponderPosix: $(COMMONOBJ) $(TLSOBJS)  $(OBJDIR)/ProxyResponder.c.o
+-	$(CC) $+ -o $@ $(LINKOPTS)
++	$(CC) $+ -o $@ $(LINKOPTS) $(TLSLIBS)
+ 
+ $(BUILDDIR)/mDNSNetMonitor:          $(SPECIALOBJ) $(TLSOBJS) $(OBJDIR)/NetMonitor.c.o
+-	$(CC) $+ -o $@ $(LINKOPTS)
++	$(CC) $+ -o $@ $(LINKOPTS) $(TLSLIBS)
+ 
+ $(OBJDIR)/NetMonitor.c.o:            $(COREDIR)/mDNS.c # Note: NetMonitor.c textually imports mDNS.c
+ 

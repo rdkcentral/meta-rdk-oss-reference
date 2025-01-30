@@ -1,0 +1,33 @@
+From beada1ef17d8fea7a3cad0aaaedbcaeccb04cc6e Mon Sep 17 00:00:00 2001
+From: Andre McCurdy <armccurdy@gmail.com>
+Date: Fri, 29 Sep 2017 13:07:56 -0700
+Subject: [PATCH 17/17] disable test-nss
+
+No nss support with musl, disable test-nss.
+
+Upstream-Status: Inappropriate [musl specific]
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ Makefile.am | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 4b7195f..629eb1c 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -4914,8 +4914,9 @@ test_nss_LDADD = \
+ 	libsystemd-internal.la \
+ 	-ldl
+ 
+-manual_tests += \
+-	test-nss
++# No nss support with musl, disable test-nss
++# manual_tests += \
++#	test-nss
+ 
+ # ------------------------------------------------------------------------------
+ if HAVE_MYHOSTNAME
+-- 
+1.9.1
+

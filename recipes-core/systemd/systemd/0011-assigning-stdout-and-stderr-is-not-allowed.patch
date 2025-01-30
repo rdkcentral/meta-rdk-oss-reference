@@ -1,0 +1,80 @@
+From e4ece7d517066e6ee6d5b275c99f8558e516ac8d Mon Sep 17 00:00:00 2001
+From: Matija Skala <mskala@gmx.com>
+Date: Wed, 15 Mar 2017 13:49:05 +0100
+Subject: [PATCH 11/17] assigning stdout and stderr is not allowed
+
+Combination of four commits cherry-picked from upstream:
+
+  e527699 assigning stdout and stderr is not allowed
+  a45e7bb redirect stdout/stderr back when closing the pager (#5661)
+  caf2221 fix parenthesis in pager.c (#5798)
+  77018a8 improve readability (#5814)
+
+Upstream-Status: Backport
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/shared/pager.c | 31 +++++++++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/src/shared/pager.c b/src/shared/pager.c
+index 219a041..b62f32a 100644
+--- a/src/shared/pager.c
++++ b/src/shared/pager.c
+@@ -53,6 +53,11 @@ noreturn static void pager_fallback(void) {
+         _exit(EXIT_SUCCESS);
+ }
+ 
++static int stored_stdout = -1;
++static int stored_stderr = -1;
++static bool stdout_redirected = false;
++static bool stderr_redirected = false;
++
+ int pager_open(bool no_pager, bool jump_to_end) {
+         _cleanup_close_pair_ int fd[2] = { -1, -1 };
+         const char *pager;
+@@ -145,10 +150,19 @@ int pager_open(bool no_pager, bool jump_to_end) {
+         }
+ 
+         /* Return in the parent */
+-        if (dup2(fd[1], STDOUT_FILENO) < 0)
++        stored_stdout = fcntl(STDOUT_FILENO, F_DUPFD_CLOEXEC, 3);
++        if (dup2(fd[1], STDOUT_FILENO) < 0) {
++                stored_stdout = safe_close(stored_stdout);
+                 return log_error_errno(errno, "Failed to duplicate pager pipe: %m");
+-        if (dup2(fd[1], STDERR_FILENO) < 0)
++        }
++        stdout_redirected = true;
++
++        stored_stderr = fcntl(STDERR_FILENO, F_DUPFD_CLOEXEC, 3);
++        if (dup2(fd[1], STDERR_FILENO) < 0) {
++                stored_stderr = safe_close(stored_stderr);
+                 return log_error_errno(errno, "Failed to duplicate pager pipe: %m");
++        }
++        stderr_redirected = true;
+ 
+         return 1;
+ }
+@@ -159,8 +173,17 @@ void pager_close(void) {
+                 return;
+ 
+         /* Inform pager that we are done */
+-        stdout = safe_fclose(stdout);
+-        stderr = safe_fclose(stderr);
++        (void) fflush(stdout);
++        if (stdout_redirected)
++                if (stored_stdout < 0 || dup2(stored_stdout, STDOUT_FILENO) < 0)
++                        (void) close(STDOUT_FILENO);
++        stored_stdout = safe_close(stored_stdout);
++        (void) fflush(stderr);
++        if (stderr_redirected)
++                if (stored_stderr < 0 || dup2(stored_stderr, STDERR_FILENO) < 0)
++                        (void) close(STDERR_FILENO);
++        stored_stderr = safe_close(stored_stderr);
++        stdout_redirected = stderr_redirected = false;
+ 
+         (void) kill(pager_pid, SIGCONT);
+         (void) wait_for_terminate(pager_pid, NULL);
+-- 
+1.9.1
+

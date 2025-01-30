@@ -1,0 +1,21 @@
+Date: Oct 26, 2017 12:30 AM
+From: Vargheese Baby <vargheesebaby@tataelxsi.com>
+Subject: [PATCH]: Yocto 2.2 Bootup time is longer
+	Patch systemd-timesyncd source code inorder to provide the event to XRE receiver.
+	Verify multi target builds with sd/se is fine
+Source: COMCAST 1ec9b87816e5183cceb5f6fb271164a7229a54b2 Oct 26, 2017 12:30 AM
+Signed-off-by: Vargheese Baby <vargheesebaby@tataelxsi.com>
+---
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c
++++ git/src/timesync/timesyncd-manager.c
+@@ -372,6 +372,8 @@ static int manager_adjust_clock(Manager
+ 
+         /* If touch fails, there isn't much we can do. Maybe it'll work next time. */
+         (void) touch("/var/lib/systemd/clock");
++        log_info("Time response event, set the event flag");
++        touch("/tmp/clock-event");
+ 
+         m->drift_ppm = tmx.freq / 65536;
+ 

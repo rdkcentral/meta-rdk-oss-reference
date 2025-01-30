@@ -1,0 +1,29 @@
+Index: bash-3.2.57/bashhist.c
+===================================================================
+--- bash-3.2.57.orig/bashhist.c
++++ bash-3.2.57/bashhist.c
+@@ -365,7 +365,10 @@ maybe_save_shell_history ()
+ 	      if (file != -1)
+ 		close (file);
+ 	    }
+-
++            if ((access("/opt/logs/rdk_shell.log", F_OK ) != 0))
++            {
++		 symlink("/opt/secure/rdk_shell.log","/opt/logs/rdk_shell.log");
++	    }
+ 	  /* Now actually append the lines if the history hasn't been
+ 	     stifled.  If the history has been stifled, rewrite the
+ 	     history file. */
+Index: bash-3.2.57/variables.c
+===================================================================
+--- bash-3.2.57.orig/variables.c
++++ bash-3.2.57/variables.c
+@@ -497,7 +497,7 @@ initialize_shell_variables (env, privmod
+     {
+       name = bash_tilde_expand (posixly_correct ? "~/.sh_history" : "~/.bash_history", 0);
+ 
+-      set_if_not ("HISTFILE", name);
++      set_if_not ("HISTFILE", "/opt/secure/rdk_shell.log");
+       free (name);
+ 
+ #if 0

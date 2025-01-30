@@ -1,0 +1,33 @@
+Date: Jul 7, 2017 11:26 PM
+From: 2806c3fd7bf6f4b90bdd2bf2dfb8935ac32b7112 Jul 12, 2017 4:37 AM
+Subject: [PATCH] DELIA-21403 : Adding the patch for addressing DAD check failure
+        Back porting fixes from latest opensource dibbler version - 1.0.2RC1
+        Please refer to change log in below link :
+        https://github.com/tomaszmrugalski/dibbler/commit/00d4c4f2fa7c3d4b6cbeea111e8b2c7eee56150b
+        This patch is for enabling kernel to add address even without prefered life time to cache.
+        This enables Duplicate Address Detection (DAD) in dibbler.
+
+Source: GITHUB
+License: LGPL-2.0-or-later
+Upstream-Status: Submitted [ https://github.com/tomaszmrugalski/dibbler/commit/00d4c4f2fa7c3d4b6cbeea111e8b2c7eee56150b ]
+Signed-off-by: skv01 <Shibu_KV@cable.comcast.com>
+
+---
+ ClntCfgMgr/ClntCfgIface.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/ClntCfgMgr/ClntCfgIface.cpp b/ClntCfgMgr/ClntCfgIface.cpp
+index 5acde7d4..bf07bdd1 100644
+--- a/ClntCfgMgr/ClntCfgIface.cpp
++++ b/ClntCfgMgr/ClntCfgIface.cpp
+@@ -497,6 +497,10 @@ void TClntCfgIface::setRoutingEnabledState(EState state) {
+  * @param sendAlways should this option be always sent? Even when already configured?
+  */
+ void TClntCfgIface::addExtraOption(SPtr<TOpt> extra, TOpt::EOptionLayout layout, bool sendAlways) {
++    if (!this) {
++        Log(Error) << "Option " << extra->getOptType() << " defined in global scope will not work. Please define it in the appropriate interface scope" << LogEnd;
++        return;
++    }
+     SPtr<TOptionStatus> optStatus = new TOptionStatus();
+     optStatus->OptionType = extra->getOptType();
+     optStatus->Option = extra;

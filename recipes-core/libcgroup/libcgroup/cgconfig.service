@@ -1,0 +1,13 @@
+[Unit]
+Description= Start/Stop the workload manager
+After=basic.target securemount.service
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c '/etc/cgconfig start'
+ExecStop=/bin/sh -c '/etc/cgconfig stop'
+
+[Install]
+WantedBy=local-fs.target

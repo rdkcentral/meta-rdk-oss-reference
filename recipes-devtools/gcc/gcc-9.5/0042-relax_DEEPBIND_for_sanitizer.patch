@@ -1,0 +1,21 @@
+Date: Wed 06 Dec 2023
+From: Jaga <jagadheesan_duraisamy@comcast.com>
+Subject: when RTLD_DEEPBIND is used during dlopen,
+then sanitizer exits. Relax the error, by just printing.
+sanitizer may not be able to intercept certain calls in those libraries.
+Source: COMCAST
+Signed-off-by: Jaga <jagadheesan_duraisamy@comcast.com>
+--- gcc-9.5.0.orig/libsanitizer/sanitizer_common/sanitizer_linux.cc     2024-04-08 05:40:23.983980971 +0000
++++ gcc-9.5.0/libsanitizer/sanitizer_common/sanitizer_linux.cc  2024-04-08 05:29:18.947063921 +0000
+@@ -2047,7 +2047,10 @@ void CheckNoDeepBind(const char *filenam
+         "). If you want to run %s library under sanitizers please remove "
+         "RTLD_DEEPBIND from dlopen flags.\n",
+         filename, filename);
+-    Die();
++    // Tried to use -URTLD_DEEPBIND macro in the recipe, but it doesn't work. May be intervenes with real RTLD_DEEPBIND enum?
++    // Let's not worry about libraries that were loaded with deep bind.
++    // Afterall sanitizer may not be able to intercept
++    //Die();
+   }
+ #endif
+ }

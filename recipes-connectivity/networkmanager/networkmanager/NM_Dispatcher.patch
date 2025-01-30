@@ -1,0 +1,11 @@
+Index: NetworkManager-1.43.7/data/NetworkManager-dispatcher.service.in
+===================================================================
+--- NetworkManager-1.43.7.orig/data/NetworkManager-dispatcher.service.in
++++ NetworkManager-1.43.7/data/NetworkManager-dispatcher.service.in
+@@ -19,4 +19,4 @@ KillMode=process
+ 
+ [Install]
+ Alias=dbus-org.freedesktop.nm-dispatcher.service
+-
++WantedBy=multi-user.target
+

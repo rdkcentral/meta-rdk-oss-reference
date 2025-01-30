@@ -1,0 +1,18 @@
+Date: Jun 19, 2024
+From: rgangi643 <ramakrishna_gangisetty@comcast.com>
+Source: COMCAST
+Subject: mDNSResponder branch changed from 1790 to  1556
+Signed-off-by: rgangi643 <ramakrishna_gangisetty@comcast.com>
+Index: git/mDNSCore/uDNS.h
+===================================================================
+--- git.orig/mDNSCore/uDNS.h
++++ git/mDNSCore/uDNS.h
+@@ -45,7 +45,7 @@ extern "C" {
+ // rather than the default (1 second).
+ #define MIN_UCAST_RETRANS_TIMEOUT (2 * mDNSPlatformOneSecond)
+ 
+-#define DEFAULT_UPDATE_LEASE 7200
++#define DEFAULT_UPDATE_LEASE 86100 //23h55m, setting near 24hours
+ 
+ #define QuestionIntervalStep 3
+ #define QuestionIntervalStep2 (QuestionIntervalStep*QuestionIntervalStep)

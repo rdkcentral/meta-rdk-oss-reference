@@ -1,0 +1,32 @@
+Date: Jan 7, 2016 3:17 AM
+
+From: 7ef31513c5922a2e9f366af5a0884eb78af64acf Jan 7, 2016 4:32 AM
+
+Subject: [PATCH] DELIA-12070: authservice Token expiry issue
+
+	Modified the ntp-event trigger to reflect the NTP server timings
+	Ensure authservice startup after ntp-event and authservice communications
+
+Source: COMCAST
+
+License: LGPL-2.1-or-later
+
+Upstream-Status: Pending
+
+Signed-off-by: Vinu Palackal <Vinu_P@cable.comcast.com>
+
+---
+
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c
++++ git/src/timesync/timesyncd-manager.c
+@@ -394,6 +394,8 @@ static int manager_adjust_clock(Manager
+                 return r;
+ 
+         touch("/var/lib/systemd/clock");
++        log_info("Time response event, set the event flag");
++        touch("/tmp/clock-event");
+ 
+         m->drift_ppm = tmx.freq / 65536;
+ 

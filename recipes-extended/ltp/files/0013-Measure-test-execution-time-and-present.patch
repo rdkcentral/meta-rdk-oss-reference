@@ -1,0 +1,471 @@
+From 23e4b8f8410e1ff33077d8f4bcf46b9d6c99280a Mon Sep 17 00:00:00 2001
+From: Peter Bone <peter.bone@consult.red>
+Date: Tue, 3 Jan 2023 14:22:15 +0000
+Subject: [PATCH] Measure test execution time and present.
+
+---
+ pan/ltp-pan.c        |  44 +++++-
+ runtest/rdk_syscalls | 350 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 391 insertions(+), 3 deletions(-)
+ create mode 100644 runtest/rdk_syscalls
+
+diff --git a/pan/ltp-pan.c b/pan/ltp-pan.c
+index 5d66bd307..91077ebda 100644
+--- a/pan/ltp-pan.c
++++ b/pan/ltp-pan.c
+@@ -88,6 +88,8 @@ struct tag_pgrp {
+ 	int pgrp;
+ 	int stopping;
+ 	time_t mystime;
++	struct timespec start_time;
++	struct timespec end_time;
+ 	struct coll_entry *cmd;
+ 	char output[PATH_MAX];
+ };
+@@ -123,6 +125,9 @@ static void write_test_end(struct tag_pgrp *running, const char *init_status,
+ 			   time_t exit_time, char *term_type, int stat_loc,
+ 			   int term_id, struct tms *tms1, struct tms *tms2, int isfail);
+ 
++float timespec_diff(struct timespec *start, struct timespec *stop,
++                   struct timespec *result);
++
+ //wjh
+ static char PAN_STOP_FILE[] = "PAN_STOP_FILE";
+ 
+@@ -736,6 +741,10 @@ check_pids(struct tag_pgrp *running, int *num_active, int keep_active,
+ 			panname, errno, strerror(errno));
+ 	}
+ 	cpid = wait(&stat_loc);
++
++	int clock_gettime_res = clock_gettime(CLOCK_MONOTONIC, &running->end_time);
++	//printf("%s res=%d end_time %lld.%ld\n", __FUNCTION__, clock_gettime_res, (long long)running->end_time.tv_sec, running->end_time.tv_nsec);
++
+ 	tck = times(&tms2);
+ 	if (tck == -1) {
+ 		fprintf(stderr, "pan(%s): times(&tms2) failed.  errno:%d  %s\n",
+@@ -962,6 +971,10 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
+ 
+ 	fflush(NULL);
+ 
++	int clock_gettime_res = clock_gettime(CLOCK_MONOTONIC, &active->start_time);
++	//printf("%s res=%d start_time %lld.%ld\n", __FUNCTION__, clock_gettime_res, (long long)active->start_time.tv_sec, active->start_time.tv_nsec);
++	memcpy(&active->end_time, &active->start_time, sizeof(struct timespec));
++
+ 	if ((cpid = fork()) == -1) {
+ 		fprintf(stderr,
+ 			"pan(%s): fork failed (tag %s).  errno:%d  %s\n",
+@@ -1098,6 +1111,10 @@ run_child(struct coll_entry *colle, struct tag_pgrp *active, int quiet_mode,
+ 			termid = 0;
+ 			termtype = "unknown";
+ 		}
++
++		int clock_gettime_res = clock_gettime(CLOCK_MONOTONIC, &active->end_time);
++		//printf("%s res=%d end_time %lld.%ld\n", __FUNCTION__, clock_gettime_res, (long long)active->end_time.tv_sec, active->end_time.tv_nsec);
++
+ 		time(&end_time);
+ 		if (logfile != NULL) {
+ 			if (!fmt_print) {
+@@ -1403,6 +1420,7 @@ static void write_test_start(struct tag_pgrp *running, int no_kmsg)
+ 	}
+ 	printf("\n<LAVA_SIGNAL_STARTTC %s>\n", running->cmd->name);
+ 	fflush(stdout);
++
+ 	if (no_kmsg)
+ 		return;
+ 
+@@ -1430,11 +1448,14 @@ write_test_end(struct tag_pgrp *running, const char *init_status,
+ 		     "<<<test_end>>>");
+ 	}
+ 
++	struct timespec diff_time;
++	float diff_time_f = timespec_diff(&running->start_time, &running->end_time, &diff_time);
++
+ 	printf("\n<LAVA_SIGNAL_ENDTC %s>\n", running->cmd->name);
+-        if (isfail) {
+-		printf("\n<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=%s RESULT=fail>\n", running->cmd->name);
++	if (isfail) {
++		printf("\n<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=%s RESULT=fail MEASUREMENT=%.3f UNITS=msecs>\n", running->cmd->name, diff_time_f);
+ 	} else {
+-		printf("\n<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=%s RESULT=pass>\n", running->cmd->name);
++		printf("\n<LAVA_SIGNAL_TESTCASE TEST_CASE_ID=%s RESULT=pass MEASUREMENT=%.3f UNITS=msecs>\n", running->cmd->name, diff_time_f);
+ 	}
+ 	fflush(stdout);
+ }
+@@ -1499,3 +1520,20 @@ void wait_handler(int sig)
+ 		lastsent = send_signal;
+ 	}
+ }
++
++float timespec_diff(struct timespec *start, struct timespec *stop,
++                   struct timespec *result)
++{
++    if ((stop->tv_nsec - start->tv_nsec) < 0) {
++        result->tv_sec = stop->tv_sec - start->tv_sec - 1;
++        result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
++    } else {
++        result->tv_sec = stop->tv_sec - start->tv_sec;
++        result->tv_nsec = stop->tv_nsec - start->tv_nsec;
++    }
++
++	float diff;
++	diff = (float)result->tv_sec * (float)1000 + ((float)result->tv_nsec / (float)1000000);
++
++	return diff;
++}
+\ No newline at end of file
+diff --git a/runtest/rdk_syscalls b/runtest/rdk_syscalls
+new file mode 100644
+index 000000000..8636b5f89
+--- /dev/null
++++ b/runtest/rdk_syscalls
+@@ -0,0 +1,350 @@
++#DESCRIPTION:Kernel system calls applicable to RDK use case - one channel tune followed by failing Netflix app launch and Successful On Demond Video Playback
++
++llseek01 llseek01
++llseek02 llseek02
++llseek03 llseek03
++
++pselect01 pselect01
++pselect01_64 pselect01_64
++pselect02 pselect02
++pselect02_64 pselect02_64
++pselect03 pselect03
++pselect03_64 pselect03_64
++
++select01 select01
++select02 select02
++select03 select03
++select04 select04
++
++access01 access01
++access02 access02
++access03 access03
++access04 access04
++
++brk01 brk01
++
++clock_gettime01 clock_gettime01
++clock_gettime02 clock_gettime02
++
++clock_nanosleep01 clock_nanosleep01
++clock_nanosleep02 clock_nanosleep02
++clock_nanosleep2_01 clock_nanosleep2_01
++
++clone01 clone01
++clone02 clone02
++clone03 clone03
++clone04 clone04
++clone05 clone05
++clone06 clone06
++clone07 clone07
++clone08 clone08
++clone09 clone09
++
++clone01 clone01
++clone02 clone02
++clone03 clone03
++clone04 clone04
++clone05 clone05
++clone06 clone06
++clone07 clone07
++clone08 clone08
++clone09 clone09
++
++close01 close01
++close02 close02
++close08 close08
++
++connect01 connect01
++
++epoll_create1_01 epoll_create1_01
++epoll01 epoll-ltp
++epoll_ctl01 epoll_ctl01
++epoll_ctl02 epoll_ctl02
++epoll_wait01 epoll_wait01
++epoll_wait02 epoll_wait02
++epoll_wait03 epoll_wait03
++epoll_pwait01 epoll_pwait01
++
++posix_fadvise01                      posix_fadvise01
++posix_fadvise01_64                posix_fadvise01_64
++posix_fadvise02                      posix_fadvise02
++posix_fadvise02_64                posix_fadvise02_64
++posix_fadvise03                      posix_fadvise03
++posix_fadvise03_64                posix_fadvise03_64
++posix_fadvise04                      posix_fadvise04
++posix_fadvise04_64                posix_fadvise04_64
++
++fcntl01 fcntl01
++fcntl01_64 fcntl01_64
++fcntl02 fcntl02
++fcntl02_64 fcntl02_64
++fcntl03 fcntl03
++fcntl03_64 fcntl03_64
++fcntl04 fcntl04
++fcntl04_64 fcntl04_64
++fcntl05 fcntl05
++fcntl05_64 fcntl05_64
++fcntl06 fcntl06
++fcntl06_64 fcntl06_64
++fcntl07 fcntl07
++fcntl07_64 fcntl07_64
++fcntl08 fcntl08
++fcntl08_64 fcntl08_64
++fcntl09 fcntl09
++fcntl09_64 fcntl09_64
++fcntl10 fcntl10
++fcntl10_64 fcntl10_64
++fcntl11 fcntl11
++fcntl11_64 fcntl11_64
++fcntl12 fcntl12
++fcntl12_64 fcntl12_64
++fcntl13 fcntl13
++fcntl13_64 fcntl13_64
++fcntl14 fcntl14
++fcntl14_64 fcntl14_64
++fcntl15 fcntl15
++fcntl15_64 fcntl15_64
++fcntl16 fcntl16
++fcntl16_64 fcntl16_64
++fcntl17 fcntl17
++fcntl17_64 fcntl17_64
++fcntl18 fcntl18
++fcntl18_64 fcntl18_64
++fcntl19 fcntl19
++fcntl19_64 fcntl19_64
++fcntl20 fcntl20
++fcntl20_64 fcntl20_64
++fcntl21 fcntl21
++fcntl21_64 fcntl21_64
++fcntl22 fcntl22
++fcntl22_64 fcntl22_64
++fcntl23 fcntl23
++fcntl23_64 fcntl23_64
++fcntl24 fcntl24
++fcntl24_64 fcntl24_64
++fcntl25 fcntl25
++fcntl25_64 fcntl25_64
++fcntl26 fcntl26
++fcntl26_64 fcntl26_64
++fcntl27 fcntl27
++fcntl27_64 fcntl27_64
++fcntl28 fcntl28
++fcntl28_64 fcntl28_64
++fcntl29 fcntl29
++fcntl29_64 fcntl29_64
++fcntl30 fcntl30
++fcntl30_64 fcntl30_64
++fcntl31 fcntl31
++fcntl31_64 fcntl31_64
++fcntl32 fcntl32
++fcntl32_64 fcntl32_64
++fcntl33 fcntl33
++fcntl33_64 fcntl33_64
++fcntl34 fcntl34
++fcntl34_64 fcntl34_64
++fcntl35 fcntl35
++fcntl35_64 fcntl35_64
++fcntl36 fcntl36
++fcntl36_64 fcntl36_64
++
++fstat02 fstat02
++fstat02_64 fstat02_64
++fstat03 fstat03
++fstat03_64 fstat03_64
++
++futex_cmp_requeue01 futex_cmp_requeue01
++futex_cmp_requeue02 futex_cmp_requeue02
++futex_wait01 futex_wait01
++futex_wait02 futex_wait02
++futex_wait03 futex_wait03
++futex_wait04 futex_wait04
++futex_wait05 futex_wait05
++futex_wake01 futex_wake01
++futex_wake02 futex_wake02
++futex_wake03 futex_wake03
++futex_wake04 futex_wake04
++futex_wait_bitset01 futex_wait_bitset01
++futex_wait_bitset02 futex_wait_bitset02
++
++getegid01 getegid01
++getegid01_16 getegid01_16
++getegid02 getegid02
++getegid02_16 getegid02_16
++
++geteuid01 geteuid01
++geteuid01_16 geteuid01_16
++geteuid02 geteuid02
++geteuid02_16 geteuid02_16
++
++getgid01 getgid01
++getgid01_16 getgid01_16
++getgid03 getgid03
++getgid03_16 getgid03_16
++
++getpeername01 getpeername01
++
++getpid01 getpid01
++getpid02 getpid02
++
++getppid01 getppid01
++getppid02 getppid02
++
++getrandom01 getrandom01
++getrandom02 getrandom02
++getrandom03 getrandom03
++getrandom04 getrandom04
++
++getsockname01 getsockname01
++
++getsockopt01 getsockopt01
++getsockopt02 getsockopt02
++
++gettid01 gettid01
++
++getuid01 getuid01
++getuid01_16 getuid01_16
++getuid03 getuid03
++getuid03_16 getuid03_16
++
++ioctl01_02   test_ioctl
++ioctl03      ioctl03
++ioctl04      ioctl04
++ioctl05      ioctl05
++ioctl06      ioctl06
++
++ioctl07      ioctl07
++ioctl08      ioctl08
++
++ioctl_ns01 ioctl_ns01
++ioctl_ns02 ioctl_ns02
++ioctl_ns03 ioctl_ns03
++ioctl_ns04 ioctl_ns04
++ioctl_ns05 ioctl_ns05
++ioctl_ns06 ioctl_ns06
++ioctl_ns07 ioctl_ns07
++
++lstat01A symlink01 -T lstat01
++lstat01A_64 symlink01 -T lstat01_64
++lstat01 lstat01
++lstat01_64 lstat01_64
++lstat02 lstat02
++lstat02_64 lstat02_64
++
++# mmap2
++vma03 vma03
++# mmap
++mmap01 mmap01
++mmap02 mmap02
++mmap03 mmap03
++mmap04 mmap04
++mmap05 mmap05
++mmap06 mmap06
++mmap07 mmap07
++mmap08 mmap08
++mmap09 mmap09
++mmap12 mmap12
++mmap13 mmap13
++mmap14 mmap14
++# test is broken, mask it for now.
++#mmap11 mmap11 -i 30000
++mmap15 mmap15
++mmap16 mmap16
++mmap10 mmap10
++mmap10_1 mmap10 -a
++mmap10_2 mmap10 -s
++mmap10_3 mmap10 -a -s
++mmap10_4 mmap10 -a -s -i 60
++mmapstress01 mmapstress01 -p 20 -t 0.2
++mmapstress02 mmapstress02
++mmapstress03 mmapstress03
++mmapstress04 mmapstress04
++mmapstress05 mmapstress05
++mmapstress06 mmapstress06 20
++mmapstress07 TMPFILE=`mktemp /tmp/example.XXXXXXXXXXXX`; mmapstress07 $TMPFILE
++mmapstress08 mmapstress08
++mmapstress09 mmapstress09 -p 20 -t 0.2
++mmapstress10 mmapstress10 -p 20 -t 0.2
++mtest06_2 mmap2 -x 0.002 -a -p
++
++mprotect01 mprotect01
++mprotect02 mprotect02
++mprotect03 mprotect03
++mprotect04 mprotect04
++
++munmap01 munmap01
++munmap02 munmap02
++munmap03 munmap03
++
++openat01 openat01
++openat02 openat02
++openat03 openat03
++
++pipe2_01 pipe2_01
++pipe2_02 pipe2_02
++
++poll01 poll01
++poll02 poll02
++
++read01 read01
++read02 read02
++read03 read03
++read04 read04
++
++readlink01A symlink01 -T readlink01
++readlink01 readlink01
++readlink03 readlink03
++
++recv01 recv01
++
++recvmsg01 recvmsg01
++recvmsg02 recvmsg02
++recvmsg03 recvmsg03
++
++rt_sigaction01 rt_sigaction01
++rt_sigaction02 rt_sigaction02
++rt_sigaction03 rt_sigaction03
++
++rt_sigprocmask01 rt_sigprocmask01
++rt_sigprocmask02 rt_sigprocmask02
++
++send01 send01
++
++sendmsg01 sendmsg01
++sendmsg02 sendmsg02
++
++setsockopt01 setsockopt01
++setsockopt02 setsockopt02
++setsockopt03 setsockopt03
++setsockopt04 setsockopt04
++
++socket01 socket01
++socket02 socket02
++
++socketpair01 socketpair01
++socketpair02 socketpair02
++
++sysinfo01 sysinfo01
++sysinfo02 sysinfo02
++
++tgkill01 tgkill01
++tgkill02 tgkill02
++tgkill03 tgkill03
++
++getrlimit01 getrlimit01
++getrlimit02 getrlimit02
++getrlimit03 getrlimit03
++
++unlink01 symlink01 -T unlink01
++unlink05 unlink05
++unlink07 unlink07
++unlink08 unlink08
++
++wait401 wait401
++wait402 wait402
++
++write01 write01
++write02 write02
++write03 write03
++write04 write04
++write05 write05
++

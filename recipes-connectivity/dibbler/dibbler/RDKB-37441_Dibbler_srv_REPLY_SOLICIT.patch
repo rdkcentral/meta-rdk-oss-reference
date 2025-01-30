@@ -1,0 +1,26 @@
+Date: Aug 23, 2021 6:13 PM
+From: I39b31d0beff287ce563e9e87b9c490e372e9ae0d Aug 23, 2021 6:13 PM
+Subject: RDKB-37441 IPv6 Prefix delegation routing is not working
+Source: COMCAST
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: Shirish <Shirish_shrivastava@cable.comcast.com>
+
+Index: dibbler-1.0.1/IfaceMgr/IfaceMgr.cpp
+===================================================================
+--- dibbler-1.0.1.orig/IfaceMgr/IfaceMgr.cpp
++++ dibbler-1.0.1/IfaceMgr/IfaceMgr.cpp
+@@ -427,6 +427,13 @@ void TIfaceMgr::notifyScripts(const std:
+     case INFORMATION_REQUEST_MSG:
+         action = "update";
+         break;
++    case SOLICIT_MSG:
++	 if (reply->getType() == REPLY_MSG) {
++             action = "add";
++	     break;
++         } else {
++                 // This is advertise. Fall through to the default behavior: no exec.
++	        }
+     default:
+         Log(Debug) << "Script execution skipped for " << reply->getName() << " response to "
+                    << question->getName() << ". No action needed for this message type." << LogEnd;

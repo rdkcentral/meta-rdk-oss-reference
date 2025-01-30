@@ -1,0 +1,15 @@
+Date: Mon 29 Jan 2024
+From: Sindhuja <Sindhuja_Muthukrishnan@comcast.com>
+Subject: Enabling the lsan option for arm platforms to integrate liblsan 
+Source: COMCAST
+Signed-off-by: Sindhuja <Sindhuja_Muthukrishnan@comcast.com>
+--- gcc-9.5.0.orig/libsanitizer/configure.tgt   2024-04-08 05:37:15.083130343 +0000
++++ gcc-9.5.0/libsanitizer/configure.tgt        2024-04-08 05:31:04.845300639 +0000
+@@ -46,6 +46,7 @@ case "${target}" in
+   sparc*-*-solaris2.11*)
+        ;;
+   arm*-*-linux*)
++        LSAN_SUPPORTED=yes
+        ;;
+   mips*64*-*-linux*)
+        # This clause is only here to not match the supported mips*-*-linux*.

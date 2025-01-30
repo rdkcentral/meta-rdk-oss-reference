@@ -1,0 +1,33 @@
+From c8be869bf5de2eb58c7efaac39f18ee33bd83bc1 Mon Sep 17 00:00:00 2001
+From: Matija Skala <mskala@gmx.com>
+Date: Wed, 15 Mar 2017 14:16:40 +0100
+Subject: [PATCH 10/17] check for _POSIX_C_SOURCE instead of __USE_POSIX*
+
+check for _GNU_SOURCE as well as sd_event_child_handler_t needs to be
+defined correctly while compiling systemd
+
+(cherry picked from commit 2797366cd23190595891b4b55f87951d3ee2ba4b)
+
+Upstream-Status: Backport
+
+Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+---
+ src/systemd/sd-event.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/systemd/sd-event.h b/src/systemd/sd-event.h
+index 531ace1..53df4bd 100644
+--- a/src/systemd/sd-event.h
++++ b/src/systemd/sd-event.h
+@@ -69,7 +69,7 @@ typedef int (*sd_event_handler_t)(sd_event_source *s, void *userdata);
+ typedef int (*sd_event_io_handler_t)(sd_event_source *s, int fd, uint32_t revents, void *userdata);
+ typedef int (*sd_event_time_handler_t)(sd_event_source *s, uint64_t usec, void *userdata);
+ typedef int (*sd_event_signal_handler_t)(sd_event_source *s, const struct signalfd_siginfo *si, void *userdata);
+-#if defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED
++#if defined _GNU_SOURCE || _POSIX_C_SOURCE >= 199309L
+ typedef int (*sd_event_child_handler_t)(sd_event_source *s, const siginfo_t *si, void *userdata);
+ #else
+ typedef void* sd_event_child_handler_t;
+-- 
+1.9.1
+

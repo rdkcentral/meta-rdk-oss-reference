@@ -1,0 +1,15 @@
+Index: git/presets/90-systemd.preset
+===================================================================
+--- git.orig/presets/90-systemd.preset
++++ git/presets/90-systemd.preset
+@@ -25,6 +25,9 @@ enable systemd-userdbd.socket
+ enable systemd-pstore.service
+ enable systemd-boot-update.service
+ 
++enable NetworkManager-dispatcher.service
++enable dbus-org.freedesktop.nm-dispatcher.service
++
+ disable console-getty.service
+ disable debug-shell.service
+ 
+
