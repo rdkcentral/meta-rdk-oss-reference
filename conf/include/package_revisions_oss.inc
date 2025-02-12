@@ -622,7 +622,7 @@ PACKAGE_ARCH_pn-netbase = "${OSS_LAYER_ARCH}"
 PR_pn-nettle = "r0"
 PACKAGE_ARCH_pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR_pn-networkmanager = "r1"
+PR_pn-networkmanager = "r2"
 PACKAGE_ARCH_pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR_pn-nghttp2 = "r0"
