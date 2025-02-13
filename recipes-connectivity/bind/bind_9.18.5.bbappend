@@ -10,6 +10,9 @@ SRC_URI:append = "file://CVE-2022-2795_9.18.5_fix.patch \
                   file://CVE-2023-3341_9.18.5_fix.patch \
                   file://CVE-2023-4236_9.18.5_fix.patch \
                   file://CVE-2023-50387_9.18.5_fix.patch \
+                  file://CVE-2023-2828_9.18.5_fix.patch \
+                  file://CVE-2023-5517_9.18.5_fix.patch \
+                  file://CVE-2023-5679_9.18.5_fix.patch \
                  "
 
 

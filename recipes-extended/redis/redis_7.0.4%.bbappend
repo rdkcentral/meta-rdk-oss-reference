@@ -5,4 +5,8 @@ SRC_URI:append = " file://CVE-2023-25155_7.0.4_fix.patch \
                    file://CVE-2023-36824_7.0.4_fix.patch \
                    file://CVE-2022-24834_7.0.4_fix.patch \
                    file://CVE-2022-35951_7.0.4_fix.patch \
+                   file://CVE-2023-45145_7.0.4_fix.patch \
+                   file://CVE-2023-41053_7.0.4_fix.patch \
+                   file://CVE-2022-36021_7.0.4_fix.patch \
+                   file://CVE-2022-35977_7.0.4_fix.patch \
                  "
