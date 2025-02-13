@@ -101,7 +101,7 @@ PACKAGE_ARCH:pn-bash = "${OSS_LAYER_ARCH}"
 PR:pn-bash-completion = "r0"
 PACKAGE_ARCH:pn-bash-completion = "${OSS_LAYER_ARCH}"
 
-PR:pn-bind = "r0"
+PR:pn-bind = "r1"
 PACKAGE_ARCH:pn-bind = "${OSS_LAYER_ARCH}"
 
 PR:pn-boost = "r0"
@@ -254,7 +254,7 @@ PACKAGE_ARCH:pn-glib-networking = "${OSS_LAYER_ARCH}"
 PR:pn-openssh = "r0"
 PACKAGE_ARCH:pn-openssh = "${OSS_LAYER_ARCH}"
 
-PR:pn-gmp = "r0"
+PR:pn-gmp = "r1"
 PACKAGE_ARCH:pn-gmp = "${OSS_LAYER_ARCH}"
 
 PR:pn-gnutls = "r1"
@@ -338,7 +338,7 @@ PACKAGE_ARCH:pn-lcms = "${OSS_LAYER_ARCH}"
 PR:pn-libaio = "r0"
 PACKAGE_ARCH:pn-libaio = "${OSS_LAYER_ARCH}"
 
-PR:pn-libarchive = "r0"
+PR:pn-libarchive = "r1"
 PACKAGE_ARCH:pn-libarchive = "${OSS_LAYER_ARCH}"
 
 PR:pn-libatomic-ops = "r0"
@@ -458,7 +458,7 @@ PACKAGE_ARCH:pn-libomxil = "${OSS_LAYER_ARCH}"
 PR:pn-libopus = "r0"
 PACKAGE_ARCH:pn-libopus = "${OSS_LAYER_ARCH}"
 
-PR:pn-libpam = "r0"
+PR:pn-libpam = "r1"
 PACKAGE_ARCH:pn-libpam = "${OSS_LAYER_ARCH}"
 
 PR:pn-libpcap = "r1"
@@ -695,7 +695,7 @@ PACKAGE_ARCH:pn-orc = "${OSS_LAYER_ARCH}"
 PR:pn-perl = "r1"
 PACKAGE_ARCH:pn-perl = "${OSS_LAYER_ARCH}"
 
-PR:pn-pixman = "r0"
+PR:pn-pixman = "r1"
 PACKAGE_ARCH:pn-pixman = "${OSS_LAYER_ARCH}"
 
 PR:pn-popt = "r0"
@@ -741,7 +741,7 @@ PACKAGE_ARCH:pn-re2 = "${OSS_LAYER_ARCH}"
 PR:pn-readline = "r9"
 PACKAGE_ARCH:pn-readline = "${OSS_LAYER_ARCH}"
 
-PR:pn-redis = "r1"
+PR:pn-redis = "r2"
 PACKAGE_ARCH:pn-redis = "${OSS_LAYER_ARCH}"
 
 PR:pn-run-postinsts = "r10"
