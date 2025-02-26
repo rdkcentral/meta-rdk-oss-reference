@@ -10,6 +10,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d5b04755015be901744a78cc30d390d4"
 SRCREV = "03265cd42b3783532de72f2ded5436652e6f5ce3"
 SRC_URI += "git://chromium.googlesource.com/webm/libvpx;protocol=https;branch=main \
            file://libvpx-configure-support-blank-prefix.patch \
+            file://CVE-2023-44488_1.12_fix.patch \
+            file://CVE-2023-5217_1.12_fix.patch \
            "
 
 S = "${WORKDIR}/git"
