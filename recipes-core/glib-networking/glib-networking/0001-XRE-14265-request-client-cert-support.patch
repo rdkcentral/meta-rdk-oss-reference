@@ -51,7 +51,7 @@ Index: glib-networking-2.72.0/tls/openssl/gtlsclientconnection-openssl.c
          cert = g_tls_connection_get_certificate (G_TLS_CONNECTION (client));
      }
  
-@@ -549,3 +551,50 @@ g_tls_client_connection_openssl_initable
+@@ -549,3 +551,74 @@ g_tls_client_connection_openssl_initable
  
    iface->init = g_tls_client_connection_openssl_initable_init;
  }
@@ -69,11 +69,35 @@ Index: glib-networking-2.72.0/tls/openssl/gtlsclientconnection-openssl.c
 +
 +  keyPath = g_getenv ("G_TLS_OPENSSL_CLIENT_CERT_KEY_PATH");
 +
-+  if (keyPath)
++  if (g_str_has_suffix (certPath, ".pk12"))
++    {
++      gchar *certData, *keyData = NULL;
++      gsize certLen, keyLen;
++      if (keyPath)
++        {
++          gsize i;
++          if (!g_file_get_contents (keyPath, &keyData, &keyLen, &error))
++            goto out;
++          for (i = keyLen - 1; i >= 0 && g_ascii_isspace(keyData[i]); --i)
++            keyData[i] = '\0';
++        }
++
++      if (!g_file_get_contents (certPath, &certData, &certLen, &error))
++        {
++          g_free (keyData);
++          goto out;
++        }
++
++      cert = g_tls_certificate_new_from_pkcs12 ((guint8 *)certData, certLen, keyData, &error);
++      g_free (certData);
++      g_free (keyData);
++    }
++  else if (keyPath)
 +    cert = g_tls_certificate_new_from_files (certPath, keyPath, &error);
 +  else
 +    cert = g_tls_certificate_new_from_file (certPath, &error);
 +
++out:
 +  if (error)
 +    {
 +      g_printerr ("Cert load failed. %s\n", error ? error->message : "unknown");

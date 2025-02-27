@@ -1,0 +1,627 @@
+From 242c22bca7a03350ec179e679b4de7c66a576d97 Mon Sep 17 00:00:00 2001
+From: Patrick Griffis <pgriffis@igalia.com>
+Date: Wed, 1 Sep 2021 15:22:34 -0500
+Subject: [PATCH] Add support for PKCS #12 encrypted files
+
+Part-of: <https://gitlab.gnome.org/GNOME/glib-networking/-/merge_requests/184>
+---
+ tls/gnutls/gtlscertificate-gnutls.c           | 151 ++++++++++++++++++
+ tls/openssl/gtlscertificate-openssl.c         | 136 ++++++++++++++++
+ tls/tests/certificate.c                       | 118 ++++++++++++++
+ tls/tests/files/client-and-key-fullchain.pem  |  77 +++++++++
+ .../files/client-and-key-password-enckey.p12  | Bin 0 -> 2794 bytes
+ tls/tests/files/client-and-key-password.p12   | Bin 0 -> 2575 bytes
+ tls/tests/files/client-and-key.p12            | Bin 0 -> 2455 bytes
+ tls/tests/files/create-files.sh               |  16 ++
+ 8 files changed, 498 insertions(+)
+
+diff --git a/tls/gnutls/gtlscertificate-gnutls.c b/tls/gnutls/gtlscertificate-gnutls.c
+index 11f5c5c..1b2f4a9 100644
+--- a/tls/gnutls/gtlscertificate-gnutls.c
++++ b/tls/gnutls/gtlscertificate-gnutls.c
+@@ -25,6 +25,7 @@
+ #include "config.h"
+ 
+ #include <gnutls/gnutls.h>
++#include <gnutls/pkcs12.h>
+ #include <gnutls/x509.h>
+ #include <string.h>
+ 
+@@ -48,6 +49,8 @@ enum
+   PROP_ISSUER_NAME,
+   PROP_DNS_NAMES,
+   PROP_IP_ADDRESSES,
++  PROP_PKCS12_DATA,
++  PROP_PASSWORD,
+ };
+ 
+ struct _GTlsCertificateGnutls
+@@ -62,6 +65,9 @@ struct _GTlsCertificateGnutls
+ 
+   GTlsCertificateGnutls *issuer;
+ 
++  GByteArray *pkcs12_data;
++  char *password;
++
+   GError *construct_error;
+ 
+   guint have_cert : 1;
+@@ -69,6 +75,7 @@ struct _GTlsCertificateGnutls
+ };
+ 
+ static void     g_tls_certificate_gnutls_initable_iface_init (GInitableIface  *iface);
++static GTlsCertificateGnutls *g_tls_certificate_gnutls_new_take_x509 (gnutls_x509_crt_t cert);
+ 
+ G_DEFINE_TYPE_WITH_CODE (GTlsCertificateGnutls, g_tls_certificate_gnutls, G_TYPE_TLS_CERTIFICATE,
+                          G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
+@@ -85,6 +92,9 @@ g_tls_certificate_gnutls_finalize (GObject *object)
+   g_clear_pointer (&gnutls->pkcs11_uri, g_free);
+   g_clear_pointer (&gnutls->private_key_pkcs11_uri, g_free);
+ 
++  g_clear_pointer (&gnutls->pkcs12_data, g_byte_array_unref);
++  g_clear_pointer (&gnutls->password, g_free);
++
+   g_clear_object (&gnutls->issuer);
+ 
+   g_clear_error (&gnutls->construct_error);
+@@ -191,6 +201,106 @@ err:
+     gnutls_x509_privkey_deinit (x509_privkey);
+ }
+ 
++static void
++maybe_import_pkcs12 (GTlsCertificateGnutls *gnutls)
++{
++  gnutls_pkcs12_t p12 = NULL;
++  gnutls_x509_privkey_t x509_key = NULL;
++  gnutls_x509_crt_t *chain = NULL;
++  guint chain_len;
++  int status;
++  gnutls_datum_t p12_data;
++  GTlsError error_code = G_TLS_ERROR_BAD_CERTIFICATE;
++  GTlsCertificateGnutls *previous_cert;
++
++  /* If password is set first. */
++  if (!gnutls->pkcs12_data)
++    return;
++
++  p12_data.data = gnutls->pkcs12_data->data;
++  p12_data.size = gnutls->pkcs12_data->len;
++
++  status = gnutls_pkcs12_init (&p12);
++  if (status != GNUTLS_E_SUCCESS)
++    goto import_failed;
++
++  /* Only support DER, it's the common encoding and what everything including OpenSSL uses. */
++  status = gnutls_pkcs12_import (p12, &p12_data, GNUTLS_X509_FMT_DER, 0);
++  if (status != GNUTLS_E_SUCCESS)
++      goto import_failed;
++
++  if (gnutls->password)
++    {
++      status = gnutls_pkcs12_verify_mac (p12, gnutls->password);
++      if (status != GNUTLS_E_SUCCESS)
++        {
++          error_code = G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD;
++          goto import_failed;
++        }
++    }
++
++  /* Note that this *requires* a cert and key, if we want to make keys optional
++   * we would have to re-implement this parsing ourselves. */
++  status = gnutls_pkcs12_simple_parse (p12,
++                                       gnutls->password ? gnutls->password : "",
++                                       &x509_key,
++                                       &chain, &chain_len,
++                                       NULL, NULL,
++                                       NULL,
++                                       GNUTLS_PKCS12_SP_INCLUDE_SELF_SIGNED);
++  if (status == GNUTLS_E_DECRYPTION_FAILED)
++    error_code = G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD;
++  if (status != GNUTLS_E_SUCCESS)
++    goto import_failed;
++
++  /* Clear a previous error to load without a password. */
++  if (g_error_matches (gnutls->construct_error, G_TLS_ERROR, G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD))
++    g_clear_error (&gnutls->construct_error);
++
++  /* Clear existing initialized empty cert. */
++  gnutls_x509_crt_deinit (gnutls->cert);
++
++  /* First cert is the main one. */
++  gnutls->cert = chain[0];
++  gnutls->have_cert = TRUE;
++  previous_cert = gnutls;
++
++  for (guint i = 1; i < chain_len; i++)
++    {
++      /* GnuTLS already built us a valid chain in order by issuer. See pkcs12.c#make_chain(). */
++      GTlsCertificateGnutls *new_cert = g_tls_certificate_gnutls_new_take_x509 (chain[i]);
++      g_tls_certificate_gnutls_set_issuer (previous_cert, new_cert);
++      previous_cert = new_cert;
++      g_object_unref (new_cert);
++    }
++
++  g_clear_pointer (&chain, gnutls_free);
++
++  /* Convert X509 privkey to abstract privkey. */
++  status = gnutls_privkey_init (&gnutls->key);
++  if (status != GNUTLS_E_SUCCESS)
++    goto import_failed;
++
++  status = gnutls_privkey_import_x509 (gnutls->key, x509_key, GNUTLS_PRIVKEY_IMPORT_COPY);
++  if (status != GNUTLS_E_SUCCESS)
++    goto import_failed;
++
++  g_clear_pointer (&x509_key, gnutls_x509_privkey_deinit);
++  gnutls->have_key = TRUE;
++
++  g_clear_pointer (&p12, gnutls_pkcs12_deinit);
++  return;
++
++import_failed:
++  g_clear_error (&gnutls->construct_error);
++  g_set_error (&gnutls->construct_error, G_TLS_ERROR, error_code,
++              _("Failed to import PKCS #12: %s"), gnutls_strerror (status));
++
++  g_clear_pointer (&p12, gnutls_pkcs12_deinit);
++  g_clear_pointer (&x509_key, gnutls_x509_privkey_deinit);
++  g_clear_pointer (&chain, gnutls_free);
++}
++
+ static void
+ g_tls_certificate_gnutls_get_property (GObject    *object,
+                                        guint       prop_id,
+@@ -209,6 +319,10 @@ g_tls_certificate_gnutls_get_property (GObject    *object,
+ 
+   switch (prop_id)
+     {
++    case PROP_PKCS12_DATA:
++      g_value_set_boxed (value, gnutls->pkcs12_data);
++      break;
++
+     case PROP_CERTIFICATE:
+       size = 0;
+       status = gnutls_x509_crt_export (gnutls->cert,
+@@ -343,6 +457,26 @@ g_tls_certificate_gnutls_set_property (GObject      *object,
+ 
+   switch (prop_id)
+     {
++    case PROP_PASSWORD:
++      gnutls->password = g_value_dup_string (value);
++      if (gnutls->password)
++        {
++          g_return_if_fail (gnutls->have_cert == FALSE);
++          g_return_if_fail (gnutls->have_key == FALSE);
++          maybe_import_pkcs12 (gnutls);
++        }
++      break;
++
++    case PROP_PKCS12_DATA:
++      gnutls->pkcs12_data = g_value_dup_boxed (value);
++      if (gnutls->pkcs12_data)
++        {
++          g_return_if_fail (gnutls->have_cert == FALSE);
++          g_return_if_fail (gnutls->have_key == FALSE);
++          maybe_import_pkcs12 (gnutls);
++        }
++      break;
++
+     case PROP_CERTIFICATE:
+       bytes = g_value_get_boxed (value);
+       if (!bytes)
+@@ -485,6 +619,9 @@ g_tls_certificate_gnutls_initable_init (GInitable       *initable,
+ {
+   GTlsCertificateGnutls *gnutls = G_TLS_CERTIFICATE_GNUTLS (initable);
+ 
++  /* After init we don't need to keep the password around. */
++  g_clear_pointer (&gnutls->password, g_free);
++
+   if (gnutls->construct_error)
+     {
+       g_propagate_error (error, gnutls->construct_error);
+@@ -592,6 +729,8 @@ g_tls_certificate_gnutls_class_init (GTlsCertificateGnutlsClass *klass)
+   g_object_class_override_property (gobject_class, PROP_ISSUER_NAME, "issuer-name");
+   g_object_class_override_property (gobject_class, PROP_DNS_NAMES, "dns-names");
+   g_object_class_override_property (gobject_class, PROP_IP_ADDRESSES, "ip-addresses");
++  g_object_class_override_property (gobject_class, PROP_PKCS12_DATA, "pkcs12-data");
++  g_object_class_override_property (gobject_class, PROP_PASSWORD, "password");
+ }
+ 
+ static void
+@@ -614,6 +753,18 @@ g_tls_certificate_gnutls_new (const gnutls_datum_t *datum,
+   return G_TLS_CERTIFICATE (gnutls);
+ }
+ 
++static GTlsCertificateGnutls *
++g_tls_certificate_gnutls_new_take_x509 (gnutls_x509_crt_t cert)
++{
++  GTlsCertificateGnutls *gnutls;
++
++  gnutls = g_object_new (G_TYPE_TLS_CERTIFICATE_GNUTLS, NULL);
++  gnutls->cert = cert;
++  gnutls->have_cert = TRUE;
++
++  return gnutls;
++}
++
+ void
+ g_tls_certificate_gnutls_set_data (GTlsCertificateGnutls *gnutls,
+                                    const gnutls_datum_t  *datum)
+diff --git a/tls/openssl/gtlscertificate-openssl.c b/tls/openssl/gtlscertificate-openssl.c
+index 0bc7ea6..d57f5ee 100644
+--- a/tls/openssl/gtlscertificate-openssl.c
++++ b/tls/openssl/gtlscertificate-openssl.c
+@@ -27,6 +27,7 @@
+ 
+ #include <string.h>
+ #include "openssl-include.h"
++#include <openssl/pkcs12.h>
+ 
+ #include "gtlscertificate-openssl.h"
+ #include <glib/gi18n-lib.h>
+@@ -38,6 +39,9 @@ struct _GTlsCertificateOpenssl
+   X509 *cert;
+   EVP_PKEY *key;
+ 
++  GByteArray *pkcs12_data;
++  char *password;
++
+   GTlsCertificateOpenssl *issuer;
+ 
+   GError *construct_error;
+@@ -61,9 +65,12 @@ enum
+   PROP_ISSUER_NAME,
+   PROP_DNS_NAMES,
+   PROP_IP_ADDRESSES,
++  PROP_PKCS12_DATA,
++  PROP_PASSWORD,
+ };
+ 
+ static void     g_tls_certificate_openssl_initable_iface_init (GInitableIface  *iface);
++static gboolean is_issuer (GTlsCertificateOpenssl *cert, GTlsCertificateOpenssl *issuer);
+ 
+ G_DEFINE_TYPE_WITH_CODE (GTlsCertificateOpenssl, g_tls_certificate_openssl, G_TYPE_TLS_CERTIFICATE,
+                          G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
+@@ -79,6 +86,9 @@ g_tls_certificate_openssl_finalize (GObject *object)
+   if (openssl->key)
+     EVP_PKEY_free (openssl->key);
+ 
++  g_clear_pointer (&openssl->pkcs12_data, g_byte_array_unref);
++  g_clear_pointer (&openssl->password, g_free);
++
+   g_clear_object (&openssl->issuer);
+ 
+   g_clear_error (&openssl->construct_error);
+@@ -205,6 +215,103 @@ out:
+   return result;
+ }
+ 
++static void
++maybe_import_pkcs12 (GTlsCertificateOpenssl *openssl)
++{
++  PKCS12 *p12 = NULL;
++  X509 *cert = NULL;
++  STACK_OF(X509) *ca = NULL;
++  EVP_PKEY *key = NULL;
++  BIO *bio = NULL;
++  int status;
++  char error_buffer[256] = { 0 };
++  GTlsError error_code = G_TLS_ERROR_BAD_CERTIFICATE;
++
++  /* If password is set first. */
++  if (!openssl->pkcs12_data)
++    return;
++
++  bio = BIO_new (BIO_s_mem ());
++  status = BIO_write (bio, openssl->pkcs12_data->data, openssl->pkcs12_data->len);
++  if (status <= 0)
++    goto import_failed;
++  g_assert (status == openssl->pkcs12_data->len);
++
++  p12 = d2i_PKCS12_bio (bio, NULL);
++  if (p12 == NULL)
++    goto import_failed;
++
++  status = PKCS12_parse (p12, openssl->password, &key, &cert, &ca);
++  g_clear_pointer (&bio, BIO_free_all);
++
++  if (status != 1)
++    {
++      if (ERR_GET_REASON (ERR_peek_last_error ()) == PKCS12_R_MAC_VERIFY_FAILURE)
++        error_code = G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD;
++      goto import_failed;
++    }
++
++  /* Clear a previous error to load without a password. */
++  if (g_error_matches (openssl->construct_error, G_TLS_ERROR, G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD))
++    g_clear_error (&openssl->construct_error);
++
++  if (cert)
++    {
++      openssl->cert = g_steal_pointer (&cert);
++      openssl->have_cert = TRUE;
++    }
++
++  if (ca)
++    {
++      GTlsCertificateOpenssl *last_cert = openssl;
++
++      for (guint i = 0; i < sk_X509_num (ca); )
++        {
++          GTlsCertificateOpenssl *new_cert;
++          new_cert = G_TLS_CERTIFICATE_OPENSSL (g_tls_certificate_openssl_new_from_x509 (sk_X509_value (ca, i),
++                                                                                         NULL));
++
++          if (is_issuer (last_cert, new_cert))
++            {
++              g_tls_certificate_openssl_set_issuer (last_cert, new_cert);
++              last_cert = new_cert;
++
++              /* Start the list over to find an issuer of the new cert. */
++              sk_X509_delete (ca, i);
++              i = 0;
++            }
++          else
++            i++;
++
++          g_object_unref (new_cert);
++        }
++
++      sk_X509_pop_free (ca, X509_free);
++      ca = NULL;
++    }
++
++  if (key)
++    {
++      openssl->key = g_steal_pointer (&key);
++      openssl->have_key = TRUE;
++    }
++
++  g_clear_pointer (&p12, PKCS12_free);
++  return;
++
++import_failed:
++  g_clear_error (&openssl->construct_error);
++
++  if (!error_buffer[0])
++    ERR_error_string_n (ERR_get_error (), error_buffer, sizeof (error_buffer));
++
++  g_set_error (&openssl->construct_error, G_TLS_ERROR, error_code,
++              _("Failed to import PKCS #12: %s"), error_buffer);
++
++  g_clear_pointer (&p12, PKCS12_free);
++  g_clear_pointer (&bio, BIO_free_all);
++}
++
+ static void
+ g_tls_certificate_openssl_get_property (GObject    *object,
+                                         guint       prop_id,
+@@ -228,6 +335,10 @@ g_tls_certificate_openssl_get_property (GObject    *object,
+ 
+   switch (prop_id)
+     {
++    case PROP_PKCS12_DATA:
++      g_value_set_boxed (value, openssl->pkcs12_data);
++      break;
++
+     case PROP_CERTIFICATE:
+       /* NOTE: we do the two calls to avoid openssl allocating the buffer for us */
+       size = i2d_X509 (openssl->cert, NULL);
+@@ -345,6 +456,26 @@ g_tls_certificate_openssl_set_property (GObject      *object,
+ 
+   switch (prop_id)
+     {
++    case PROP_PASSWORD:
++      openssl->password = g_value_dup_string (value);
++      if (openssl->password)
++        {
++          g_return_if_fail (openssl->have_cert == FALSE);
++          g_return_if_fail (openssl->have_key == FALSE);
++          maybe_import_pkcs12 (openssl);
++        }
++      break;
++
++    case PROP_PKCS12_DATA:
++      openssl->pkcs12_data = g_value_dup_boxed (value);
++      if (openssl->pkcs12_data)
++        {
++          g_return_if_fail (openssl->have_cert == FALSE);
++          g_return_if_fail (openssl->have_key == FALSE);
++          maybe_import_pkcs12 (openssl);
++        }
++      break;
++
+     case PROP_CERTIFICATE:
+       bytes = g_value_get_boxed (value);
+       if (!bytes)
+@@ -447,6 +578,9 @@ g_tls_certificate_openssl_initable_init (GInitable       *initable,
+ {
+   GTlsCertificateOpenssl *openssl = G_TLS_CERTIFICATE_OPENSSL (initable);
+ 
++  /* After init we don't need to keep the password around. */
++  g_clear_pointer (&openssl->password, g_free);
++
+   if (openssl->construct_error)
+     {
+       g_propagate_error (error, openssl->construct_error);
+@@ -544,6 +678,8 @@ g_tls_certificate_openssl_class_init (GTlsCertificateOpensslClass *klass)
+   g_object_class_override_property (gobject_class, PROP_ISSUER_NAME, "issuer-name");
+   g_object_class_override_property (gobject_class, PROP_DNS_NAMES, "dns-names");
+   g_object_class_override_property (gobject_class, PROP_IP_ADDRESSES, "ip-addresses");
++  g_object_class_override_property (gobject_class, PROP_PKCS12_DATA, "pkcs12-data");
++  g_object_class_override_property (gobject_class, PROP_PASSWORD, "password");
+ }
+ 
+ static void
+diff --git a/tls/tests/certificate.c b/tls/tests/certificate.c
+index 01c3c1a..e820ba1 100644
+--- a/tls/tests/certificate.c
++++ b/tls/tests/certificate.c
+@@ -793,6 +793,120 @@ test_certificate_ip_addresses (void)
+   g_object_unref (cert);
+ }
+ 
++static GByteArray *
++load_bytes_for_test_file (const char *filename)
++{
++  GFile *file = g_file_new_for_path (tls_test_file_path (filename));
++  GBytes *bytes = g_file_load_bytes (file, NULL, NULL, NULL);
++
++  g_assert_nonnull (bytes);
++  g_object_unref (file);
++  return g_bytes_unref_to_array (bytes);
++}
++
++static void
++assert_cert_contains_cert_and_key (GTlsCertificate *certificate)
++{
++  char *cert_pem, *key_pem;
++
++  g_object_get (certificate,
++                "certificate-pem", &cert_pem,
++                "private-key-pem", &key_pem,
++                NULL);
++
++  g_assert_nonnull (cert_pem);
++  g_assert_nonnull (key_pem);
++
++  g_free (cert_pem);
++  g_free (key_pem);
++}
++
++static void
++assert_equals_original_cert (GTlsCertificate *cert)
++{
++  GTlsCertificate *original_cert = g_tls_certificate_new_from_file (tls_test_file_path ("client-and-key.pem"), NULL);
++  g_assert_nonnull (original_cert);
++  g_assert_true (g_tls_certificate_is_same (original_cert, cert));
++  g_object_unref (original_cert);
++}
++
++static void
++test_certificate_pkcs12_basic (void)
++{
++  GTlsCertificate *cert;
++  GByteArray *pkcs12_data;
++  GError *error = NULL;
++
++  pkcs12_data = load_bytes_for_test_file ("client-and-key.p12");
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_data->data, pkcs12_data->len, NULL, &error);
++
++  g_assert_no_error (error);
++  g_assert_nonnull (cert);
++  assert_cert_contains_cert_and_key (cert);
++  assert_equals_original_cert (cert);
++
++  g_byte_array_unref (pkcs12_data);
++  g_object_unref (cert);
++}
++
++static void
++test_certificate_pkcs12_password (void)
++{
++  GTlsCertificate *cert;
++  GByteArray *pkcs12_data;
++  GError *error = NULL;
++
++  pkcs12_data = load_bytes_for_test_file ("client-and-key-password.p12");
++
++  /* Without a password it fails. */
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_data->data, pkcs12_data->len, NULL, &error);
++  g_assert_error (error, G_TLS_ERROR, G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD);
++  g_clear_error (&error);
++
++  /* With the wrong password it fails. */
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_data->data, pkcs12_data->len, "oajfo", &error);
++  g_assert_error (error, G_TLS_ERROR, G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD);
++  g_clear_error (&error);
++
++  /* With the correct password it succeeds. */
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_data->data, pkcs12_data->len, "1234", &error);
++  g_assert_no_error (error);
++  g_assert_nonnull (cert);
++  assert_cert_contains_cert_and_key (cert);
++  assert_equals_original_cert (cert);
++  g_object_unref (cert);
++  g_byte_array_unref (pkcs12_data);
++}
++
++static void
++test_certificate_pkcs12_encrypted (void)
++{
++  GTlsCertificate *cert;
++  GByteArray *pkcs12_enc_data;
++  GError *error = NULL;
++
++  pkcs12_enc_data = load_bytes_for_test_file ("client-and-key-password-enckey.p12");
++
++  /* Without a password it fails. */
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_enc_data->data, pkcs12_enc_data->len, NULL, &error);
++  g_assert_error (error, G_TLS_ERROR, G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD);
++  g_clear_error (&error);
++
++  /* With the wrong password it fails. */
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_enc_data->data, pkcs12_enc_data->len, "oajfo", &error);
++  g_assert_error (error, G_TLS_ERROR, G_TLS_ERROR_BAD_CERTIFICATE_PASSWORD);
++  g_clear_error (&error);
++
++  /* With the correct password it succeeds. */
++  cert = g_tls_certificate_new_from_pkcs12 (pkcs12_enc_data->data, pkcs12_enc_data->len, "1234", &error);
++  g_assert_no_error (error);
++  g_assert_nonnull (cert);
++  assert_cert_contains_cert_and_key (cert);
++  assert_equals_original_cert (cert);
++  g_object_unref (cert);
++  g_byte_array_unref (pkcs12_enc_data);
++}
++
+ int
+ main (int   argc,
+       char *argv[])
+@@ -862,5 +976,9 @@ main (int   argc,
+   g_test_add_func ("/tls/" BACKEND "/certificate/dns-names", test_certificate_dns_names);
+   g_test_add_func ("/tls/" BACKEND "/certificate/ip-addresses", test_certificate_ip_addresses);
+ 
++  g_test_add_func ("/tls/" BACKEND "/certificate/pkcs12/basic", test_certificate_pkcs12_basic);
++  g_test_add_func ("/tls/" BACKEND "/certificate/pkcs12/password", test_certificate_pkcs12_password);
++  g_test_add_func ("/tls/" BACKEND "/certificate/pkcs12/encrypted", test_certificate_pkcs12_encrypted);
++
+   return g_test_run();
+ }
+diff --git a/tls/tests/files/create-files.sh b/tls/tests/files/create-files.sh
+index ca1b842..d350e69 100755
+--- a/tls/tests/files/create-files.sh
++++ b/tls/tests/files/create-files.sh
+@@ -133,6 +133,10 @@ msg "Concatenating client certificate and private key into a single file"
+ cat client.pem > client-and-key.pem
+ cat client-key.pem >> client-and-key.pem
+ 
++msg "Concatenating the full client chain into a single file"
++cat ca.pem > client-and-key-fullchain.pem
++cat client-and-key.pem >> client-and-key-fullchain.pem
++
+ # It is not possible to specify the start and end date using the "x509" tool.
+ # It would be better to use the "ca" tool. Sorry!
+ msg "Creating client certificate (past)"
+@@ -220,6 +224,18 @@ msg "Updating test expectations"
+ ./update-test-database.py ca.pem ../file-database.h
+ ./update-certificate-test.py server.pem ../certificate.h
+ 
++#######################################################################
++### Generate PKCS #12 format copies for testing
++#######################################################################
++
++msg "Generating PKCS #12 files"
++# Not encrypted p12 file
++openssl pkcs12 -in client-and-key.pem -export -keypbe NONE -certpbe NONE -nomaciter -out client-and-key.p12 -passout 'pass:' -name "No password"
++# Encrypted key only
++openssl pkcs12 -in client-and-key.pem -export -certpbe NONE -nomaciter -out client-and-key-password.p12 -passout 'pass:1234' -name "With Password"
++# Encrypted p12 file
++openssl pkcs12 -in client-and-key.pem -export -out client-and-key-password-enckey.p12 -passout 'pass:1234' -name "With Password and encrypted privkey"
++
+ #######################################################################
+ ### Cleanup
+ #######################################################################
+-- 
+2.25.1
+
