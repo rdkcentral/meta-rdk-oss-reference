@@ -27,7 +27,6 @@ SRC_URI = " \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
     file://readline_NM.patch \
-    file://nlmon-script.sh \
     file://NM_Dispatcher.patch \
     file://NM_Wpa_Sync.sh \
     file://NetworkManager_wpaSync.service \
