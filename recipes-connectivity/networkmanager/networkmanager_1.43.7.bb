@@ -27,7 +27,6 @@ SRC_URI = " \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
     file://readline_NM.patch \
-    file://nlmon-script.sh \
     file://NM_Dispatcher.patch \
     file://NM_Wpa_Sync.sh \
     file://NetworkManager_wpaSync.service \
@@ -213,7 +212,6 @@ FILES:${PN}-daemon += " \
     ${sysconfdir}/NetworkManager \
     ${sysconfdir}/sysconfig/network-scripts \
     ${systemd_system_unitdir} \
-    ${sysconfdir}/NetworkManager/dispatcher.d/nlmon-script.sh \
     ${sysconfdir}/NetworkManager/NM_Wpa_Sync.sh \
     ${systemd_system_unitdir}/NetworkManager_wpaSync.service \
 "
@@ -255,7 +253,6 @@ do_install:append() {
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
-    install ${WORKDIR}/nlmon-script.sh ${D}${sysconfdir}/NetworkManager/dispatcher.d/nlmon-script.sh
     install ${WORKDIR}/NM_Wpa_Sync.sh ${D}${sysconfdir}/NetworkManager/NM_Wpa_Sync.sh
     install ${WORKDIR}/NetworkManager_wpaSync.service ${D}${systemd_system_unitdir}/NetworkManager_wpaSync.service
 
