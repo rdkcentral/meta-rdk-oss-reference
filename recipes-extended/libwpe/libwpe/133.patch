@@ -1,0 +1,71 @@
+From 6860294dd9e7f27e6479e45892e9e328f53d6c19 Mon Sep 17 00:00:00 2001
+From: Manoj Bhatta <manoj_bhatta@comcast.com>
+Date: Fri, 11 Oct 2024 00:46:45 +0000
+Subject: [PATCH] Analog button values from 0.0 to 1.0
+
+Analog button should have values from 0.0 to 1.0 instead of only digital value.
+
+https://www.w3.org/TR/gamepad/#dom-gamepadbutton-value
+
+value attribute
+For buttons that have an analog sensor, this property MUST represent the amount which the button has been pressed. All button values MUST be linearly normalized to the range [0.0 .. 1.0]. 0.0 MUST mean fully unpressed, and 1.0 MUST mean fully pressed. For buttons without an analog sensor, only the values 0.0 and 1.0 for fully unpressed and fully pressed respectively, MUST be provided.
+---
+ include/wpe/gamepad.h | 16 +++++++++++++++-
+ src/gamepad.c         |  7 +++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/include/wpe/gamepad.h b/include/wpe/gamepad.h
+index 506f0b0..fd6cbfa 100644
+--- a/include/wpe/gamepad.h
++++ b/include/wpe/gamepad.h
+@@ -142,7 +142,7 @@ struct wpe_gamepad_client_interface {
+     void (*axis_changed)(void*, enum wpe_gamepad_axis, double);
+ 
+     /*< private >*/
+-    void (*_wpe_reserved1)(void);
++    void (*analog_button_changed)(void*, enum wpe_gamepad_button, double);
+     void (*_wpe_reserved2)(void);
+     void (*_wpe_reserved3)(void);
+ };
+@@ -358,6 +358,20 @@ void wpe_gamepad_set_client(struct wpe_gamepad*, const struct wpe_gamepad_client
+ WPE_EXPORT
+ const char* wpe_gamepad_get_id(struct wpe_gamepad*);
+ 
++/**
++ * wpe_gamepad_dispatch_analog_button_changed:
++ * @gamepad: opaque gamepad object.
++ * @button: the analog button that changed its value.
++ * @value: the new analog @button value.
++ *
++ * Method called by application (gamepad implementator). It reports to
++ * WPEWebkit a change in the value  of analog @button.
++ *
++ * Since: 1.15
++ */
++WPE_EXPORT
++void wpe_gamepad_dispatch_analog_button_changed(struct wpe_gamepad*, enum wpe_gamepad_button, double);
++
+ /**
+  * wpe_gamepad_dispatch_button_changed:
+  * @gamepad: opaque gamepad object.
+diff --git a/src/gamepad.c b/src/gamepad.c
+index 355636a..64bfe48 100644
+--- a/src/gamepad.c
++++ b/src/gamepad.c
+@@ -161,6 +161,13 @@ wpe_gamepad_get_id(struct wpe_gamepad* gamepad)
+     return "Unknown device";
+ }
+ 
++void
++wpe_gamepad_dispatch_analog_button_changed(struct wpe_gamepad* gamepad, enum wpe_gamepad_button button, double value)
++{
++    if (gamepad && gamepad->client_interface && gamepad->client_interface->analog_button_changed)
++        gamepad->client_interface->analog_button_changed(gamepad->client_data, button, value);
++}
++
+ void
+ wpe_gamepad_dispatch_button_changed(struct wpe_gamepad* gamepad, enum wpe_gamepad_button button, bool pressed)
+ {
+-- 
+2.25.1
+
