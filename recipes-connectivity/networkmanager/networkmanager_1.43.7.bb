@@ -29,8 +29,6 @@ SRC_URI = " \
     file://readline_NM.patch \
     file://nlmon-script.sh \
     file://NM_Dispatcher.patch \
-    file://NM_Wpa_Sync.sh \
-    file://NetworkManager_wpaSync.service \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
@@ -214,8 +212,6 @@ FILES:${PN}-daemon += " \
     ${sysconfdir}/sysconfig/network-scripts \
     ${systemd_system_unitdir} \
     ${sysconfdir}/NetworkManager/dispatcher.d/nlmon-script.sh \
-    ${sysconfdir}/NetworkManager/NM_Wpa_Sync.sh \
-    ${systemd_system_unitdir}/NetworkManager_wpaSync.service \
 "
 FILES:${PN}:remove = "${sysconfdir}/resolv.dnsmasq"
 FILES:${PN}:remove = "${sysconfdir}/resolv.conf"
@@ -233,7 +229,6 @@ INITSCRIPT_NAME:${PN}-daemon = "network-manager"
 SYSTEMD_SERVICE:${PN}-daemon = "\
     NetworkManager.service \
     NetworkManager-dispatcher.service \
-    NetworkManager_wpaSync.service \
 "
 RCONFLICTS:${PN}-daemon += "connman"
 ALTERNATIVE_PRIORITY = "100"
@@ -256,8 +251,6 @@ do_install:append() {
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
     install ${WORKDIR}/nlmon-script.sh ${D}${sysconfdir}/NetworkManager/dispatcher.d/nlmon-script.sh
-    install ${WORKDIR}/NM_Wpa_Sync.sh ${D}${sysconfdir}/NetworkManager/NM_Wpa_Sync.sh
-    install ${WORKDIR}/NetworkManager_wpaSync.service ${D}${systemd_system_unitdir}/NetworkManager_wpaSync.service
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
