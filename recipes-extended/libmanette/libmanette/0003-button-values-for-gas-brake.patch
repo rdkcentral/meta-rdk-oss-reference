@@ -1,3 +1,9 @@
+Date: Fri, Aug 30 20:30:21 2024 +0000
+From: Manoj Bhatta <manoj_bhatta@comcast.com>
+Subject: [PATCH] Add support for Analog buton values
+Source: COMCAST 
+Signed-off-by: Ganesh Sahu <ganeshprasad_sahu@comcast.com>
+
 diff --git a/src/manette-device.c b/src/manette-device.c
 index a720d63..9ca9254 100644
 --- a/src/manette-device.c
