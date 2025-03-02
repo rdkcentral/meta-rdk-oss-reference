@@ -209,7 +209,6 @@ FILES:${PN}-daemon += " \
     ${sysconfdir}/NetworkManager \
     ${sysconfdir}/sysconfig/network-scripts \
     ${systemd_system_unitdir} \
-    ${sysconfdir}/NetworkManager/dispatcher.d/nlmon-script.sh \
 "
 FILES:${PN}_remove = "${sysconfdir}/resolv.dnsmasq"
 FILES:${PN}_remove = "${sysconfdir}/resolv.conf"
@@ -248,8 +247,6 @@ do_install:append() {
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
-    install ${WORKDIR}/nlmon-script.sh ${D}${sysconfdir}/NetworkManager/dispatcher.d/nlmon-script.sh
-
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
     rm -rf ${D}/run ${D}${localstatedir}/run
