@@ -1,7 +1,8 @@
-From 516fbcab93d8228feb41a4a3dbaa7a46f077f30b Mon Sep 17 00:00:00 2001
-From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Date: Wed, 15 Mar 2023 20:14:18 +0000
+From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Subject: [PATCH] map key menu back as btn
+Source: COMCAST 516fbcab93d8228feb41a4a3dbaa7a46f077f30b Mon Sep 17 00:00:00 2001
+Signed-off-by: Manoj Bhatta <manoj_bhatta@comcast.com>
 
 ---
  src/manette-device.c | 18 ++++++++++++++++++
