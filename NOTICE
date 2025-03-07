@@ -5,7 +5,7 @@ Some material:
 Copyright 2023 Comcast Cable Communications Management, LLC
 Licensed under the Apache License, Version 2.0
 
-Some material is derived from openembedded.org "or the yocto project"  and is licensed in the same 
+Some material is derived from openembedded.org,openbmc "or the yocto project"  and is licensed in the same 
 manner here (MIT for metadata; source code to match the associated recipe license).
 
 Note:- Source / License information for patches may only be present and/or correct in the develop branch.
