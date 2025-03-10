@@ -114,6 +114,7 @@ RDEPENDS:${PN} = "\
      libxcrypt \
      libxml2 \
      libxslt \
+     lsof \
      lttng-ust \
      lz4 \
      lzo \
