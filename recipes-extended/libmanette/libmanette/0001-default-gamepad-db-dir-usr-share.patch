@@ -1,7 +1,8 @@
-From e65f129c29b6cc96bd65677ac763c6e92888d4a7 Mon Sep 17 00:00:00 2001
-From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Date: Fri, 10 Mar 2023 19:24:30 +0000
+From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Subject: [PATCH] default gamepad db dir /usr/share
+Source: COMCAST e65f129c29b6cc96bd65677ac763c6e92888d4a7 Mon Sep 17 00:00:00 2001
+Signed-off-by: Manoj Bhatta <manoj_bhatta@comcast.com>
 
 ---
  src/manette-device.h          | 1 +
