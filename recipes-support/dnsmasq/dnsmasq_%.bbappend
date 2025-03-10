@@ -1,6 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-SRC_URI += "file://addtruncatedmsgcaching.patch"
 SRC_URI += "file://dnsmasq.service"
 
 SRC_URI += "file://dns.conf"

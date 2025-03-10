@@ -309,7 +309,6 @@ RDEPENDS:${PN} += "\
      pango \
      procps \
      rdkperf \
-     rdm \
      readline \
      safec-common-wrapper \
      sed \
