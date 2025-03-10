@@ -11,6 +11,9 @@ inherit cmake features_check pkgconfig
 REQUIRED_DISTRO_FEATURES = "opengl"
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
+# Drop after a PR is approved
+SRC_URI +="file://133.patch"
+
 SRC_URI[sha256sum] = "c073305bbac5f4402cc1c8a4753bfa3d63a408901f86182051eaa5a75dd89c00"
 
 # This is a tweak of upstream-version-is-even needed because

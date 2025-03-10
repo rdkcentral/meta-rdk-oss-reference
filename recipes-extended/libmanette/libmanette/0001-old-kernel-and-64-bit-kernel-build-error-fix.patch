@@ -1,7 +1,8 @@
-From 169d1fe5bb507ad910e092bc9d376b8bed6cc9ed Mon Sep 17 00:00:00 2001
-From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Date: Fri, 10 Mar 2023 17:49:25 +0000
+From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Subject: [PATCH] old kernel and 64 bit kernel build error fix
+Source: COMCAST 169d1fe5bb507ad910e092bc9d376b8bed6cc9ed Mon Sep 17 00:00:00 2001
+Signed-off-by: Manoj Bhatta <manoj_bhatta@comcast.com>
 
 ---
  demos/manette-test/manette-test.c |  2 +-
