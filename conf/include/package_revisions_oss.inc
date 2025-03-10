@@ -593,6 +593,9 @@ PACKAGE_ARCH:pn-log4c = "${OSS_LAYER_ARCH}"
 PR:pn-logrotate = "r1"
 PACKAGE_ARCH:pn-logrotate = "${OSS_LAYER_ARCH}"
 
+PR:pn-lsof = "r0"
+PACKAGE_ARCH:pn-lsof = "${OSS_LAYER_ARCH}"
+
 PR:pn-lttng-ust = "r0"
 PACKAGE_ARCH:pn-lttng-ust = "${OSS_LAYER_ARCH}"
 
