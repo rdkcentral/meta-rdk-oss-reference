@@ -440,7 +440,7 @@ PACKAGE_ARCH:pn-libnl = "${OSS_LAYER_ARCH}"
 PR:pn-libnsl2 = "r0"
 PACKAGE_ARCH:pn-libnsl2 = "${OSS_LAYER_ARCH}"
 
-PR:pn-libnss-mdns = "r0"
+PR:pn-libnss-mdns = "r1"
 PACKAGE_ARCH:pn-libnss-mdns = "${OSS_LAYER_ARCH}"
 
 PR:pn-liboauth = "r0"
