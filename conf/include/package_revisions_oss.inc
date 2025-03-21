@@ -440,7 +440,7 @@ PACKAGE_ARCH:pn-libnl = "${OSS_LAYER_ARCH}"
 PR:pn-libnsl2 = "r0"
 PACKAGE_ARCH:pn-libnsl2 = "${OSS_LAYER_ARCH}"
 
-PR:pn-libnss-mdns = "r0"
+PR:pn-libnss-mdns = "r1"
 PACKAGE_ARCH:pn-libnss-mdns = "${OSS_LAYER_ARCH}"
 
 PR:pn-liboauth = "r0"
@@ -593,6 +593,9 @@ PACKAGE_ARCH:pn-log4c = "${OSS_LAYER_ARCH}"
 PR:pn-logrotate = "r1"
 PACKAGE_ARCH:pn-logrotate = "${OSS_LAYER_ARCH}"
 
+PR:pn-lsof = "r0"
+PACKAGE_ARCH:pn-lsof = "${OSS_LAYER_ARCH}"
+
 PR:pn-lttng-ust = "r0"
 PACKAGE_ARCH:pn-lttng-ust = "${OSS_LAYER_ARCH}"
 
@@ -653,7 +656,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r0"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r3"
+PR:pn-networkmanager = "r4"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"

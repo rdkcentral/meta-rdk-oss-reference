@@ -66,7 +66,7 @@ Index: git/mDNSPosix/mDNSPosix.c
      flags   = 0;
      packetLen = recvfrom_flags(skt, &packet, sizeof(packet), &flags, (struct sockaddr *) &from, &fromLen, &packetInfo, &ttl);
 -
-+    LogMsg("unicast debug: SocketDataReady: Got packetLen %lld for socket %d", (long long)packetLen, skt);
++    //LogMsg("unicast debug: SocketDataReady: Got packetLen %lld for socket %d", (long long)packetLen, skt);
      if (packetLen >= 0)
      {
          SockAddrTomDNSAddr((struct sockaddr*)&from, &senderAddr, &senderPort);
@@ -87,8 +87,8 @@ Index: git/mDNSPosix/mDNSPosix.c
 +                }
 +                if (realIntf)
 +                {
-+                    LogMsg("SocketDataReady correcting receive interface from %s/%u to %s/%u",
-+                        intf->intfName, intf->index, realIntf->intfName, realIntf->index);
++                    //LogMsg("SocketDataReady correcting receive interface from %s/%u to %s/%u",
++                    //    intf->intfName, intf->index, realIntf->intfName, realIntf->index);
 +                    intf = realIntf;
 +                    reject = mDNSfalse;
 +                }
@@ -99,9 +99,9 @@ Index: git/mDNSPosix/mDNSPosix.c
 -                verbosedebugf("SocketDataReady ignored a packet from %#a to %#a on interface %s/%d expecting %#a/%s/%d/%d",
 -                              &senderAddr, &destAddr, packetInfo.ipi_ifname, packetInfo.ipi_ifindex,
 -                              &intf->coreIntf.ip, intf->intfName, intf->index, skt);
-+                LogMsg("unicast debug: SocketDataReady ignored a packet from %#a (port %u) to %#a (port %u) on interface %s/%d expecting %#a/%s/%d/%d",
-+                    &senderAddr, mDNSVal16(senderPort), &destAddr, mDNSVal16(destPort), packetInfo.ipi_ifname, packetInfo.ipi_ifindex,
-+                    &intf->coreIntf.ip, intf->intfName, intf->index, skt);
++                //LogMsg("unicast debug: SocketDataReady ignored a packet from %#a (port %u) to %#a (port %u) on interface %s/%d expecting %#a/%s/%d/%d",
++                //    &senderAddr, mDNSVal16(senderPort), &destAddr, mDNSVal16(destPort), packetInfo.ipi_ifname, packetInfo.ipi_ifindex,
++                //    &intf->coreIntf.ip, intf->intfName, intf->index, skt);
                  packetLen = -1;
                  num_pkts_rejected++;
                  if (num_pkts_rejected > (num_pkts_accepted + 1) * (num_registered_interfaces + 1) * 2)
@@ -111,8 +111,8 @@ Index: git/mDNSPosix/mDNSPosix.c
              {
 -                verbosedebugf("SocketDataReady got a packet from %#a to %#a on interface %#a/%s/%d/%d",
 -                              &senderAddr, &destAddr, &intf->coreIntf.ip, intf->intfName, intf->index, skt);
-+                LogMsg("unicast debug: SocketDataReady got a packet from %#a (port %u) to %#a (port %u) on interface %#a/%s/%d/%d",
-+                    &senderAddr, mDNSVal16(senderPort), &destAddr, mDNSVal16(destPort), &intf->coreIntf.ip, intf->intfName, intf->index, skt);
++                //LogMsg("unicast debug: SocketDataReady got a packet from %#a (port %u) to %#a (port %u) on interface %#a/%s/%d/%d",
++                //    &senderAddr, mDNSVal16(senderPort), &destAddr, mDNSVal16(destPort), &intf->coreIntf.ip, intf->intfName, intf->index, skt);
                  num_pkts_accepted++;
              }
          }
@@ -168,8 +168,8 @@ Index: git/mDNSPosix/mDNSPosix.c
      close(s);
 -    if (err) debugf("No unicast UDP responses");
 -    else debugf("Unicast UDP responses okay");
-+    if (err) LogMsg("unicast debug: No unicast UDP responses");
-+    else LogMsg("unicast debug: Unicast UDP responses okay");
++    //if (err) LogMsg("unicast debug: No unicast UDP responses");
++    //else LogMsg("unicast debug: Unicast UDP responses okay");
      return(err == 0);
  }
  
@@ -177,14 +177,14 @@ Index: git/mDNSPosix/mDNSPosix.c
  
      if (m->p->unicastSocket4 != -1 && FD_ISSET(m->p->unicastSocket4, readfds))
      {
-+        LogMsg("unicast debug: mDNSPosixProcessFDSet: checking unicastSocket4 (%d)", m->p->unicastSocket4);
++        //LogMsg("unicast debug: mDNSPosixProcessFDSet: checking unicastSocket4 (%d)", m->p->unicastSocket4);
          FD_CLR(m->p->unicastSocket4, readfds);
          SocketDataReady(m, NULL, m->p->unicastSocket4, NULL);
      }
  #if HAVE_IPV6
      if (m->p->unicastSocket6 != -1 && FD_ISSET(m->p->unicastSocket6, readfds))
      {
-+        LogMsg("unicast debug: mDNSPosixProcessFDSet: checking unicastSocket6 (%d)", m->p->unicastSocket6);
++        //LogMsg("unicast debug: mDNSPosixProcessFDSet: checking unicastSocket6 (%d)", m->p->unicastSocket6);
          FD_CLR(m->p->unicastSocket6, readfds);
          SocketDataReady(m, NULL, m->p->unicastSocket6, NULL);
      }
@@ -192,14 +192,14 @@ Index: git/mDNSPosix/mDNSPosix.c
      {
          if (info->multicastSocket4 != -1 && FD_ISSET(info->multicastSocket4, readfds))
          {
-+            LogMsg("unicast debug: mDNSPosixProcessFDSet: checking %s IPv4 socket (%d)", info->intfName, info->multicastSocket4);
++            //LogMsg("unicast debug: mDNSPosixProcessFDSet: checking %s IPv4 socket (%d)", info->intfName, info->multicastSocket4);
              FD_CLR(info->multicastSocket4, readfds);
              SocketDataReady(m, info, info->multicastSocket4, NULL);
          }
  #if HAVE_IPV6
          if (info->multicastSocket6 != -1 && FD_ISSET(info->multicastSocket6, readfds))
          {
-+            LogMsg("unicast debug: mDNSPosixProcessFDSet: checking %s IPv6 socket (%d)", info->intfName, info->multicastSocket6);
++            //LogMsg("unicast debug: mDNSPosixProcessFDSet: checking %s IPv6 socket (%d)", info->intfName, info->multicastSocket6);
              FD_CLR(info->multicastSocket6, readfds);
              SocketDataReady(m, info, info->multicastSocket6, NULL);
          }
@@ -207,9 +207,9 @@ Index: git/mDNSPosix/mDNSPosix.c
  
      // Include the sockets that are listening to the wire in our select() set
      mDNSPosixGetFDSetForSelect(m, &numFDs, &listenFDs, &writeFDs);
-+    LogMsg("unicast debug: mDNSPosixRunEventLoopOnce: calling select()...");
++    //LogMsg("unicast debug: mDNSPosixRunEventLoopOnce: calling select()...");
      numReady = select(numFDs, &listenFDs, &writeFDs, (fd_set*) NULL, &timeout);
-+    LogMsg("unicast debug: mDNSPosixRunEventLoopOnce: select() returned %d", numReady);
++    //LogMsg("unicast debug: mDNSPosixRunEventLoopOnce: select() returned %d", numReady);
  
      if (numReady > 0)
      {
