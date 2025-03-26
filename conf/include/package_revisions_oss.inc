@@ -167,7 +167,7 @@ PACKAGE_ARCH:pn-dbus-glib = "${OSS_LAYER_ARCH}"
 PR:pn-dibbler= "r1"
 PACKAGE_ARCH:pn-dibbler = "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq = "r4"
+PR:pn-dnsmasq = "r1"
 PACKAGE_ARCH:pn-dnsmasq = "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools = "r0"
@@ -689,13 +689,13 @@ PACKAGE_ARCH:pn-opkg = "${OSS_LAYER_ARCH}"
 PR:pn-opkg-arch-config = "r1"
 PACKAGE_ARCH:pn-opkg-arch-config = "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg-utils = "r0"
+PR:pn-opkg-utils = "r1"
 PACKAGE_ARCH:pn-opkg-utils = "${OSS_LAYER_ARCH}"
 
 PR:pn-orc = "r0"
 PACKAGE_ARCH:pn-orc = "${OSS_LAYER_ARCH}"
 
-PR:pn-perl = "r1"
+PR:pn-perl = "r0"
 PACKAGE_ARCH:pn-perl = "${OSS_LAYER_ARCH}"
 
 PR:pn-pixman = "r0"
@@ -795,7 +795,7 @@ PACKAGE_ARCH:pn-strace = "${OSS_LAYER_ARCH}"
 PR:pn-stunnel = "r2"
 PACKAGE_ARCH:pn-stunnel = "${OSS_LAYER_ARCH}"
 
-PR:pn-sysfsutils = "r5"
+PR:pn-sysfsutils = "r6"
 PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 
 PR:pn-syslog-ng = "r2"
