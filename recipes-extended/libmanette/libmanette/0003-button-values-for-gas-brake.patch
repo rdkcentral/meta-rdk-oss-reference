@@ -1,0 +1,138 @@
+Date: Fri, Aug 30 20:30:21 2024 +0000
+From: Manoj Bhatta <manoj_bhatta@comcast.com>
+Subject: [PATCH] Add support for Analog buton values
+Source: COMCAST 
+Signed-off-by: Ganesh Sahu <ganeshprasad_sahu@comcast.com>
+
+diff --git a/src/manette-device.c b/src/manette-device.c
+index a720d63..9ca9254 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -367,6 +367,33 @@ compute_guid_string (struct libevdev *device)
+                           GINT_TO_BE (libevdev_get_id_version (device)));
+ }
+ 
++static gdouble
++button_centered_absolute_value (struct input_absinfo *abs_info,
++                         gint32                value)
++{
++  gint64 max_normalized;
++  gint64 value_normalized;
++  gint64 max_centered;
++  gint64 value_centered;
++  gint64 divisor;
++
++  g_assert (abs_info != NULL);
++
++  /* Adapt the value maximum 1  to a minimum of 0. */
++  max_normalized = ((gint64) abs_info->maximum) - abs_info->minimum;
++  value_normalized = ((gint64) value) - abs_info->minimum;
++
++  max_centered = max_normalized ;
++  value_centered = value_normalized ;
++
++  if (value_centered > -abs_info->flat && value_centered < abs_info->flat)
++    value_centered = 0;
++
++  divisor = value_centered < 0 ? max_centered + 1 : max_centered;;
++
++  return ((gdouble) value_centered) / ((gdouble) divisor);
++}
++
+ static gdouble
+ centered_absolute_value (struct input_absinfo *abs_info,
+                          gint32                value)
+@@ -467,6 +494,10 @@ on_evdev_event (ManetteDevice      *self,
+       manette_event.absolute.value =
+         centered_absolute_value (&self->abs_info[self->abs_map[evdev_event->code]],
+                                  evdev_event->value);
++      //Get mapped Axis to button's value
++      manette_event.absolute.other_value =
++        button_centered_absolute_value (&self->abs_info[self->abs_map[evdev_event->code]],
++                                 evdev_event->value);
+ 
+       break;
+     }
+diff --git a/src/manette-event-mapping.c b/src/manette-event-mapping.c
+index 6ca7f6c..b40c9b1 100644
+--- a/src/manette-event-mapping.c
++++ b/src/manette-event-mapping.c
+@@ -146,6 +146,7 @@ map_absolute_event (ManetteMapping       *mapping,
+       mapped_event->any.type = pressed ? MANETTE_EVENT_BUTTON_PRESS :
+                                          MANETTE_EVENT_BUTTON_RELEASE;
+       mapped_event->button.button = binding->destination.code;
++      mapped_event->button.value = event->other_value;
+ 
+       break;
+     default:
+diff --git a/src/manette-event-private.h b/src/manette-event-private.h
+index a1a00d8..3e4c53b 100644
+--- a/src/manette-event-private.h
++++ b/src/manette-event-private.h
+@@ -48,6 +48,7 @@ struct _ManetteEventButton {
+   guint16 hardware_type;
+   guint16 hardware_code;
+   gint32 hardware_value;
++  gdouble value;
+   guint8 hardware_index;
+   guint16 button;
+ };
+@@ -62,6 +63,7 @@ struct _ManetteEventAbsolute {
+   guint8 hardware_index;
+   guint16 axis;
+   gdouble value;
++  gdouble other_value;
+ };
+ 
+ struct _ManetteEventHat {
+diff --git a/src/manette-event.c b/src/manette-event.c
+index 7404365..7a32964 100644
+--- a/src/manette-event.c
++++ b/src/manette-event.c
+@@ -195,6 +195,33 @@ manette_event_get_hardware_index (const ManetteEvent *self)
+   return self->any.hardware_index;
+ }
+ 
++/**
++ * manette_event_get_button_value:
++ * @self: a #ManetteEvent
++ * @button: (in): relative value of the button
++ *
++ * Gets the relative button value  of @button, if any.
++ *
++ * Returns: whether the button has value
++ */
++gboolean
++manette_event_get_button_value (const ManetteEvent *self,
++			  gdouble            *value)
++{
++  g_return_val_if_fail (self, FALSE);
++  g_return_val_if_fail (value, FALSE);
++
++  switch (self->any.type) {
++  case MANETTE_EVENT_BUTTON_PRESS:
++  case MANETTE_EVENT_BUTTON_RELEASE:
++    *value =  self->button.value;
++    return TRUE;
++  default:
++    return FALSE;
++  }
++}
++
++
+ /**
+  * manette_event_get_button:
+  * @self: a #ManetteEvent
+diff --git a/src/manette-event.h b/src/manette-event.h
+index 0e14d92..ee7fb38 100644
+--- a/src/manette-event.h
++++ b/src/manette-event.h
+@@ -67,6 +67,8 @@ guint16 manette_event_get_hardware_value (const ManetteEvent *self);
+ guint16 manette_event_get_hardware_index (const ManetteEvent *self);
+ gboolean manette_event_get_button (const ManetteEvent *self,
+                                    guint16            *button);
++gboolean manette_event_get_button_value (const ManetteEvent *self,
++			                 gdouble            *value);
+ gboolean manette_event_get_absolute (const ManetteEvent *self,
+                                      guint16            *axis,
+                                      gdouble            *value);
