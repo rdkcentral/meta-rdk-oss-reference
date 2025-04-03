@@ -167,7 +167,7 @@ PACKAGE_ARCH:pn-dbus-glib = "${OSS_LAYER_ARCH}"
 PR:pn-dibbler= "r1"
 PACKAGE_ARCH:pn-dibbler = "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq = "r4"
+PR:pn-dnsmasq = "r1"
 PACKAGE_ARCH:pn-dnsmasq = "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools = "r0"
@@ -416,7 +416,7 @@ PACKAGE_ARCH:pn-libinput = "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg = "r0"
 PACKAGE_ARCH:pn-libjpeg = "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette = "r0"
+PR:pn-libmanette = "r1"
 PACKAGE_ARCH:pn-libmanette = "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd = "r0"
@@ -440,7 +440,7 @@ PACKAGE_ARCH:pn-libnl = "${OSS_LAYER_ARCH}"
 PR:pn-libnsl2 = "r0"
 PACKAGE_ARCH:pn-libnsl2 = "${OSS_LAYER_ARCH}"
 
-PR:pn-libnss-mdns = "r0"
+PR:pn-libnss-mdns = "r1"
 PACKAGE_ARCH:pn-libnss-mdns = "${OSS_LAYER_ARCH}"
 
 PR:pn-liboauth = "r0"
@@ -593,6 +593,9 @@ PACKAGE_ARCH:pn-log4c = "${OSS_LAYER_ARCH}"
 PR:pn-logrotate = "r1"
 PACKAGE_ARCH:pn-logrotate = "${OSS_LAYER_ARCH}"
 
+PR:pn-lsof = "r0"
+PACKAGE_ARCH:pn-lsof = "${OSS_LAYER_ARCH}"
+
 PR:pn-lttng-ust = "r0"
 PACKAGE_ARCH:pn-lttng-ust = "${OSS_LAYER_ARCH}"
 
@@ -653,7 +656,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r0"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r3"
+PR:pn-networkmanager = "r4"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
@@ -686,13 +689,13 @@ PACKAGE_ARCH:pn-opkg = "${OSS_LAYER_ARCH}"
 PR:pn-opkg-arch-config = "r1"
 PACKAGE_ARCH:pn-opkg-arch-config = "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg-utils = "r0"
+PR:pn-opkg-utils = "r1"
 PACKAGE_ARCH:pn-opkg-utils = "${OSS_LAYER_ARCH}"
 
 PR:pn-orc = "r0"
 PACKAGE_ARCH:pn-orc = "${OSS_LAYER_ARCH}"
 
-PR:pn-perl = "r1"
+PR:pn-perl = "r0"
 PACKAGE_ARCH:pn-perl = "${OSS_LAYER_ARCH}"
 
 PR:pn-pixman = "r0"
@@ -792,7 +795,7 @@ PACKAGE_ARCH:pn-strace = "${OSS_LAYER_ARCH}"
 PR:pn-stunnel = "r2"
 PACKAGE_ARCH:pn-stunnel = "${OSS_LAYER_ARCH}"
 
-PR:pn-sysfsutils = "r5"
+PR:pn-sysfsutils = "r6"
 PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 
 PR:pn-syslog-ng = "r2"

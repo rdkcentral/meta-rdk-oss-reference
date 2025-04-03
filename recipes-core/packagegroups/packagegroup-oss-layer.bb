@@ -6,7 +6,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 
 inherit packagegroup
 
-PV = "4.4.0"
+PV = "4.5.0"
 PR = "r0"
 
 # poky components
@@ -114,6 +114,7 @@ RDEPENDS:${PN} = "\
      libxcrypt \
      libxml2 \
      libxslt \
+     lsof \
      lttng-ust \
      lz4 \
      lzo \
