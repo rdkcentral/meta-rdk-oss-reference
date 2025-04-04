@@ -6,3 +6,9 @@ if [ -e ${WORKDIR}/pam.d ]; then
      sed -i 's/^auth/#auth/g' ${D}${sysconfdir}/pam.d/su
 fi
 }
+
+#These plugins are removed from pam as it is not used in RDK
+PAM_PLUGINS:remove += "\
+			pam-plugin-shells \
+			pam-plugin-rootok \
+"
