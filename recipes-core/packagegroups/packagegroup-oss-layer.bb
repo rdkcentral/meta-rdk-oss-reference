@@ -4,7 +4,7 @@ LICENSE = "MIT"
 
 PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 
-inherit packagegroup
+inherit packagegroup bind-config
 
 PV = "4.6.0"
 PR = "r0"
@@ -319,7 +319,6 @@ RDEPENDS:${PN} += "\
      systemd \
      trower-base64 \
      vmtouch \
-     volatile-binds \
      westeros \
      westeros-simplebuffer \
      westeros-simpleshell \
