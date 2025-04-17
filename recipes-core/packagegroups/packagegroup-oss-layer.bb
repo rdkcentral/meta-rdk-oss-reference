@@ -376,3 +376,4 @@ RDEPENDS:${PN} += "\
      woff2 \
      brotli \
 "
+VOLATILE_BINDS:append = "/var/volatile/Test-oss /Test-oss\n"
