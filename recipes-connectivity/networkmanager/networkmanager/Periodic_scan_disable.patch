@@ -1,0 +1,18 @@
+Date: Apr 21 2025
+From: Gururaaja ESR <gururaja_erodesriranganramlingham@comcast.com>
+Subject: Disabled Periodic Scan
+Source: COMCAST
+Signed-off-by: Gururaaja ESR <gururaja_erodesriranganramlingham@comcast.com>
+Index: NetworkManager-1.43.7/src/core/devices/wifi/nm-device-wifi.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/devices/wifi/nm-device-wifi.c	2023-05-03 10:20:35.000000000 -0400
++++ NetworkManager-1.43.7/src/core/devices/wifi/nm-device-wifi.c	2025-04-21 22:13:46.297545877 -0400
+@@ -515,7 +515,7 @@ _scan_notify_allowed(NMDeviceWifi *self,
+     } else if (NM_IN_SET(state, NM_DEVICE_STATE_DISCONNECTED, NM_DEVICE_STATE_FAILED)) {
+         /* Can always scan when disconnected */
+         explicit_allowed = TRUE;
+-        periodic_allowed = TRUE;
++        //periodic_allowed = TRUE; /* Disabling periodic scan for RDKE */
+     } else if (NM_IN_SET(state, NM_DEVICE_STATE_ACTIVATED)) {
+         /* Prohibit periodic scans when connected; we ask the supplicant to
+          * background scan for us, unless the connection is locked to a specific
