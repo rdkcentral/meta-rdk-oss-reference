@@ -44,7 +44,7 @@ while read -r line; do
 		 ipv6=$((ipv6 +1))
 		 DNS_ADDR="$DNS_ADDR \n$ADDR;"
 	 else
-		 echo "Unrecognized IP format '$line'"
+		 echo "Unrecognized IP format '$line'" >>$LOG_FILE
 	 fi
 done<$resolvFile
 
