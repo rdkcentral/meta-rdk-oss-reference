@@ -6,6 +6,9 @@ PACKAGECONFIG:remove = "vconsole ldconfig"
 PACKAGECONFIG:remove = " resolved nss-resolve "
 
 PACKAGECONFIG:remove:libc-uclibc = "sysusers machined"
+DEPENDS += " ${@bb.utils.contains("DISTRO_FEATURES", "apparmor", " apparmor", "" ,d)}"
+PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'apparmor', 'apparmor', '', d)}"
+PACKAGECONFIG[apparmor] = "--enable-apparmor, --disable-apparmor"
 
 #Remove volatile bind dependency as it is not an oss delivered component
 RDEPENDS:${PN}:remove = "volatile-binds"
