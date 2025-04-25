@@ -6,8 +6,6 @@ RDEPENDS:${PN}-xtests:append = " bash"
 PACKAGE_BEFORE_PN += "${PN}-extras"
 FILES:${PN}-extras =  "\
                         ${base_libdir}/libpamc.so* \
-                        ${base_libdir}/security/pam_rootok.so \
-                        ${base_libdir}/security/pam_shells.so \
                         ${sbindir}/faillock \
                         ${sbindir}/mkhomedir_helper \
                         ${sbindir}/pam_timestamp_check \
