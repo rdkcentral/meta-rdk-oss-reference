@@ -2,14 +2,3 @@
 RDEPENDS:${PN}-xtests:remove = "coreutils"
 RDEPENDS:${PN}-xtests:append = " bash"
 
-
-PACKAGE_BEFORE_PN += "${PN}-extras"
-FILES:${PN}-extras =  "\
-                        ${base_libdir}/libpamc.so* \
-                        ${sbindir}/faillock \
-                        ${sbindir}/mkhomedir_helper \
-                        ${sbindir}/pam_timestamp_check \
-                        ${sbindir}/pwhistory_helper \
-                        ${sbindir}/unix_chkpwd \
-                        ${sbindir}/unix_update \
-"
