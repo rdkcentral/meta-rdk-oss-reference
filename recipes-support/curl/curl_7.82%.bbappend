@@ -1,6 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}_${PV}:"
 
-SRC_URI:append = " file://ocsp_request_to_CA_Directly_curl_7.82.patch"
+SRC_URI:append = " file://ocsp_request_to_CA_Directly_curl_7.82.patch \
+                   file://CVE-2024-9681_7.82.0_fix.patch \
+                  "
 
 CURLGNUTLS = "--without-gnutls --with-ssl"
 DEPENDS += " openssl"
