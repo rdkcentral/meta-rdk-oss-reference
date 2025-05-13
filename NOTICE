@@ -5,4 +5,4 @@ Some material:
 Copyright 2023 Comcast Cable Communications Management, LLC  
 licensed under the Apache License, Version 2.0  
  
-(MIT for metadata; source code to match the associated recipe license, other files (bbclass etc.) GPL version 2 only unless otherwise stated)
+Some material is derived from openembedded.org,openbmc or the yocto project and is licensed in the same manner here (MIT for metadata; source code to match the associated recipe license; other files (bbclass etc.) as GPL Version 2 only unless otherwise stated)
