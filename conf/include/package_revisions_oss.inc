@@ -584,7 +584,7 @@ PACKAGE_ARCH:pn-lighttpd = "${OSS_LAYER_ARCH}"
 PR:pn-linenoise = "r1"
 PACKAGE_ARCH:pn-linenoise = "${OSS_LAYER_ARCH}"
 
-PR:pn-linux-libc-headers = "r1"
+PR:pn-linux-libc-headers = "r2"
 PACKAGE_ARCH:pn-linux-libc-headers = "${OSS_LAYER_ARCH}"
 
 PR:pn-log4c = "r0"
