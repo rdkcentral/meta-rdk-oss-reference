@@ -7,7 +7,7 @@ PR = "r0"
 INHIBIT_DEFAULT_DEPS = "1"
 EXCLUDE_FROM_WORLD = "1"
 
-# native packages 
+#Native packages 
 DEPENDS = "\
     abseil-cpp-native \
     acl-native \
@@ -171,10 +171,13 @@ DEPENDS = "\
     zstd-native \
 "
 
-# toolchain
+#Cross Toolchain
 DEPENDS += "gcc-cross-${TARGET_ARCH} binutils-cross-${TARGET_ARCH}"
 
-# rust compiler
+#Include core OSS packages built with the target architecture necessary for constructing the fundamental toolchain
+RDEPENDS:${PN} += "linux-libc-headers libgcc-initial glibc libgcc  libstdc++"
+
+#Rust compiler
 DEPENDS += "rust-cross-${TUNE_PKGARCH}-${TCLIBC} rust-native rust-llvm-native cargo-native"
 
 do_fetch[noexec] = "1"
