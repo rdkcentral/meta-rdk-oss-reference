@@ -45,7 +45,7 @@ Index: git/src/timesync/timesyncd-manager.c
 +				m->packet_count,
 +				m->samples_jitter, spike ? " spike" : "",
 +				m->poll_interval_usec / USEC_PER_SEC),
-+				offset,m->drift_freq / 65536, spike ? " (ignored)" : ""),
++				offset,m->drift_freq / 65536, spike ? " (ignored)" : "");
 +				fclose(fp);
 +	}
 +log_info("DEBUG:Added Response infile");
