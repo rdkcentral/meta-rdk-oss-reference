@@ -27,9 +27,9 @@ Index: git/src/timesync/timesyncd-manager.c
 +				"  delay        : %+.3f sec\n"
 +				"  packet count : %"PRIu64"\n"
 +				"  jitter       : %.3f%s\n"
-+				"  poll interval: %"PRIu64"\n",
-+				"  delta        : %+0.3fs"
-+				"  drift        : %+ " PRIi64 " ppm%s"
++				"  poll interval: %"PRIu64"\n"
++				"  delta        : %+0.3fs\n"
++				"  drift        : %+ " PRIi64 " ppm%n",
 +				NTP_FIELD_LEAP(ntpmsg.field),
 +				NTP_FIELD_VERSION(ntpmsg.field),
 +				NTP_FIELD_MODE(ntpmsg.field),
@@ -44,7 +44,7 @@ Index: git/src/timesync/timesyncd-manager.c
 +				offset, delay,
 +				m->packet_count,
 +				m->samples_jitter, spike ? " spike" : "",
-+				m->poll_interval_usec / USEC_PER_SEC),
++				m->poll_interval_usec / USEC_PER_SEC,
 +				offset,m->drift_freq / 65536, spike ? " (ignored)" : "");
 +				fclose(fp);
 +	}
