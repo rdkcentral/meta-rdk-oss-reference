@@ -22,7 +22,6 @@ Index: NetworkManager-1.43.7/data/NetworkManager.service.in
  #ExecReload=/bin/kill -HUP $MAINPID
 +ExecStartPre= /bin/sh -c 'if [ ! -d /opt/NetworkManager/system-connections ];then mkdir -p /opt/NetworkManager/system-connections; fi'
  ExecStart=@sbindir@/NetworkManager --no-daemon
-+ExecStartPost=/bin/sh /lib/rdk/NM_restartConn.sh
  Restart=on-failure
  # NM doesn't want systemd to kill its children for it
 Index: NetworkManager-1.43.7/tools/meson-post-install.sh
