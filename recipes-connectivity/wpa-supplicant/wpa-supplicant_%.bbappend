@@ -3,7 +3,7 @@ PACKAGECONFIG:append = " openssl"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://defconfig"
-SRC_URI += "${@bb.utils.contains('PREFERRED_VERSION_wpa-supplicant', '2.10', 'file://openssl_no_md4_2.10.patch', 'file://openssl_no_md4.patch', d)}"
+SRC_URI += "file://openssl_no_md4_2.10.patch"
 SRC_URI += "file://fix_HS20_build_with_INTERWORKING.patch"
 SRC_URI += "file://increase_wpa_ctrl_return_buffer.patch"
 SRC_URI += "file://suppress_no_eap_session_id_log.patch"
