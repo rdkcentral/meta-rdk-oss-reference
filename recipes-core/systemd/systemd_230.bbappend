@@ -135,7 +135,7 @@ SRC_URI += " \
 SRC_URI:append = " \
             file://0001-memfd-patch-for-latest-version-of-glibc.patch \
             file://0001-nss-util-silence-warning-about-deprecated-RES_USE_IN.patch \
-            file://99-default.preset 
+            file://99-default.preset \
             "
 
 EXTRA_OECONF += " --enable-polkit=no"
