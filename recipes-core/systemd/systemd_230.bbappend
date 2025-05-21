@@ -132,7 +132,11 @@ SRC_URI += " \
 
 ## The below patches are needed to build systemd V230 with glibc V2.31 on dunfell(Yocto 3.1)
 # journald-minimal-client-metadata-caching patch contains changes the remaining 3 patches as well
-SRC_URI:append = " file://journald-minimal-client-metadata-caching.patch"
+SRC_URI:append = " \
+            file://0001-memfd-patch-for-latest-version-of-glibc.patch \
+            file://0001-nss-util-silence-warning-about-deprecated-RES_USE_IN.patch \
+            file://99-default.preset 
+            "
 
 EXTRA_OECONF += " --enable-polkit=no"
 PACKAGECONFIG:remove = "pam"
