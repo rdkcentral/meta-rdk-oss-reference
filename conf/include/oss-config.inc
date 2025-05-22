@@ -28,8 +28,9 @@ INHERIT:append = " uninative"
 include  conf/distro/include/yocto-uninative.inc
 
 #Use locked sstate from host machine/docker
-HOST_LOCKED_SSTATE_PATH ?= "/opt/locked_sstate"
-include ${@ 'use_host_locked_sstate.inc' if os.path.exists(os.path.join("${HOST_LOCKED_SSTATE_PATH}", "locked-sigs.inc")) else ''}
+DISTRO_FEATURES:append = " use_locked_sstate"
+include ${@bb.utils.contains('DISTRO_FEATURES', 'use_locked_sstate', 'use_host_locked_sstate.inc' , '', d)}
+
 
 require package_revisions_oss.inc
 BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/bluez5/bluez5_5.77*"
