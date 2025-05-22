@@ -7,6 +7,9 @@ PR = "r0"
 INHIBIT_DEFAULT_DEPS = "1"
 EXCLUDE_FROM_WORLD = "1"
 
+inherit license
+do_build[recrdeptask] += "do_populate_lic"
+
 #Native packages 
 DEPENDS = "\
     abseil-cpp-native \
