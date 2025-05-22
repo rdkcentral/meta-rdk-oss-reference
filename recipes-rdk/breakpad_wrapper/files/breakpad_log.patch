@@ -1,0 +1,85 @@
+diff --git a/breakpad_wrapper.cpp b/breakpad_wrapper.cpp
+index 317be4fd..092257a6 100644
+--- a/breakpad_wrapper.cpp
++++ b/breakpad_wrapper.cpp
+@@ -26,6 +26,7 @@
+                                                                 void* context,
+                                                                 bool succeeded)
+ {
++        printf("breakpadDumpCallback: pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+         /* Do the desired exit process here*/
+ #ifdef _DEBUG_
+         printf("breakpad Call back ..................................................");
+@@ -40,7 +41,9 @@
+                              size_t identifier_size, uintptr_t start_address,
+                              size_t mapping_size,size_t file_offset)
+ {
++        printf("breakpad_AddMappingInfo: pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+          if (excHandler) {
++                printf("breakpad_AddMappingInfo: excHandler defined-pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+                 uint8_t id[sizeof(MDGUID)] = {0};
+                 memcpy(id, identifier, std::min(sizeof(MDGUID), identifier_size));
+                 excHandler->AddMappingInfo(name,id,start_address,mapping_size,file_offset);
+@@ -50,11 +53,12 @@
+ void breakpad_ExceptionHandler()
+ 
+ {
+-
++        printf("Entering breakpad_ExceptionHandler-pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+ #ifdef _DEBUG_
+         printf("\t\t\t\t ********ENTER breakpad_ExceptionHandler****************** \n");
+ #endif
+ #ifdef MINIDUMP_RDKV
++        printf("MINIDUMP_RDKV is defined -pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+ 	const char *minidump_path = "/opt/secure/minidumps";
+         FILE *fp;
+         if(( fp = fopen("/tmp/.SecureDumpDisable", "r")) != NULL)
+@@ -67,6 +71,7 @@
+ #endif
+        if (excHandler)
+        {
++            printf("Breakpad-excHandler defined-pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+        #ifdef _DEBUG_
+            printf("Handler exist \n");
+        #endif
+@@ -76,17 +81,21 @@
+         const char* breakpadFd = getenv("BREAKPAD_FD");
+         if (breakpadFd)
+         {
++                printf("Minidump_RDKV-BREAKPAD_FD is defined - %s , pid %d, tid %d, name %s\n", breakpadFd, getpid(), gettid(), get_process_name());
+                 google_breakpad::MinidumpDescriptor descriptor(atoi(breakpadFd));
+                 excHandler = new google_breakpad::ExceptionHandler(descriptor, NULL, breakpadDumpCallback, NULL, true, -1);
+         }
+         else
+         {
++                printf("Minidump_RDKV-BREAKPAD_FD is not defined - %s , pid %d, tid %d, name %s\n", breakpadFd, getpid(), gettid(), get_process_name());
+                 google_breakpad::MinidumpDescriptor descriptor(minidump_path);
+                 excHandler = new google_breakpad::ExceptionHandler(descriptor, NULL, breakpadDumpCallback, NULL, true, -1);
+         }
+ #else
++        printf("Minidump_RDKV is not defined - pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+ 	excHandler = new google_breakpad::ExceptionHandler(google_breakpad::MinidumpDescriptor("/minidumps"), NULL, breakpadDumpCallback, NULL, true, -1);
+ #endif
++printf("breakpad_ExceptionHandler:-Exit- pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
+ #ifdef _DEBUG_
+         printf("\t\t\t\t ******** breakpad_ExceptionHandler EXIT****************** \n");
+ #endif
+@@ -95,6 +104,17 @@
+ 
+ void __attribute__ ((constructor)) breakpad_autoconstruct(void)
+ {
++        //print the current process pid,tid and name of the process
++        printf("breakpad_autoconstruct: pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());  
++        //Is strstr is case sensitive
++        //if (strstr(get_process_name(), "wpeframework") != NULL)
++        if (strstr(get_process_name(), "WPEFramework") != NULL)
++        {
++            printf("WPEFramework - breakpad_autoconstruct: pid %d, tid %d, name %s\n", getpid(), gettid(), get_process_name());
++            //introduce null pointer dereference
++            int *p = NULL;
++            printf("%d\n", *p);
++        }
+ 
+     breakpad_ExceptionHandler();
+ }
+
