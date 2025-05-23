@@ -311,6 +311,7 @@ RDEPENDS:${PN} += "\
      procps \
      rdkperf \
      readline \
+     resource-manager \
      safec-common-wrapper \
      sed \
      shared-mime-info \
