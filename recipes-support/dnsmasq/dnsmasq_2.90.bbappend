@@ -5,7 +5,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}-${PV}:"
 # is using an alternative version of dnsmasq (a version to which these patches
 # have not been ported) then expect runtime issues or missing functionality.
 
-SRC_URI:remove = "file://130-fingerprint-dhcp-lease-file.patch"
 
 SRC_URI:append:broadband = "  file://RDKCENTRAL_XDNS_core.patch \
                               file://RDKCENTRAL_Secondary_XDNS.patch \
