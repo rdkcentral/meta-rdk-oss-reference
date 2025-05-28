@@ -584,7 +584,7 @@ PACKAGE_ARCH:pn-lighttpd = "${OSS_LAYER_ARCH}"
 PR:pn-linenoise = "r1"
 PACKAGE_ARCH:pn-linenoise = "${OSS_LAYER_ARCH}"
 
-PR:pn-linux-libc-headers = "r1"
+PR:pn-linux-libc-headers = "r2"
 PACKAGE_ARCH:pn-linux-libc-headers = "${OSS_LAYER_ARCH}"
 
 PR:pn-log4c = "r0"
@@ -656,7 +656,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r0"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r4"
+PR:pn-networkmanager = "r5"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
@@ -668,7 +668,7 @@ PACKAGE_ARCH:pn-nopoll = "${OSS_LAYER_ARCH}"
 PR:pn-nspr = "r0"
 PACKAGE_ARCH:pn-nspr = "${OSS_LAYER_ARCH}"
 
-PR:pn-nss = "r0"
+PR:pn-nss = "r1"
 PACKAGE_ARCH:pn-nss = "${OSS_LAYER_ARCH}"
 
 PR:pn-openjpeg = "r0"
