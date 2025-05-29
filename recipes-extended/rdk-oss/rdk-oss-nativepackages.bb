@@ -27,6 +27,7 @@ DEPENDS = "\
     ca-certificates-native \
     ccache-native \
     chrpath-native \
+    chrpath-replacement-native \
     cmake-native \
     coreutils-native \
     cracklib-native \

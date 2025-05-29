@@ -28,7 +28,7 @@ INHERIT:append = " uninative"
 include  conf/distro/include/yocto-uninative.inc
 
 #Use locked sstate from host machine/docker
-DISTRO_FEATURES:append = " use_locked_sstate"
+#DISTRO_FEATURES:append = " use_locked_sstate"
 include ${@bb.utils.contains('DISTRO_FEATURES', 'use_locked_sstate', 'use_host_locked_sstate.inc' , '', d)}
 
 
