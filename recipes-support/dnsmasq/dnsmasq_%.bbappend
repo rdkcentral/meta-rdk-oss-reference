@@ -3,7 +3,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI += "file://dnsmasq.service"
 
 SRC_URI += "file://dns.conf"
-SRC_URI += "file://130-fingerprint-dhcp-lease-file.patch"
 
 CFLAGS += " -DNO_INOTIFY"
      
