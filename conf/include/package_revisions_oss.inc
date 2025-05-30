@@ -668,7 +668,7 @@ PACKAGE_ARCH:pn-nopoll = "${OSS_LAYER_ARCH}"
 PR:pn-nspr = "r0"
 PACKAGE_ARCH:pn-nspr = "${OSS_LAYER_ARCH}"
 
-PR:pn-nss = "r0"
+PR:pn-nss = "r1"
 PACKAGE_ARCH:pn-nss = "${OSS_LAYER_ARCH}"
 
 PR:pn-openjpeg = "r0"
@@ -801,7 +801,7 @@ PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 PR:pn-syslog-ng = "r2"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r10"
+PR:pn-systemd = "r11"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
