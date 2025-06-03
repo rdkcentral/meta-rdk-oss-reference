@@ -213,9 +213,9 @@ FILES:${PN}-daemon += " \
 "
 FILES:${PN}:remove = "${sysconfdir}/resolv.dnsmasq"
 FILES:${PN}:remove = "${sysconfdir}/resolv.conf"
-FLIES:${PN}-daemon:remove = "${sysconfdir}/resolv.conf"
-FLIES:${PN}-daemon:remove = "${sysconfdir}/resolv.dnsmasq"
-FLIES:${PN}-daemon:remove = "${systemd_system_unitdir}/NetworkManager-wait-online.service"
+FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.conf"
+FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.dnsmasq"
+FILES:${PN}-daemon:remove = "${systemd_system_unitdir}/NetworkManager-wait-online.service"
 #{nonarch_libdir}/NetworkManager/system-connections
 RDEPENDS:${PN}-daemon += "\
     ${@bb.utils.contains('PACKAGECONFIG', 'ifupdown', 'bash', '', d)} \
@@ -262,6 +262,7 @@ do_install:append() {
     fi
     
     ln -sf /opt/secure/NetworkManager/system-connections ${D}${sysconfdir}/NetworkManager/
+    rm -f ${D}${systemd_system_unitdir}/NetworkManager-wait-online.service
 
     # Enable iwd if compiled
     if ${@bb.utils.contains('PACKAGECONFIG','iwd','true','false',d)}; then
