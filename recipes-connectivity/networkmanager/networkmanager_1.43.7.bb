@@ -215,7 +215,6 @@ FILES:${PN}:remove = "${sysconfdir}/resolv.dnsmasq"
 FILES:${PN}:remove = "${sysconfdir}/resolv.conf"
 FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.conf"
 FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.dnsmasq"
-FILES:${PN}-daemon:remove = "${systemd_system_unitdir}/NetworkManager-wait-online.service"
 #{nonarch_libdir}/NetworkManager/system-connections
 RDEPENDS:${PN}-daemon += "\
     ${@bb.utils.contains('PACKAGECONFIG', 'ifupdown', 'bash', '', d)} \
@@ -229,7 +228,6 @@ SYSTEMD_SERVICE:${PN}-daemon = "\
     NetworkManager.service \
     NetworkManager-dispatcher.service \
 "
-SYSTEMD_SERVICE:${PN}-daemon:remove = "NetworkManager-wait-online.service"
 RCONFLICTS:${PN}-daemon += "connman"
 ALTERNATIVE_PRIORITY = "100"
 ALTERNATIVE:${PN}-daemon = "${@bb.utils.contains('PACKAGECONFIG','man-resolv-conf','resolv-conf','',d)}"
