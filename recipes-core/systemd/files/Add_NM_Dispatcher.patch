@@ -13,7 +13,7 @@ Index: git/presets/90-systemd.preset
  
 +enable NetworkManager-dispatcher.service
 +enable dbus-org.freedesktop.nm-dispatcher.service
-+
++disable NetworkManager-wait-online.service
  disable console-getty.service
  disable debug-shell.service
  
