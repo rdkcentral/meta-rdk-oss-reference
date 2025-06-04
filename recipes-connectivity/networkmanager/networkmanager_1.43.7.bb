@@ -273,12 +273,6 @@ do_install:append() {
     fi
 }
 
-pkg_postinst_ontarget:${PN}-daemon() {
-    if [ -n "$D" ]; then
-        exit 0
-    fi
-}
-
 inherit syslog-ng-config-gen
 SYSLOG-NG_FILTER = "networkmanager"
 SYSLOG-NG_SERVICE_networkmanager = "NetworkManager.service"
