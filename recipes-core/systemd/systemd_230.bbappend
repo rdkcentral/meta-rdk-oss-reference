@@ -145,7 +145,6 @@ SRC_URI:append = " \
             file://99-default.preset \
             "
 
-
 EXTRA_OECONF += " --enable-polkit=no"
 PACKAGECONFIG:remove = "pam"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/10-ubi-device-systemd.rules"
