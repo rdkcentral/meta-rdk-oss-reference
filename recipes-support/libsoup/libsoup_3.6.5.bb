@@ -12,11 +12,9 @@ DEPENDS = "glib-2.0 glib-2.0-native libxml2 sqlite3 libpsl nghttp2"
 SHRT_VER = "${@d.getVar('PV').split('.')[0]}.${@d.getVar('PV').split('.')[1]}"
 
 SRC_URI = "${GNOME_MIRROR}/libsoup/${SHRT_VER}/libsoup-${PV}.tar.xz"
-SRC_URI[sha256sum] = "78c8fa37cb152d40ec8c4a148d6155e2f6947f3f1602a7cda3a31ad40f5ee2f3"
+SRC_URI[sha256sum] = "6891765aac3e949017945c3eaebd8cc8216df772456dc9f460976fbdb7ada234"
 
-SRC_URI += "file://comcast-LLAMA-11563-Avoid-sending-empty-data-frames-with-EOF.patch"
-SRC_URI += "file://384-libsoup-Increase-HTTP-header-size-limit.patch"
-SRC_URI += "file://0001-set-same_site_policy-to-NONE-if-COL_SAME_SITE_POLICY_3.0.patch"
+SRC_URI += "file://comcast-RDK-56000-Cookie-size-limit-log_3.0.patch"
 
 PROVIDES = "libsoup-3.0"
 CVE_PRODUCT = "libsoup"
