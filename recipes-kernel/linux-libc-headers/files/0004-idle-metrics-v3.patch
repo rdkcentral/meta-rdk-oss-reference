@@ -8,10 +8,10 @@ Test Procedure: Run collectd to load AV metrics
 Risks: Low
 ---
 
-diff -Naur linux-5.4_orig/include/uapi/linux/prctl.h linux-5.4/include/uapi/linux/prctl.h
---- linux-5.4_orig/include/uapi/linux/prctl.h	2024-04-10 00:25:35.953948622 +0100
-+++ linux-5.4/include/uapi/linux/prctl.h	2024-04-10 00:31:27.624190261 +0100
-@@ -241,50 +241,50 @@
+diff -Naur linux-4.9_orig/include/uapi/linux/prctl.h linux-4.9/include/uapi/linux/prctl.h
+--- linux-4.9_orig/include/uapi/linux/prctl.h	2024-04-10 01:42:38.750245444 +0100
++++ linux-4.9/include/uapi/linux/prctl.h	2024-04-10 01:48:59.232024927 +0100
+@@ -204,50 +204,50 @@
  
  /* define structure(s) used for logging video and audio metrics */
  typedef struct {
@@ -105,7 +105,7 @@ diff -Naur linux-5.4_orig/include/uapi/linux/prctl.h linux-5.4/include/uapi/linu
  } VIDEO_METRICS;
  /* max two AV channels supported */
  #define MAX_VIDEO_CHANNELS	2
-@@ -303,53 +303,53 @@
+@@ -266,53 +266,53 @@
  
  /* define structure(s) used for logging audio metrics */
  typedef struct {
@@ -196,9 +196,9 @@ diff -Naur linux-5.4_orig/include/uapi/linux/prctl.h linux-5.4/include/uapi/linu
  	AUDIO_INPUT_METRICS input[AUDIO_METRIC_TYPE_MAX_INPUTS];
  	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
  } AUDIO_METRICS;
-@@ -363,54 +363,54 @@
+@@ -325,54 +325,54 @@
+ #define T962X3_NUM_CPUS 4
  
- /* define structure(s) used for logging idle metrics */
  typedef struct {
 -	unsigned long long metricStartTime;
 -	unsigned long long metricEndTime;

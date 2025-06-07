@@ -15,6 +15,7 @@ PACKAGECONFIG[xdgv4] = "--enable-xdgv4=yes"
 PACKAGECONFIG[xdgv5] = "--enable-xdgv5=yes"
 PACKAGECONFIG[xdgstable] = "--enable-xdgstable=yes"
 PACKAGECONFIG[modules] = "--enable-modules=yes,,virtual/westeros-soc"
+PACKAGECONFIG[explicit-sync] = "--enable-lexpsyncprotocol=yes, , wayland-protocols"
 
 S = "${WORKDIR}/git"
 
@@ -33,4 +34,5 @@ do_compile:prepend() {
    export SCANNER_TOOL=${STAGING_BINDIR_NATIVE}/wayland-scanner
    oe_runmake -C ${S}/protocol
    oe_runmake -C ${S}/linux-dmabuf/protocol
+   oe_runmake -C ${S}/linux-expsync/protocol
 }
