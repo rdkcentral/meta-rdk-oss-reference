@@ -38,3 +38,5 @@ RDEPENDS:${PN} += "busybox"
 FILES:${PN}:append = " ${base_libdir}/rdk/* \
                      "
 FILES:${PN} += " ${systemd_unitdir}/system/dnsmasq.service.d/dns.conf"
+
+SYSTEMD_AUTO_ENABLE = "disable"
