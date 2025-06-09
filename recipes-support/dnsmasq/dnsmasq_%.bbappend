@@ -30,19 +30,11 @@ do_install:append() {
      sed -i -- 's/#resolv-file=/resolv-file="\/etc\/resolv.dnsmasq"/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#user=/user=root/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#dhcp-leasefile=\/var\/lib\/misc\/dnsmasq.leases/dhcp-leasefile=\/tmp\/dnsmasq.leases/g' ${D}/etc/dnsmasq.conf
-     touch ${D}${sysconfdir}/resolv.conf
-     echo "nameserver 127.0.0.1" > ${D}${sysconfdir}/resolv.conf
-     echo "options timeout:1" >> ${D}${sysconfdir}/resolv.conf
-     echo "options attempts:2" >> ${D}${sysconfdir}/resolv.conf
-     touch ${D}${sysconfdir}/resolv.dnsmasq
-     install -m 0755 ${S}/../dnsmasqLauncher.sh ${D}${base_libdir}/rdk
      install -D -m 0644 ${WORKDIR}/dns.conf ${D}${systemd_unitdir}/system/dnsmasq.service.d/dns.conf
 }
 
 RDEPENDS:${PN} += "busybox"
 
-FILES:${PN}:append = " ${sysconfdir}/resolv.conf \
-                       ${sysconfdir}/resolv.dnsmasq \
-                       ${base_libdir}/rdk/* \
-                      "
+FILES:${PN}:append = " ${base_libdir}/rdk/* \
+                     "
 FILES:${PN} += " ${systemd_unitdir}/system/dnsmasq.service.d/dns.conf"
