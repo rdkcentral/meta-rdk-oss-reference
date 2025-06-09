@@ -252,6 +252,7 @@ RDEPENDS:${PN} += "\
      coreutils \
      crun \
      ctemplate \
+     dnsmasq \
      dosfstools \
      essos \
      fcgi \
