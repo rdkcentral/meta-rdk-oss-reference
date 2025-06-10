@@ -211,10 +211,6 @@ FILES:${PN}-daemon += " \
     ${sysconfdir}/sysconfig/network-scripts \
     ${systemd_system_unitdir} \
 "
-FILES:${PN}:remove = "${sysconfdir}/resolv.dnsmasq"
-FILES:${PN}:remove = "${sysconfdir}/resolv.conf"
-FLIES:${PN}-daemon:remove = "${sysconfdir}/resolv.conf"
-FLIES:${PN}-daemon:remove = "${sysconfdir}/resolv.dnsmasq"
 FLIES:${PN}-daemon:remove = "${systemd_system_unitdir}/NetworkManager-wait-online.service"
 #{nonarch_libdir}/NetworkManager/system-connections
 RDEPENDS:${PN}-daemon += "\
