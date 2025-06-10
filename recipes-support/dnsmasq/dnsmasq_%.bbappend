@@ -25,7 +25,6 @@ LOGROTATE_SIZE_MEM_dnsmasq="1572864"
 LOGROTATE_ROTATION_MEM_dnsmasq="3"
 
 do_install:append() {
-     install -d ${D}${base_libdir}/rdk
      install -m 0644 ${WORKDIR}/dnsmasq.service ${D}${systemd_unitdir}/system
      sed -i -- 's/#resolv-file=/resolv-file="\/etc\/resolv.dnsmasq"/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#user=/user=root/g' ${D}/etc/dnsmasq.conf
