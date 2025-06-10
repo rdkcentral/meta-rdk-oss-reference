@@ -24,6 +24,9 @@ LOGROTATE_ROTATION_dnsmasq="3"
 LOGROTATE_SIZE_MEM_dnsmasq="1572864"
 LOGROTATE_ROTATION_MEM_dnsmasq="3"
 
+PACKAGECONFIG:append = " dbus"
+PACKAGECONFIG[dbus] = "--enable-dbus,--disable-dbus,dbus"
+
 do_install:append() {
      install -m 0644 ${WORKDIR}/dnsmasq.service ${D}${systemd_unitdir}/system
      sed -i -- 's/#resolv-file=/resolv-file="\/etc\/resolv.dnsmasq"/g' ${D}/etc/dnsmasq.conf
