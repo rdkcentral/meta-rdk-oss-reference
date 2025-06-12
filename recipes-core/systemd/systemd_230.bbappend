@@ -15,7 +15,7 @@ PACKAGECONFIG[apparmor] = "--enable-apparmor, --disable-apparmor"
 RDEPENDS:${PN}:remove = "volatile-binds"
 
 
-_OECONF += "--disable-ldconfig"
+EXTRA_OECONF += "--disable-ldconfig"
 EXTRA_OECONF:append:libc-uclibc = " --disable-sysusers --disable-machined "
 
 CFLAGS:append:arm = " -fno-lto"
