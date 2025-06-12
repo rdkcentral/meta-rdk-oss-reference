@@ -15,7 +15,7 @@ PACKAGECONFIG[apparmor] = "--enable-apparmor, --disable-apparmor"
 RDEPENDS:${PN}:remove = "volatile-binds"
 
 
-EXTRA_OECONF += "--disable-ldconfig"
+_OECONF += "--disable-ldconfig"
 EXTRA_OECONF:append:libc-uclibc = " --disable-sysusers --disable-machined "
 
 CFLAGS:append:arm = " -fno-lto"
@@ -201,7 +201,8 @@ SRC_URI += "\
             file://systemd230-forec-reboot-on-freeze.patch \
             file://0001-Added-decrement-of-notify-watchers-when-we-dont-need.patch \
             file://0001-Added-code-to-cleanup-all-the-xisting-watches-on-pat.patch \
-            file://0001-Added-Extra-information-fro-NTP-Status.patch \
+            file://add_info_ntp_analytics.patch \
+            file://ntp_client_info.patch \
            "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://0001-In-our-echo-system-we-are-managing-last-known-good-t.patch', '', d)} "
