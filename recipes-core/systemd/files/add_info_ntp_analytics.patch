@@ -43,6 +43,7 @@ Index: git/src/timesync/timesyncd-manager.c
 +               log_info("  adjust (slew): %+.3f sec", offset);
          } else {
                  tmx.modes = ADJ_STATUS | ADJ_NANO | ADJ_SETOFFSET;
+ 
 @@ -374,10 +378,11 @@ static int manager_adjust_clock(Manager
          (void) touch("/var/lib/systemd/clock");
          log_info("Time response event, set the event flag");
