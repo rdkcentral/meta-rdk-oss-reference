@@ -74,3 +74,8 @@ do_install_ptest() {
 	  do cp ${S}/$i $t; \
 	done
 }
+
+PACKAGE_BEFORE_PN += "${PN}-extras"
+FILES:${PN}-extras = " \
+    ${bindir}/pcregrep \
+"
