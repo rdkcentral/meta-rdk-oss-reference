@@ -3,3 +3,7 @@ FILES:${PN}-extras = " \
     ${bindir}/zstd \
     ${bindir}/pzstd \
 "
+FILES:${PN}:remove = "\
+    ${bindir}/zstd \
+    ${bindir}/pzstd \
+"
