@@ -431,7 +431,7 @@ PACKAGE_ARCH:pn-libmicrohttpd = "${OSS_LAYER_ARCH}"
 PR:pn-libmng = "r0"
 PACKAGE_ARCH:pn-libmng = "${OSS_LAYER_ARCH}"
 
-PR:pn- = "r0"
+PR:pn-libmnl = "r0"
 PACKAGE_ARCH:pn-libmnl = "${OSS_LAYER_ARCH}"
 
 PR:pn-libndp = "r0"
