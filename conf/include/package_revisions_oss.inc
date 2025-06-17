@@ -179,6 +179,9 @@ PACKAGE_ARCH:pn-e2fsprogs = "${OSS_LAYER_ARCH}"
 PR:pn-ebtables = "r4"
 PACKAGE_ARCH:pn-ebtables = "${OSS_LAYER_ARCH}"
 
+PR:pn-ethtool = "r0"
+PACKAGE_ARCH:pn-ethtool = "${OSS_LAYER_ARCH}"
+
 PR:pn-elfutils = "r0"
 PACKAGE_ARCH:pn-elfutils = "${OSS_LAYER_ARCH}"
 
@@ -427,6 +430,9 @@ PACKAGE_ARCH:pn-libmicrohttpd = "${OSS_LAYER_ARCH}"
 
 PR:pn-libmng = "r0"
 PACKAGE_ARCH:pn-libmng = "${OSS_LAYER_ARCH}"
+
+PR:pn-libmnl = "r0"
+PACKAGE_ARCH:pn-libmnl = "${OSS_LAYER_ARCH}"
 
 PR:pn-libndp = "r0"
 PACKAGE_ARCH:pn-libndp = "${OSS_LAYER_ARCH}"
