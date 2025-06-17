@@ -179,7 +179,7 @@ PACKAGE_ARCH:pn-e2fsprogs = "${OSS_LAYER_ARCH}"
 PR:pn-ebtables = "r4"
 PACKAGE_ARCH:pn-ebtables = "${OSS_LAYER_ARCH}"
 
-PR:pn-ethttol = "r0"
+PR:pn-ethtool = "r0"
 PACKAGE_ARCH:pn-ethtool = "${OSS_LAYER_ARCH}"
 
 PR:pn-elfutils = "r0"
