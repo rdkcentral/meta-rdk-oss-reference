@@ -179,6 +179,7 @@ RDEPENDS:${PN} += "\
      dibbler-client \
      directfb \
      ebtables \
+     ethtool \
      evtest \
      gflags \
      googletest \
@@ -192,6 +193,7 @@ RDEPENDS:${PN} += "\
      libev \
      libmicrohttpd \
      libmng \
+     libmnl \
      liboauth \
      libol \
      libomxil \
