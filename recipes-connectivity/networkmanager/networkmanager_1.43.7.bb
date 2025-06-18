@@ -98,7 +98,7 @@ PACKAGECONFIG[selinux] = "-Dselinux=true,-Dselinux=false,libselinux"
 #PACKAGECONFIG[vala] = "-Dvapi=true,-Dvapi=false"
 #PACKAGECONFIG[dhcpcd] = "-Ddhcpcd=${base_sbindir}/dhcpcd,-Ddhcpcd=no,,dhcpcd"
 #PACKAGECONFIG[dhclient] = "-Ddhclient=yes,-Ddhclient=no,,dhcp"
-PACKAGECONFIG[concheck] = "-Dconcheck=true,-Dconcheck=false"
+PACKAGECONFIG[concheck] = "-Dconcheck=true,-Dconcheck=true"
 # The following PACKAGECONFIG is used to determine whether NM is managing /etc/resolv.conf itself or not
 #PACKAGECONFIG[man-resolv-conf] = ",,"
 #PACKAGECONFIG:append = "man-resolv-conf"
