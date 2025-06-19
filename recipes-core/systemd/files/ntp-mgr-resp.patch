@@ -1,0 +1,56 @@
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c
++++ git/src/timesync/timesyncd-manager.c
+@@ -687,6 +687,51 @@ static int manager_receive_response(sd_e
+                   m->poll_interval_usec / USEC_PER_SEC, offset, delay, m->samples_jitter, m->drift_ppm,
+                   spike ? " (ignored)" : "");
+ 
++
++	log_info("DEBUG:Adding info file");
++	FILE *fp = fopen("/tmp/ntp-status-latest.log", "w");
++	if (fp) {
++		fprintf(fp,
++				"NTP response:\n"
++				"  leap         : %i\n"
++				"  version      : %i\n"
++				"  mode         : %i\n"
++				"  stratum      : %u\n"
++				"  precision    : %.6f sec (%i)\n"
++				"  root distance: %.6f sec\n"
++				"  reference    : %.4s\n"
++				"  origin       : %.3f\n"
++				"  receive      : %.3f\n"
++				"  transmit     : %.3f\n"
++				"  dest         : %.3f\n"
++				"  offset       : %+.3f sec\n"
++				"  delay        : %+.3f sec\n"
++				"  packet count : %"PRIu64"\n"
++				"  jitter       : %.3f%s\n"
++				"  poll interval: %"PRIu64"\n"
++				"  delta        : %+0.3fs\n"
++				"  drift        : %+ " PRIi64 " ppm%n",
++				NTP_FIELD_LEAP(ntpmsg.field),
++				NTP_FIELD_VERSION(ntpmsg.field),
++				NTP_FIELD_MODE(ntpmsg.field),
++				ntpmsg.stratum,
++				exp2(ntpmsg.precision), ntpmsg.precision,
++				root_distance,
++				ntpmsg.stratum == 1 ? ntpmsg.refid : "n/a",
++				origin - OFFSET_1900_1970,
++				receive - OFFSET_1900_1970,
++				trans - OFFSET_1900_1970,
++				dest - OFFSET_1900_1970,
++				offset, delay,
++				m->packet_count,
++				m->samples_jitter, spike ? " spike" : "",
++				m->poll_interval_usec / USEC_PER_SEC,
++				offset,m->drift_ppm, spike ? " (ignored)" : "");
++				fclose(fp);
++	}
++log_info("DEBUG:Added Response infile");
++
++
+         if (!m->good) {
+                 _cleanup_free_ char *pretty = NULL;
+ 

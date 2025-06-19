@@ -1,0 +1,51 @@
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c
++++ git/src/timesync/timesyncd-manager.c
+@@ -696,6 +696,46 @@ static int manager_receive_response(sd_e
+                 log_info("Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
+                 sd_notifyf(false, "STATUS=Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
+         }
++log_debug("DEBUG:Adding info file");
++FILE *fp = fopen("/tmp/ntp-status-latest.log", "w");
++if (fp) {
++	fprintf(fp,
++			"NTP response:\n"
++			"  leap         : %i\n"
++			"  version      : %i\n"
++			"  mode         : %i\n"
++			"  stratum      : %u\n"
++			"  precision    : %.6f sec (%i)\n"
++			"  root distance: %.6f sec\n"
++			"  reference    : %.4s\n"
++			"  origin       : %.3f\n"
++			"  receive      : %.3f\n"
++			"  transmit     : %.3f\n"
++			"  dest         : %.3f\n"
++			"  offset       : %+.3f sec\n"
++			"  delay        : %+.3f sec\n"
++			"  packet count : %"PRIu64"\n"
++			"  jitter       : %.3f%s\n"
++			"  poll interval: %"PRIu64"\n",
++			NTP_FIELD_LEAP(ntpmsg.field),
++			NTP_FIELD_VERSION(ntpmsg.field),
++			NTP_FIELD_MODE(ntpmsg.field),
++			ntpmsg.stratum,
++			exp2(ntpmsg.precision), ntpmsg.precision,
++			root_distance,
++			ntpmsg.stratum == 1 ? ntpmsg.refid : "n/a",
++			origin - OFFSET_1900_1970,
++			receive - OFFSET_1900_1970,
++			trans - OFFSET_1900_1970,
++			dest - OFFSET_1900_1970,
++			offset, delay,
++			m->packet_count,
++			m->samples_jitter, spike ? " spike" : "",
++			m->poll_interval_usec / USEC_PER_SEC);
++	fclose(fp);
++}
++
++log_debug("DEBUG:Addded info -DONE");
+ 
+         r = manager_arm_timer(m, m->poll_interval_usec);
+         if (r < 0)
