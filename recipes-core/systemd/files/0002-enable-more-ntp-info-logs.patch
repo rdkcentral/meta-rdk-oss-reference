@@ -19,7 +19,7 @@ Index: git/src/timesync/timesyncd-manager.c
          return manager_connect(m);
  }
  
-@@ -192,11 +193,14 @@ static int manager_send_request(Manager
+@@ -192,13 +193,17 @@ static int manager_send_request(Manager
          ntpmsg.trans_time.frac = htobe32(m->trans_time.tv_nsec);
  
          server_address_pretty(m->current_server_address, &pretty);
@@ -34,8 +34,11 @@ Index: git/src/timesync/timesyncd-manager.c
 +                log_info("Sent NTP request to %s (%s) at %lld ms.", strna(pretty), m->current_server_name->string,uptime_ms);
          } else {
                  log_debug_errno(errno, "Sending NTP request to %s (%s) failed: %m", strna(pretty), m->current_server_name->string);
++		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
-@@ -328,7 +332,7 @@ static int manager_adjust_clock(Manager
+         }
+ 
+@@ -328,7 +333,7 @@ static int manager_adjust_clock(Manager
                  tmx.constant = log2i(m->poll_interval_usec / USEC_PER_SEC) - 4;
                  tmx.maxerror = 0;
                  tmx.esterror = 0;
@@ -44,7 +47,7 @@ Index: git/src/timesync/timesyncd-manager.c
          } else {
                  tmx.modes = ADJ_STATUS | ADJ_NANO | ADJ_SETOFFSET;
  
-@@ -343,7 +347,7 @@ static int manager_adjust_clock(Manager
+@@ -343,7 +348,7 @@ static int manager_adjust_clock(Manager
                  }
  
                  m->jumped = true;
@@ -53,7 +56,7 @@ Index: git/src/timesync/timesyncd-manager.c
          }
  
          /*
-@@ -374,10 +378,11 @@ static int manager_adjust_clock(Manager
+@@ -374,10 +379,11 @@ static int manager_adjust_clock(Manager
          (void) touch("/var/lib/systemd/clock");
          log_info("Time response event, set the event flag");
          touch("/tmp/clock-event");
@@ -66,7 +69,7 @@ Index: git/src/timesync/timesyncd-manager.c
                    "  time now     : %li.%03llu\n"
                    "  constant     : %li\n"
                    "  offset       : %+.3f sec\n"
-@@ -529,7 +534,7 @@ static int manager_receive_response(sd_e
+@@ -529,7 +535,7 @@ static int manager_receive_response(sd_e
          if (!m->current_server_name ||
              !m->current_server_address ||
              !sockaddr_equal(&server_addr, &m->current_server_address->sockaddr)) {
@@ -75,7 +78,7 @@ Index: git/src/timesync/timesyncd-manager.c
                  return 0;
          }
  
-@@ -550,7 +555,7 @@ static int manager_receive_response(sd_e
+@@ -550,7 +556,7 @@ static int manager_receive_response(sd_e
          }
  
          if (!m->pending) {
@@ -84,7 +87,7 @@ Index: git/src/timesync/timesyncd-manager.c
                  return 0;
          }
  
-@@ -559,7 +564,8 @@ static int manager_receive_response(sd_e
+@@ -559,7 +565,8 @@ static int manager_receive_response(sd_e
          /* check our "time cookie" (we just stored nanoseconds in the fraction field) */
          if (be32toh(ntpmsg.origin_time.sec) != m->trans_time.tv_sec + OFFSET_1900_1970 ||
              be32toh(ntpmsg.origin_time.frac) != m->trans_time.tv_nsec) {
@@ -94,7 +97,7 @@ Index: git/src/timesync/timesyncd-manager.c
                  return 0;
          }
  
-@@ -567,29 +573,34 @@ static int manager_receive_response(sd_e
+@@ -567,29 +574,34 @@ static int manager_receive_response(sd_e
  
          if (be32toh(ntpmsg.recv_time.sec) < TIME_EPOCH + OFFSET_1900_1970 ||
              be32toh(ntpmsg.trans_time.sec) < TIME_EPOCH + OFFSET_1900_1970) {
@@ -134,7 +137,7 @@ Index: git/src/timesync/timesyncd-manager.c
                  return manager_connect(m);
          }
  
-@@ -600,6 +611,12 @@ static int manager_receive_response(sd_e
+@@ -600,6 +612,12 @@ static int manager_receive_response(sd_e
          /* Stop listening */
          manager_listen_stop(m);
  
@@ -147,7 +150,7 @@ Index: git/src/timesync/timesyncd-manager.c
          /* announce leap seconds */
          if (NTP_FIELD_LEAP(ntpmsg.field) & NTP_LEAP_PLUSSEC)
                  leap_sec = 1;
-@@ -631,7 +648,7 @@ static int manager_receive_response(sd_e
+@@ -631,7 +649,7 @@ static int manager_receive_response(sd_e
  
          manager_adjust_poll(m, offset, spike);
  
@@ -156,7 +159,7 @@ Index: git/src/timesync/timesyncd-manager.c
                    "  leap         : %u\n"
                    "  version      : %u\n"
                    "  mode         : %u\n"
-@@ -671,17 +688,19 @@ static int manager_receive_response(sd_e
+@@ -671,17 +689,19 @@ static int manager_receive_response(sd_e
                          log_error_errno(r, "Failed to call clock_adjtime(): %m");
          }
  
@@ -179,7 +182,7 @@ Index: git/src/timesync/timesyncd-manager.c
                  sd_notifyf(false, "STATUS=Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
          }
  
-@@ -746,7 +765,7 @@ static int manager_begin(Manager *m) {
+@@ -746,7 +766,7 @@ static int manager_begin(Manager *m) {
                  m->poll_interval_usec = NTP_POLL_INTERVAL_MIN_SEC * USEC_PER_SEC;
  
          server_address_pretty(m->current_server_address, &pretty);
@@ -188,7 +191,7 @@ Index: git/src/timesync/timesyncd-manager.c
          sd_notifyf(false, "STATUS=Connecting to time server %s (%s).", strna(pretty), m->current_server_name->string);
  
          r = manager_clock_watch_setup(m);
-@@ -768,7 +787,7 @@ void manager_set_server_name(Manager *m,
+@@ -768,7 +788,7 @@ void manager_set_server_name(Manager *m,
          manager_disconnect(m);
  
          if (n)
@@ -197,7 +200,7 @@ Index: git/src/timesync/timesyncd-manager.c
  }
  
  void manager_set_server_address(Manager *m, ServerAddress *a) {
-@@ -788,7 +807,7 @@ void manager_set_server_address(Manager
+@@ -788,7 +808,7 @@ void manager_set_server_address(Manager
          if (a) {
                  _cleanup_free_ char *pretty = NULL;
                  server_address_pretty(a, &pretty);
@@ -206,7 +209,7 @@ Index: git/src/timesync/timesyncd-manager.c
          }
  }
  
-@@ -803,7 +822,7 @@ static int manager_resolve_handler(sd_re
+@@ -803,7 +823,7 @@ static int manager_resolve_handler(sd_re
          m->resolve_query = sd_resolve_query_unref(m->resolve_query);
  
          if (ret != 0) {
@@ -215,7 +218,7 @@ Index: git/src/timesync/timesyncd-manager.c
  
                  /* Try next host */
                  return manager_connect(m);
-@@ -826,7 +845,7 @@ static int manager_resolve_handler(sd_re
+@@ -826,7 +846,7 @@ static int manager_resolve_handler(sd_re
                          return log_error_errno(r, "Failed to add server address: %m");
  
                  server_address_pretty(a, &pretty);
@@ -224,7 +227,7 @@ Index: git/src/timesync/timesyncd-manager.c
          }
  
          if (!m->current_server_name->addresses) {
-@@ -908,12 +927,12 @@ int manager_connect(Manager *m) {
+@@ -908,12 +928,12 @@ int manager_connect(Manager *m) {
  
                          if (!f) {
                                  manager_set_server_name(m, NULL);
@@ -239,6 +242,7 @@ Index: git/src/timesync/timesyncd-manager.c
                                  r = sd_event_add_time(m->event, &m->event_retry, clock_boottime_or_monotonic(), now(clock_boottime_or_monotonic()) + m->poll_interval_usec, 0, manager_retry_connect, m);
                                  if (r < 0)
                                          return log_error_errno(r, "Failed to create retry timer: %m");
+
 Index: git/src/timesync/timesyncd.c
 ===================================================================
 --- git.orig/src/timesync/timesyncd.c
