@@ -198,7 +198,7 @@ SRC_URI += "\
             file://systemd230-forec-reboot-on-freeze.patch \
             file://0001-Added-decrement-of-notify-watchers-when-we-dont-need.patch \
             file://0001-Added-code-to-cleanup-all-the-xisting-watches-on-pat.patch \
-            file://0001-Added-Extra-information-fro-NTP-Status.patch \
+            file://analytics-error-add.patch \
            "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://0001-In-our-echo-system-we-are-managing-last-known-good-t.patch', '', d)} "
