@@ -7,7 +7,7 @@ RDKE_GITHUB_ROOT = "git://git@github.com/rdk-e"
 #SRC_URI = "${RDKE_GITHUB_ROOT}/jquery-opensource;${RDKE_GITHUB_SRC_URI_SUFFIX}"
 #SRC_URI = "https://code.jquery.com/jquery-1.4.4.js"
 SRC_URI = "https://code.jquery.com/jquery-1.4.4.min.js"
-SRC_URI[sha256sum] = "b31cd094af7950b3a461dc78161fd2faf01faa9d0ed8c1c072790f83ab26d482"
+SRC_URI[sha256sum] = "517364f2d45162fb5037437b5b6cb953d00d9b2b3b79ba87d9fe57ea6ee6070c"
 
 S = "${WORKDIR}"
 
