@@ -861,8 +861,8 @@ PACKAGE_ARCH:pn-vala = "${OSS_LAYER_ARCH}"
 PR:pn-vmtouch = "r0"
 PACKAGE_ARCH:pn-vmtouch = "${OSS_LAYER_ARCH}"
 
-PR:pn-wayland = "r0"
-PACKAGE_ARCH:pn-wayland = "${OSS_LAYER_ARCH}"
+#PR:pn-wayland = "r0"
+#PACKAGE_ARCH:pn-wayland = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland-protocols = "r1"
 PACKAGE_ARCH:pn-wayland-protocols = "${OSS_LAYER_ARCH}"
