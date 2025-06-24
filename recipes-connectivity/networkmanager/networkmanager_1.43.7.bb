@@ -74,6 +74,7 @@ PACKAGECONFIG[systemd] = "\
     -Dsystemdsystemunitdir=${systemd_unitdir}/system -Dsession_tracking=systemd,\
     -Dsystemdsystemunitdir=no -Dsystemd_journal=false -Dsession_tracking=no\
 "
+PACKAGECONFIG += "concheck"
 PACKAGECONFIG[polkit] = "-Dpolkit=true,-Dpolkit=false,polkit"
 # consolekit is not picked by shlibs, so add it to RDEPENDS too
 #PACKAGECONFIG[consolekit] = "-Dsession_tracking_consolekit=true,-Dsession_tracking_consolekit=false,consolekit,consolekit"
