@@ -163,7 +163,6 @@ RDEPENDS:${PN} = "\
      util-linux-libuuid \
      util-macros \
      vala \
-     wayland \
      wayland-protocols \
      wireless-regdb \
      xkeyboard-config \
