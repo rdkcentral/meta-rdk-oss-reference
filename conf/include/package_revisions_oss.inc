@@ -864,6 +864,9 @@ PACKAGE_ARCH:pn-vmtouch = "${OSS_LAYER_ARCH}"
 PR:pn-wayland = "r0"
 PACKAGE_ARCH:pn-wayland = "${OSS_LAYER_ARCH}"
 
+PR:pn-wayland-default-egl = "r0"
+PACKAGE_ARCH:pn-wayland-default-egl = "${OSS_LAYER_ARCH}"
+
 PR:pn-wayland-protocols = "r1"
 PACKAGE_ARCH:pn-wayland-protocols = "${OSS_LAYER_ARCH}"
 
