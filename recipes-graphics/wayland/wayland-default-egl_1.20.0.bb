@@ -1,6 +1,7 @@
-# This recipe's intended to provide only the wayland-egl.so and related pkgconfig
-# due to the non-standard wayland package delivery from OSS layer.
-# Refer: ./common/meta-rdk-oss-reference/recipes-graphics/wayland/wayland_%.bbappend
+
+# Provides libwayland-egl.so and related pkgconfig for legacy compatibility
+# Note: This library was removed from Wayland as it's now typically provided by SoC vendors through platform-specific implementations.
+# See related changes: meta-rdk-oss-reference/recipes-graphics/wayland/wayland_%.bbappend
 
 HOMEPAGE = "http://wayland.freedesktop.org"
 LICENSE = "MIT"
