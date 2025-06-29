@@ -59,6 +59,7 @@ SRC_URI += "file://breakpad.patch \
     file://bluez-5.48-055-kernel-dev-node-delete-create.patch \
     file://bluez-5.48-056-remove-pairing-failure-cache.patch \
     file://bluez-5.48-059-hci-version-update.patch \
+    file://bluez-5.48-profiles_audio_avdtp_setconf_cb_crash_Fix.patch \
 "
 
 SRC_URI:append = " file://bluez-5.48-kirkstone_compile_errors.patch "

@@ -1,0 +1,22 @@
+Index: bluez-5.48/profiles/audio/avdtp.c
+===================================================================
+--- bluez-5.48.orig/profiles/audio/avdtp.c
++++ bluez-5.48/profiles/audio/avdtp.c
+@@ -1424,14 +1424,23 @@ static void setconf_cb(struct avdtp *ses
+ {
+        struct conf_rej rej;
+        struct avdtp_local_sep *sep;
+-
++       if(session == NULL){
++                error("session is NULL"); // Handle session if NULL
++                return;
++       }
+        if (err != NULL) {
+                rej.error = AVDTP_UNSUPPORTED_CONFIGURATION;
+                rej.category = err->err.error_code;
+                avdtp_send(session, session->in_cmd.transaction,
+                                AVDTP_MSG_TYPE_REJECT, AVDTP_SET_CONFIGURATION,
+                                &rej, sizeof(rej));
+                stream_free(stream);
+                return;
+        }
