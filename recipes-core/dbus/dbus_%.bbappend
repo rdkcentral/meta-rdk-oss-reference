@@ -4,6 +4,17 @@ SRC_URI:append = " \
     file://dbus_rdk_system_configuration.patch \
 "
 
+SRC_URI:append:broadband = " \
+    file://01-dbus-ccsp-apis-${PV}.patch \
+"
+
+#Removed --with-xml expact as the configuration is not supported in 1.14. It was not supported in dunfell version 1.12.16 as well.
+EXTRA_OECONF:broadband = "--disable-tests \
+                          --disable-xml-docs \
+                          --disable-doxygen-docs \
+                          --disable-libaudit \
+                          --disable-checks \
+                          --disable-systemd"
 
 
 do_install:append() {

@@ -3,7 +3,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI:append = " file://001_online_service_kirkstone.patch"
 SRC_URI:append = " file://99_slaac.conf"
-SRC_URI:append = " file://mmc.rules"
+#SRC_URI:append = " file://mmc.rules"
 SRC_URI:append = " file://004_rfkill_dependency_kirkstone.patch"
 
 BBCLASSEXTEND:append = " native nativesdk"
@@ -111,9 +111,9 @@ SRC_URI += " \
            file://traffic-filter.conf \
            file://protected_regular.conf \
            "
-SRC_URI:append = " \
-            file://build-sys-add-check-for-gperf-lookup-function-signat.patch \
-           "
+#SRC_URI:append = " \
+#            file://build-sys-add-check-for-gperf-lookup-function-signat.patch \
+#           "
 BACKPORTS ?= " "
 
 RRECOMMENDS:${PN} += " \
@@ -132,9 +132,9 @@ do_install:append() {
         install -m 644 ${WORKDIR}/50-netfilter.conf ${D}${sysconfdir}/sysctl.d
         install -m 644 ${WORKDIR}/traffic-filter.conf ${D}${sysconfdir}/sysctl.d
         install -m 644 ${WORKDIR}/protected_regular.conf ${D}${sysconfdir}/sysctl.d
-        mkdir -pv ${D}/usb
-        mkdir -pv ${D}/usb0
-        mkdir -pv ${D}/usb1
+        #mkdir -pv ${D}/usb
+        #mkdir -pv ${D}/usb0
+        #mkdir -pv ${D}/usb1
         ln -s /dev/null ${D}${sysconfdir}/udev/rules.d/80-net-setup-link.rules
 
         sed -i -e 's/^#DumpCore=.*$/DumpCore=yes/g' ${D}${sysconfdir}/systemd/system.conf
@@ -176,7 +176,7 @@ fi
 do_install:append() {
         install -d ${D}${sysconfdir}/sysctl.d
         install -m 644 ${WORKDIR}/99_slaac.conf ${D}${sysconfdir}/sysctl.d
-        install -m 0644 ${WORKDIR}/mmc.rules ${D}${sysconfdir}/udev/rules.d/
+        #install -m 0644 ${WORKDIR}/mmc.rules ${D}${sysconfdir}/udev/rules.d/
         rm -f ${D}/${sysconfdir}/systemd/network/20-wired.network
         sed -i "s/Requires=.*/Requires=basic.target ui-init.target/g" ${D}${systemd_unitdir}/system/multi-user.target
         sed -i -e 's/.*RuntimeMaxUse=.*/RuntimeMaxUse=16M/g' ${D}${sysconfdir}/systemd/journald.conf
