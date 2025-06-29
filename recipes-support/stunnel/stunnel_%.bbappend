@@ -1,4 +1,11 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+SRC_URI += "file://stunnelCertUtil.sh"
+
+
+do_install:append() {
+    install -d ${D}${bindir}
+    cp ${WORKDIR}/stunnelCertUtil.sh ${D}${bindir}/stunnelCertUtil.sh
+}
 
 do_install:append() {
 
