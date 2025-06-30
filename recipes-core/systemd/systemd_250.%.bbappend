@@ -178,7 +178,7 @@ do_install:append() {
         install -m 644 ${WORKDIR}/99_slaac.conf ${D}${sysconfdir}/sysctl.d
         #install -m 0644 ${WORKDIR}/mmc.rules ${D}${sysconfdir}/udev/rules.d/
         rm -f ${D}/${sysconfdir}/systemd/network/20-wired.network
-        sed -i "s/Requires=.*/Requires=basic.target ui-init.target/g" ${D}${systemd_unitdir}/system/multi-user.target
+        #sed -i "s/Requires=.*/Requires=basic.target ui-init.target/g" ${D}${systemd_unitdir}/system/multi-user.target
         sed -i -e 's/.*RuntimeMaxUse=.*/RuntimeMaxUse=16M/g' ${D}${sysconfdir}/systemd/journald.conf
         sed -i -e 's/.*RuntimeMaxFileSize=.*/RuntimeMaxFileSize=8M/g' ${D}${sysconfdir}/systemd/journald.conf
         sed -i -e 's@\(kernel.panic\)\(.*\)@\1 = 3@' ${D}${sysconfdir}/sysctl.d/50-panic.conf
