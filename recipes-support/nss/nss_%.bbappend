@@ -1,3 +1,9 @@
+PACKAGES =+ "${PN}-bin"
+
+FILES:${PN}-bin = "\
+    ${bindir} \
+"
+
 PACKAGE_BEFORE_PN += "${PN}-extras"
 FILES:${PN}-extras = " \
     ${bindir}/rsaperf \
