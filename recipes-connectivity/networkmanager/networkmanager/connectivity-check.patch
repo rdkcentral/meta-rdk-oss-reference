@@ -23,7 +23,7 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
 +			      G_DBUS_CALL_FLAGS_NONE,
 +			      -1,
 +			      NULL,
-+			      (GAsyncReadyCallback) on_dbus_call_finished,
++			      NULL,
 +			      NULL
 +			     );
 +    } else {
@@ -36,24 +36,3 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
      cb_data->callback(self, cb_data, state, cb_data->user_data);
  
      /* Note: self might be a danling pointer at this point. It must not be used
-@@ -264,6 +291,20 @@ cb_data_complete(NMConnectivityCheckHand
-     g_slice_free(NMConnectivityCheckHandle, cb_data);
- }
- 
-+/* Callback for D-Bus method call result */
-+static void
-+on_dbus_call_finished(GDBusConnection *connection,
-+		                      GAsyncResult    *res,
-+				                            gpointer         user_data)
-+{
-+g_autoptr(GError) error = NULL;
-+if (!g_dbus_connection_call_finish(connection, res, &error)) {
-+     _LOG2D("DBG:D-Bus call to NotifyConnected failed: %s", error->message);
-+} else {
-+    _LOG2D("DBG:D-Bus call to NotifyConnected succeeded.");
-+}						        }
-+}
-+
- /*****************************************************************************/
- 
- #if WITH_CONCHECK
