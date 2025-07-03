@@ -260,7 +260,8 @@ do_install:append() {
         # systemd v210 and newer do not need this rule fil
         rm ${D}/${nonarch_base_libdir}/udev/rules.d/84-nm-drivers.rules
     fi
-    
+
+    ln -sf /opt/NetworkManager/system-connections ${D}${sysconfdir}/NetworkManager/
     ln -sf /opt/secure/NetworkManager/system-connections ${D}${sysconfdir}/NetworkManager/
     rm -f ${D}${systemd_system_unitdir}/NetworkManager-wait-online.service
 
