@@ -41,7 +41,7 @@ MULTILIB_VARIANTS:pn-wireless-regdb = " multilib "
 MULTILIB_VARIANTS:pn-liberation-fonts = " multilib "
 
 # Package revisions and architecture configurations
-PR:pn-abseil-cpp = "r0"
+PR:pn-abseil-cpp = "r1"
 PACKAGE_ARCH:pn-abseil-cpp = "${OSS_LAYER_ARCH}"
 
 PR:pn-acl = "r0"
@@ -146,7 +146,7 @@ PACKAGE_ARCH:pn-cracklib = "${OSS_LAYER_ARCH}"
 PR:pn-crun = "r0"
 PACKAGE_ARCH:pn-crun = "${OSS_LAYER_ARCH}"
 
-PR:pn-ctemplate = "r3"
+PR:pn-ctemplate = "r4"
 PACKAGE_ARCH:pn-ctemplate = "${OSS_LAYER_ARCH}"
 
 PR:pn-cunit = "r0"
@@ -178,6 +178,9 @@ PACKAGE_ARCH:pn-e2fsprogs = "${OSS_LAYER_ARCH}"
 
 PR:pn-ebtables = "r4"
 PACKAGE_ARCH:pn-ebtables = "${OSS_LAYER_ARCH}"
+
+PR:pn-ethtool = "r0"
+PACKAGE_ARCH:pn-ethtool = "${OSS_LAYER_ARCH}"
 
 PR:pn-elfutils = "r0"
 PACKAGE_ARCH:pn-elfutils = "${OSS_LAYER_ARCH}"
@@ -269,7 +272,7 @@ PACKAGE_ARCH:pn-googletest = "${OSS_LAYER_ARCH}"
 PR:pn-graphite2 = "r0"
 PACKAGE_ARCH:pn-graphite2 = "${OSS_LAYER_ARCH}"
 
-PR:pn-grpc = "r0"
+PR:pn-grpc = "r1"
 PACKAGE_ARCH:pn-grpc = "${OSS_LAYER_ARCH}"
 
 PR:pn-gssdp = "r0"
@@ -299,7 +302,7 @@ PACKAGE_ARCH:pn-initscripts = "${OSS_LAYER_ARCH}"
 PR:pn-iperf3 = "r0"
 PACKAGE_ARCH:pn-iperf3 = "${OSS_LAYER_ARCH}"
 
-PR:pn-iptables = "r0"
+PR:pn-iptables = "r1"
 PACKAGE_ARCH:pn-iptables = "${OSS_LAYER_ARCH}"
 
 PR:pn-iso-codes = "r0"
@@ -404,7 +407,7 @@ PACKAGE_ARCH:pn-libgpg-error = "${OSS_LAYER_ARCH}"
 PR:pn-libgudev = "r0"
 PACKAGE_ARCH:pn-libgudev = "${OSS_LAYER_ARCH}"
 
-PR:pn-libical = "r0"
+PR:pn-libical = "r1"
 PACKAGE_ARCH:pn-libical = "${OSS_LAYER_ARCH}"
 
 PR:pn-libidn2 = "r0"
@@ -428,13 +431,16 @@ PACKAGE_ARCH:pn-libmicrohttpd = "${OSS_LAYER_ARCH}"
 PR:pn-libmng = "r0"
 PACKAGE_ARCH:pn-libmng = "${OSS_LAYER_ARCH}"
 
+PR:pn-libmnl = "r0"
+PACKAGE_ARCH:pn-libmnl = "${OSS_LAYER_ARCH}"
+
 PR:pn-libndp = "r0"
 PACKAGE_ARCH:pn-libndp = "${OSS_LAYER_ARCH}"
 
 PR:pn-libnewt = "r0"
 PACKAGE_ARCH:pn-libnewt = "${OSS_LAYER_ARCH}"
 
-PR:pn-libnl = "r0"
+PR:pn-libnl = "r1"
 PACKAGE_ARCH:pn-libnl = "${OSS_LAYER_ARCH}"
 
 PR:pn-libnsl2 = "r0"
@@ -452,7 +458,7 @@ PACKAGE_ARCH:pn-libogg = "${OSS_LAYER_ARCH}"
 PR:pn-libol = "r0"
 PACKAGE_ARCH:pn-libol = "${OSS_LAYER_ARCH}"
 
-PR:pn-libomxil = "r0"
+PR:pn-libomxil = "r1"
 PACKAGE_ARCH:pn-libomxil = "${OSS_LAYER_ARCH}"
 
 PR:pn-libopus = "r0"
@@ -578,7 +584,7 @@ PACKAGE_ARCH:pn-libxslt = "${OSS_LAYER_ARCH}"
 PR:pn-libzip = "r0"
 PACKAGE_ARCH:pn-libzip = "${OSS_LAYER_ARCH}"
 
-PR:pn-lighttpd = "r2"
+PR:pn-lighttpd = "r3"
 PACKAGE_ARCH:pn-lighttpd = "${OSS_LAYER_ARCH}"
 
 PR:pn-linenoise = "r1"
@@ -798,10 +804,10 @@ PACKAGE_ARCH:pn-stunnel = "${OSS_LAYER_ARCH}"
 PR:pn-sysfsutils = "r6"
 PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 
-PR:pn-syslog-ng = "r2"
+PR:pn-syslog-ng = "r3"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r11"
+PR:pn-systemd = "r12"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
@@ -840,7 +846,7 @@ PACKAGE_ARCH:pn-unzip = "${OSS_LAYER_ARCH}"
 PR:pn-update-rc.d = "r0"
 PACKAGE_ARCH:pn-update-rc.d = "${OSS_LAYER_ARCH}"
 
-PR:pn-util-linux = "r0"
+PR:pn-util-linux = "r1"
 PACKAGE_ARCH:pn-util-linux = "${OSS_LAYER_ARCH}"
 
 PR:pn-util-linux-libuuid = "r0"
@@ -857,6 +863,9 @@ PACKAGE_ARCH:pn-vmtouch = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland = "r0"
 PACKAGE_ARCH:pn-wayland = "${OSS_LAYER_ARCH}"
+
+PR:pn-wayland-default-egl = "r0"
+PACKAGE_ARCH:pn-wayland-default-egl = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland-protocols = "r1"
 PACKAGE_ARCH:pn-wayland-protocols = "${OSS_LAYER_ARCH}"
@@ -878,7 +887,7 @@ PACKAGE_ARCH:pn-wpa-supplicant = "${OSS_LAYER_ARCH}"
 PR:pn-xkeyboard-config = "r0"
 PACKAGE_ARCH:pn-xkeyboard-config = "${OSS_LAYER_ARCH}"
 
-PR:pn-xmlsec1 = "r0"
+PR:pn-xmlsec1 = "r1"
 PACKAGE_ARCH:pn-xmlsec1 = "${OSS_LAYER_ARCH}"
 
 PR:pn-xz = "r0"
