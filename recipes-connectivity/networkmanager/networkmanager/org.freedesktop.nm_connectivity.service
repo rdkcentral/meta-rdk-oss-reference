@@ -1,4 +1,5 @@
 [D-BUS Service]
 Name=org.freedesktop.nm_connectivity
 Exec=/bin/sh -c '[ -f /lib/rdk/logMilestone.sh ] && /bin/sh /lib/rdk/logMilestone.sh "INTERNET_FULLY_CONNECTED"'
+SystemdService=network-up.target
 User=root
