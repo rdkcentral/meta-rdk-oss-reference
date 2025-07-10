@@ -289,3 +289,5 @@ SYSLOG-NG_DESTINATION_networkmanager = "NetworkManager.log"
 SYSLOG-NG_LOGRATE_networkmanager = "high"
 FILES:${PN} += "${datadir}/dbus-1/system-services/org.freedesktop.nm_connectivity.service"
 FILES:${PN} += ""${systemd_unitdir}/system/network-ready.service"
+
+SYSTEMD_SERVICE:${PN} += "network-ready.service"
