@@ -179,6 +179,9 @@ PACKAGE_ARCH:pn-e2fsprogs = "${OSS_LAYER_ARCH}"
 PR:pn-ebtables = "r4"
 PACKAGE_ARCH:pn-ebtables = "${OSS_LAYER_ARCH}"
 
+PR:pn-ethtool = "r0"
+PACKAGE_ARCH:pn-ethtool = "${OSS_LAYER_ARCH}"
+
 PR:pn-elfutils = "r0"
 PACKAGE_ARCH:pn-elfutils = "${OSS_LAYER_ARCH}"
 
@@ -428,6 +431,9 @@ PACKAGE_ARCH:pn-libmicrohttpd = "${OSS_LAYER_ARCH}"
 PR:pn-libmng = "r0"
 PACKAGE_ARCH:pn-libmng = "${OSS_LAYER_ARCH}"
 
+PR:pn-libmnl = "r0"
+PACKAGE_ARCH:pn-libmnl = "${OSS_LAYER_ARCH}"
+
 PR:pn-libndp = "r0"
 PACKAGE_ARCH:pn-libndp = "${OSS_LAYER_ARCH}"
 
@@ -656,7 +662,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r0"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r5"
+PR:pn-networkmanager = "r6"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
@@ -801,7 +807,7 @@ PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 PR:pn-syslog-ng = "r3"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r11"
+PR:pn-systemd = "r12"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
@@ -857,6 +863,9 @@ PACKAGE_ARCH:pn-vmtouch = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland = "r0"
 PACKAGE_ARCH:pn-wayland = "${OSS_LAYER_ARCH}"
+
+PR:pn-wayland-default-egl = "r0"
+PACKAGE_ARCH:pn-wayland-default-egl = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland-protocols = "r1"
 PACKAGE_ARCH:pn-wayland-protocols = "${OSS_LAYER_ARCH}"

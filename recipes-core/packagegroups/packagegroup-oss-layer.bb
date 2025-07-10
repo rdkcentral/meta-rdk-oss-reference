@@ -179,6 +179,7 @@ RDEPENDS:${PN} += "\
      dibbler-client \
      directfb \
      ebtables \
+     ethtool \
      evtest \
      gflags \
      googletest \
@@ -192,6 +193,7 @@ RDEPENDS:${PN} += "\
      libev \
      libmicrohttpd \
      libmng \
+     libmnl \
      liboauth \
      libol \
      libomxil \
@@ -321,6 +323,7 @@ RDEPENDS:${PN} += "\
      trower-base64 \
      vmtouch \
      volatile-binds \
+     wayland-default-egl \
      westeros \
      westeros-simplebuffer \
      westeros-simpleshell \
