@@ -1,11 +1,9 @@
 [Unit]
 Description=Log Internet connectivity and Trigger network target
 After=dbus.service
-OnSuccess=network-up.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c '[ -f /lib/rdk/logMilestone.sh ] && /bin/sh /lib/rdk/logMilestone.sh "INTERNET_FULLY_CONNECTED"'
+ExecStartPre=/bin/touch /tmp/connectivity_check_done
+ExecStart= /bin/sh /lib/rdk/logMilestone.sh "INTERNET_FULLY_CONNECTED"
 
-[Install]
-WantedBy=multi-user.target
