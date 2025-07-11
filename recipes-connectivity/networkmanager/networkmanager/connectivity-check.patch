@@ -17,11 +17,11 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
 +    */
 +    static gboolean already_notified = FALSE;
 +    if (state == NM_CONNECTIVITY_FULL && !already_notified) {
-+	    _LOG2D("DBG:status is full.register dbus");
++	    _LOG2D("Connectivity status is full.Register dbus");
 +	    already_notified = TRUE;
 +    g_autoptr(GError) error = NULL;
 +    GDBusConnection *connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
-+    _LOG2D("DBG: Trying to call D-Bus method NotifyConnected...");
++    _LOG2D("Trying to call D-Bus method NotifyConnected...");
 +    if (connection) {
 +	     g_dbus_connection_call(
 +			     connection,
