@@ -17,7 +17,6 @@ RDEPENDS:iptables-modules:remove = " \
 									iptables-module-ip6t-frag \
 									iptables-module-ip6t-hbh \
 									iptables-module-ip6t-hl \
-									iptables-module-ip6t-icmp6 \
 									iptables-module-ip6t-ipv6header \
 									iptables-module-ip6t-log \
 									iptables-module-ip6t-mh \
@@ -28,7 +27,6 @@ RDEPENDS:iptables-modules:remove = " \
 									iptables-module-ipt-ah \
 									iptables-module-ipt-clusterip \
 									iptables-module-ipt-ecn \
-									iptables-module-ipt-icmp \
 									iptables-module-ipt-log \
 									iptables-module-ipt-netmap \
 									iptables-module-ipt-realm \
