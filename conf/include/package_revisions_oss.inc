@@ -299,7 +299,7 @@ PACKAGE_ARCH:pn-initscripts = "${OSS_LAYER_ARCH}"
 PR:pn-iperf3 = "r0"
 PACKAGE_ARCH:pn-iperf3 = "${OSS_LAYER_ARCH}"
 
-PR:pn-iptables = "r1"
+PR:pn-iptables = "r2"
 PACKAGE_ARCH:pn-iptables = "${OSS_LAYER_ARCH}"
 
 PR:pn-iso-codes = "r0"
