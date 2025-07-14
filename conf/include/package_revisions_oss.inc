@@ -846,7 +846,7 @@ PACKAGE_ARCH:pn-unzip = "${OSS_LAYER_ARCH}"
 PR:pn-update-rc.d = "r0"
 PACKAGE_ARCH:pn-update-rc.d = "${OSS_LAYER_ARCH}"
 
-PR:pn-util-linux = "r1"
+PR:pn-util-linux = "r2"
 PACKAGE_ARCH:pn-util-linux = "${OSS_LAYER_ARCH}"
 
 PR:pn-util-linux-libuuid = "r0"
