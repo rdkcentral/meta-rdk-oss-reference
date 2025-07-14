@@ -254,7 +254,6 @@ do_install:append() {
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
     install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
-    install -m 0755 ${WORKDIR}/notify-network-ready.service  ${D}${systemd_unitdir}/system
 
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
