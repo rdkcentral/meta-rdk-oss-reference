@@ -18,7 +18,7 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
 +static void
 +nm_connectivity_set_interval(NMConnectivity *self, guint interval)
 +{
-+	 _LOGI("DBG: Set Interval");
++	    _LOGI("DBG: Set Interval");
 +	    NMConnectivityPrivate *priv = NM_CONNECTIVITY_GET_PRIVATE(self);
 +	    priv->interval = interval;
 +	    _LOGI("DBG: Setting interval to %u",priv->interval);
@@ -33,7 +33,7 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
      nm_clear_g_source_inst(&cb_data->timeout_source);
  
 -    _LOG2D("check completed: %s; %s", nm_connectivity_state_to_string(state), log_message);
-+ _LOG2D("check completed: %s; %s", nm_connectivity_state_to_string(state), log_message);
++  _LOG2D("check completed: %s; %s", nm_connectivity_state_to_string(state), log_message);
 +  static gboolean already_notified = FALSE;
 +    if (state == NM_CONNECTIVITY_FULL && !already_notified) {
 +	    _LOG2D("DBG:status is full.register dbus");
@@ -61,7 +61,7 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
 +    }
 +
 +    nm_connectivity_set_interval(self, NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                                              
-+   _LOG2D("Connectivity FULL: interval set to %u seconds", NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                        
++                                                      
 +   _LOGI("Connectivity FULL: interval set to %u seconds", NM_CONNECTIVITY_INTERVAL_AFTER_FULL);      
 +    }
 +
