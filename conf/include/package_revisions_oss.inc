@@ -41,7 +41,6 @@ MULTILIB_VARIANTS:pn-wireless-regdb = " multilib "
 MULTILIB_VARIANTS:pn-liberation-fonts = " multilib "
 
 
-OSS_LAYER_VERSION = "4.7.0"
 def get_oss_machine(d):
     arch = ""
     default_tune = d.getVar('DEFAULTTUNE')
