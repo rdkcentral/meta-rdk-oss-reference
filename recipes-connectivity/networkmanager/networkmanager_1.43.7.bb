@@ -30,7 +30,6 @@ SRC_URI = " \
     file://NM_Dispatcher.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
-    file://notify-network-ready.service \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
@@ -255,7 +254,6 @@ do_install:append() {
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
     install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
-    install -m 0755 ${WORKDIR}/notify-network-ready.service  ${D}${systemd_unitdir}/system
    
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
@@ -288,6 +286,4 @@ SYSLOG-NG_SERVICE_networkmanager = "NetworkManager.service"
 SYSLOG-NG_DESTINATION_networkmanager = "NetworkManager.log"
 SYSLOG-NG_LOGRATE_networkmanager = "high"
 FILES:${PN} += "${datadir}/dbus-1/system-services/org.freedesktop.nm_connectivity.service"
-FILES:${PN} += "${systemd_unitdir}/system/notify-network-ready.service"
 
-SYSTEMD_SERVICE:${PN} += "notify-network-ready.service"
