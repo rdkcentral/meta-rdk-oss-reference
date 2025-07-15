@@ -57,11 +57,11 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
 +			      NULL
 +			     );
 +    } else {
-+	     _LOG2D("DBG: Failed to get system bus: %s", error->message);
++	     _LOG2D("Failed to get system bus: %s", error->message);
 +    }
 +
 +    nm_connectivity_set_interval(self, NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                                              
-+    _LOGI("Connectivity FULL: interval set to %u seconds", NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                  
++    _LOGI("Connectivity FULL: connectivity check interval set to %u seconds", NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                  
 +      
 +    }
 +
