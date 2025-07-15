@@ -1,0 +1,71 @@
+Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/nm-connectivity.c	2023-05-03 14:04:10.000000000 +0000
++++ NetworkManager-1.43.7/src/core/nm-connectivity.c	2025-07-15 09:06:04.734462859 +0000
+@@ -23,6 +23,7 @@
+ #include "nm-dbus-manager.h"
+ #include "dns/nm-dns-manager.h"
+ 
++#define NM_CONNECTIVITY_INTERVAL_AFTER_FULL 0
+ #define HEADER_STATUS_ONLINE "X-NetworkManager-Status: online\r\n"
+ 
+ /*****************************************************************************/
+@@ -196,7 +197,16 @@
+ #endif
+ 
+ /*****************************************************************************/
+-
++static void
++nm_connectivity_set_interval(NMConnectivity *self, guint interval)
++{
++	 _LOGI("DBG: Set Interval");
++	    NMConnectivityPrivate *priv = NM_CONNECTIVITY_GET_PRIVATE(self);
++	    priv->interval = interval;
++	    _LOGI("DBG: Setting interval to %u",priv->interval);
++	    g_signal_emit(self, signals[CONFIG_CHANGED], 0);
++	    _LOGI("DBG:Emit config change signal");
++}
+ static void
+ cb_data_complete(NMConnectivityCheckHandle *cb_data,
+                  NMConnectivityState        state,
+@@ -247,7 +257,39 @@
+ 
+     nm_clear_g_source_inst(&cb_data->timeout_source);
+ 
+-    _LOG2D("check completed: %s; %s", nm_connectivity_state_to_string(state), log_message);
++ _LOG2D("check completed: %s; %s", nm_connectivity_state_to_string(state), log_message);
++  static gboolean already_notified = FALSE;
++    if (state == NM_CONNECTIVITY_FULL && !already_notified) {
++	    _LOG2D("DBG:status is full.register dbus");
++	    already_notified = TRUE;
++    g_autoptr(GError) error = NULL;
++    GDBusConnection *connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &error);
++    _LOG2D("DBG: Trying to call D-Bus method NotifyConnected...");
++    if (connection) {
++	     g_dbus_connection_call(
++			     connection,
++			     "org.freedesktop.nm_connectivity",
++			     "/org/freedesktop/nm_connectivity",
++			     "org.freedesktop.nm_connectivity",
++			     "NotifyFullyConnected",
++			     NULL,
++			     NULL,
++			      G_DBUS_CALL_FLAGS_NONE,
++			      -1,
++			      NULL,
++			      NULL,
++			      NULL
++			     );
++    } else {
++	     _LOG2D("DBG: Failed to get system bus: %s", error->message);
++    }
++
++    nm_connectivity_set_interval(self, NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                                              
++   _LOG2D("Connectivity FULL: interval set to %u seconds", NM_CONNECTIVITY_INTERVAL_AFTER_FULL);                                                        
++   _LOGI("Connectivity FULL: interval set to %u seconds", NM_CONNECTIVITY_INTERVAL_AFTER_FULL);      
++    }
++
++
+ 
+     cb_data->callback(self, cb_data, state, cb_data->user_data);
+ 
