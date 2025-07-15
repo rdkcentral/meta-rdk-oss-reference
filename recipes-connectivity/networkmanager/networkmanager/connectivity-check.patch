@@ -16,7 +16,7 @@ Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
  /*****************************************************************************/
 -
 +
-+ /* To Change the interval when connectivity is FULL for the first time */
++ /* Disable connectivity check by setting interval to 0  */
 +static void
 +	nm_connectivity_set_interval(NMConnectivity *self, guint interval)  
 +{    
