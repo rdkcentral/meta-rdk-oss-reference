@@ -62,9 +62,9 @@ def get_oss_arch(d):
 
 OSS_MACHINE = "${@get_oss_machine(d)}"
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}"
-LAYER_EXTENSION ?= ""
+LAYER_EXTENSION ?= "test"
 OSS_LAYER_ARCH:append = "${LAYER_EXTENSION}" 
-PACKAGE_EXTRA_ARCHS:append = "${@bb.utils.contains('LAYER_EXTENSION', '', '', ' ${OSS_LAYER_ARCH}', d)}"
+PACKAGE_EXTRA_ARCHS:append = "${OSS_LAYER_ARCH}"
 
 # Package revisions and architecture configurations
 PR:pn-abseil-cpp = "r1"
