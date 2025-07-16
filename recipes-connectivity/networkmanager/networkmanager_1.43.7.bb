@@ -22,9 +22,6 @@ GNOMEBASEBUILDCLASS = "meson"
 inherit gnomebase gettext update-rc.d systemd gobject-introspection gtk-doc update-alternatives upstream-version-is-even
 SRC_URI = " \
     ${GNOME_MIRROR}/NetworkManager/${@gnome_verdir("${PV}")}/NetworkManager-${PV}.tar.xz \
-    file://${BPN}.initd \
-    file://95-logging.conf \
-    file://NetworkManager.conf \
     file://NM-wpa-service.patch \
     file://readline_NM.patch \
     file://NM_Dispatcher.patch \
@@ -248,10 +245,7 @@ do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${sysconfdir}/NetworkManager/
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
-    install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
-    install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
-
-    install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
+   
 
     rm -rf ${D}/run ${D}${localstatedir}/run
     if ${@bb.utils.contains('PACKAGECONFIG','man-resolv-conf','true','false',d)}; then
