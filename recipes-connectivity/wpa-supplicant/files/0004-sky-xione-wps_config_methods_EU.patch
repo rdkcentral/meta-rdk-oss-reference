@@ -1,0 +1,132 @@
+#####################################################################
+Date: Wed Feb 17 19:35:00 2021 +0000
+From:
+Subject: [PATCH] Set the correct WPS Config Method (for EU) and serialised data.
+Source: SKY
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: Matthew Golab <matthew.golab@sky.uk>
+#####################################################################
+
+Index: wpa_supplicant-2.9/src/wps/wps_common.c
+===================================================================
+--- wpa_supplicant-2.9.orig/src/wps/wps_common.c
++++ wpa_supplicant-2.9/src/wps/wps_common.c
+@@ -550,6 +550,10 @@
+ u16 wps_config_methods_str2bin(const char *str)
+ {
+ 	u16 methods = 0;
++	
++	methods = (WPS_CONFIG_VIRT_PUSHBUTTON | WPS_CONFIG_LABEL);
++
++	return methods;
+ 
+ 	if (str == NULL || str[0] == '\0') {
+ 		/* Default to enabling methods based on build configuration */
+
+Index: wpa_supplicant-2.9/wpa_supplicant/wps_supplicant.c
+===================================================================
+--- wpa_supplicant-2.9.orig/wpa_supplicant/wps_supplicant.c
++++ wpa_supplicant-2.9/wpa_supplicant/wps_supplicant.c
+@@ -34,6 +34,9 @@
+ #include "p2p_supplicant.h"
+ #include "wps_supplicant.h"
+ 
++#include <stdio.h>
++#include <fcntl.h>
++
+ 
+ #ifndef WPS_PIN_SCAN_IGNORE_SEL_REG
+ #define WPS_PIN_SCAN_IGNORE_SEL_REG 3
+@@ -49,6 +52,7 @@
+ 
+ static void wpas_wps_timeout(void *eloop_ctx, void *timeout_ctx);
+ static void wpas_clear_wps(struct wpa_supplicant *wpa_s);
++int readSerialisedDataFromFlash(char * model_name, char * model_number);
+ 
+ 
+ static void wpas_wps_clear_ap_info(struct wpa_supplicant *wpa_s)
+@@ -1539,6 +1543,47 @@
+ 	}
+ }
+ 
++/*  Read Model number and name from flash */
++int readSerialisedDataFromFlash(char * model_name, char * model_number)
++{
++	const off_t SERIALISED_UDA_OFFSET_ADDR = (0x3800000 + 4096);
++	int read_emmc_fd;
++	char buf[512] = {0};
++	off_t seek;
++
++	if ((model_name == NULL) || (model_number == NULL)) {
++		wpa_printf(MSG_ERROR, "readSerialisedDataFromFlash() - Error Null params!\n");
++		return -1;
++	}
++
++	read_emmc_fd = open("/dev/mmcblk0",O_RDONLY);
++	if (read_emmc_fd < 0)
++	{
++		perror("open");
++		return -1;
++	}
++
++	seek = lseek(read_emmc_fd, (off_t)SERIALISED_UDA_OFFSET_ADDR, SEEK_SET);
++	if (seek != SERIALISED_UDA_OFFSET_ADDR) {
++		wpa_printf(MSG_ERROR, "Failed to seek to offset\n");
++		return -1;
++	}
++
++	if (read(read_emmc_fd,buf,512) != 512) {
++		wpa_printf(MSG_ERROR, "Failed to read the wps pin from emmc\n");
++ 		return -1;
++	}
++
++	/* Copy Model number and name into pointer param buffers */ 
++	memcpy(model_number, buf, 32);
++	memcpy(model_name, buf+32, 32);
++
++	wpa_printf(MSG_INFO, "readSerialisedDataFromFlash(): Model num: %s, name: %s\n", 
++				model_number, model_name);
++
++	close(read_emmc_fd);
++	return 1;
++}
+ 
+ int wpas_wps_init(struct wpa_supplicant *wpa_s)
+ {
+@@ -1556,13 +1601,29 @@
+ 	wps->rf_band_cb = wpa_supplicant_wps_rf_band;
+ 	wps->cb_ctx = wpa_s;
+ 
+-	wps->dev.device_name = wpa_s->conf->device_name;
+-	wps->dev.manufacturer = wpa_s->conf->manufacturer;
+-	wps->dev.model_name = wpa_s->conf->model_name;
+-	wps->dev.model_number = wpa_s->conf->model_number;
++	wps->dev.device_name = "XiOne";
++	wps->dev.manufacturer = "Sky CP";
++	static char model_name[33] = {0};
++	static char model_number[33] = {0};
++
++ 	if (1 == readSerialisedDataFromFlash(model_name, model_number)) {
++		wpa_printf(MSG_INFO, "wpas_wps_init(): serialised data returned OK!\n");
++	}
++
++	wpa_printf(MSG_INFO, "wpas_wps_init(): Config data: Model name: %s, number: %s \n",
++		 model_name, model_number);
++
++	wps->dev.model_name = model_name;
++	wps->dev.model_number = model_number;
++
++	/* 	Do not read serial number from emmc as it requires calculating checksums on a 
++		per country variant (and is optional anyway).	*/ 
+ 	wps->dev.serial_number = wpa_s->conf->serial_number;
+-	wps->config_methods =
+-		wps_config_methods_str2bin(wpa_s->conf->config_methods);
++
++	wps->config_methods = wps_config_methods_str2bin(wpa_s->conf->config_methods);
++	
++	wpa_printf(MSG_INFO, "wpas_wps_init(): Config Methods: 0x%x \n", wps->config_methods);
++
+ 	if ((wps->config_methods & (WPS_CONFIG_DISPLAY | WPS_CONFIG_LABEL)) ==
+ 	    (WPS_CONFIG_DISPLAY | WPS_CONFIG_LABEL)) {
+ 		wpa_printf(MSG_ERROR, "WPS: Both Label and Display config "
