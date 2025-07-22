@@ -8,6 +8,7 @@ SRC_URI += "file://wpa_supplicant_utc_timestamp_2.10.patch \
 	    file://tkip_rc4_bug_fix.patch \
 	    file://wpa_cli_command_changes_to_skip_p2p_iface_for_default_iface.patch \
             file://unii3_country_code_check.patch \
+            file://0004-sky-xione-wps_config_methods_EU.patch \
 	   "
 do_configure:append () {
 
