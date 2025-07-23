@@ -10,9 +10,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 EXTRA_OECONF += "no-tls1"
 EXTRA_OECONF += "no-tls1_1"
 
-SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://canary-cert-logging.patch', '', d)}"
-
-SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', 'file://canary-cert-logging.patch', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://openssl-canary-3.0.5.patch', '', d)}"
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://endpoint-logging-canary-enable-3.0.5.patch', 'file://endpoint-logging-canary-disable-3.0.5.patch', d), '', d)}"
 
