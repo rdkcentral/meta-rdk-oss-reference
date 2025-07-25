@@ -75,9 +75,13 @@ fi
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-sleep
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
-	rm -rf ${D}${rootlibexecdir}/systemd/debug-shell.service
+	rm -rf ${D}${rootlibexecdir}/systemd/systemd-debug-shell.service
 	rm -rf ${D}${rootlibexecdir}/systemd/console-getty.service
 	rm -rf ${D}${rootlibexecdir}/systemd/console-shell.service
+        rm -rf ${D}${base_libdir}/systemd/systemd-debug-shell.service
+        rm -rf ${D}${base_libdir}/systemd/console-getty.service
+        rm -rf ${D}${base_libdir}/systemd/console-shell.service
+
 	sed -i -e 's/systemd-fsck-root.service//g' ${D}${systemd_unitdir}/system/systemd-remount-fs.service
 if ! ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         sed -i -e '/^L! \/etc\/resolv\.conf*/d' ${D}${exec_prefix}/lib/tmpfiles.d/etc.conf
@@ -110,7 +114,7 @@ do_install:append:hybrid() {
 
 SYSTEMD_SERVICE:systemd-binfmt:remove = " systemd-binfmt.service"
 
-FILES:${PN}:remove = "${bindir}/busctl ${datadir}/bash-completion/completions/busctl ${libdir}/libnss_mymachines.so.2 ${rootlibexecdir}/systemd/systemd-bus-proxyd ${rootlibexecdir}/systemd/systemd-ac-power ${rootlibexecdir}/systemd/systemd-sleep ${rootlibexecdir}/systemd/systemd-reply-password ${rootlibexecdir}/systemd/systemd-activate ${rootlibexecdir}/systemd/console-getty ${rootlibexecdir}/systemd/debug-shell ${rootlibexecdir}/systemd/onsole-shell"
+FILES:${PN}:remove = "${bindir}/busctl ${datadir}/bash-completion/completions/busctl ${libdir}/libnss_mymachines.so.2 ${rootlibexecdir}/systemd/systemd-bus-proxyd ${rootlibexecdir}/systemd/systemd-ac-power ${rootlibexecdir}/systemd/systemd-sleep ${rootlibexecdir}/systemd/systemd-reply-password ${rootlibexecdir}/systemd/systemd-activate"
 
 FILES:${PN}:append:client = " /media/apps"
 FILES:${PN}:append:hybrid = " /media/apps"
