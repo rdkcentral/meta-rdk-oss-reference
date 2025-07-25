@@ -1,0 +1,70 @@
+Index: git/src/timesync/timesyncd-manager.c
+===================================================================
+--- git.orig/src/timesync/timesyncd-manager.c	2025-07-25 04:40:53.116045145 +0000
++++ git/src/timesync/timesyncd-manager.c	2025-07-25 04:45:41.880543249 +0000
+@@ -556,40 +556,54 @@
+ 
+         m->missed_replies = 0;
+ 
++       int force_failure = 0; 	
++	if (getenv("FORCE_FAILURE")) {
++	force_failure = true;
++       }
++	if (force_failure)
++	{
++		ntpmsg.origin_time.sec = htobe32(12345); 
++		ntpmsg.origin_time.frac = htobe32(67890); 
++		ntpmsg.stratum = 0;
++		ntpmsg.trans_time.sec = htobe32(OFFSET_1900_1970 - 5); ntpmsg.recv_time.sec = htobe32(OFFSET_1900_1970 - 10);   
++		ntpmsg.field = 3;
++		root_distance = 10.0;
++	}
++
+         /* check our "time cookie" (we just stored nanoseconds in the fraction field) */
+         if (be32toh(ntpmsg.origin_time.sec) != m->trans_time.tv_sec + OFFSET_1900_1970 ||
+             be32toh(ntpmsg.origin_time.frac) != m->trans_time.tv_nsec) {
+-                log_debug("Invalid reply; not our transmit time. Ignoring.");
+-                return 0;
++                log_info("Invalid reply; not our transmit time. Ignoring.");
++                //return 0;
+         }
+ 
+         m->event_timeout = sd_event_source_unref(m->event_timeout);
+ 
+         if (be32toh(ntpmsg.recv_time.sec) < TIME_EPOCH + OFFSET_1900_1970 ||
+             be32toh(ntpmsg.trans_time.sec) < TIME_EPOCH + OFFSET_1900_1970) {
+-                log_debug("Invalid reply, returned times before epoch. Ignoring.");
+-                return manager_connect(m);
++                log_info("Invalid reply, returned times before epoch. Ignoring.");
++            //    return manager_connect(m);
+         }
+ 
+         if (NTP_FIELD_LEAP(ntpmsg.field) == NTP_LEAP_NOTINSYNC ||
+             ntpmsg.stratum == 0 || ntpmsg.stratum >= 16) {
+-                log_debug("Server is not synchronized. Disconnecting.");
+-                return manager_connect(m);
++                log_info("Server is not synchronized. Disconnecting.");
++           //     return manager_connect(m);
+         }
+ 
+         if (!IN_SET(NTP_FIELD_VERSION(ntpmsg.field), 3, 4)) {
+-                log_debug("Response NTPv%d. Disconnecting.", NTP_FIELD_VERSION(ntpmsg.field));
+-                return manager_connect(m);
++                log_info("Response NTPv%d. Disconnecting.", NTP_FIELD_VERSION(ntpmsg.field));
++           //     return manager_connect(m);
+         }
+ 
+         if (NTP_FIELD_MODE(ntpmsg.field) != NTP_MODE_SERVER) {
+-                log_debug("Unsupported mode %d. Disconnecting.", NTP_FIELD_MODE(ntpmsg.field));
+-                return manager_connect(m);
++                log_info("Unsupported mode %d. Disconnecting.", NTP_FIELD_MODE(ntpmsg.field));
++         //       return manager_connect(m);
+         }
+ 
+         root_distance = ntp_ts_short_to_d(&ntpmsg.root_delay) / 2 + ntp_ts_short_to_d(&ntpmsg.root_dispersion);
+         if (root_distance > NTP_MAX_ROOT_DISTANCE) {
+-                log_debug("Server has too large root distance. Disconnecting.");
++                log_info("Server has too large root distance. Disconnecting.");
+                 return manager_connect(m);
+         }
+ 
