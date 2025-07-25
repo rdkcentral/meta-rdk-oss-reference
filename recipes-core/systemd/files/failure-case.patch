@@ -1,23 +1,23 @@
 Index: git/src/timesync/timesyncd-manager.c
 ===================================================================
---- git.orig/src/timesync/timesyncd-manager.c	2025-07-25 04:40:53.116045145 +0000
-+++ git/src/timesync/timesyncd-manager.c	2025-07-25 04:45:41.880543249 +0000
+--- git.orig/src/timesync/timesyncd-manager.c	2025-07-25 06:51:10.761524043 +0000
++++ git/src/timesync/timesyncd-manager.c	2025-07-25 06:52:47.621691530 +0000
 @@ -556,40 +556,54 @@
  
          m->missed_replies = 0;
  
-+       int force_failure = 0; 	
++       int force_failure = 0;
 +	if (getenv("FORCE_FAILURE")) {
 +	force_failure = true;
 +       }
 +	if (force_failure)
 +	{
-+		ntpmsg.origin_time.sec = htobe32(12345); 
-+		ntpmsg.origin_time.frac = htobe32(67890); 
-+		ntpmsg.stratum = 0;  uint32_t pre_epoch_value = 2208980000;
-+		ntpmsg.trans_time.sec = htobe32(pre_epoch_value); ntpmsg.recv_time.sec = htobe32(pre_epoch_value - 100);
++		ntpmsg.origin_time.sec = htobe32(12345);
++		ntpmsg.origin_time.frac = htobe32(67890);
++		ntpmsg.stratum = 0;
++		ntpmsg.trans_time.sec = htobe32(2208980000);  ntpmsg.recv_time.sec = htobe32(2208980000);
 +		ntpmsg.field = 3;
-+		 ntpmsg.root_delay = htobe32(0x0A0000);  ntpmsg.root_dispersion = htobe32(0x0A0000);  
++		root_distance = 10.0;
 +	}
 +
          /* check our "time cookie" (we just stored nanoseconds in the fraction field) */
@@ -61,7 +61,8 @@ Index: git/src/timesync/timesyncd-manager.c
 +         //       return manager_connect(m);
          }
  
-         root_distance = ntp_ts_short_to_d(&ntpmsg.root_delay) / 2 + ntp_ts_short_to_d(&ntpmsg.root_dispersion);
+-        root_distance = ntp_ts_short_to_d(&ntpmsg.root_delay) / 2 + ntp_ts_short_to_d(&ntpmsg.root_dispersion);
++        root_distance = 10;
          if (root_distance > NTP_MAX_ROOT_DISTANCE) {
 -                log_debug("Server has too large root distance. Disconnecting.");
 +                log_info("Server has too large root distance. Disconnecting.");
