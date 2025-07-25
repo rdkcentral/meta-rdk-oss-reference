@@ -18,7 +18,6 @@ RDEPENDS:iptables-modules:remove = " \
 									iptables-module-ip6t-hbh \
 									iptables-module-ip6t-hl \
 									iptables-module-ip6t-ipv6header \
-									iptables-module-ip6t-log \
 									iptables-module-ip6t-mh \
 									iptables-module-ip6t-netmap \
 									iptables-module-ip6t-redirect \
