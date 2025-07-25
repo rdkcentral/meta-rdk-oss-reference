@@ -14,10 +14,10 @@ Index: git/src/timesync/timesyncd-manager.c
 +	{
 +		ntpmsg.origin_time.sec = htobe32(12345); 
 +		ntpmsg.origin_time.frac = htobe32(67890); 
-+		ntpmsg.stratum = 0;
-+		ntpmsg.trans_time.sec = htobe32(OFFSET_1900_1970 - 5); ntpmsg.recv_time.sec = htobe32(OFFSET_1900_1970 - 10);   
++		ntpmsg.stratum = 0;  uint32_t pre_epoch_value = 2208980000;
++		ntpmsg.trans_time.sec = htobe32(pre_epoch_value); ntpmsg.recv_time.sec = htobe32(pre_epoch_value - 100);
 +		ntpmsg.field = 3;
-+		root_distance = 10.0;
++		 ntpmsg.root_delay = htobe32(0x0A0000);  ntpmsg.root_dispersion = htobe32(0x0A0000);  
 +	}
 +
          /* check our "time cookie" (we just stored nanoseconds in the fraction field) */
