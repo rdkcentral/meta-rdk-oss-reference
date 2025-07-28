@@ -62,7 +62,8 @@ def get_oss_arch(d):
 LAYER_EXTENSION ?= ""
 OSS_MACHINE = "${@get_oss_machine(d)}"
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
-PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
+PACKAGE_EXTRA_ARCHS:append = "${@'' if OSS_LAYER_ARCH_ADDED == '1' else ' ${OSS_LAYER_ARCH}'}"
+OSS_LAYER_ARCH_ADDED = "1"
 
 
 # Package revisions and architecture configurations
