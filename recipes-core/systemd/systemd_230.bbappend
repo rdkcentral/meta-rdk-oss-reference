@@ -75,9 +75,6 @@ fi
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-sleep
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
-	rm -rf ${D}${rootlibexecdir}/systemd/systemd-debug-shell.service
-	rm -rf ${D}${rootlibexecdir}/systemd/console-getty.service
-	rm -rf ${D}${rootlibexecdir}/systemd/console-shell.service
         rm -rf ${D}${base_libdir}/systemd/systemd-debug-shell.service
         rm -rf ${D}${base_libdir}/systemd/console-getty.service
         rm -rf ${D}${base_libdir}/systemd/console-shell.service
