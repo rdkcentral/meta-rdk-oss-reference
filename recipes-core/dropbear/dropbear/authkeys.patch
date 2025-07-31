@@ -90,7 +90,7 @@ index 2c905dd..0626baa 100644
                                          "-A <authplugin>[,<options>]\n"
                                          "               Enable external public key auth through <authplugin>\n"
  #endif
-+					"-f <file>        Load authorized_keys from .ssh/<file> \n"
++					"-f <file>       Load authorized_keys from .ssh/<file> \n"
  					"-V    Version\n"
  #if DEBUG_TRACE
  					"-v		verbose (compiled with DEBUG_TRACE)\n"
