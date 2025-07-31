@@ -5,7 +5,7 @@ SRC_URI:append = " \
 "
 
 SRC_URI:append:broadband = " \
-    file://01-dbus-ccsp-apis-${PV}.patch \
+    file://01-dbus-ccsp-apis-1.14.8.patch \
 "
 
 #Removed --with-xml expact as the configuration is not supported in 1.14. It was not supported in dunfell version 1.12.16 as well.
