@@ -323,6 +323,7 @@ RDEPENDS:${PN} += "\
      trower-base64 \
      vmtouch \
      volatile-binds \
+     wayland-default-egl \
      westeros \
      westeros-simplebuffer \
      westeros-simpleshell \
