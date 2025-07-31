@@ -10,10 +10,10 @@ PV = "1.0.0+git${SRCPV}"
 PR = "r1"
 
 SRC_URI = "git://github.com/antirez/linenoise.git;protocol=https"
-SRCREV = "97d2850af13c339369093b78abe5265845d78220"
-
+#SRCREV = "97d2850af13c339369093b78abe5265845d78220"
+SRCREV = "d895173d679be70bcd8b23041fff3e458e1a3506"
 # Support for linenoiseHistoryPrint
-SRC_URI += "file://001-linenoise-history.patch"
+#SRC_URI += "file://001-linenoise-history.patch"
 
 # To compile and generate liblinenoise.so
 SRC_URI += "file://002-linenoise-cmakelists.patch"
