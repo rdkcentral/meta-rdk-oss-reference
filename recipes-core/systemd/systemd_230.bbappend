@@ -75,9 +75,9 @@ fi
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-sleep
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
-        rm -rf ${D}${rootlibexecdir}/systemd/systemd-debug-shell.service
-        rm -rf ${D}${rootlibexecdir}/systemd/systemd-console-getty.service
-        rm -rf ${D}${rootlibexecdir}/systemd/systemd-console-shell.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-debug-shell.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-console-getty.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-console-shell.service
 
 	sed -i -e 's/systemd-fsck-root.service//g' ${D}${systemd_unitdir}/system/systemd-remount-fs.service
 if ! ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
