@@ -18,7 +18,6 @@ def get_oss_arch(d):
     return arch
 
 LAYER_EXTENSION ?= ""
-OSS_MACHINE = "${@get_oss_machine(d)}"
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 
