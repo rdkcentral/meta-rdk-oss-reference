@@ -27,7 +27,7 @@ SRC_URI = "git://github.com/rdkcentral/rdkperf;protocol=git;branch=main"
 
 SRCREV = "d802d561c4a2a4456403d572da75e73032d48d91"
 
-PV = "1.0.0"
+PV = "1.0.0+git${SRCPV}"
 PR ?= "r0"
 S = "${WORKDIR}/git"
 
