@@ -17,3 +17,16 @@ SRC_URI += "\
             "
 
 DISABLE_STATIC = ""
+
+PACKAGES_DYNAMIC += "^${PN}-file-.*"
+ 
+python populate_packages:prepend() {
+import os
+ 
+bindir = d.getVar("bindir")
+
+dvar = d.getVar("PKGD")
+
+do_split_packages( d, root=os.path.join(dvar, bindir), file_regex=r'^(nettle-hash|sexp-conv|pkcs1-conv|nettle-lfib-stream)$', output_pattern='${PN}-file-%s', description='file %s from ${PN}', prepend=True )
+
+}
