@@ -19,9 +19,9 @@ SRC_URI += "\
 DISABLE_STATIC = ""
 
 PACKAGE_BEFORE_PN += "${PN}-extras"
- 
-FILES:${PN}-extras = "${bindir}/sexp-conv \
-                      ${bindir}/pkcs1-conv \
-                      ${bindir}/nettle-hash \
-                      ${bindir}/nettle-lfib-stream 
-                     "
+FILES:${PN}-extras = " \
+    ${bindir}/sexp-conv \
+    ${bindir}/pkcs1-conv \
+    ${bindir}/nettle-hash \
+    ${bindir}/nettle-lfib-stream \
+"
