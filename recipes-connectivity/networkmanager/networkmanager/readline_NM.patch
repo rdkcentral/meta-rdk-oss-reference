@@ -1,8 +1,8 @@
-Date: Jun 12 2024
-From: anaras440_comcast <aravindan_narasimhapuramchakravarthy@comcast.com>
+Date: Jul 24 2025
+From: Aravindan NC <nc.aravindan@gmail.com>
 Subject: Add NetworkManager component in RDKE
 Source: COMCAST
-Signed-off-by: anaras440_comcast <aravindan_narasimhapuramchakravarthy@comcast.com>
+Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
 Index: NetworkManager-1.43.7/src/nmcli/common.c
 ===================================================================
 --- NetworkManager-1.43.7.orig/src/nmcli/common.c
