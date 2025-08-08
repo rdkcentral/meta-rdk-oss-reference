@@ -365,7 +365,7 @@ PACKAGE_ARCH:pn-lcms = "${OSS_LAYER_ARCH}"
 PR:pn-libaio = "r0"
 PACKAGE_ARCH:pn-libaio = "${OSS_LAYER_ARCH}"
 
-PR:pn-libarchive = "r0"
+PR:pn-libarchive = "r1"
 PACKAGE_ARCH:pn-libarchive = "${OSS_LAYER_ARCH}"
 
 PR:pn-libatomic-ops = "r0"
@@ -599,7 +599,7 @@ PACKAGE_ARCH:pn-libxcrypt = "${OSS_LAYER_ARCH}"
 PR:pn-libxkbcommon = "r0"
 PACKAGE_ARCH:pn-libxkbcommon = "${OSS_LAYER_ARCH}"
 
-PR:pn-libxml2 = "r0"
+PR:pn-libxml2 = "r1"
 PACKAGE_ARCH:pn-libxml2 = "${OSS_LAYER_ARCH}"
 
 PR:pn-libxslt = "r0"
