@@ -79,6 +79,9 @@ fi
 if ! ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         sed -i -e '/^L! \/etc\/resolv\.conf*/d' ${D}${exec_prefix}/lib/tmpfiles.d/etc.conf
 fi
+        rm -rf ${D}${systemd_system_unitdir}/debug-shell.service
+        rm -rf ${D}${systemd_system_unitdir}/console-getty.service
+        rm -rf ${D}${systemd_system_unitdir}/console-shell.service
 }
 
 do_install:append:client() {
