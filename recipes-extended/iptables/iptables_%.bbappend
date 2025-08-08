@@ -9,6 +9,14 @@ do_install:append() {
 
 SYSTEMD_SERVICE:iptables:remove = "iptables.service ip6tables.service"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+SRC_URI:append:broadband = "  \
+                             file://0001-add-extentions-for-http-match-rule-specifications.patch \
+                             ${@bb.utils.contains('DISTRO_FEATURES', 'nat46', 'file://iptables-connlimit-daddr-dport.patch', '', d)} \
+                             file://0001-add-port-triggering-support.patch \
+                             file://0001-extenstions-http.patch \
+                           "
+
 RDEPENDS:iptables-modules:remove = " \
 									iptables-module-ip6t-ah \
 									iptables-module-ip6t-dnpt \
