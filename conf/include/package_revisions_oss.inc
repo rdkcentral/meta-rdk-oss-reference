@@ -1,3 +1,27 @@
+def get_oss_machine(d):
+    arch = ""
+    default_tune = d.getVar('DEFAULTTUNE')
+
+    # need to fix: Workaround to check for 64bit machine with multilib configuration
+    multilib_support = d.getVar('MULTILIBS') or ""
+    if multilib_support:
+        arch = "rdk-arm64"
+    elif "armv7athf-neon" in default_tune:
+        arch = "rdk-arm7a"
+    else:
+        arch = "rdk-arm7ve"
+    return arch
+
+def get_oss_arch(d):
+    arch = get_oss_machine(d)
+    arch += "-oss"
+    return arch
+
+LAYER_EXTENSION ?= ""
+OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
+PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
+
+
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
 PREFERRED_VERSION_openssl = "3.0.%"
@@ -167,7 +191,7 @@ PACKAGE_ARCH:pn-dbus-glib = "${OSS_LAYER_ARCH}"
 PR:pn-dibbler= "r1"
 PACKAGE_ARCH:pn-dibbler = "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq = "r1"
+PR:pn-dnsmasq = "r2"
 PACKAGE_ARCH:pn-dnsmasq = "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools = "r0"
@@ -178,6 +202,9 @@ PACKAGE_ARCH:pn-e2fsprogs = "${OSS_LAYER_ARCH}"
 
 PR:pn-ebtables = "r4"
 PACKAGE_ARCH:pn-ebtables = "${OSS_LAYER_ARCH}"
+
+PR:pn-ethtool = "r0"
+PACKAGE_ARCH:pn-ethtool = "${OSS_LAYER_ARCH}"
 
 PR:pn-elfutils = "r0"
 PACKAGE_ARCH:pn-elfutils = "${OSS_LAYER_ARCH}"
@@ -299,7 +326,7 @@ PACKAGE_ARCH:pn-initscripts = "${OSS_LAYER_ARCH}"
 PR:pn-iperf3 = "r0"
 PACKAGE_ARCH:pn-iperf3 = "${OSS_LAYER_ARCH}"
 
-PR:pn-iptables = "r1"
+PR:pn-iptables = "r3"
 PACKAGE_ARCH:pn-iptables = "${OSS_LAYER_ARCH}"
 
 PR:pn-iso-codes = "r0"
@@ -338,7 +365,7 @@ PACKAGE_ARCH:pn-lcms = "${OSS_LAYER_ARCH}"
 PR:pn-libaio = "r0"
 PACKAGE_ARCH:pn-libaio = "${OSS_LAYER_ARCH}"
 
-PR:pn-libarchive = "r0"
+PR:pn-libarchive = "r1"
 PACKAGE_ARCH:pn-libarchive = "${OSS_LAYER_ARCH}"
 
 PR:pn-libatomic-ops = "r0"
@@ -427,6 +454,9 @@ PACKAGE_ARCH:pn-libmicrohttpd = "${OSS_LAYER_ARCH}"
 
 PR:pn-libmng = "r0"
 PACKAGE_ARCH:pn-libmng = "${OSS_LAYER_ARCH}"
+
+PR:pn-libmnl = "r0"
+PACKAGE_ARCH:pn-libmnl = "${OSS_LAYER_ARCH}"
 
 PR:pn-libndp = "r0"
 PACKAGE_ARCH:pn-libndp = "${OSS_LAYER_ARCH}"
@@ -569,7 +599,7 @@ PACKAGE_ARCH:pn-libxcrypt = "${OSS_LAYER_ARCH}"
 PR:pn-libxkbcommon = "r0"
 PACKAGE_ARCH:pn-libxkbcommon = "${OSS_LAYER_ARCH}"
 
-PR:pn-libxml2 = "r0"
+PR:pn-libxml2 = "r1"
 PACKAGE_ARCH:pn-libxml2 = "${OSS_LAYER_ARCH}"
 
 PR:pn-libxslt = "r0"
@@ -656,7 +686,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r0"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r5"
+PR:pn-networkmanager = "r7"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
@@ -801,7 +831,7 @@ PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 PR:pn-syslog-ng = "r3"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r11"
+PR:pn-systemd = "r12"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
@@ -840,7 +870,7 @@ PACKAGE_ARCH:pn-unzip = "${OSS_LAYER_ARCH}"
 PR:pn-update-rc.d = "r0"
 PACKAGE_ARCH:pn-update-rc.d = "${OSS_LAYER_ARCH}"
 
-PR:pn-util-linux = "r1"
+PR:pn-util-linux = "r3"
 PACKAGE_ARCH:pn-util-linux = "${OSS_LAYER_ARCH}"
 
 PR:pn-util-linux-libuuid = "r0"
@@ -857,6 +887,9 @@ PACKAGE_ARCH:pn-vmtouch = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland = "r0"
 PACKAGE_ARCH:pn-wayland = "${OSS_LAYER_ARCH}"
+
+PR:pn-wayland-default-egl = "r0"
+PACKAGE_ARCH:pn-wayland-default-egl = "${OSS_LAYER_ARCH}"
 
 PR:pn-wayland-protocols = "r1"
 PACKAGE_ARCH:pn-wayland-protocols = "${OSS_LAYER_ARCH}"
