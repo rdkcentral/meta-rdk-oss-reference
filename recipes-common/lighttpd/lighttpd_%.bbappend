@@ -9,8 +9,6 @@ RDEPENDS:${PN} += " \
     lighttpd-module-ssi \
     lighttpd-module-access \
     lighttpd-module-accesslog \
-    lighttpd-module-rewrite \
-    lighttpd-module-secdownload \
 	"
 # From meta-rdk-comcast/recipes-common/lighttpd/lighttpd_%.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/files:"

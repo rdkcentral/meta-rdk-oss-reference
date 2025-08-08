@@ -7,6 +7,10 @@ PACKAGECONFIG:remove = " resolved nss-resolve "
 
 PACKAGECONFIG:remove:libc-uclibc = "sysusers machined"
 
+DEPENDS += " ${@bb.utils.contains("DISTRO_FEATURES", "apparmor", " apparmor", "" ,d)}"
+PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'apparmor', 'apparmor', '', d)}"
+PACKAGECONFIG[apparmor] = "--enable-apparmor, --disable-apparmor"
+
 #Remove volatile bind dependency as it is not an oss delivered component
 RDEPENDS:${PN}:remove = "volatile-binds"
 
@@ -141,7 +145,6 @@ SRC_URI:append = " \
             file://99-default.preset \
             "
 
-
 EXTRA_OECONF += " --enable-polkit=no"
 PACKAGECONFIG:remove = "pam"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/10-ubi-device-systemd.rules"
@@ -198,7 +201,7 @@ SRC_URI += "\
             file://systemd230-forec-reboot-on-freeze.patch \
             file://0001-Added-decrement-of-notify-watchers-when-we-dont-need.patch \
             file://0001-Added-code-to-cleanup-all-the-xisting-watches-on-pat.patch \
-            file://0001-Added-Extra-information-fro-NTP-Status.patch \
+            file://0002-enable-more-ntp-info-logs.patch \
            "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://0001-In-our-echo-system-we-are-managing-last-known-good-t.patch', '', d)} "
