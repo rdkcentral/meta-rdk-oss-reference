@@ -1,0 +1,29 @@
+Date: Jul 24 2025
+From: Aravindan NC <nc.aravindan@gmail.com>
+Subject: Bugfix for NetworkManager component in RDKE
+Source: COMCAST
+Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
+Index: NetworkManager-1.43.7/src/core/nm-policy.c
+===================================================================
+--- NetworkManager-1.43.7/src/core/nm-policy.c	2023-05-03 14:04:12.000000000 +0000
++++ NetworkManager-1.43.7/src/core/nm-policy.c	2025-07-24 14:49:56.795960853 +0000
+@@ -1662,14 +1662,17 @@
+
+     g_return_if_fail(NM_IS_POLICY(self));
+     g_return_if_fail(NM_IS_DEVICE(device));
+-    nm_assert(g_signal_handler_find(device,
++    if(g_signal_handler_find(device,
+                                     G_SIGNAL_MATCH_DATA,
+                                     0,
+                                     0,
+                                     NULL,
+                                     NULL,
+                                     NM_POLICY_GET_PRIVATE(self))
+-              != 0);
++              == 0) {
++        _LOGE(LOGD_DEVICE, "Policy: signal handler not found; skipping auto-activate scheduling.");
++	return;
++    }
+
+     if (!c_list_is_empty(&device->policy_auto_activate_lst)) {
+         /* already queued. Return. */
