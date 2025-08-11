@@ -101,7 +101,7 @@ pkg_postinst:${PN}() {
 }
 
 SYSTEMD_SERVICE:${PN}:remove += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'syslog-ng@.service', '', d)}"
-#SYSTEMD_SERVICE:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'syslog-ng.service', '', d)}"
+SYSTEMD_SERVICE:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'syslog-ng.service', '', d)}"
 FILES:${PN} += " ${systemd_unitdir}/system/* "
 
 FILES:${PN}-jconf = ""
