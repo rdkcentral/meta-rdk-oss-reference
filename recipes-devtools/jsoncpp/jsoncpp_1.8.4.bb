@@ -18,7 +18,8 @@ SRC_URI = "git://github.com/open-source-parsers/jsoncpp.git \
 SRC_URI = "git://github.com/open-source-parsers/jsoncpp;branch=master;protocol=https"
 
 # release 1.8.4
-SRCREV = "ddabf50f72cf369bf652a95c4d9fe31a1865a781"
+#SRCREV = "ddabf50f72cf369bf652a95c4d9fe31a1865a781"
+SRCREV = "ceae0e3867fe16e1227b4a39fe6951ee005591dc"
 
 S = "${WORKDIR}/git"
 
@@ -27,3 +28,7 @@ EXTRA_OECMAKE += "-DBUILD_SHARED_LIBS=ON -DJSONCPP_WITH_PKGCONFIG_SUPPORT=OFF -D
 inherit cmake
 
 BBCLASSEXTEND:append += " nativesdk"
+do_install:append() {
+    rm -rf ${D}${libdir}/objects-Release || true
+}
+
