@@ -1,0 +1,110 @@
+Date: Oct 29, 2024 8:46 PM
+From: LasyaPrakarsha_DonthiVenkata@comcast.com
+Subject: RDKB-56794: syslog-ng process runs with limited privilege
+Upstream-Status: Pending
+Signed-off-by: LasyaPrakarsha_DonthiVenkata@comcast.com
+Index: syslog-ng-3.36.1/lib/gprocess.h
+===================================================================
+--- syslog-ng-3.36.1.orig/lib/gprocess.h
++++ syslog-ng-3.36.1/lib/gprocess.h
+@@ -30,7 +30,7 @@
+ #include <sys/types.h>
+ #include <glib.h>
+ 
+-#if SYSLOG_NG_ENABLE_LINUX_CAPS
++#if SYSLOG_NG_ENABLE_LINUX_CAPS || COMCAST_ENABLE_NONROOT
+ #  include <sys/capability.h>
+ #endif
+ 
+@@ -41,6 +41,10 @@ typedef enum
+   G_PM_SAFE_BACKGROUND,
+ } GProcessMode;
+ 
++#if SYSLOG_NG_ENABLE_LINUX_CAPS && COMCAST_ENABLE_NONROOT
++# error "Both SYSLOG_NG_ENABLE_LINUX_CAPS and COMCAST_ENABLE_NONROOT cannot be enabled at the same time"
++#endif /* SYSLOG_NG_ENABLE_LINUX_CAPS && COMCAST_ENABLE_NONROOT */
++
+ #if SYSLOG_NG_ENABLE_LINUX_CAPS
+ 
+ gboolean g_process_enable_cap(const gchar *cap_name);
+@@ -48,6 +52,12 @@ gboolean g_process_is_cap_enabled(void);
+ cap_t g_process_cap_save(void);
+ void g_process_cap_restore(cap_t r);
+ 
++#elif COMCAST_ENABLE_NONROOT
++
++#define g_process_enable_cap(cap)
++#define g_process_cap_save() NULL
++#define g_process_cap_restore(cap) cap = cap
++
+ #else
+ 
+ typedef gpointer cap_t;
+Index: syslog-ng-3.36.1/syslog-ng/main.c
+===================================================================
+--- syslog-ng-3.36.1.orig/syslog-ng/main.c
++++ syslog-ng-3.36.1/syslog-ng/main.c
+@@ -31,6 +31,8 @@
+ #include "apphook.h"
+ #include "alarms.h"
+ #include "logqueue.h"
++#define COMCAST_ENABLE_NONROOT 1
++#define SYSLOG_NG_ENABLE_LINUX_CAPS 0
+ #include "gprocess.h"
+ #include "control/control.h"
+ #include "logsource.h"
+@@ -58,6 +60,11 @@
+ #include <iv.h>
+ #include <iv_signal.h>
+ 
++#if COMCAST_ENABLE_NONROOT
++#include "cap.h"
++static cap_user appcaps;
++#endif
++
+ static gboolean display_version = FALSE;
+ static gboolean display_module_registry = FALSE;
+ static gboolean dummy = FALSE;
+@@ -201,6 +208,29 @@ setup_caps (void)
+ 
+ #endif
+ 
++#if COMCAST_ENABLE_NONROOT
++int drop_root()
++{
++    int retval = 0;
++    syslog(LOG_INFO, "NonRoot feature is enabled, dropping root privileges for syslog-ng process\n");
++    appcaps.caps = NULL;
++    appcaps.user_name = NULL;
++
++    if (init_capability() != NULL)
++    {
++        if (drop_root_caps(&appcaps) != -1)
++        {
++            if (update_process_caps(&appcaps) != -1)
++            {
++                read_capability(&appcaps);
++                retval = 1;
++            }
++        }
++    }
++    return retval;
++}
++#endif
++
+ int
+ main(int argc, char *argv[])
+ {
+@@ -251,6 +281,12 @@ main(int argc, char *argv[])
+ 
+   setup_caps();
+ 
++#if COMCAST_ENABLE_NONROOT
++  if (!drop_root()) {
++      syslog(LOG_ERR, "drop_root method failed!\n");
++  }
++#endif
++
+   if(startup_debug_flag && debug_flag)
+     {
+       startup_debug_flag = FALSE;

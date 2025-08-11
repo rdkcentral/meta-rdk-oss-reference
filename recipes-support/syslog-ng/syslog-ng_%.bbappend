@@ -111,3 +111,8 @@ FILES:${PN}-libs = " ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', '${lib
 
 FILES:${PN} += "${datadir}/${BPN}/include/scl/cim ${datadir}/${BPN}/include/scl/elasticsearch ${datadir}/${BPN}/include/scl/ewmm  ${datadir}/${BPN}/include/scl/graylog2 ${datadir}/${BPN}/include/scl/loggly ${datadir}/${BPN}/include/scl/logmatic ${datadir}/${BPN}/tools/merge-grammar.pl ${libdir}/${BPN}/libdate.so"
 
+DEPENDS:append:broadband = " libunpriv"
+
+LDFLAGS:append:broadband = " -lprivilege"
+
+SRC_URI:append:broadband = " file://drop_root_syslog-ng.patch"
