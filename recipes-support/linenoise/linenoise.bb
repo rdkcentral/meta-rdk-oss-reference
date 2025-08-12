@@ -17,7 +17,7 @@ SRCREV = "d895173d679be70bcd8b23041fff3e458e1a3506"
 
 # To compile and generate liblinenoise.so
 SRC_URI += "file://002-linenoise-cmakelists.patch"
-
+PACKAGE_ARCH = "${MIDDLEWARE_ARCH}"
 S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig
