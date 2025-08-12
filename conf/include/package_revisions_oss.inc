@@ -345,7 +345,7 @@ PR:pn-json-c = "r0"
 PACKAGE_ARCH:pn-json-c = "${OSS_LAYER_ARCH}"
 
 PR:pn-jsoncpp = "r0"
-#PACKAGE_ARCH:pn-jsoncpp = "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-jsoncpp = "${MIDDLEWARE_ARCH}"
 
 PR:pn-jsonrpc = "r0"
 PACKAGE_ARCH:pn-jsonrpc = "${OSS_LAYER_ARCH}"
