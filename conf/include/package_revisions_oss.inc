@@ -345,7 +345,7 @@ PR:pn-json-c = "r0"
 PACKAGE_ARCH:pn-json-c = "${OSS_LAYER_ARCH}"
 
 PR:pn-jsoncpp = "r0"
-PACKAGE_ARCH:pn-jsoncpp = "${OSS_LAYER_ARCH}"
+#PACKAGE_ARCH:pn-jsoncpp = "${OSS_LAYER_ARCH}"
 
 PR:pn-jsonrpc = "r0"
 PACKAGE_ARCH:pn-jsonrpc = "${OSS_LAYER_ARCH}"
@@ -612,7 +612,7 @@ PR:pn-lighttpd = "r3"
 PACKAGE_ARCH:pn-lighttpd = "${OSS_LAYER_ARCH}"
 
 PR:pn-linenoise = "r1"
-PACKAGE_ARCH:pn-linenoise = "${OSS_LAYER_ARCH}"
+#PACKAGE_ARCH:pn-linenoise = "${OSS_LAYER_ARCH}"
 
 PR:pn-linux-libc-headers = "r2"
 PACKAGE_ARCH:pn-linux-libc-headers = "${OSS_LAYER_ARCH}"
