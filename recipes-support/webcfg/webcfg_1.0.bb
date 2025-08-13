@@ -19,7 +19,7 @@ S = "${WORKDIR}/git"
 
 ASNEEDED = ""
 
-inherit pkgconfig cmake ${@bb.utils.contains("DISTRO_FEATURES", "kirkstone", "python3native", "pythonnative", d)}
+inherit pkgconfig cmake ${@bb.utils.contains_any("DISTRO_FEATURES", "kirkstone scarthgap", "python3native", "pythonnative", d)}
 
 EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true"
 

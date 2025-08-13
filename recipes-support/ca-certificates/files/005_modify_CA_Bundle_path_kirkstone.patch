@@ -7,6 +7,7 @@ Subject: [PATCH] RDKALL-1221: Create separate CA bundles for browser apps
 	This patch is made compatible to kirkstone Yocto version.
 Source: COMCAST 02060561db73c28bcb9dff8d241c2275c6ad9b47 Mar 22, 2019 2:49 PM
 Signed-off-by: Arjun <arjun_daasuramdass@comcast.com>
+Upstream-Status: Pending
 ---
 
 --- a/sbin/update-ca-certificates	2022-10-31 11:35:36.417666102 +0000
