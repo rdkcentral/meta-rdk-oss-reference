@@ -1,0 +1,225 @@
+From 4f2b80cceb2dfc94daea28f87a757e822b4b5902 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@riseup.net>
+Date: Wed, 13 Aug 2025 09:53:00 +0200
+Subject: [PATCH] wifi: don't recheck  auto-activate on disposal
+
+During disposal we're calling to remove_all_aps that in turns schedules
+an auto-activate recheck. As the device is removed, this triggers an
+assertion when trying to do the recheck.
+
+Fix that by not scheduling the recheck.
+
+Example of backtrace that this commits fix:
+  0  __libc_do_syscall () at ../sysdeps/unix/sysv/linux/arm/libc-do-syscall.S:47
+  1  0xf746e270 in __pthread_kill_implementation (threadid=<optimized out>, signo=6, no_tid=<optimized out>) at pthread_kill.c:43
+  2  0xf743fbc6 in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+  3  0xf7431614 in __GI_abort () at abort.c:79
+  4  0xf775afea in g_assertion_message (domain=domain@entry=0x209a9f "nm", file=file@entry=0x1f7d59 "../NetworkManager-1.43.7/src/core/nm-policy.c", line=line@entry=1665,
+     func=func@entry=0x1f94d9 <__func__.6> "nm_policy_device_recheck_auto_activate_schedule",
+     message=message@entry=0x1d3e950 "assertion failed: (g_signal_handler_find(device, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, NM_POLICY_GET_PRIVATE(self)) != 0)")
+     at ../glib-2.72.3/glib/gtestutils.c:3253
+  5  0xf775b05e in g_assertion_message_expr (domain=0x209a9f "nm", file=0x1f7d59 "../NetworkManager-1.43.7/src/core/nm-policy.c", line=1665,
+     func=0x1f94d9 <__func__.6> "nm_policy_device_recheck_auto_activate_schedule",
+     expr=0x1f8afc "g_signal_handler_find(device, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, NM_POLICY_GET_PRIVATE(self)) != 0") at ../glib-2.72.3/glib/gtestutils.c:3279
+  6  0x0005f27a in nm_policy_device_recheck_auto_activate_schedule (self=0x1d3e950, device=0x209a9f) at ../NetworkManager-1.43.7/src/core/nm-policy.c:1679
+  7  0x000548ae in nm_manager_device_recheck_auto_activate_schedule (self=<optimized out>, device=<optimized out>) at ../NetworkManager-1.43.7/src/core/nm-manager.c:3113
+  8  0x00070622 in nm_device_recheck_auto_activate_schedule (self=<optimized out>) at ../NetworkManager-1.43.7/src/core/devices/nm-device.c:9249
+  9  0xf693aa8c in ap_add_remove (self=self@entry=0x1ceb0b0, is_adding=0, ap=<optimized out>, recheck_available_connections=0)
+     at ../NetworkManager-1.43.7/src/core/devices/wifi/nm-device-wifi.c:846
+  10 0xf693bcda in remove_all_aps (self=self@entry=0x1ceb0b0) at ../NetworkManager-1.43.7/src/core/devices/wifi/nm-device-wifi.c:863
+  11 0xf693f83c in dispose (object=0x1ceb0b0) at ../NetworkManager-1.43.7/src/core/devices/wifi/nm-device-wifi.c:3809
+  12 0xf7806e72 in g_object_unref (_object=<optimized out>) at ../glib-2.72.3/gobject/gobject.c:3636
+  13 g_object_unref (_object=0x1ceb0b0) at ../glib-2.72.3/gobject/gobject.c:3553
+  14 0x000f7fa4 in _nm_dbus_object_clear_and_unexport (location=location@entry=0xffa50644) at ../NetworkManager-1.43.7/src/core/nm-dbus-object.c:203
+  15 0x000576e4 in remove_device (self=self@entry=0x1c9c900, device=<optimized out>, quitting=quitting@entry=1) at ../NetworkManager-1.43.7/src/core/nm-manager.c:2289
+  16 0x0005a864 in nm_manager_stop (self=self@entry=0x1c9c900) at ../NetworkManager-1.43.7/src/core/nm-manager.c:7784
+  17 0x00023438 in main (argc=<optimized out>, argv=<optimized out>) at ../NetworkManager-1.43.7/src/core/main.c:530
+
+Fixes https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/issues/1791
+---
+ src/core/devices/wifi/nm-device-wifi.c | 51 ++++++++++++++++----------
+ 1 file changed, 31 insertions(+), 20 deletions(-)
+
+diff --git a/src/core/devices/wifi/nm-device-wifi.c b/src/core/devices/wifi/nm-device-wifi.c
+index 06eee14245..b890b11052 100644
+--- a/src/core/devices/wifi/nm-device-wifi.c
++++ b/src/core/devices/wifi/nm-device-wifi.c
+@@ -196,7 +196,8 @@ static void periodic_update(NMDeviceWifi *self);
+ static void ap_add_remove(NMDeviceWifi *self,
+                           gboolean      is_adding,
+                           NMWifiAP     *ap,
+-                          gboolean      recheck_available_connections);
++                          gboolean      recheck_available_connections,
++                          gboolean      recheck_auto_activate);
+
+ static void _hw_addr_set_scanning(NMDeviceWifi *self, gboolean do_reset);
+
+@@ -714,7 +715,10 @@ update_seen_bssids_cache(NMDeviceWifi *self, NMWifiAP *ap)
+ }
+
+ static void
+-set_current_ap(NMDeviceWifi *self, NMWifiAP *new_ap, gboolean recheck_available_connections)
++set_current_ap(NMDeviceWifi *self,
++               NMWifiAP     *new_ap,
++               gboolean      recheck_available_connections,
++               gboolean      recheck_auto_activate)
+ {
+     NMDeviceWifiPrivate *priv;
+     NMWifiAP            *old_ap;
+@@ -741,7 +745,11 @@ set_current_ap(NMDeviceWifi *self, NMWifiAP *new_ap, gboolean recheck_available_
+         /* Remove any AP from the internal list if it was created by NM or isn't known to the supplicant */
+         if (NM_IN_SET(mode, _NM_802_11_MODE_ADHOC, _NM_802_11_MODE_AP)
+             || nm_wifi_ap_get_fake(old_ap))
+-            ap_add_remove(self, FALSE, old_ap, recheck_available_connections);
++            ap_add_remove(self,
++                          FALSE,
++                          old_ap,
++                          recheck_available_connections,
++                          recheck_auto_activate);
+         g_object_unref(old_ap);
+     }
+
+@@ -814,7 +822,8 @@ static void
+ ap_add_remove(NMDeviceWifi *self,
+               gboolean      is_adding, /* or else removing */
+               NMWifiAP     *ap,
+-              gboolean      recheck_available_connections)
++              gboolean      recheck_available_connections,
++              gboolean      recheck_auto_activate)
+ {
+     NMDeviceWifiPrivate *priv = NM_DEVICE_WIFI_GET_PRIVATE(self);
+
+@@ -845,13 +854,14 @@ ap_add_remove(NMDeviceWifi *self,
+         nm_dbus_object_clear_and_unexport(&ap);
+     }
+
+-    nm_device_recheck_auto_activate_schedule(NM_DEVICE(self));
++    if (recheck_auto_activate)
++        nm_device_recheck_auto_activate_schedule(NM_DEVICE(self));
+     if (recheck_available_connections)
+         nm_device_recheck_available_connections(NM_DEVICE(self));
+ }
+
+ static void
+-remove_all_aps(NMDeviceWifi *self)
++remove_all_aps(NMDeviceWifi *self, gboolean disposing)
+ {
+     NMDeviceWifiPrivate *priv = NM_DEVICE_WIFI_GET_PRIVATE(self);
+     NMWifiAP            *ap;
+@@ -859,12 +869,13 @@ remove_all_aps(NMDeviceWifi *self)
+     if (c_list_is_empty(&priv->aps_lst_head))
+         return;
+
+-    set_current_ap(self, NULL, FALSE);
++    set_current_ap(self, NULL, FALSE, !disposing);
+
+     while ((ap = c_list_first_entry(&priv->aps_lst_head, NMWifiAP, aps_lst)))
+-        ap_add_remove(self, FALSE, ap, FALSE);
++        ap_add_remove(self, FALSE, ap, FALSE, !disposing);
+
+-    nm_device_recheck_available_connections(NM_DEVICE(self));
++    if (!disposing)
++        nm_device_recheck_available_connections(NM_DEVICE(self));
+ }
+
+ static gboolean
+@@ -951,7 +962,7 @@ deactivate(NMDevice *device)
+
+     priv->rate = 0;
+
+-    set_current_ap(self, NULL, TRUE);
++    set_current_ap(self, NULL, TRUE, TRUE);
+
+     if (!wake_on_wlan_restore(self))
+         _LOGW(LOGD_DEVICE | LOGD_WIFI, "Cannot unconfigure WoWLAN.");
+@@ -2000,7 +2011,7 @@ supplicant_iface_bss_changed_cb(NMSupplicantInterface *iface,
+             if (nm_wifi_ap_set_fake(found_ap, TRUE))
+                 _ap_dump(self, LOGL_DEBUG, found_ap, "updated", 0);
+         } else {
+-            ap_add_remove(self, FALSE, found_ap, TRUE);
++            ap_add_remove(self, FALSE, found_ap, TRUE, TRUE);
+             schedule_ap_list_dump(self);
+         }
+         return;
+@@ -2043,7 +2054,7 @@ supplicant_iface_bss_changed_cb(NMSupplicantInterface *iface,
+             }
+         }
+
+-        ap_add_remove(self, TRUE, ap, TRUE);
++        ap_add_remove(self, TRUE, ap, TRUE, TRUE);
+     }
+
+     /* Update the current AP if the supplicant notified a current BSS change
+@@ -2268,7 +2279,7 @@ link_timeout_cb(gpointer user_data)
+     if (nm_device_get_state(device) != NM_DEVICE_STATE_ACTIVATED)
+         return FALSE;
+
+-    set_current_ap(self, NULL, TRUE);
++    set_current_ap(self, NULL, TRUE, TRUE);
+
+     nm_device_state_changed(device,
+                             NM_DEVICE_STATE_FAILED,
+@@ -2684,7 +2695,7 @@ supplicant_iface_notify_current_bss(NMSupplicantInterface *iface,
+             }
+         }
+
+-        set_current_ap(self, new_ap, TRUE);
++        set_current_ap(self, new_ap, TRUE, TRUE);
+
+         req = nm_device_get_act_request(NM_DEVICE(self));
+         if (req) {
+@@ -3118,7 +3129,7 @@ act_stage1_prepare(NMDevice *device, NMDeviceStateReason *out_failure_reason)
+         priv->mode = _NM_802_11_MODE_AP;
+
+         /* Scanning not done in AP mode; clear the scan list */
+-        remove_all_aps(self);
++        remove_all_aps(self, FALSE);
+     } else if (g_strcmp0(mode, NM_SETTING_WIRELESS_MODE_MESH) == 0)
+         priv->mode = _NM_802_11_MODE_MESH;
+     _notify(self, PROP_MODE);
+@@ -3155,14 +3166,14 @@ act_stage1_prepare(NMDevice *device, NMDeviceStateReason *out_failure_reason)
+             nm_wifi_ap_set_address(ap_fake, nm_device_get_hw_address(device));
+
+         g_object_freeze_notify(G_OBJECT(self));
+-        ap_add_remove(self, TRUE, ap_fake, TRUE);
++        ap_add_remove(self, TRUE, ap_fake, TRUE, TRUE);
+         g_object_thaw_notify(G_OBJECT(self));
+         ap = ap_fake;
+     }
+
+     _scan_notify_allowed(self, NM_TERNARY_DEFAULT);
+
+-    set_current_ap(self, ap, FALSE);
++    set_current_ap(self, ap, FALSE, TRUE);
+     nm_active_connection_set_specific_object(NM_ACTIVE_CONNECTION(req),
+                                              nm_dbus_object_get_path(NM_DBUS_OBJECT(ap)));
+     return NM_ACT_STAGE_RETURN_SUCCESS;
+@@ -3528,7 +3539,7 @@ device_state_changed(NMDevice           *device,
+
+         cleanup_association_attempt(self, TRUE);
+         cleanup_supplicant_failures(self);
+-        remove_all_aps(self);
++        remove_all_aps(self, FALSE);
+     }
+
+     switch (new_state) {
+@@ -3566,7 +3577,7 @@ device_state_changed(NMDevice           *device,
+     }
+
+     if (clear_aps)
+-        remove_all_aps(self);
++        remove_all_aps(self, FALSE);
+
+     _scan_notify_allowed(self, NM_TERNARY_DEFAULT);
+ }
+@@ -3808,7 +3819,7 @@ dispose(GObject *object)
+
+     g_clear_object(&priv->sup_mgr);
+
+-    remove_all_aps(self);
++    remove_all_aps(self, TRUE);
+
+     if (priv->p2p_device) {
+         /* Destroy the P2P device. */
+-- 
+2.50.1
