@@ -21,6 +21,7 @@ SRC_URI:append:broadband = " file://client-notify.patch \
                              file://dibbler_clear_sysevent_for_null_option23.patch \
                              file://fix_type_casting.patch \
                              ${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable','file://oss_dibbler_conf.sh','',d)} \
+                             file://logging_ipv6_timeoffset.patch \
 "
 
 
@@ -73,8 +74,16 @@ do_install:append:broadband() {
 
 FILES:${PN}-client += "${sysconfdir}/dibbler/* \
                        ${base_libdir}/rdk/*    \
+                       ${sbindir}/dibbler-client \
                       "
 FILES:${PN}:append:broadband += " ${sysconfdir}/*"
 FILES:${PN}-client:append:broadband += " ${base_libdir}/rdk/*"
 
 ALLOW_EMPTY:${PN} = "1"
+
+#meta-rdk-comcast-broadband/recipes-connectivity/dibbler/dibbler_%.bbappend
+SRC_URI:append:broadband = " file://drop_priv_root_dibbler.patch"
+SRC_URI:append:broadband = " file://DAD_Failed_Log_Redirect.patch"
+
+DEPENDS:append:broadband = " libunpriv"
+LDFLAGS:append:broadband = " -lprivilege"

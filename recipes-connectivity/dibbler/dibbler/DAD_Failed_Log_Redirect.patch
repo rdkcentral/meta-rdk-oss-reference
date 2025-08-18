@@ -1,0 +1,20 @@
+Index: git/AddrMgr/AddrIA.cpp
+===================================================================
+--- git.orig/AddrMgr/AddrIA.cpp
++++ git/AddrMgr/AddrIA.cpp
+@@ -436,6 +436,7 @@ enum EAddrStatus TAddrIA::getTentative()
+ 	case ADDRSTATUS_YES:
+ 	    Log(Warning) << "DAD failed. Address " << ptrAddr->get()->getPlain() 
+ 			 << " was detected as tentative." << LogEnd;
++        system("echo DAD failed. Address was detected as tentative. >> /rdklogs/logs/Consolelog.txt.0");
+ 	    this->Tentative = ADDRSTATUS_YES;
+ 	    return ADDRSTATUS_YES;
+ 	case ADDRSTATUS_NO:
+@@ -458,6 +459,7 @@ enum EAddrStatus TAddrIA::getTentative()
+ 	    default:
+ 		Log(Error) << "DAD inconclusive. Unable to dermine " << ptrAddr->get()->getPlain() 
+ 			   << " address state. Assuming NOT TENTATIVE." << LogEnd;
++        system("echo DAD inconclusive. Unable to dermine address state. Assuming NOT TENTATIVE. >> /rdklogs/logs/Consolelog.txt.0");
+ 		ptrAddr->setTentative(ADDRSTATUS_NO);
+ 		break;
+             }
