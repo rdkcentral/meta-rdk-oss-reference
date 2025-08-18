@@ -248,12 +248,12 @@ do_install:append() {
     else
         #Update Journal configuration if syslog-ng is enabled
         sed -i -e 's/.*ForwardToSyslog=.*/#ForwardToSyslog=no/g' ${D}${sysconfdir}/systemd/journald.conf
-        sed -i -e 's/.*RuntimeMaxFileSize=.*/RuntimeMaxFileSize=3M/g' ${D}${sysconfdir}/systemd/journald.conf
-        sed -i -e 's/.*SystemMaxUse=.*/SystemMaxUse=3M/g' ${D}${sysconfdir}/systemd/journald.conf
-        sed -i -e 's/.*SystemMaxFileSize=.*/SystemMaxFileSize=3M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxFileSize=.*/RuntimeMaxFileSize=6M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxUse=.*/SystemMaxUse=6M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxFileSize=.*/SystemMaxFileSize=6M/g' ${D}${sysconfdir}/systemd/journald.conf
         sed -i -e 's/.*RuntimeMaxFiles=.*/RuntimeMaxFiles=2/g' ${D}${sysconfdir}/systemd/journald.conf
         sed -i -e 's/.*SystemMaxFiles=.*/SystemMaxFiles=2/g' ${D}${sysconfdir}/systemd/journald.conf
-        sed -i -e 's/.*RuntimeMaxUse=.*/RuntimeMaxUse=3M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxUse=.*/RuntimeMaxUse=6M/g' ${D}${sysconfdir}/systemd/journald.conf
     fi
 }
 
