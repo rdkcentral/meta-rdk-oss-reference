@@ -9,3 +9,6 @@ SRC_URI:append = " file://dropbear_2019-verbose.patch \
 "
 
 SRC_URI:append = " file://dropbear_performance__kirkstone_issue.patch "
+SRC_URI:append:broadband = " file://dropbear_logging_fix.patch"
+
+CFLAGS:append:broadband = " -DRDK_BROADBAND"

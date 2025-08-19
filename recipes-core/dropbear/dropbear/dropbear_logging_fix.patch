@@ -1,0 +1,22 @@
+From 7fd5a3f595dd89f7465a8e223fb0f478305248e6 Mon Sep 17 00:00:00 2001
+From: nm296 <nareshkumar_m@comcast.com>
+Date: Thu, 21 Sep 2023 07:26:12 +0000
+Subject: [PATCH]
+
+---
+ svr-main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/svr-main.c b/svr-main.c
+index a00727c..dc7fe73 100644
+--- a/svr-main.c
++++ b/svr-main.c
+@@ -153,7 +153,7 @@ static void main_noinetd() {
+ 	/* fork */
+ 	if (svr_opts.forkbg) {
+ 		int closefds = 0;
+-#if !DEBUG_TRACE
++#if DEBUG_TRACE
+ 		if (!opts.usingsyslog) {
+ 			closefds = 1;
+ 		}
