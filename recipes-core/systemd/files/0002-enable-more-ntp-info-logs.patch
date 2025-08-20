@@ -1,44 +1,44 @@
 Index: git/src/timesync/timesyncd-manager.c
 ===================================================================
---- git.orig/src/timesync/timesyncd-manager.c
-+++ git/src/timesync/timesyncd-manager.c
+--- git.orig/src/timesync/timesyncd-manager.c   2025-08-20 09:41:27.720971431 +0000
++++ git/src/timesync/timesyncd-manager.c        2025-08-20 09:45:42.861422659 +0000
 @@ -47,6 +47,7 @@
  #include "timesyncd-conf.h"
  #include "timesyncd-manager.h"
  #include "util.h"
 +#include "fileio.h"
- 
+
  #ifndef ADJ_SETOFFSET
  #define ADJ_SETOFFSET                   0x0100  /* add 'time' to current time */
-@@ -149,7 +150,7 @@ static int manager_timeout(sd_event_sour
- 
+@@ -149,7 +150,7 @@
+
          server_address_pretty(m->current_server_address, &pretty);
          log_info("Timed out waiting for reply from %s (%s).", strna(pretty), m->current_server_name->string);
 -
 +write_string_file("/tmp/ntp_status", "Error (Timeout)", WRITE_STRING_FILE_CREATE);
          return manager_connect(m);
  }
- 
-@@ -192,13 +193,17 @@ static int manager_send_request(Manager
+
+@@ -192,13 +193,17 @@
          ntpmsg.trans_time.frac = htobe32(m->trans_time.tv_nsec);
- 
+
          server_address_pretty(m->current_server_address, &pretty);
-+	struct timespec uptime;
-+	clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
-+	long long uptime_ms = (long long)uptime.tv_sec * 1000 + uptime.tv_nsec / 1000000;
- 
++       struct timespec uptime;
++       clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
++       long long uptime_ms = (long long)uptime.tv_sec * 1000 + uptime.tv_nsec / 1000000;
+
          len = sendto(m->server_socket, &ntpmsg, sizeof(ntpmsg), MSG_DONTWAIT, &m->current_server_address->sockaddr.sa, m->current_server_address->socklen);
          if (len == sizeof(ntpmsg)) {
                  m->pending = true;
 -                log_debug("Sent NTP request to %s (%s).", strna(pretty), m->current_server_name->string);
-+                log_info("Sent NTP request to %s (%s) at %lld", strna(pretty), m->current_server_name->string);
++                log_info("Sent NTP request to %s (%s) at %lld", strna(pretty), m->current_server_name->string,uptime_ms);
          } else {
                  log_debug_errno(errno, "Sending NTP request to %s (%s) failed: %m", strna(pretty), m->current_server_name->string);
-+		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
++               write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
          }
- 
-@@ -328,7 +333,7 @@ static int manager_adjust_clock(Manager
+
+@@ -328,7 +333,7 @@
                  tmx.constant = log2i(m->poll_interval_usec / USEC_PER_SEC) - 4;
                  tmx.maxerror = 0;
                  tmx.esterror = 0;
@@ -46,30 +46,30 @@ Index: git/src/timesync/timesyncd-manager.c
 +               log_info("  adjust (slew): %+.3f sec", offset);
          } else {
                  tmx.modes = ADJ_STATUS | ADJ_NANO | ADJ_SETOFFSET;
- 
-@@ -343,7 +348,7 @@ static int manager_adjust_clock(Manager
+
+@@ -343,7 +348,7 @@
                  }
- 
+
                  m->jumped = true;
 -                log_debug("  adjust (jump): %+.3f sec", offset);
 +            log_info("  adjust (jump): %+.3f sec", offset);
          }
- 
+
          /*
-@@ -374,10 +379,11 @@ static int manager_adjust_clock(Manager
+@@ -374,10 +379,11 @@
          (void) touch("/var/lib/systemd/clock");
          log_info("Time response event, set the event flag");
          touch("/tmp/clock-event");
 +        write_string_file("/tmp/ntp_status", "Synchronized", WRITE_STRING_FILE_CREATE);
- 
+
          m->drift_ppm = tmx.freq / 65536;
- 
+
 -        log_debug("  status       : %04i %s\n"
 +        log_info("  status       : %04i %s\n"
                    "  time now     : %li.%03llu\n"
                    "  constant     : %li\n"
                    "  offset       : %+.3f sec\n"
-@@ -529,7 +535,7 @@ static int manager_receive_response(sd_e
+@@ -529,7 +535,7 @@
          if (!m->current_server_name ||
              !m->current_server_address ||
              !sockaddr_equal(&server_addr, &m->current_server_address->sockaddr)) {
@@ -77,130 +77,139 @@ Index: git/src/timesync/timesyncd-manager.c
 +                log_info("Response from unknown server.");
                  return 0;
          }
- 
-@@ -550,7 +556,7 @@ static int manager_receive_response(sd_e
+
+@@ -550,7 +556,7 @@
          }
- 
+
          if (!m->pending) {
 -                log_debug("Unexpected reply. Ignoring.");
 +                log_info("Unexpected reply. Ignoring.");
                  return 0;
          }
- 
-@@ -559,7 +565,8 @@ static int manager_receive_response(sd_e
+
+@@ -559,7 +565,8 @@
          /* check our "time cookie" (we just stored nanoseconds in the fraction field) */
          if (be32toh(ntpmsg.origin_time.sec) != m->trans_time.tv_sec + OFFSET_1900_1970 ||
              be32toh(ntpmsg.origin_time.frac) != m->trans_time.tv_nsec) {
 -                log_debug("Invalid reply; not our transmit time. Ignoring.");
 +                log_info("Invalid reply; not our transmit time. Ignoring.");
-+		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
++               write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
                  return 0;
          }
- 
-@@ -567,29 +574,34 @@ static int manager_receive_response(sd_e
- 
+
+@@ -567,29 +574,34 @@
+
          if (be32toh(ntpmsg.recv_time.sec) < TIME_EPOCH + OFFSET_1900_1970 ||
              be32toh(ntpmsg.trans_time.sec) < TIME_EPOCH + OFFSET_1900_1970) {
 -                log_debug("Invalid reply, returned times before epoch. Ignoring.");
 +                log_info("Invalid reply, returned times before epoch. Ignoring.");
-+		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
++               write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
          }
- 
+
          if (NTP_FIELD_LEAP(ntpmsg.field) == NTP_LEAP_NOTINSYNC ||
              ntpmsg.stratum == 0 || ntpmsg.stratum >= 16) {
 -                log_debug("Server is not synchronized. Disconnecting.");
 +                log_info("Server is not synchronized. Disconnecting.");
-+		write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
++               write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
          }
- 
+
          if (!IN_SET(NTP_FIELD_VERSION(ntpmsg.field), 3, 4)) {
 -                log_debug("Response NTPv%d. Disconnecting.", NTP_FIELD_VERSION(ntpmsg.field));
 +              log_info("Response NTPv%d. Disconnecting.", NTP_FIELD_VERSION(ntpmsg.field));
-+	      write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
++             write_string_file("/tmp/ntp_status", "Unsynchronized", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
          }
- 
+
          if (NTP_FIELD_MODE(ntpmsg.field) != NTP_MODE_SERVER) {
 -                log_debug("Unsupported mode %d. Disconnecting.", NTP_FIELD_MODE(ntpmsg.field));
 +             log_info("Unsupported mode %d. Disconnecting.", NTP_FIELD_MODE(ntpmsg.field));
-+	     write_string_file("/tmp/ntp_status", "Unsupported mode.Unsynchronized", WRITE_STRING_FILE_CREATE);
++            write_string_file("/tmp/ntp_status", "Unsupported mode.Unsynchronized", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
          }
- 
+
          root_distance = ntp_ts_short_to_d(&ntpmsg.root_delay) / 2 + ntp_ts_short_to_d(&ntpmsg.root_dispersion);
          if (root_distance > NTP_MAX_ROOT_DISTANCE) {
 -                log_debug("Server has too large root distance. Disconnecting.");
 +                log_info("Server has too large root distance. Disconnecting.");
-+		write_string_file("/tmp/ntp_status", "Server has too large root distance.Unsynchronized", WRITE_STRING_FILE_CREATE);
++               write_string_file("/tmp/ntp_status", "Server has too large root distance.Unsynchronized", WRITE_STRING_FILE_CREATE);
                  return manager_connect(m);
          }
- 
-@@ -600,6 +612,12 @@ static int manager_receive_response(sd_e
+
+@@ -600,6 +612,12 @@
          /* Stop listening */
          manager_listen_stop(m);
- 
-+	struct timespec uptime;
-+	clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
-+	long long uptime_ms = (long long)uptime.tv_sec * 1000 + uptime.tv_nsec / 1000000;
+
++       struct timespec uptime;
++       clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
++       long long uptime_ms = (long long)uptime.tv_sec * 1000 + uptime.tv_nsec / 1000000;
 +
-+	log_info("NTP Response received at %lld",uptime_ms);
++       log_info("NTP Response received at %lld",uptime_ms);
 +
          /* announce leap seconds */
          if (NTP_FIELD_LEAP(ntpmsg.field) & NTP_LEAP_PLUSSEC)
                  leap_sec = 1;
-@@ -631,7 +649,7 @@ static int manager_receive_response(sd_e
- 
+@@ -631,7 +649,7 @@
+
          manager_adjust_poll(m, offset, spike);
- 
+
 -        log_debug("NTP response:\n"
 +        log_info("NTP response:\n"
                    "  leap         : %u\n"
                    "  version      : %u\n"
                    "  mode         : %u\n"
-@@ -671,17 +689,19 @@ static int manager_receive_response(sd_e
+@@ -644,7 +662,7 @@
+                   "  transmit     : %.3f\n"
+                   "  dest         : %.3f\n"
+                   "  offset       : %+.3f sec\n"
+-                  "  delay        : %+.3f sec\n"
++                  "  delay        : %+.3f\n"
+                   "  packet count : %"PRIu64"\n"
+                   "  jitter       : %.3f%s\n"
+                   "  poll interval: " USEC_FMT "\n",
+@@ -671,17 +689,19 @@
                          log_error_errno(r, "Failed to call clock_adjtime(): %m");
          }
- 
+
 -        log_debug("interval/delta/delay/jitter/drift " USEC_FMT "s/%+.3fs/%.3fs/%.3fs/%+ippm%s",
 +        log_info("interval/delta/delay/jitter/drift " USEC_FMT "s/%+.3fs/%.3fs/%.3fs/%+ippm%s",
                    m->poll_interval_usec / USEC_PER_SEC, offset, delay, m->samples_jitter, m->drift_ppm,
                    spike ? " (ignored)" : "");
- 
+
          if (!m->good) {
                  _cleanup_free_ char *pretty = NULL;
- 
+
 -                m->good = true;
 +m->good = true;
-+		clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
-+		long long ntp_sync_ms =  uptime.tv_sec * 1000LL + uptime.tv_nsec / 1000000;
- 
++               clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
++               long long ntp_sync_ms =  uptime.tv_sec * 1000LL + uptime.tv_nsec / 1000000;
+
                  server_address_pretty(m->current_server_address, &pretty);
 -                log_info("Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
 +                log_info("Synchronized to time server %s (%s) at %lld", strna(pretty), m->current_server_name->string,ntp_sync_ms);
                  sd_notifyf(false, "STATUS=Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
          }
- 
-@@ -746,7 +766,7 @@ static int manager_begin(Manager *m) {
+
+@@ -746,7 +766,7 @@
                  m->poll_interval_usec = NTP_POLL_INTERVAL_MIN_SEC * USEC_PER_SEC;
- 
+
          server_address_pretty(m->current_server_address, &pretty);
 -        log_debug("Connecting to time server %s (%s).", strna(pretty), m->current_server_name->string);
 +log_info("Connecting to time server %s (%s).", strna(pretty), m->current_server_name->string);
          sd_notifyf(false, "STATUS=Connecting to time server %s (%s).", strna(pretty), m->current_server_name->string);
- 
+
          r = manager_clock_watch_setup(m);
-@@ -768,7 +788,7 @@ void manager_set_server_name(Manager *m,
+@@ -768,7 +788,7 @@
          manager_disconnect(m);
- 
+
          if (n)
 -                log_debug("Selected server %s.", n->string);
 +                log_info("Selected server %s.", n->string);
  }
- 
+
  void manager_set_server_address(Manager *m, ServerAddress *a) {
-@@ -788,7 +808,7 @@ void manager_set_server_address(Manager
+@@ -788,7 +808,7 @@
          if (a) {
                  _cleanup_free_ char *pretty = NULL;
                  server_address_pretty(a, &pretty);
@@ -208,46 +217,45 @@ Index: git/src/timesync/timesyncd-manager.c
 +                log_info("Selected address %s of server %s.", strna(pretty), a->name->string);
          }
  }
- 
-@@ -803,7 +823,7 @@ static int manager_resolve_handler(sd_re
+
+@@ -803,7 +823,7 @@
          m->resolve_query = sd_resolve_query_unref(m->resolve_query);
- 
+
          if (ret != 0) {
 -                log_debug("Failed to resolve %s: %s", m->current_server_name->string, gai_strerror(ret));
 +                log_info("Failed to resolve %s: %s", m->current_server_name->string, gai_strerror(ret));
- 
+
                  /* Try next host */
                  return manager_connect(m);
-@@ -826,7 +846,7 @@ static int manager_resolve_handler(sd_re
+@@ -826,7 +846,7 @@
                          return log_error_errno(r, "Failed to add server address: %m");
- 
+
                  server_address_pretty(a, &pretty);
 -                log_debug("Resolved address %s for %s.", pretty, m->current_server_name->string);
 +                log_info("Resolved address %s for %s.", pretty, m->current_server_name->string);
          }
- 
+
          if (!m->current_server_name->addresses) {
-@@ -908,12 +928,12 @@ int manager_connect(Manager *m) {
- 
+@@ -908,12 +928,12 @@
+
                          if (!f) {
                                  manager_set_server_name(m, NULL);
 -                                log_debug("No server found.");
 +                                log_info("No server found.");
                                  return 0;
                          }
- 
+
                          if (restart && !m->exhausted_servers && m->poll_interval_usec) {
 -                                log_debug("Waiting after exhausting servers.");
 +                                log_info("Waiting after exhausting servers.");
                                  r = sd_event_add_time(m->event, &m->event_retry, clock_boottime_or_monotonic(), now(clock_boottime_or_monotonic()) + m->poll_interval_usec, 0, manager_retry_connect, m);
                                  if (r < 0)
                                          return log_error_errno(r, "Failed to create retry timer: %m");
-
 Index: git/src/timesync/timesyncd.c
 ===================================================================
---- git.orig/src/timesync/timesyncd.c
-+++ git/src/timesync/timesyncd.c
-@@ -130,6 +130,15 @@ int main(int argc, char *argv[]) {
+--- git.orig/src/timesync/timesyncd.c   2025-08-20 09:41:22.112961513 +0000
++++ git/src/timesync/timesyncd.c        2025-08-20 09:44:17.881272370 +0000
+@@ -132,6 +132,15 @@
          if (r < 0)
                  log_warning_errno(r, "Failed to parse configuration file: %m");
 
