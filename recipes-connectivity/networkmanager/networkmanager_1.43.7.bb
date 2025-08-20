@@ -31,7 +31,6 @@ SRC_URI = " \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
     file://dnsmasq-logging.conf \
-    file://FixAssert_Handler.patch \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
