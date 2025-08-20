@@ -17,6 +17,7 @@ do_install:append() {
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI += "file://separate_keying_for_dev_prod_vm_stunnel.patch"
+SRC_URI += "file://fd_credential.patch"
 
 inherit logrotate_config
 
@@ -41,3 +42,9 @@ FILES:${PN}:remove:client = "${systemd_unitdir}/system/*"
 SYSTEMD_SERVICE:${PN}:remove:client = "stunnel.service"
 
 RDEPENDS:${PN}:remove = "perl"
+
+#meta-rdk-broadband/recipes-support/stunnel/stunnel_%.bbappend
+DEPENDS:remove:broadband = "systemd"
+SYSTEMD_SERVICE:${PN}:remove:broadband = "stunnel.service"
+FILES_${PN}:remove:broadband = "/lib/systemd/system/stunnel.service"
+PACKAGECONFIG:remove:broadband = "systemd"
