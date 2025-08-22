@@ -1,0 +1,354 @@
+##########################################
+Date: Dec 23, 2019 16:39 PM
+From: None
+Subject: To keep two local identities and choose based on port number on DTLS session
+Source: None
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+Patch Recreated by: Arjun <arjun_daasuramdass@comcast.com>
+Patch updated to support net-snmp-5.9.1
+##########################################
+Index: net-snmp-5.8/configure.d/config_os_progs
+===================================================================
+--- net-snmp-5.8.orig/configure.d/config_os_progs	2020-02-10 04:48:38.887079473 -0500
++++ net-snmp-5.8/configure.d/config_os_progs	2020-02-10 04:48:38.879079473 -0500
+@@ -447,6 +447,7 @@
+     AC_DEFINE(HAVE_DPKG_QUERY, 1, [Set if the dpkg-query command is available])
+ fi
+ 
++AC_DEFINE(NETSNMP_ALLOW_MULTI_SERVER_CERTS, 1, [define to support multiple server certs])
+ 
+ ##
+ #   Non-program/compilation checks:
+Index: net-snmp-5.8/include/net-snmp/library/snmpTLSBaseDomain.h
+===================================================================
+--- net-snmp-5.8.orig/include/net-snmp/library/snmpTLSBaseDomain.h	2020-02-10 04:48:38.887079473 -0500
++++ net-snmp-5.8/include/net-snmp/library/snmpTLSBaseDomain.h	2020-02-10 04:48:38.879079473 -0500
+@@ -57,7 +57,11 @@
+ 
+     SSL_CTX *sslctx_client_setup(const SSL_METHOD *,
+                                  _netsnmpTLSBaseData *tlsbase);
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    SSL_CTX *sslctx_server_setup(const SSL_METHOD *, int localport);
++#else
+     SSL_CTX *sslctx_server_setup(const SSL_METHOD *);
++#endif
+ 
+     int netsnmp_tlsbase_verify_server_cert(SSL *ssl,
+                                            _netsnmpTLSBaseData *tlsdata);
+Index: net-snmp-5.8/snmplib/default_store.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/default_store.c   2020-02-10 05:06:32.000000000 -0500
++++ net-snmp-5.8/snmplib/default_store.c        2020-02-10 05:16:59.759152183 -0500
+@@ -179,6 +179,16 @@
+
+ static netsnmp_ds_read_config *netsnmp_ds_configs = NULL;
+
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++typedef struct netsnmp_ds_localcert_config_s {
++  char      *hint;
++  int       port;
++  struct netsnmp_ds_localcert_config_s *next;
++} netsnmp_ds_localcert_config;
++
++static netsnmp_ds_localcert_config *netsnmp_ds_localcert_configs = NULL;
++#endif
++
+ static int   netsnmp_ds_integers[NETSNMP_DS_MAX_IDS][NETSNMP_DS_MAX_SUBIDS];
+ static char  netsnmp_ds_booleans[NETSNMP_DS_MAX_IDS][NETSNMP_DS_MAX_SUBIDS/8];
+ static char *netsnmp_ds_strings[NETSNMP_DS_MAX_IDS][NETSNMP_DS_MAX_SUBIDS];
+@@ -415,7 +425,16 @@
+             break;
+
+         case ASN_OCTET_STR:
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++           /* Copy local certs with port number in a list if port number option is given in config */
++            if (((strcasecmp (token, "localCert") == 0)) && (line[0] == '-' && line[1] == '-'))
++            {
++                netsnmp_ds_register_localcerts (line);
++            }
++           else if (*line == '"') {
++#else
+             if (*line == '"') {
++#endif
+                 copy_nword(line, buf, sizeof(buf));
+                 netsnmp_ds_set_string(drsp->storeid, drsp->which, buf);
+             } else {
+@@ -435,6 +454,60 @@
+     }
+ }
+
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++void
++netsnmp_ds_register_localcerts (char *line)
++{
++    int which = 0;
++    size_t len = 0;
++    char *tmp;
++    char buf[SNMP_MAXBUF];
++    netsnmp_ds_localcert_config *lcertp = NULL;
++    netsnmp_ds_localcert_config *lcert = NULL;
++    if (netsnmp_ds_localcert_configs == NULL) {
++        netsnmp_ds_localcert_configs = SNMP_MALLOC_TYPEDEF(netsnmp_ds_localcert_config);
++        if (netsnmp_ds_localcert_configs == NULL)
++            return SNMPERR_GENERR;
++        lcertp = netsnmp_ds_localcert_configs;
++    } else {
++        for (lcertp = netsnmp_ds_localcert_configs;
++                lcertp->next != NULL; lcertp = lcertp->next);
++        lcertp->next = SNMP_MALLOC_TYPEDEF(netsnmp_ds_localcert_config);
++        if (lcertp->next == NULL)
++            return SNMPERR_GENERR;
++        lcertp = lcertp->next;
++    }
++    /* Check whether port option is given in localCert token */
++    len = sizeof(buf);
++    tmp = buf;
++    line = read_config_read_octet_string(line, (u_char **)&tmp, &len);
++    tmp[len] = 0;
++    if ((strcasecmp (buf, "--port")) == 0)
++    {
++        memset (buf, 0, len);
++        tmp = buf;
++        line = read_config_read_octet_string(line, (u_char **)&tmp, &len);
++        tmp[len] = 0;
++       lcertp->port   = atoi(buf);
++    }
++    lcertp->hint    = strdup(line);
++    return;
++}
++
++void
++netsnmp_ds_get_localcert_hint (int localport, char **hint)
++{
++    netsnmp_ds_localcert_config *lcertp = NULL;
++    for (lcertp = netsnmp_ds_localcert_configs;
++                    lcertp != NULL; lcertp = lcertp->next)
++    {
++        if (lcertp->port == localport)
++        {
++            *hint = strdup(lcertp->hint);
++        }
++    }
++}
++#endif
+
+ int
+ netsnmp_ds_register_config(u_char type, const char *ftype, const char *token,
+@@ -541,6 +614,9 @@
+ {
+     netsnmp_ds_read_config *drsp;
+     int             i, j;
++#ifdef NETSNMP_ALLOW_MUTLI_SERVER_CERTS
++    netsnmp_ds_localcert_config *lcert = NULL;
++#endif
+
+     snmp_res_lock(MT_LIBRARY_ID, MT_LIB_SESSION);
+     for (drsp = netsnmp_ds_configs; drsp; drsp = netsnmp_ds_configs) {
+@@ -566,6 +642,17 @@
+             }
+         }
+     }
++
++#ifdef NETSNMP_ALLOW_MUTLI_SERVER_CERTS
++    for (lcert = netsnmp_ds_localcert_configs;
++                    lcert != NULL; lcert = netsnmp_ds_localcert_configs)
++    {
++        netsnmp_ds_localcert_configs = lcert->next;
++        DEBUGMSGTL(("tls:config", "FREE LOCALCERT hint: %s port: %d", lcert->hint, lcert->port));
++        SNMP_FREE (lcert);
++    }
++#endif
++
+     snmp_res_unlock(MT_LIBRARY_ID, MT_LIB_SESSION);
+ }
+ /**  @} */
+Index: net-snmp-5.8/snmplib/transports/snmpDTLSUDPDomain.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/transports/snmpDTLSUDPDomain.c	2020-02-10 04:48:38.887079473 -0500
++++ net-snmp-5.8/snmplib/transports/snmpDTLSUDPDomain.c	2020-02-10 04:48:38.883079473 -0500
+@@ -214,10 +214,17 @@
+ /* XXX: lots of malloc/state cleanup needed */
+ #define DIEHERE(msg) do { snmp_log(LOG_ERR, "%s\n", msg); return NULL; } while(0)
+ 
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++static bio_cache *
++start_new_cached_connection(netsnmp_transport *t,
++                            const netsnmp_sockaddr_storage *remote_addr,
++                            int we_are_client, int localport)
++#else
+ static bio_cache *
+ start_new_cached_connection(netsnmp_transport *t,
+                             const netsnmp_sockaddr_storage *remote_addr,
+                             int we_are_client)
++#endif
+ {
+     bio_cache *cachep = NULL;
+     _netsnmpTLSBaseData *tlsdata;
+@@ -329,7 +336,11 @@
+         /* XXX: session setting 735 */
+     } else {
+         /* we're the server */
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++        SSL_CTX *ctx = sslctx_server_setup(DTLS_method(), localport);
++#else
+         SSL_CTX *ctx = sslctx_server_setup(DTLS_method());
++#endif
+         if (!ctx) {
+             BIO_free(cachep->read_bio);
+             BIO_free(cachep->write_bio);
+@@ -414,16 +425,27 @@
+     return cachep;
+ }
+ 
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++static bio_cache *
++find_or_create_bio_cache(netsnmp_transport *t,
++                         const netsnmp_sockaddr_storage *from_addr,
++                         int we_are_client, int localport)
++#else
+ static bio_cache *
+ find_or_create_bio_cache(netsnmp_transport *t,
+                          const netsnmp_sockaddr_storage *from_addr,
+                          int we_are_client)
++#endif
+ {
+     bio_cache *cachep = find_bio_cache(from_addr);
+ 
+     if (NULL == cachep) {
+         /* none found; need to start a new context */
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++        cachep = start_new_cached_connection(t, from_addr, we_are_client, localport);
++#else
+         cachep = start_new_cached_connection(t, from_addr, we_are_client);
++#endif
+         if (NULL == cachep) {
+             snmp_log(LOG_ERR, "failed to open a new dtls connection\n");
+         }
+@@ -636,6 +658,10 @@
+     netsnmp_tmStateReference *tmStateRef = NULL;
+     _netsnmpTLSBaseData *tlsdata;
+     bio_cache *cachep;
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    struct sockaddr *to;
++    int localport = 0;
++#endif
+ 
+     DEBUGTRACETOK("9:dtlsudp");
+ 
+@@ -670,6 +696,22 @@
+                          __func__, olen, (int)sizeof(*addr_pair));
+             memcpy(addr_pair, opaque, SNMP_MIN(sizeof(*addr_pair), olen));
+         }
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++        socklen_t tolen = sizeof(addr_pair->local_addr);
++        to = (struct sockaddr *)&addr_pair->local_addr.sa;
++        int r2 = getsockname (t->sock, to, &tolen);
++        netsnmp_assert (r2 == 0);
++        if (to->sa_family == AF_INET6)
++        {
++            localport = ntohs (((struct sockaddr_in6 *)to)->sin6_port);
++        }
++        else
++        {
++            localport = ntohs (((struct sockaddr_in *)to)->sin_port);
++        }
++        DEBUGMSGTL(("dtlsudp", "%s() rc: %d socket: %d, family : %d ipv4port: %d ipv6_port: %d", __func__, rc, t->sock, to->sa_family, ntohs (((struct sockaddr_in *)to)->sin_port), ntohs (((struct sockaddr_in6 *)to)->sin6_port)));
++        DEBUGMSGTL(("dtlsudp", "recvfrom fd %d got %d bytes from  port: %d\n", t->sock, rc, localport));
++#endif
+         SNMP_FREE(opaque);
+         if (rc < 0 && errno != EINTR) {
+             break;
+@@ -735,8 +777,13 @@
+     /* if we don't have a cachep for this connection then
+        we're receiving something new and are the server
+        side */
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    cachep =
++        find_or_create_bio_cache(t, &addr_pair->remote_addr, WE_ARE_SERVER, localport);
++#else
+     cachep =
+         find_or_create_bio_cache(t, &addr_pair->remote_addr, WE_ARE_SERVER);
++#endif
+     if (NULL == cachep) {
+         snmp_increment_statistic(STAT_TLSTM_SNMPTLSTMSESSIONACCEPTS);
+         SNMP_FREE(tmStateRef);
+@@ -1144,9 +1191,15 @@
+     */
+ 
+     /* we're always a client if we're sending to something unknown yet */
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    if (NULL ==
++        (cachep = find_or_create_bio_cache(t, &addr_pair->remote_addr,
++                                           WE_ARE_CLIENT, 0))) {
++#else
+     if (NULL ==
+         (cachep = find_or_create_bio_cache(t, &addr_pair->remote_addr,
+                                            WE_ARE_CLIENT))) {
++#endif
+         snmp_increment_statistic(STAT_TLSTM_SNMPTLSTMSESSIONOPENERRORS);
+         return -1;
+     }
+Index: net-snmp-5.8/snmplib/transports/snmpTLSBaseDomain.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/transports/snmpTLSBaseDomain.c	2020-02-10 04:48:38.887079473 -0500
++++ net-snmp-5.8/snmplib/transports/snmpTLSBaseDomain.c	2020-02-10 04:48:38.883079473 -0500
+@@ -579,10 +579,17 @@
+     return _sslctx_common_setup(the_ctx, tlsbase);
+ }
+ 
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++SSL_CTX *
++sslctx_server_setup(const SSL_METHOD *method, int localport) {
++#else
+ SSL_CTX *
+ sslctx_server_setup(const SSL_METHOD *method) {
++#endif
+     netsnmp_cert *id_cert;
+-
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++       char     *hint_str = NULL;
++#endif
+     /***********************************************************************
+      * Set up the server context
+      */
+@@ -592,7 +599,23 @@
+         LOGANDDIE("can't create a new context");
+     }
+ 
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    DEBUGMSGTL(("tls", "%s() %d received packet on localport: %d", __func__, __LINE__, localport));
++    /* check if matching local cert for port number is found in default list.
++       Else get default local cert */
++    netsnmp_ds_get_localcert_hint (localport, &hint_str);
++    if (hint_str != NULL)
++    {
++        id_cert = netsnmp_cert_find(NS_CERT_IDENTITY, NS_CERTKEY_MULTIPLE, hint_str);
++    }
++    else
++    {
++#endif
+     id_cert = netsnmp_cert_find(NS_CERT_IDENTITY, NS_CERTKEY_DEFAULT, NULL);
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    }
++#endif
++
+     if (!id_cert)
+         LOGANDDIE ("error finding server identity keys");
+ 
+--- a/snmplib/transports/snmpTLSTCPDomain.c.orig	2022-11-17 10:54:17.962859989 +0000
++++ b/snmplib/transports/snmpTLSTCPDomain.c	2022-11-17 10:55:38.910553302 +0000
+@@ -916,7 +916,12 @@
+     }
+ 
+     /* create the OpenSSL TLS context */
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    /* TODO: For TLS TCP Connections, support multiple server certs */
++    tlsdata->ssl_context = sslctx_server_setup(TLS_method(), 0);
++#else
+     tlsdata->ssl_context = sslctx_server_setup(TLS_method());
++#endif
+ #ifdef SSL_CTX_set_max_proto_version
+     if (tlsdata->ssl_context)
+         SSL_CTX_set_max_proto_version(tlsdata->ssl_context, TLS1_VERSION);

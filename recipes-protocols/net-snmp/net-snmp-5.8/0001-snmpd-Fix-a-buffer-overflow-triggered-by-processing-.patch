@@ -1,0 +1,166 @@
+###########################################################
+Date: 24 May, 2020 12:55 PM
+From: 998a1686cbc202d2a5f3b4bc3933719cb13aaebd
+Subject:   Fix a buffer overflow triggered by processing getnext
+Source: http://git.code.sf.net/p/net-snmp/code V5.8-patches
+License: "BSD & MIT"
+Upstream-Status: Merged
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+###########################################################
+From 998a1686cbc202d2a5f3b4bc3933719cb13aaebd Mon Sep 17 00:00:00 2001
+From: Bart Van Assche <bvanassche@acm.org>
+Date: Mon, 4 May 2020 15:11:59 -0700
+Subject: [PATCH] snmpd: Fix a buffer overflow triggered by processing
+ "getnext"
+
+This patch fixes the following Valgrind complaint:
+
+Invalid write of size 8
+   at 0x4864DD4: netsnmp_scalar_helper_handler (scalar.c:225)
+   by 0x4872008: netsnmp_call_handler (agent_handler.c:546)
+   by 0x4872369: netsnmp_call_next_handler (agent_handler.c:660)
+   by 0x48655B6: netsnmp_serialize_helper_handler (serialize.c:86)
+   by 0x4872008: netsnmp_call_handler (agent_handler.c:546)
+   by 0x487219C: netsnmp_call_handlers (agent_handler.c:631)
+   by 0x4881D52: handle_var_requests (snmp_agent.c:3012)
+   by 0x488245A: handle_getnext_loop (snmp_agent.c:3502)
+   by 0x4882D97: handle_pdu (snmp_agent.c:3849)
+   by 0x4882F03: netsnmp_handle_request (snmp_agent.c:3685)
+   by 0x48835AB: handle_snmp_packet (snmp_agent.c:2294)
+   by 0x4C53CA7: _sess_process_packet_handle_pdu (snmp_api.c:5809)
+   by 0x4C5409F: _sess_process_packet (snmp_api.c:5858)
+   by 0x4C5443C: _sess_read (snmp_api.c:6115)
+   by 0x4C55009: snmp_sess_read2 (snmp_api.c:6387)
+   by 0x4C55046: snmp_read2 (snmp_api.c:5907)
+   by 0x403E43: receive (snmpd.c:1311)
+   by 0x405765: main (snmpd.c:1089)
+ Address 0x63a0908 is 0 bytes after a block of size 72 alloc'd
+   at 0x483877F: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+   by 0x4C5002E: snmp_duplicate_objid (snmp_api.c:7844)
+   by 0x4872992: netsnmp_handler_registration_dup (agent_handler.c:844)
+   by 0x487575C: netsnmp_subtree_deepcopy (agent_registry.c:524)
+   by 0x4875B61: netsnmp_subtree_split (agent_registry.c:660)
+   by 0x487666F: netsnmp_subtree_load (agent_registry.c:940)
+   by 0x48766A4: netsnmp_subtree_load (agent_registry.c:947)
+   by 0x48766A4: netsnmp_subtree_load (agent_registry.c:947)
+   by 0x48766A4: netsnmp_subtree_load (agent_registry.c:947)
+   by 0x48770A4: netsnmp_register_mib (agent_registry.c:1214)
+   by 0x4872655: netsnmp_register_handler (agent_handler.c:318)
+   by 0x48656AB: netsnmp_register_serialize (serialize.c:56)
+   by 0x4864F07: netsnmp_register_scalar (scalar.c:98)
+   by 0x48712FC: netsnmp_register_watched_scalar2 (watcher.c:211)
+   by 0x49822AC: _register_extend (extend.c:221)
+   by 0x4982870: extend_parse_config (extend.c:576)
+   by 0x4C65EAD: run_config_handler (read_config.c:541)
+   by 0x4C66D19: read_config (read_config.c:960)
+   by 0x4C67422: read_config_with_type_when (read_config.c:481)
+   by 0x4C6770A: read_configs_optional (read_config.c:1018)
+   by 0x4C6809D: read_configs (read_config.c:1049)
+   by 0x4C55418: init_snmp (snmp_api.c:907)
+   by 0x405013: main (snmpd.c:911)
+---
+ agent/agent_handler.c | 83 ++++++++++++++++++++++++---------------------------
+ 1 file changed, 39 insertions(+), 44 deletions(-)
+
+diff --git a/agent/agent_handler.c b/agent/agent_handler.c
+index fc2b79a634..769701fdfd 100644
+--- a/agent/agent_handler.c
++++ b/agent/agent_handler.c
+@@ -806,56 +806,51 @@ netsnmp_handler_registration_dup(netsnmp_handler_registration *reginfo)
+ {
+     netsnmp_handler_registration *r = NULL;
+
+-    if (reginfo == NULL) {
++    if (reginfo == NULL)
+         return NULL;
+-    }
+-
+-
+-    r = (netsnmp_handler_registration *) calloc(1,
+-                                                sizeof
+-                                                (netsnmp_handler_registration));
+
+-    if (r != NULL) {
+-        r->modes = reginfo->modes;
+-        r->priority = reginfo->priority;
+-        r->range_subid = reginfo->range_subid;
+-        r->timeout = reginfo->timeout;
+-        r->range_ubound = reginfo->range_ubound;
+-        r->rootoid_len = reginfo->rootoid_len;
+-
+-        if (reginfo->handlerName != NULL) {
+-            r->handlerName = strdup(reginfo->handlerName);
+-            if (r->handlerName == NULL) {
+-                netsnmp_handler_registration_free(r);
+-                return NULL;
+-            }
+-        }
+-
+-        if (reginfo->contextName != NULL) {
+-            r->contextName = strdup(reginfo->contextName);
+-            if (r->contextName == NULL) {
+-                netsnmp_handler_registration_free(r);
+-                return NULL;
+-            }
+-        }
++    r = calloc(1, sizeof(netsnmp_handler_registration));
++    if (!r)
++        return r;
++    r->modes = reginfo->modes;
++    r->priority = reginfo->priority;
++    r->range_subid = reginfo->range_subid;
++    r->timeout = reginfo->timeout;
++    r->range_ubound = reginfo->range_ubound;
++    r->rootoid_len = reginfo->rootoid_len;
++
++    if (reginfo->handlerName != NULL) {
++        r->handlerName = strdup(reginfo->handlerName);
++        if (r->handlerName == NULL)
++            goto err;
++    }
+
+-        if (reginfo->rootoid != NULL) {
+-            r->rootoid =
+-                snmp_duplicate_objid(reginfo->rootoid, reginfo->rootoid_len);
+-            if (r->rootoid == NULL) {
+-                netsnmp_handler_registration_free(r);
+-                return NULL;
+-            }
+-        }
++    if (reginfo->contextName != NULL) {
++        r->contextName = strdup(reginfo->contextName);
++        if (r->contextName == NULL)
++            goto err;
++    }
+
+-        r->handler = netsnmp_handler_dup(reginfo->handler);
+-        if (r->handler == NULL) {
+-            netsnmp_handler_registration_free(r);
+-            return NULL;
+-        }
+-        return r;
++    if (reginfo->rootoid != NULL) {
++        /*
++         * + 1 to make the following code safe:
++         * reginfo->rootoid[reginfo->rootoid_len++] = 0;
++         * See also netsnmp_scalar_helper_handler().
++         */
++        r->rootoid = malloc((reginfo->rootoid_len + 1) * sizeof(oid));
++        if (r->rootoid == NULL)
++            goto err;
++        memcpy(r->rootoid, reginfo->rootoid,
++               reginfo->rootoid_len * sizeof(oid));
+     }
+
++    r->handler = netsnmp_handler_dup(reginfo->handler);
++    if (r->handler == NULL)
++        goto err;
++    return r;
++
++err:
++    netsnmp_handler_registration_free(r);
+     return NULL;
+ }
+
+--
+2.14.2
