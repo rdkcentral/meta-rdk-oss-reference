@@ -620,7 +620,7 @@ PACKAGE_ARCH:pn-linux-libc-headers = "${OSS_LAYER_ARCH}"
 PR:pn-log4c = "r0"
 PACKAGE_ARCH:pn-log4c = "${OSS_LAYER_ARCH}"
 
-PR:pn-logrotate = "r1"
+PR:pn-logrotate = "r2"
 PACKAGE_ARCH:pn-logrotate = "${OSS_LAYER_ARCH}"
 
 PR:pn-lsof = "r0"
