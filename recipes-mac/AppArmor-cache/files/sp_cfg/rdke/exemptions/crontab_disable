@@ -1,0 +1,1 @@
+deny /var/spool/cron/root w,
