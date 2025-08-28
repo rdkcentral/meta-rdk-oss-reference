@@ -1,12 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-SRC_URI += "file://dnsmasq.service"
-
-SRC_URI += "file://dns.conf"
-
 CFLAGS += " -DNO_INOTIFY"
-     
-SRC_URI += "file://dnsmasqLauncher.sh"
+
 SRC_URI:append:broadband += "file://dnsmasq_syslog_quiet.patch"
 
 inherit syslog-ng-config-gen logrotate_config
@@ -28,16 +23,9 @@ PACKAGECONFIG:append = " dbus"
 PACKAGECONFIG[dbus] = "--enable-dbus,--disable-dbus,dbus"
 
 do_install:append() {
-     install -m 0644 ${WORKDIR}/dnsmasq.service ${D}${systemd_unitdir}/system
      sed -i -- 's/#resolv-file=/resolv-file="\/etc\/resolv.dnsmasq"/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#user=/user=root/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#dhcp-leasefile=\/var\/lib\/misc\/dnsmasq.leases/dhcp-leasefile=\/tmp\/dnsmasq.leases/g' ${D}/etc/dnsmasq.conf
-     install -D -m 0644 ${WORKDIR}/dns.conf ${D}${systemd_unitdir}/system/dnsmasq.service.d/dns.conf
 }
 
 RDEPENDS:${PN} += "busybox"
-
-FILES:${PN}:append = " ${base_libdir}/rdk/* \
-                     "
-FILES:${PN} += " ${systemd_unitdir}/system/dnsmasq.service.d/dns.conf"
-SYSTEMD_AUTO_ENABLE = "disable"
