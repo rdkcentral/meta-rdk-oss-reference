@@ -1,3 +1,27 @@
+def get_oss_machine(d):
+    arch = ""
+    default_tune = d.getVar('DEFAULTTUNE')
+
+    # need to fix: Workaround to check for 64bit machine with multilib configuration
+    multilib_support = d.getVar('MULTILIBS') or ""
+    if multilib_support:
+        arch = "rdk-arm64"
+    elif "armv7athf-neon" in default_tune:
+        arch = "rdk-arm7a"
+    else:
+        arch = "rdk-arm7ve"
+    return arch
+
+def get_oss_arch(d):
+    arch = get_oss_machine(d)
+    arch += "-oss"
+    return arch
+
+LAYER_EXTENSION ?= ""
+OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
+PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
+
+
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
 PREFERRED_VERSION_openssl = "3.0.%"
@@ -167,7 +191,7 @@ PACKAGE_ARCH:pn-dbus-glib = "${OSS_LAYER_ARCH}"
 PR:pn-dibbler= "r1"
 PACKAGE_ARCH:pn-dibbler = "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq = "r1"
+PR:pn-dnsmasq = "r2"
 PACKAGE_ARCH:pn-dnsmasq = "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools = "r0"
@@ -575,7 +599,7 @@ PACKAGE_ARCH:pn-libxcrypt = "${OSS_LAYER_ARCH}"
 PR:pn-libxkbcommon = "r0"
 PACKAGE_ARCH:pn-libxkbcommon = "${OSS_LAYER_ARCH}"
 
-PR:pn-libxml2 = "r0"
+PR:pn-libxml2 = "r1"
 PACKAGE_ARCH:pn-libxml2 = "${OSS_LAYER_ARCH}"
 
 PR:pn-libxslt = "r0"
@@ -596,7 +620,7 @@ PACKAGE_ARCH:pn-linux-libc-headers = "${OSS_LAYER_ARCH}"
 PR:pn-log4c = "r0"
 PACKAGE_ARCH:pn-log4c = "${OSS_LAYER_ARCH}"
 
-PR:pn-logrotate = "r1"
+PR:pn-logrotate = "r2"
 PACKAGE_ARCH:pn-logrotate = "${OSS_LAYER_ARCH}"
 
 PR:pn-lsof = "r0"
@@ -662,7 +686,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r1"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r5"
+PR:pn-networkmanager = "r8"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
