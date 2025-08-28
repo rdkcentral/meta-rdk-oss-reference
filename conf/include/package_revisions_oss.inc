@@ -302,7 +302,7 @@ PACKAGE_ARCH:pn-initscripts = "${OSS_LAYER_ARCH}"
 PR:pn-iperf3 = "r0"
 PACKAGE_ARCH:pn-iperf3 = "${OSS_LAYER_ARCH}"
 
-PR:pn-iptables = "r2"
+PR:pn-iptables = "r3"
 PACKAGE_ARCH:pn-iptables = "${OSS_LAYER_ARCH}"
 
 PR:pn-iso-codes = "r0"
@@ -846,7 +846,7 @@ PACKAGE_ARCH:pn-unzip = "${OSS_LAYER_ARCH}"
 PR:pn-update-rc.d = "r0"
 PACKAGE_ARCH:pn-update-rc.d = "${OSS_LAYER_ARCH}"
 
-PR:pn-util-linux = "r2"
+PR:pn-util-linux = "r3"
 PACKAGE_ARCH:pn-util-linux = "${OSS_LAYER_ARCH}"
 
 PR:pn-util-linux-libuuid = "r0"
