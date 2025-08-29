@@ -30,3 +30,4 @@ do_install:append() {
 }
 
 RDEPENDS:${PN} += "busybox"
+SYSTEMD_SERVICE:${PN}:remove = "dnsmasq.service"
