@@ -26,6 +26,7 @@ do_install:append() {
      sed -i -- 's/#resolv-file=/resolv-file="\/etc\/resolv.dnsmasq"/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#user=/user=root/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#dhcp-leasefile=\/var\/lib\/misc\/dnsmasq.leases/dhcp-leasefile=\/tmp\/dnsmasq.leases/g' ${D}/etc/dnsmasq.conf
+     rm ${D}${systemd_unitdir}/system/dnsmasq.service
 }
 
 RDEPENDS:${PN} += "busybox"
