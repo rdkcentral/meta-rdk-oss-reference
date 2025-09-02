@@ -584,7 +584,7 @@ PACKAGE_ARCH:pn-libuv = "${OSS_LAYER_ARCH}"
 PR:pn-libvorbis = "r0"
 PACKAGE_ARCH:pn-libvorbis = "${OSS_LAYER_ARCH}"
 
-PR:pn-libvpx = "r0"
+PR:pn-libvpx = "r1"
 PACKAGE_ARCH:pn-libvpx = "${OSS_LAYER_ARCH}"
 
 PR:pn-libwebp = "r0"
