@@ -215,7 +215,7 @@ PACKAGE_ARCH:pn-evtest = "${OSS_LAYER_ARCH}"
 PR:pn-expat = "r0"
 PACKAGE_ARCH:pn-expat = "${OSS_LAYER_ARCH}"
 
-PR:pn-fcgi = "r0"
+PR:pn-fcgi = "r1"
 PACKAGE_ARCH:pn-fcgi = "${OSS_LAYER_ARCH}"
 
 PR:pn-file = "r0"
@@ -404,7 +404,7 @@ PACKAGE_ARCH:pn-liberation-fonts = "${OSS_LAYER_ARCH}"
 PR:pn-libev = "r0"
 PACKAGE_ARCH:pn-libev = "${OSS_LAYER_ARCH}"
 
-PR:pn-libevdev = "r0"
+PR:pn-libevdev = "r1"
 PACKAGE_ARCH:pn-libevdev = "${OSS_LAYER_ARCH}"
 
 PR:pn-libevent = "r0"
@@ -422,10 +422,10 @@ PACKAGE_ARCH:pn-libgcc = "${OSS_LAYER_ARCH}"
 PR:pn-libgcc-initial = "r0"
 PACKAGE_ARCH:pn-libgcc-initial = "${OSS_LAYER_ARCH}"
 
-PR:pn-libgcrypt = "r0"
+PR:pn-libgcrypt = "r1"
 PACKAGE_ARCH:pn-libgcrypt = "${OSS_LAYER_ARCH}"
 
-PR:pn-libgpg-error = "r0"
+PR:pn-libgpg-error = "r1"
 PACKAGE_ARCH:pn-libgpg-error = "${OSS_LAYER_ARCH}"
 
 PR:pn-libgudev = "r0"
@@ -524,7 +524,7 @@ PACKAGE_ARCH:pn-libsdl-image = "${OSS_LAYER_ARCH}"
 PR:pn-libsdl-ttf = "r0"
 PACKAGE_ARCH:pn-libsdl-ttf = "${OSS_LAYER_ARCH}"
 
-PR:pn-libseccomp = "r0"
+PR:pn-libseccomp = "r1"
 PACKAGE_ARCH:pn-libseccomp = "${OSS_LAYER_ARCH}"
 
 PR:pn-libsndfile1 = "r0"
@@ -584,7 +584,7 @@ PACKAGE_ARCH:pn-libuv = "${OSS_LAYER_ARCH}"
 PR:pn-libvorbis = "r0"
 PACKAGE_ARCH:pn-libvorbis = "${OSS_LAYER_ARCH}"
 
-PR:pn-libvpx = "r0"
+PR:pn-libvpx = "r1"
 PACKAGE_ARCH:pn-libvpx = "${OSS_LAYER_ARCH}"
 
 PR:pn-libwebp = "r0"
@@ -662,7 +662,7 @@ PACKAGE_ARCH:pn-msgpack-c = "${OSS_LAYER_ARCH}"
 PR:pn-mtdev = "r0"
 PACKAGE_ARCH:pn-mtdev = "${OSS_LAYER_ARCH}"
 
-PR:pn-mtd-utils = "r1"
+PR:pn-mtd-utils = "r2"
 PACKAGE_ARCH:pn-mtd-utils = "${OSS_LAYER_ARCH}"
 
 PR:pn-msgpack-c = "r0"
@@ -683,7 +683,7 @@ PACKAGE_ARCH:pn-ne10 = "${OSS_LAYER_ARCH}"
 PR:pn-netbase = "r0"
 PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 
-PR:pn-nettle = "r0"
+PR:pn-nettle = "r1"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
 PR:pn-networkmanager = "r8"
@@ -698,7 +698,7 @@ PACKAGE_ARCH:pn-nopoll = "${OSS_LAYER_ARCH}"
 PR:pn-nspr = "r0"
 PACKAGE_ARCH:pn-nspr = "${OSS_LAYER_ARCH}"
 
-PR:pn-nss = "r1"
+PR:pn-nss = "r2"
 PACKAGE_ARCH:pn-nss = "${OSS_LAYER_ARCH}"
 
 PR:pn-openjpeg = "r0"
@@ -831,7 +831,7 @@ PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 PR:pn-syslog-ng = "r3"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r12"
+PR:pn-systemd = "r13"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
