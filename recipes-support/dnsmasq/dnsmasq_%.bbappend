@@ -34,7 +34,7 @@ do_install:append() {
      sed -i -- 's/#dhcp-leasefile=\/var\/lib\/misc\/dnsmasq.leases/dhcp-leasefile=\/tmp\/dnsmasq.leases/g' ${D}/etc/dnsmasq.conf
      install -D -m 0644 ${WORKDIR}/dns.conf ${D}${systemd_unitdir}/system/dnsmasq.service.d/dns.conf
 }
-                      "
+
 RDEPENDS:${PN} += "busybox"
 FILES:${PN}-service = "${systemd_unitdir}/system/*"
 SYSTEMD_SERVICE:${PN}:remove = "dnsmasq.service"
