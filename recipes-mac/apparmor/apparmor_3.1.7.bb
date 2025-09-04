@@ -29,7 +29,7 @@ S = "${WORKDIR}/git"
 
 PARALLEL_MAKE = ""
 
-COMPATIBLE_MACHINE_mips64 = "(!.*mips64).*"
+COMPATIBLE_MACHINE:mips64 = "(!.*mips64).*"
 
 inherit pkgconfig autotools-brokensep update-rc.d python3native perlnative ptest cpan manpages systemd features_check
 REQUIRED_DISTRO_FEATURES = "apparmor"
@@ -142,11 +142,11 @@ do_install () {
 }
 
 #Building ptest on arm fails.
-do_compile_ptest_aarch64 () {
+do_compile_ptest:aarch64 () {
   :
 }
 
-do_compile_ptest_arm () {
+do_compile_ptest:arm () {
   :
 }
 
@@ -176,22 +176,22 @@ do_install_ptest () {
 }
 
 #Building ptest on arm fails.
-do_install_ptest_aarch64 () {
+do_install_ptest:aarch64 () {
   :
 }
 
-do_install_ptest_arm() {
+do_install_ptest:arm() {
   :
 }
 
-#pkg_postinst_ontarget_${PN} () {
+#pkg_postinst_ontarget:${PN} () {
 #if [ ! -d /etc/apparmor.d/cache ] ; then
 #    mkdir /etc/apparmor.d/cache
 #fi
 #}
 
 # We need the init script so don't rm it
-RMINITDIR_class-target_remove = " rm_sysvinit_initddir"
+RMINITDIR:class-target:remove = " rm_sysvinit_initddir"
 
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME = "apparmor"
@@ -204,21 +204,21 @@ SYSLOG-NG_DESTINATION_startup_stdout_log = "startup_stdout_log.txt"
 SYSLOG-NG_LOGRATE_startup_stdout_log = "low"
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = "apparmor.service"
+SYSTEMD_SERVICE:${PN} = "apparmor.service"
 SYSTEMD_AUTO_ENABLE ?= "enable"
 
 PACKAGES += "mod-${PN}"
 
-FILES_${PN} += "/lib/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
-FILES_mod-${PN} = "${libdir}/apache2/modules/*"
+FILES:${PN} += "/lib/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
+FILES:mod-${PN} = "${libdir}/apache2/modules/*"
 
 # Add coreutils and findutils only if sysvinit scripts are in use
-RDEPENDS_${PN} +=  "${@["coreutils findutils", ""][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'systemd')]} ${@bb.utils.contains('PACKAGECONFIG','python','python3-core python3-modules','', d)}"
-RDEPENDS_${PN}_remove += "${@bb.utils.contains('PACKAGECONFIG','perl','','perl', d)}"
-RDEPENDS_${PN}-ptest += "perl coreutils dbus-lib bash"
+RDEPENDS:${PN} +=  "${@["coreutils findutils", ""][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'systemd')]} ${@bb.utils.contains('PACKAGECONFIG','python','python3-core python3-modules','', d)}"
+RDEPENDS:${PN}:remove += "${@bb.utils.contains('PACKAGECONFIG','perl','','perl', d)}"
+RDEPENDS:${PN}-ptest += "perl coreutils dbus-lib bash"
 
-PRIVATE_LIBS_${PN}-ptest = "libapparmor.so*"
-LDFLAGS_remove = "-flto"
-CFLAGS_remove = "-flto"
-CXXFLAGS_remove = "-flto"
+PRIVATE_LIBS:${PN}-ptest = "libapparmor.so*"
+LDFLAGS:remove = "-flto"
+CFLAGS:remove = "-flto"
+CXXFLAGS:remove = "-flto"
 
