@@ -209,6 +209,8 @@ SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file:
 #PACKAGECONFIG:append = " timesyncd"
 #PACKAGECONFIG[timesyncd] = "--enable-timesyncd,--disable-timesyncd"
 
+PACKAGECONFIG:append = " timedated"
+PACKAGECONFIG[timedated] = "--enable-timedated,--disable-timedated"
 
 do_install:append() {
         install -d ${D}/media/tsb
