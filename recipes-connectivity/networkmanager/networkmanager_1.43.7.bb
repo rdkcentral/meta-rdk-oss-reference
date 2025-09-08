@@ -212,10 +212,7 @@ FILES:${PN}-daemon += " \
     ${sysconfdir}/sysconfig/network-scripts \
     ${systemd_system_unitdir} \
 "
-FILES:${PN}:remove = "${sysconfdir}/resolv.dnsmasq"
-FILES:${PN}:remove = "${sysconfdir}/resolv.conf"
-FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.conf"
-FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.dnsmasq"
+
 FILES:${PN}-daemon:remove = "${systemd_system_unitdir}/NetworkManager-wait-online.service"
 #{nonarch_libdir}/NetworkManager/system-connections
 RDEPENDS:${PN}-daemon += "\
@@ -249,8 +246,10 @@ do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${sysconfdir}/NetworkManager/
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
+    install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
-    install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
+    install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf\
+    install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
