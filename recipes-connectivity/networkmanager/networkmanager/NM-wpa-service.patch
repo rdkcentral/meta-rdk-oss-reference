@@ -1,8 +1,8 @@
-Date: Jun 12 2024
-From: anaras440_comcast <aravindan_narasimhapuramchakravarthy@comcast.com>
+Date: Jun 05 2025
+From: Aravindan NC <nc.aravindan@gmail.com>
 Subject: Add NetworkManager component in RDKE
-Source: COMCAST
-Signed-off-by: anaras440_comcast <aravindan_narasimhapuramchakravarthy@comcast.com>
+Source: RDKCENTRAL
+Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
 Index: NetworkManager-1.43.7/data/NetworkManager.service.in
 ===================================================================
 --- NetworkManager-1.43.7.orig/data/NetworkManager.service.in
@@ -16,11 +16,12 @@ Index: NetworkManager-1.43.7/data/NetworkManager.service.in
  BindsTo=dbus.service
 
  [Service]
-@@ -11,6 +11,7 @@ Type=dbus
+@@ -11,6 +11,8 @@ Type=dbus
  BusName=org.freedesktop.NetworkManager
  ExecReload=/usr/bin/busctl call org.freedesktop.NetworkManager /org/freedesktop/NetworkManager org.freedesktop.NetworkManager Reload u 0
  #ExecReload=/bin/kill -HUP $MAINPID
 +ExecStartPre= /bin/sh -c 'if [ ! -d /opt/NetworkManager/system-connections ];then mkdir -p /opt/NetworkManager/system-connections; fi'
++ExecStartPre= /bin/sh -c 'if [ ! -d /opt/secure/NetworkManager/system-connections ];then mkdir -p /opt/secure/NetworkManager/system-connections; fi'
  ExecStart=@sbindir@/NetworkManager --no-daemon
  Restart=on-failure
  # NM doesn't want systemd to kill its children for it
