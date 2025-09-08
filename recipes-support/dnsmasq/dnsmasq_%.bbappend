@@ -47,3 +47,5 @@ FILES:${PN}-service = "${systemd_unitdir}/system/* \
                        ${base_libdir}/rdk/* \
                       "
 SYSTEMD_SERVICE:${PN}-service  = "dnsmasq.service"
+SYSTEMD_SERVICE:${PN}:remove  = "dnsmasq.service"
+SYSTEMD_AUTO_ENABLE = "disable"
