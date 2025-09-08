@@ -3,8 +3,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI += "file://dnsmasq.service"
 
 SRC_URI += "file://dns.conf"
-
-CFLAGS += " -DNO_INOTIFY"
      
 SRC_URI += "file://dnsmasqLauncher.sh"
 SRC_URI:append:broadband += "file://dnsmasq_syslog_quiet.patch"
