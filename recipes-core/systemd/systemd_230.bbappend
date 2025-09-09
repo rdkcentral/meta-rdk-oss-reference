@@ -205,6 +205,7 @@ SRC_URI += "\
             file://0001-Added-decrement-of-notify-watchers-when-we-dont-need.patch \
             file://0001-Added-code-to-cleanup-all-the-xisting-watches-on-pat.patch \
             file://0002-enable-more-ntp-info-logs.patch \
+            file://timesyncd-update.conf \
            "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://0001-In-our-echo-system-we-are-managing-last-known-good-t.patch', '', d)} "
@@ -215,12 +216,17 @@ SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file:
 
 do_install:append() {
         install -d ${D}/media/tsb
+        install -d ${D}${systemd_unitdir}/system/systemd-timesyncd.service.d
+        install -m 644 ${WORKDIR}/timesyncd-update.conf ${D}${systemd_unitdir}/system/systemd-timesyncd.service.d
         #Enable comcast ntp server in timesyncd.conf
         if [ -n "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', 'timesyncd', '', d)}" ]; then
            sed -i -e '/ProtectSystem=full/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e '/PrivateTmp=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e 's/^#ShutdownWatchdogSec=.*$/ShutdownWatchdogSec=1min/g' ${D}${sysconfdir}/systemd/system.conf
+           sed -i -E 's/^(Before=).*/\1time-sync.target shutdown.target/' ${D}/lib/systemd/system/systemd-timesyncd.service
+           sed -i -E '/^\[Install\]/,/^\[/{s/(WantedBy=).*/\1network-up.target/}' ${D}/lib/systemd/system/systemd-timesyncd.service
            sed -i -e 's/^#NTP=.*/NTP=time.google.com/g' ${D}${sysconfdir}/systemd/timesyncd.conf
+           rm -rf ${D}${sysconfdir}/systemd/system/sysinit.target.wants/systemd-timesyncd.service
        fi
 
 }
@@ -306,3 +312,4 @@ SRC_URI += " file://0001-Reduced-retry-interval-to-5-secs.patch \
              file://0003-udev-use-interface-before-the-string-is-freed.patch \
            "
 
+FILES_${PN}_append = " ${systemd_unitdir}/system/systemd-timesyncd.service.d/timesyncd-update.conf"
