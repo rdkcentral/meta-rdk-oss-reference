@@ -312,4 +312,4 @@ SRC_URI += " file://0001-Reduced-retry-interval-to-5-secs.patch \
              file://0003-udev-use-interface-before-the-string-is-freed.patch \
            "
 
-FILES_${PN}_append = " ${systemd_unitdir}/system/systemd-timesyncd.service.d/timesyncd-update.conf"
+FILES:${PN}:append = " ${systemd_unitdir}/system/systemd-timesyncd.service.d/timesyncd-update.conf"
