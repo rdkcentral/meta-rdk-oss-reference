@@ -3,11 +3,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI += "file://dnsmasq.service"
 
 SRC_URI += "file://dns.conf"
-
-CFLAGS += " -DNO_INOTIFY"
-
+     
 SRC_URI += "file://dnsmasqLauncher.sh"
-
 SRC_URI:append:broadband += "file://dnsmasq_syslog_quiet.patch"
 
 inherit syslog-ng-config-gen logrotate_config
@@ -43,7 +40,10 @@ do_install:append() {
 }
 
 RDEPENDS:${PN} += "busybox"
+
 FILES:${PN}-service = "${systemd_unitdir}/system/* \
                        ${base_libdir}/rdk/* \
                       "
 SYSTEMD_SERVICE:${PN}-service  = "dnsmasq.service"
+SYSTEMD_SERVICE:${PN}:remove  = "dnsmasq.service"
+SYSTEMD_AUTO_ENABLE = "disable"
