@@ -29,6 +29,7 @@ SRC_URI = " \
     file://readline_NM.patch \
     file://NM_Dispatcher.patch \
     file://dnsmasq-logging.conf \
+    file://NM_autoconnect_retry.patch \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
