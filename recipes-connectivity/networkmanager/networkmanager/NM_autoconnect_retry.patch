@@ -1,0 +1,29 @@
+Date: Sep 09 2025
+From: Aravindan NC <nc.aravindan@gmail.com>
+Subject: Do not block retry for WRONG_KEY
+Source: RDKCENTRAL
+Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
+Index: NetworkManager-1.43.7/src/core/nm-policy.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/nm-policy.c
++++ NetworkManager-1.43.7/src/core/nm-policy.c
+@@ -1998,13 +1998,13 @@ device_state_changed(NMDevice
+                 con_v = nm_settings_connection_get_last_secret_agent_version_id(sett_conn);
+                 if (con_v == 0 || con_v == nm_agent_manager_get_agent_version_id(priv->agent_mgr)) {
+                     _LOGD(LOGD_DEVICE,
+-                          "connection '%s' now blocked from autoconnect due to no secrets",
++                          "connection '%s' now retrying autoconnect due to no secrets",
+                           nm_settings_connection_get_id(sett_conn));
+-                    nm_settings_connection_autoconnect_blocked_reason_set(
+-                        sett_conn,
+-                        NM_SETTINGS_AUTOCONNECT_BLOCKED_REASON_NO_SECRETS,
+-                        TRUE);
+-                    blocked = TRUE;
++                    //nm_settings_connection_autoconnect_blocked_reason_set(
++                    //    sett_conn,
++                    //    NM_SETTINGS_AUTOCONNECT_BLOCKED_REASON_NO_SECRETS,
++                    //    TRUE);
++                    blocked = FALSE;
+                 }
+             } else if (nm_device_state_reason_check(reason)
+                        == NM_DEVICE_STATE_REASON_DEPENDENCY_FAILED) {
