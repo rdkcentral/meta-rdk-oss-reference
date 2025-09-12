@@ -40,6 +40,7 @@ do_install:append() {
 }
 
 RDEPENDS:${PN} += "busybox"
+RDEPENDS:${PN}-service += "busybox"
 
 FILES:${PN}-service = "${systemd_unitdir}/system/* \
                        ${base_libdir}/rdk/* \
