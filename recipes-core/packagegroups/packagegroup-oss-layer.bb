@@ -172,6 +172,9 @@ RDEPENDS:${PN} = "\
 
 # meta-openembedded components
 RDEPENDS:${PN} += "\
+     fmt \
+     paho-mqtt-c \
+     mosquitto \
      breakpad \
      c-ares \
      cjson \
