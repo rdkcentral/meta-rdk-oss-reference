@@ -230,6 +230,9 @@ PACKAGE_ARCH:pn-flac = "${OSS_LAYER_ARCH}"
 PR:pn-flex = "r0"
 PACKAGE_ARCH:pn-flex = "${OSS_LAYER_ARCH}"
 
+PR:pn-fmt = "r0"
+PACKAGE_ARCH:pn-fmt = "${OSS_LAYER_ARCH}"
+
 PR:pn-fontconfig = "r0"
 PACKAGE_ARCH:pn-fontconfig = "${OSS_LAYER_ARCH}"
 
@@ -656,6 +659,9 @@ PACKAGE_ARCH:pn-minizip = "${OSS_LAYER_ARCH}"
 PR:pn-mongoose = "r0"
 PACKAGE_ARCH:pn-mongoose = "${OSS_LAYER_ARCH}"
 
+PR:pn-mosquitto = "r0"
+PACKAGE_ARCH:pn-mosquitto = "${OSS_LAYER_ARCH}"
+
 PR:pn-msgpack-c = "r0"
 PACKAGE_ARCH:pn-msgpack-c = "${OSS_LAYER_ARCH}"
 
@@ -724,6 +730,9 @@ PACKAGE_ARCH:pn-opkg-utils = "${OSS_LAYER_ARCH}"
 
 PR:pn-orc = "r0"
 PACKAGE_ARCH:pn-orc = "${OSS_LAYER_ARCH}"
+
+PR:pn-paho-mqtt-c = "r0"
+PACKAGE_ARCH:pn-paho-mqtt-c = "${OSS_LAYER_ARCH}"
 
 PR:pn-perl = "r0"
 PACKAGE_ARCH:pn-perl = "${OSS_LAYER_ARCH}"
