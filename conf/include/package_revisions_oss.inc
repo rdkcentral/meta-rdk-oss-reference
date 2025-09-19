@@ -167,7 +167,7 @@ PACKAGE_ARCH:pn-dbus-glib = "${OSS_LAYER_ARCH}"
 PR:pn-dibbler= "r1"
 PACKAGE_ARCH:pn-dibbler = "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq = "r3"
+PR:pn-dnsmasq = "r4"
 PACKAGE_ARCH:pn-dnsmasq = "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools = "r0"
@@ -656,7 +656,7 @@ PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 PR:pn-nettle = "r0"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r7"
+PR:pn-networkmanager = "r8"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
@@ -801,7 +801,7 @@ PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 PR:pn-syslog-ng = "r3"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r11"
+PR:pn-systemd = "r12"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
