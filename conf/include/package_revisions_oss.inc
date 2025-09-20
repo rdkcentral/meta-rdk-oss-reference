@@ -278,7 +278,7 @@ PACKAGE_ARCH:pn-glibc-locale = "${OSS_LAYER_ARCH}"
 PR:pn-glibc-mtrace = "r0"
 PACKAGE_ARCH:pn-glibc-mtrace = "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-networking = "r1"
+PR:pn-glib-networking = "r2"
 PACKAGE_ARCH:pn-glib-networking = "${OSS_LAYER_ARCH}"
 
 PR:pn-openssh = "r0"
