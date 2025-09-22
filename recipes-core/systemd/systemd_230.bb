@@ -77,6 +77,7 @@ PACKAGECONFIG ??= "xz \
                    backlight \
                    ${@bb.utils.contains('TCLIBC', 'glibc', 'myhostname sysusers', '', d)} \
                    hibernate \
+                   timesyncd \
                    timedated \
                    ima \
                    firstboot \
