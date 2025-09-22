@@ -14,7 +14,7 @@ LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=fd57a4b0bc782d7b80fd431f10bbf9d0"
 DEPENDS = "bison-native apr gettext-native coreutils-native linux-libc-headers"
 
 SRC_URI = " \
-    git://gitlab.com/apparmor/apparmor.git;protocol=https;branch=apparmor-2.13 \
+    git://gitlab.com/apparmor/apparmor.git;protocol=https;branch=apparmor-3.1 \
     file://crosscompile_perl_bindings.patch \
     file://apparmor.rc \
     file://functions \
@@ -24,7 +24,7 @@ SRC_URI = " \
     file://run-ptest \
 "
 
-SRCREV = "b1d7dcab241f35e54ae6a32649eae51cf04553f3"
+SRCREV = "7279fae3d1e4e9e3c3d9a42079184d638a38bd3c"
 S = "${WORKDIR}/git"
 
 PARALLEL_MAKE = ""
@@ -61,7 +61,7 @@ do_configure() {
     automake -ac
     ./configure ${CONFIGUREOPTS} ${EXTRA_OECONF}
 }
-_CAP_HDR_REGEX = "s/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9xa-f]+)(.*)/CAP_\1/p" 
+_CAP_HDR_REGEX = "s/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9xa-f]+)(.*)/CAP_\1/p"
 _CAP_PP_REGEX = "s/[ \\t]\\?CAP_\\([A-Z1-9_]\\+\\)/\{\"\\L\\1\", \\UCAP_\\1\},\\n/pg"
 
 do_compile () {
@@ -196,6 +196,12 @@ RMINITDIR:class-target:remove = " rm_sysvinit_initddir"
 INITSCRIPT_PACKAGES = "${PN}"
 INITSCRIPT_NAME = "apparmor"
 INITSCRIPT_PARAMS = "start 16 2 3 4 5 . stop 35 0 1 6 ."
+
+inherit syslog-ng-config-gen
+SYSLOG-NG_FILTER = "startup_stdout_log"
+SYSLOG-NG_SERVICE_startup_stdout_log = "apparmor.service"
+SYSLOG-NG_DESTINATION_startup_stdout_log = "startup_stdout_log.txt"
+SYSLOG-NG_LOGRATE_startup_stdout_log = "low"
 
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE:${PN} = "apparmor.service"
