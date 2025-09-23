@@ -229,6 +229,7 @@ RDEPENDS:${PN} += "\
      xmlsec1 \
      yajl \
      zstd \
+     ltrace \
 "
 
 # meta-rust components
