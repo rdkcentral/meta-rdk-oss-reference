@@ -26,7 +26,6 @@ SRC_URI = " \
     file://95-logging.conf \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
-    file://readline_NM.patch \
     file://NM_Dispatcher.patch \
 "
 
@@ -64,11 +63,12 @@ CFLAGS:append:libc-musl = " \
 do_compile:prepend() {
     export GI_TYPELIB_PATH="${B}}/src/libnm-client-impl${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
 }
-PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala \
+PACKAGECONFIG ??= "nss ifupdown dnsmasq vala \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
 "
+
 #inherit ${@bb.utils.contains('PACKAGECONFIG', 'vala', 'vala', '', d)}
 PACKAGECONFIG[systemd] = "\
     -Dsystemdsystemunitdir=${systemd_unitdir}/system -Dsession_tracking=systemd,\
@@ -89,9 +89,6 @@ PACKAGECONFIG[wifi] = "-Dwext=true -Dwifi=true,-Dwext=false -Dwifi=false"
 #PACKAGECONFIG[iwd] = "-Diwd=true ,-Diwd=false"
 PACKAGECONFIG[ifupdown] = "-Difupdown=true,-Difupdown=false"
 #PACKAGECONFIG[cloud-setup] = "-Dnm_cloud_setup=true,-Dnm_cloud_setup=false"
-PACKAGECONFIG[nmcli] = "-Dnmcli=true,-Dnmcli=false"
-PACKAGECONFIG[readline] = "-Dreadline=libreadline,,readline"
-PACKAGECONFIG[libedit] = "-Dreadline=libedit,,libedit"
 PACKAGECONFIG[ovs] = "-Dovs=true,-Dovs=false,jansson"
 PACKAGECONFIG[audit] = "-Dlibaudit=yes,-Dlibaudit=no"
 PACKAGECONFIG[selinux] = "-Dselinux=true,-Dselinux=false,libselinux"
@@ -104,8 +101,6 @@ PACKAGECONFIG[concheck] = "-Dconcheck=true,-Dconcheck=false"
 #PACKAGECONFIG:append = "man-resolv-conf"
 PACKAGES =+ " \
     libnm \
-    ${PN}-nmcli \
-    ${PN}-nmcli-bash-completion \
     ${PN}-wifi \
     ${PN}-daemon \
     ${PN}-man-resolv-conf \
@@ -135,14 +130,7 @@ SUMMARY:${PN}-bluetooth = "Bluetooth device plugin for NetworkManager"
 #RDEPENDS:${PN}-cloud-setup += "${PN}-daemon"
 #ALLOW_EMPTY:${PN}-cloud-setup = "1"
 #SYSTEMD_SERVICE:${PN}-cloud-setup = "${@bb.utils.contains('PACKAGECONFIG', 'cloud-setup', 'nm-cloud-setup.service nm-cloud-setup.timer', '', d)}"
-SUMMARY:${PN}-nmcli = "NetworkManager command line client"
-FILES:${PN}-nmcli = " \
-    ${bindir}/nmcli \
-"
-RDEPENDS:${PN}-nmcli += "${PN}-daemon"
-SUMMARY:${PN}-nmcli-bash-completion = "NetworkManager command line client bash completion"
-FILES:${PN}-nmcli-bash-completion = "${datadir}/bash-completion/completions/nmcli"
-RDEPENDS:${PN}-nmcli-bash-completion = "bash-completion"
+
 #SUMMARY:${PN}-nmtui = "NetworkManager curses-based UI"
 #FILES:${PN}-nmtui = " \
 #    ${bindir}/nmtui \
@@ -241,7 +229,6 @@ ALTERNATIVE_LINK_NAME[resolv-conf] = "${@bb.utils.contains('PACKAGECONFIG','man-
 # packages to the firmware.
 ALLOW_EMPTY:${PN} = "1"
 RRECOMMENDS:${PN} += "\
-    ${@bb.utils.contains('PACKAGECONFIG','nmcli','${PN}-nmcli','',d)} \
     ${@bb.utils.contains('PACKAGECONFIG','wifi','${PN}-wifi','',d)} \
 "
 do_install:append() {
