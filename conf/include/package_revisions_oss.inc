@@ -892,3 +892,6 @@ PACKAGE_ARCH:pn-zlib = "${OSS_LAYER_ARCH}"
 
 PR:pn-zstd = "r0"
 PACKAGE_ARCH:pn-zstd = "${OSS_LAYER_ARCH}"
+
+PR:pn-ltrace = "r0"
+PACKAGE_ARCH:pn-ltrace = "${OSS_LAYER_ARCH}"
