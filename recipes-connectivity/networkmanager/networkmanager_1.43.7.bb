@@ -16,8 +16,10 @@ DEPENDS = " \
     libnewt \
     curl \
     dbus \
+    readline \
 "
 DEPENDS:append:class-target = " bash-completion"
+RDEPENDS:${PN} += "readline"
 GNOMEBASEBUILDCLASS = "meson"
 inherit gnomebase gettext update-rc.d systemd gobject-introspection gtk-doc update-alternatives upstream-version-is-even
 SRC_URI = " \
@@ -26,7 +28,6 @@ SRC_URI = " \
     file://95-logging.conf \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
-    file://readline_NM.patch \
     file://NM_Dispatcher.patch \
 "
 
@@ -69,6 +70,7 @@ PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
 "
+EXTRA_OECMAKE += "-Dreadline=libreadline"
 #inherit ${@bb.utils.contains('PACKAGECONFIG', 'vala', 'vala', '', d)}
 PACKAGECONFIG[systemd] = "\
     -Dsystemdsystemunitdir=${systemd_unitdir}/system -Dsession_tracking=systemd,\
@@ -91,7 +93,6 @@ PACKAGECONFIG[ifupdown] = "-Difupdown=true,-Difupdown=false"
 #PACKAGECONFIG[cloud-setup] = "-Dnm_cloud_setup=true,-Dnm_cloud_setup=false"
 PACKAGECONFIG[nmcli] = "-Dnmcli=true,-Dnmcli=false"
 PACKAGECONFIG[readline] = "-Dreadline=libreadline,,readline"
-PACKAGECONFIG[libedit] = "-Dreadline=libedit,,libedit"
 PACKAGECONFIG[ovs] = "-Dovs=true,-Dovs=false,jansson"
 PACKAGECONFIG[audit] = "-Dlibaudit=yes,-Dlibaudit=no"
 PACKAGECONFIG[selinux] = "-Dselinux=true,-Dselinux=false,libselinux"
