@@ -26,7 +26,6 @@ SRC_URI = " \
     file://95-logging.conf \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
-    file://readline_NM.patch \
     file://NM_Dispatcher.patch \
 "
 
@@ -104,8 +103,6 @@ PACKAGECONFIG[concheck] = "-Dconcheck=true,-Dconcheck=false"
 #PACKAGECONFIG:append = "man-resolv-conf"
 PACKAGES =+ " \
     libnm \
-    ${PN}-nmcli \
-    ${PN}-nmcli-bash-completion \
     ${PN}-wifi \
     ${PN}-daemon \
     ${PN}-man-resolv-conf \
