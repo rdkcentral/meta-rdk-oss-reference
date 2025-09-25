@@ -96,6 +96,7 @@ EXTRA_OECONF:append = " \
     --enable-decoder=vorbis \
     --enable-decoder=wmav1 \
     --enable-decoder=wmav2 \
+    --enable-decoder=vp8 \
 "
 
 DEPENDS += " libxml2 "
