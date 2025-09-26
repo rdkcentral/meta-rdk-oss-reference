@@ -1,3 +1,27 @@
+def get_oss_machine(d):
+    arch = ""
+    default_tune = d.getVar('DEFAULTTUNE')
+
+    # need to fix: Workaround to check for 64bit machine with multilib configuration
+    multilib_support = d.getVar('MULTILIBS') or ""
+    if multilib_support:
+        arch = "rdk-arm64"
+    elif "armv7athf-neon" in default_tune:
+        arch = "rdk-arm7a"
+    else:
+        arch = "rdk-arm7ve"
+    return arch
+
+def get_oss_arch(d):
+    arch = get_oss_machine(d)
+    arch += "-oss"
+    return arch
+
+LAYER_EXTENSION ?= ""
+OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
+PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
+
+
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
 PREFERRED_VERSION_openssl = "3.0.%"
@@ -7,15 +31,15 @@ PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
 
 #Fix the version diff against stable2
-PREFERRED_VERSION_libstd-rs = "1.72.0"
-PREFERRED_VERSION_cargo = "1.72.0"
-PREFERRED_VERSION_cargo-native = "1.72.0"
-PREFERRED_VERSION_rust = "1.72.0"
-PREFERRED_VERSION_rust-native = "1.72.0"
-PREFERRED_VERSION_rust-llvm = "1.72.0"
-PREFERRED_VERSION_rust-llvm-native = "1.72.0"
-PREFERRED_VERSION_rust-cross-canadian = "1.72.0"
-PREFERRED_VERSION_rust-cross-canadian-native = "1.72.0"
+PREFERRED_VERSION_libstd-rs = "1.82.0"
+PREFERRED_VERSION_cargo = "1.82.0"
+PREFERRED_VERSION_cargo-native = "1.82.0"
+PREFERRED_VERSION_rust = "1.82.0"
+PREFERRED_VERSION_rust-native = "1.82.0"
+PREFERRED_VERSION_rust-llvm = "1.82.0"
+PREFERRED_VERSION_rust-llvm-native = "1.82.0"
+PREFERRED_VERSION_rust-cross-canadian = "1.82.0"
+PREFERRED_VERSION_rust-cross-canadian-native = "1.82.0"
 PREFERRED_VERSION_readline-native = "8.1.2"
 PREFERRED_VERSION_nativesdk-readline = "8.1.2"
 PREFERRED_VERSION_bluez5 = "5.48"
@@ -167,7 +191,7 @@ PACKAGE_ARCH:pn-dbus-glib = "${OSS_LAYER_ARCH}"
 PR:pn-dibbler= "r1"
 PACKAGE_ARCH:pn-dibbler = "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq = "r1"
+PR:pn-dnsmasq = "r4"
 PACKAGE_ARCH:pn-dnsmasq = "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools = "r0"
@@ -191,7 +215,7 @@ PACKAGE_ARCH:pn-evtest = "${OSS_LAYER_ARCH}"
 PR:pn-expat = "r0"
 PACKAGE_ARCH:pn-expat = "${OSS_LAYER_ARCH}"
 
-PR:pn-fcgi = "r0"
+PR:pn-fcgi = "r1"
 PACKAGE_ARCH:pn-fcgi = "${OSS_LAYER_ARCH}"
 
 PR:pn-file = "r0"
@@ -205,6 +229,9 @@ PACKAGE_ARCH:pn-flac = "${OSS_LAYER_ARCH}"
 
 PR:pn-flex = "r0"
 PACKAGE_ARCH:pn-flex = "${OSS_LAYER_ARCH}"
+
+PR:pn-fmt = "r0"
+PACKAGE_ARCH:pn-fmt = "${OSS_LAYER_ARCH}"
 
 PR:pn-fontconfig = "r0"
 PACKAGE_ARCH:pn-fontconfig = "${OSS_LAYER_ARCH}"
@@ -251,7 +278,7 @@ PACKAGE_ARCH:pn-glibc-locale = "${OSS_LAYER_ARCH}"
 PR:pn-glibc-mtrace = "r0"
 PACKAGE_ARCH:pn-glibc-mtrace = "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-networking = "r1"
+PR:pn-glib-networking = "r2"
 PACKAGE_ARCH:pn-glib-networking = "${OSS_LAYER_ARCH}"
 
 PR:pn-openssh = "r0"
@@ -302,7 +329,7 @@ PACKAGE_ARCH:pn-initscripts = "${OSS_LAYER_ARCH}"
 PR:pn-iperf3 = "r0"
 PACKAGE_ARCH:pn-iperf3 = "${OSS_LAYER_ARCH}"
 
-PR:pn-iptables = "r2"
+PR:pn-iptables = "r3"
 PACKAGE_ARCH:pn-iptables = "${OSS_LAYER_ARCH}"
 
 PR:pn-iso-codes = "r0"
@@ -341,7 +368,7 @@ PACKAGE_ARCH:pn-lcms = "${OSS_LAYER_ARCH}"
 PR:pn-libaio = "r0"
 PACKAGE_ARCH:pn-libaio = "${OSS_LAYER_ARCH}"
 
-PR:pn-libarchive = "r0"
+PR:pn-libarchive = "r1"
 PACKAGE_ARCH:pn-libarchive = "${OSS_LAYER_ARCH}"
 
 PR:pn-libatomic-ops = "r0"
@@ -380,7 +407,7 @@ PACKAGE_ARCH:pn-liberation-fonts = "${OSS_LAYER_ARCH}"
 PR:pn-libev = "r0"
 PACKAGE_ARCH:pn-libev = "${OSS_LAYER_ARCH}"
 
-PR:pn-libevdev = "r0"
+PR:pn-libevdev = "r1"
 PACKAGE_ARCH:pn-libevdev = "${OSS_LAYER_ARCH}"
 
 PR:pn-libevent = "r0"
@@ -398,10 +425,10 @@ PACKAGE_ARCH:pn-libgcc = "${OSS_LAYER_ARCH}"
 PR:pn-libgcc-initial = "r0"
 PACKAGE_ARCH:pn-libgcc-initial = "${OSS_LAYER_ARCH}"
 
-PR:pn-libgcrypt = "r0"
+PR:pn-libgcrypt = "r1"
 PACKAGE_ARCH:pn-libgcrypt = "${OSS_LAYER_ARCH}"
 
-PR:pn-libgpg-error = "r0"
+PR:pn-libgpg-error = "r1"
 PACKAGE_ARCH:pn-libgpg-error = "${OSS_LAYER_ARCH}"
 
 PR:pn-libgudev = "r0"
@@ -500,7 +527,7 @@ PACKAGE_ARCH:pn-libsdl-image = "${OSS_LAYER_ARCH}"
 PR:pn-libsdl-ttf = "r0"
 PACKAGE_ARCH:pn-libsdl-ttf = "${OSS_LAYER_ARCH}"
 
-PR:pn-libseccomp = "r0"
+PR:pn-libseccomp = "r1"
 PACKAGE_ARCH:pn-libseccomp = "${OSS_LAYER_ARCH}"
 
 PR:pn-libsndfile1 = "r0"
@@ -560,7 +587,7 @@ PACKAGE_ARCH:pn-libuv = "${OSS_LAYER_ARCH}"
 PR:pn-libvorbis = "r0"
 PACKAGE_ARCH:pn-libvorbis = "${OSS_LAYER_ARCH}"
 
-PR:pn-libvpx = "r0"
+PR:pn-libvpx = "r1"
 PACKAGE_ARCH:pn-libvpx = "${OSS_LAYER_ARCH}"
 
 PR:pn-libwebp = "r0"
@@ -575,7 +602,7 @@ PACKAGE_ARCH:pn-libxcrypt = "${OSS_LAYER_ARCH}"
 PR:pn-libxkbcommon = "r0"
 PACKAGE_ARCH:pn-libxkbcommon = "${OSS_LAYER_ARCH}"
 
-PR:pn-libxml2 = "r0"
+PR:pn-libxml2 = "r1"
 PACKAGE_ARCH:pn-libxml2 = "${OSS_LAYER_ARCH}"
 
 PR:pn-libxslt = "r0"
@@ -596,7 +623,7 @@ PACKAGE_ARCH:pn-linux-libc-headers = "${OSS_LAYER_ARCH}"
 PR:pn-log4c = "r0"
 PACKAGE_ARCH:pn-log4c = "${OSS_LAYER_ARCH}"
 
-PR:pn-logrotate = "r1"
+PR:pn-logrotate = "r2"
 PACKAGE_ARCH:pn-logrotate = "${OSS_LAYER_ARCH}"
 
 PR:pn-lsof = "r0"
@@ -632,13 +659,16 @@ PACKAGE_ARCH:pn-minizip = "${OSS_LAYER_ARCH}"
 PR:pn-mongoose = "r0"
 PACKAGE_ARCH:pn-mongoose = "${OSS_LAYER_ARCH}"
 
+PR:pn-mosquitto = "r0"
+PACKAGE_ARCH:pn-mosquitto = "${OSS_LAYER_ARCH}"
+
 PR:pn-msgpack-c = "r0"
 PACKAGE_ARCH:pn-msgpack-c = "${OSS_LAYER_ARCH}"
 
 PR:pn-mtdev = "r0"
 PACKAGE_ARCH:pn-mtdev = "${OSS_LAYER_ARCH}"
 
-PR:pn-mtd-utils = "r1"
+PR:pn-mtd-utils = "r2"
 PACKAGE_ARCH:pn-mtd-utils = "${OSS_LAYER_ARCH}"
 
 PR:pn-msgpack-c = "r0"
@@ -659,10 +689,10 @@ PACKAGE_ARCH:pn-ne10 = "${OSS_LAYER_ARCH}"
 PR:pn-netbase = "r0"
 PACKAGE_ARCH:pn-netbase = "${OSS_LAYER_ARCH}"
 
-PR:pn-nettle = "r0"
+PR:pn-nettle = "r1"
 PACKAGE_ARCH:pn-nettle = "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager = "r6"
+PR:pn-networkmanager = "r10"
 PACKAGE_ARCH:pn-networkmanager = "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 = "r1"
@@ -674,7 +704,7 @@ PACKAGE_ARCH:pn-nopoll = "${OSS_LAYER_ARCH}"
 PR:pn-nspr = "r0"
 PACKAGE_ARCH:pn-nspr = "${OSS_LAYER_ARCH}"
 
-PR:pn-nss = "r1"
+PR:pn-nss = "r2"
 PACKAGE_ARCH:pn-nss = "${OSS_LAYER_ARCH}"
 
 PR:pn-openjpeg = "r0"
@@ -700,6 +730,9 @@ PACKAGE_ARCH:pn-opkg-utils = "${OSS_LAYER_ARCH}"
 
 PR:pn-orc = "r0"
 PACKAGE_ARCH:pn-orc = "${OSS_LAYER_ARCH}"
+
+PR:pn-paho-mqtt-c = "r0"
+PACKAGE_ARCH:pn-paho-mqtt-c = "${OSS_LAYER_ARCH}"
 
 PR:pn-perl = "r0"
 PACKAGE_ARCH:pn-perl = "${OSS_LAYER_ARCH}"
@@ -807,7 +840,7 @@ PACKAGE_ARCH:pn-sysfsutils = "${OSS_LAYER_ARCH}"
 PR:pn-syslog-ng = "r3"
 PACKAGE_ARCH:pn-syslog-ng = "${OSS_LAYER_ARCH}"
 
-PR:pn-systemd = "r12"
+PR:pn-systemd = "r13"
 PACKAGE_ARCH:pn-systemd = "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd-serialgetty = "r5"
@@ -846,7 +879,7 @@ PACKAGE_ARCH:pn-unzip = "${OSS_LAYER_ARCH}"
 PR:pn-update-rc.d = "r0"
 PACKAGE_ARCH:pn-update-rc.d = "${OSS_LAYER_ARCH}"
 
-PR:pn-util-linux = "r2"
+PR:pn-util-linux = "r3"
 PACKAGE_ARCH:pn-util-linux = "${OSS_LAYER_ARCH}"
 
 PR:pn-util-linux-libuuid = "r0"

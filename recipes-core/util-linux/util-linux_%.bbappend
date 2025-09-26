@@ -41,7 +41,6 @@ RRECOMMENDS:${PN}:remove = " \
                            ${PN}-scriptreplay \ 
                            ${PN}-setarch \ 
                            ${PN}-setterm \ 
-                           ${PN}-sfdisk \ 
                            ${PN}-swaplabel \ 
                            ${PN}-uclampset \ 
                            ${PN}-ul \ 
