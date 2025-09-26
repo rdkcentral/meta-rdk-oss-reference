@@ -31,6 +31,8 @@ SRC_URI = " \
     file://dnsmasq-logging.conf \
     file://NM_autoconnect_retry.patch \
     file://NM_dynamicDNS.patch \
+    file://connectivity-check.patch \
+    file://org.freedesktop.nm_connectivity.service \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
@@ -67,7 +69,7 @@ CFLAGS:append:libc-musl = " \
 do_compile:prepend() {
     export GI_TYPELIB_PATH="${B}}/src/libnm-client-impl${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
 }
-PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala \
+PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala concheck \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
@@ -249,9 +251,11 @@ do_install:append() {
     install -d ${D}${sysconfdir}/NetworkManager/
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
     install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
+    install -d ${D}${datadir}/dbus-1/system-services
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
     install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
+     install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
@@ -282,3 +286,5 @@ SYSLOG-NG_FILTER = "networkmanager"
 SYSLOG-NG_SERVICE_networkmanager = "NetworkManager.service"
 SYSLOG-NG_DESTINATION_networkmanager = "NetworkManager.log"
 SYSLOG-NG_LOGRATE_networkmanager = "high"
+
+FILES:${PN} += "${datadir}/dbus-1/system-services/org.freedesktop.nm_connectivity.service"
