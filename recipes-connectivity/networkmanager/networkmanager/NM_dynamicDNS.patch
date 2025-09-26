@@ -2,12 +2,11 @@ Index: NetworkManager-1.43.7/src/core/dnsmasq/nm-dnsmasq-manager.c
 ===================================================================
 --- NetworkManager-1.43.7.orig/src/core/dnsmasq/nm-dnsmasq-manager.c
 +++ NetworkManager-1.43.7/src/core/dnsmasq/nm-dnsmasq-manager.c
-@@ -136,7 +136,7 @@ create_dm_cmd_line(const char
+@@ -136,7 +136,6 @@ create_dm_cmd_line(const char
 
      nm_strv_ptrarray_add_string_dup(cmd, "--no-hosts");
      nm_strv_ptrarray_add_string_dup(cmd, "--keep-in-foreground");
 -    nm_strv_ptrarray_add_string_dup(cmd, "--bind-interfaces");
-+    nm_strv_ptrarray_add_string_dup(cmd, "--bind-dynamic");
      nm_strv_ptrarray_add_string_dup(cmd, "--except-interface=lo");
      nm_strv_ptrarray_add_string_dup(cmd, "--clear-on-reload");
 
@@ -15,12 +14,11 @@ Index: NetworkManager-1.43.7/src/core/dns/nm-dns-dnsmasq.c
 ===================================================================
 --- NetworkManager-1.43.7.orig/src/core/dns/nm-dns-dnsmasq.c
 +++ NetworkManager-1.43.7/src/core/dns/nm-dns-dnsmasq.c
-@@ -521,7 +521,7 @@ _gl_pid_spawn_next_step(void)
+@@ -521,7 +521,6 @@ _gl_pid_spawn_next_step(void)
      argv[argv_idx++] = "--no-resolv"; /* Use only commandline */
      argv[argv_idx++] = "--keep-in-foreground";
      argv[argv_idx++] = "--no-hosts"; /* don't use /etc/hosts to resolve */
 -    argv[argv_idx++] = "--bind-interfaces";
-+    argv[argv_idx++] = "--bind-dynamic";
      argv[argv_idx++] = "--pid-file=" PIDFILE;
      argv[argv_idx++] = "--listen-address=127.0.0.1"; /* Should work for both 4 and 6 */
      argv[argv_idx++] = "--cache-size=400";
