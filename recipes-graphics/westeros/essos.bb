@@ -2,8 +2,6 @@ SUMMARY = "Essos is a library making it simple to create applications that run e
 
 include westeros.inc
 
-LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=7df5a8706277b586ca000838046993d1"
-
 SRC_URI = "${ESSOS_URI}"
 
 PV = "1.0+gitr${SRCPV}"
@@ -20,7 +18,9 @@ DEBIAN_NOAUTONAME:${PN}-dbg = "1"
 DEBIAN_NOAUTONAME:${PN}-dev = "1"
 DEBIAN_NOAUTONAME:${PN}-staticdev = "1"
 
-DEBIAN_NOAUTONAME:${PN} = "1"
+LICENSE = "Apache-2.0"
+LICENSE_LOCATION = "${S}/LICENSE"
+LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
 
 REQUIRED_DISTRO_FEATURES += "wayland"
 
