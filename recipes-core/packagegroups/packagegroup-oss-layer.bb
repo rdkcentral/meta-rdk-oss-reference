@@ -260,6 +260,7 @@ RDEPENDS:${PN} += "\
      dnsmasq \
      dosfstools \
      essos \
+     essosrmgr \
      fcgi \
      findutils \
      gawk \
@@ -354,6 +355,7 @@ RDEPENDS:${PN}:remove += "\
      cairo \
      dropbear \
      essos \
+     essosrmgr \
      gstreamer1.0 \
      gstreamer1.0-libav \
      gstreamer1.0-meta-base \
