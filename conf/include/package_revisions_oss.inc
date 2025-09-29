@@ -16,7 +16,7 @@ def get_oss_arch(d):
     arch = get_oss_machine(d)
     arch += "-oss"
     return arch
-
+OSS_LAYER_VERSION = "4.8.0"
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
