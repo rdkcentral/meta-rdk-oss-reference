@@ -26,7 +26,6 @@ SRC_URI = " \
     file://95-logging.conf \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
-    file://readline_NM.patch \
     file://NM_Dispatcher.patch \
 "
 
@@ -54,6 +53,7 @@ EXTRA_OEMESON = "\
     -Ddhcpcanon=false \
     -Diptables=${sbindir}/iptables \
     -Dnft=${sbindir}/nft \
+    -Dreadline=none \
 "
 # stolen from https://github.com/void-linux/void-packages/blob/master/srcpkgs/NetworkManager/template
 # avoids:
@@ -64,7 +64,7 @@ CFLAGS:append:libc-musl = " \
 do_compile:prepend() {
     export GI_TYPELIB_PATH="${B}}/src/libnm-client-impl${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
 }
-PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala \
+PACKAGECONFIG ??= "nss ifupdown dnsmasq nmcli vala \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
@@ -90,8 +90,6 @@ PACKAGECONFIG[wifi] = "-Dwext=true -Dwifi=true,-Dwext=false -Dwifi=false"
 PACKAGECONFIG[ifupdown] = "-Difupdown=true,-Difupdown=false"
 #PACKAGECONFIG[cloud-setup] = "-Dnm_cloud_setup=true,-Dnm_cloud_setup=false"
 PACKAGECONFIG[nmcli] = "-Dnmcli=true,-Dnmcli=false"
-PACKAGECONFIG[readline] = "-Dreadline=libreadline,,readline"
-PACKAGECONFIG[libedit] = "-Dreadline=libedit,,libedit"
 PACKAGECONFIG[ovs] = "-Dovs=true,-Dovs=false,jansson"
 PACKAGECONFIG[audit] = "-Dlibaudit=yes,-Dlibaudit=no"
 PACKAGECONFIG[selinux] = "-Dselinux=true,-Dselinux=false,libselinux"
