@@ -30,6 +30,9 @@ SRC_URI = " \
     file://NM_Dispatcher.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
+    file://0001-wifi-don-t-recheck-auto-activate-on-disposal.patch \
+    file://dnsmasq-logging.conf \
+    file://NM_autoconnect_retry.patch \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
@@ -213,10 +216,6 @@ FILES:${PN}-daemon += " \
     ${sysconfdir}/sysconfig/network-scripts \
     ${systemd_system_unitdir} \
 "
-FILES:${PN}:remove = "${sysconfdir}/resolv.dnsmasq"
-FILES:${PN}:remove = "${sysconfdir}/resolv.conf"
-FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.conf"
-FILES:${PN}-daemon:remove = "${sysconfdir}/resolv.dnsmasq"
 FILES:${PN}-daemon:remove = "${systemd_system_unitdir}/NetworkManager-wait-online.service"
 #{nonarch_libdir}/NetworkManager/system-connections
 RDEPENDS:${PN}-daemon += "\
@@ -250,11 +249,12 @@ do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${sysconfdir}/NetworkManager/
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
+    install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
     install -d ${D}${datadir}/dbus-1/system-services
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
     install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
-
+    install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
