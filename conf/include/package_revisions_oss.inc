@@ -1,3 +1,5 @@
+OSS_LAYER_VERSION = "4.8.0"
+
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
 PREFERRED_VERSION_openssl = "3.0.%"
