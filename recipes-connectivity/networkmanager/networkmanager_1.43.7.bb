@@ -26,7 +26,6 @@ SRC_URI = " \
     file://95-logging.conf \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
-    file://readline_NM.patch \
     file://NM_Dispatcher.patch \
 "
 
@@ -54,6 +53,8 @@ EXTRA_OEMESON = "\
     -Ddhcpcanon=false \
     -Diptables=${sbindir}/iptables \
     -Dnft=${sbindir}/nft \
+    -Dnmcli=true \
+    -Dreadline=libreadline \
 "
 # stolen from https://github.com/void-linux/void-packages/blob/master/srcpkgs/NetworkManager/template
 # avoids:
@@ -91,7 +92,6 @@ PACKAGECONFIG[ifupdown] = "-Difupdown=true,-Difupdown=false"
 #PACKAGECONFIG[cloud-setup] = "-Dnm_cloud_setup=true,-Dnm_cloud_setup=false"
 PACKAGECONFIG[nmcli] = "-Dnmcli=true,-Dnmcli=false"
 PACKAGECONFIG[readline] = "-Dreadline=libreadline,,readline"
-PACKAGECONFIG[libedit] = "-Dreadline=libedit,,libedit"
 PACKAGECONFIG[ovs] = "-Dovs=true,-Dovs=false,jansson"
 PACKAGECONFIG[audit] = "-Dlibaudit=yes,-Dlibaudit=no"
 PACKAGECONFIG[selinux] = "-Dselinux=true,-Dselinux=false,libselinux"
