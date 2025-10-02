@@ -30,6 +30,7 @@ SRC_URI = " \
     file://NM_Dispatcher.patch \
     file://dnsmasq-logging.conf \
     file://NM_autoconnect_retry.patch \
+    file://NM_dynamicDNS.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
 "
