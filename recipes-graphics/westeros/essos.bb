@@ -12,8 +12,8 @@ REQUIRED_DISTRO_FEATURES += "wayland"
 
 inherit autotools pkgconfig features_check
 
-CXXFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flex2_rdk', ' -DUNAUTHORIZED_REQUESTS_ABORT', \
-                   ${@bb.utils.contains('DISTRO_FEATURES', 'erm_unauthorized_requests_abort', ' -DUNAUTHORIZED_REQUESTS_ABORT', '', d)}, d)}"
+CXXFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'erm_unauthorized_requests_abort', ' -DUNAUTHORIZED_REQUESTS_ABORT', '', d)}"
+CXXFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flex2_rdk', ' -DUNAUTHORIZED_REQUESTS_ABORT', '', d)}"
 
 PACKAGECONFIG ??= "westeros resmgr"
 PACKAGECONFIG[westeros] = "--disable-essoswesterosfree,--enable-essoswesterosfree,westeros-simpleshell virtual/westeros-soc"
