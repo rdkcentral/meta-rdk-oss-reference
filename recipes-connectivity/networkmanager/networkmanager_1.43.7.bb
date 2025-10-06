@@ -54,6 +54,8 @@ EXTRA_OEMESON = "\
     -Ddhcpcanon=false \
     -Diptables=${sbindir}/iptables \
     -Dnft=${sbindir}/nft \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '-Dnmcli=true', 'nmcli=false', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '-Dreadline=libreadline', '-Dreadline=none', d)} \
 "
 # stolen from https://github.com/void-linux/void-packages/blob/master/srcpkgs/NetworkManager/template
 # avoids:
@@ -64,10 +66,12 @@ CFLAGS:append:libc-musl = " \
 do_compile:prepend() {
     export GI_TYPELIB_PATH="${B}}/src/libnm-client-impl${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
 }
-PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala \
+PACKAGECONFIG ??= "nss ifupdown dnsmasq vala \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', 'nmcli', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', 'readline', '', d)} \
 "
 #inherit ${@bb.utils.contains('PACKAGECONFIG', 'vala', 'vala', '', d)}
 PACKAGECONFIG[systemd] = "\
@@ -104,8 +108,8 @@ PACKAGECONFIG[concheck] = "-Dconcheck=true,-Dconcheck=false"
 #PACKAGECONFIG:append = "man-resolv-conf"
 PACKAGES =+ " \
     libnm \
-    ${PN}-nmcli \
-    ${PN}-nmcli-bash-completion \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '{PN}-nmcli', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '{PN}-nmcli-bash-completion', '', d)} \
     ${PN}-wifi \
     ${PN}-daemon \
     ${PN}-man-resolv-conf \
@@ -135,12 +139,12 @@ SUMMARY:${PN}-bluetooth = "Bluetooth device plugin for NetworkManager"
 #RDEPENDS:${PN}-cloud-setup += "${PN}-daemon"
 #ALLOW_EMPTY:${PN}-cloud-setup = "1"
 #SYSTEMD_SERVICE:${PN}-cloud-setup = "${@bb.utils.contains('PACKAGECONFIG', 'cloud-setup', 'nm-cloud-setup.service nm-cloud-setup.timer', '', d)}"
-SUMMARY:${PN}-nmcli = "NetworkManager command line client"
+SUMMARY:${PN}-nmcli = " ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', 'NetworkManager command line client', '', d)}" 
 FILES:${PN}-nmcli = " \
-    ${bindir}/nmcli \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '${bindir}/nmcli', '', d)} \
 "
-RDEPENDS:${PN}-nmcli += "${PN}-daemon"
-SUMMARY:${PN}-nmcli-bash-completion = "NetworkManager command line client bash completion"
+RDEPENDS:${PN}-nmcli += " ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '${PN}-daemon', '', d)}"
+SUMMARY:${PN}-nmcli-bash-completion = "${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', 'NetworkManager command line client bash completion', '', d)}"
 FILES:${PN}-nmcli-bash-completion = "${datadir}/bash-completion/completions/nmcli"
 RDEPENDS:${PN}-nmcli-bash-completion = "bash-completion"
 #SUMMARY:${PN}-nmtui = "NetworkManager curses-based UI"
