@@ -12,6 +12,8 @@ REQUIRED_DISTRO_FEATURES += "wayland"
 
 inherit autotools pkgconfig features_check
 
+SRC_URI += "file://essos-resmgr_v1.patch"
+
 PACKAGECONFIG ??= "westeros resmgr"
 PACKAGECONFIG[westeros] = "--disable-essoswesterosfree,--enable-essoswesterosfree,westeros-simpleshell virtual/westeros-soc"
 PACKAGECONFIG[resmgr] = "--disable-essosresmgrfree,--enable-essosresmgrfree"

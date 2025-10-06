@@ -1,0 +1,13 @@
+diff --git a/essos/essos-resmgr.cpp b/essos/essos-resmgr.cpp
+index 9eef8f5..5f68b77 100644
+--- a/essos/essos-resmgr.cpp
++++ b/essos/essos-resmgr.cpp
+@@ -69,7 +69,7 @@
+ 
+ #define DEFAULT_TIMEOUT_MS (3000)
+ 
+-static int gLogLevel= 2;
++static int gLogLevel= 6;
+ 
+ #define SHOW_TASK_ID 1
+ #ifdef SHOW_TASK_ID
