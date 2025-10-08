@@ -69,7 +69,7 @@ do_compile:class-native () {
 }
 
 do_install:class-native () {
-    install -d ${D}/lib/apparmor
+    install -d ${D}${libdir}/apparmor
     install -d ${D}${base_sbindir}
     install -d ${D}/etc/aaprofiles/ 
     oe_runmake -C ${B}/libraries/libapparmor DESTDIR="${D}" install
@@ -91,5 +91,6 @@ FILES:${PN} += "/etc/apparmor/earlypolicy/*"
 FILES:${PN} += "/etc/apparmor/aa_profiles/"
 
 FILES:${PN}-native += "${base_sbindir}/apparmor_parser"
+FILES:${PN}-dbg += "${base_sbindir}/apparmor_parser"
 FILES:${PN}-native += "${libdir}/features"
 BBCLASSEXTEND = "native"

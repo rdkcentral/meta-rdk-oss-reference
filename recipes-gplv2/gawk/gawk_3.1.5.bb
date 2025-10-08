@@ -40,5 +40,5 @@ CFLAGS += "-D PROTOTYPES"
 
 do_install:append() {
 	# remove the link since we don't package it
-	rm ${D}${bindir}/awk
+	rm -f ${D}${bindir}/awk
 }

@@ -24,7 +24,7 @@ PROFILES_CACHE="$PROFILES/cache"
 PROFILES_VAR="/var/lib/apparmor/profiles"
 PROFILES_SNAPPY="/var/lib/snapd/apparmor/profiles"
 PROFILES_CACHE_VAR="/var/cache/apparmor"
-PARSER="/sbin/apparmor_parser"
+PARSER="${sbindir}/apparmor_parser"
 SECURITYFS="/sys/kernel/security"
 export AA_SFS="$SECURITYFS/apparmor"
 

@@ -1,3 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://header_installation.patch"
+#SRC_URI += "file://header_installation.patch"

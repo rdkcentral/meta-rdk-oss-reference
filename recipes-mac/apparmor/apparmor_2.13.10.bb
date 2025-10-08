@@ -98,7 +98,7 @@ do_compile () {
 
 do_install () {
     install -d ${D}/${INIT_D_DIR}
-    install -d ${D}/lib/apparmor
+    install -d ${D}${libdir}/apparmor
     oe_runmake -C ${B}/libraries/libapparmor DESTDIR="${D}" install
     oe_runmake -C ${B}/binutils DESTDIR="${D}" install
     if ${@bb.utils.contains('PACKAGECONFIG','python','true','false', d)}; then
@@ -131,14 +131,16 @@ do_install () {
     # chmod 0755 ${D}${bindir}/aa-easyprof
 
     install ${WORKDIR}/apparmor ${D}/${INIT_D_DIR}/apparmor
-    install ${WORKDIR}/functions ${D}/lib/apparmor
-    sed -i -e 's/getconf _NPROCESSORS_ONLN/nproc/' ${D}/lib/apparmor/functions
-    sed -i -e 's/ls -AU/ls -A/' ${D}/lib/apparmor/functions
+    install ${WORKDIR}/functions ${D}${libdir}/apparmor
+    sed -i -e 's/getconf _NPROCESSORS_ONLN/nproc/' ${D}${libdir}/apparmor/functions
+    sed -i -e 's/ls -AU/ls -A/' ${D}${libdir}/apparmor/functions
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_system_unitdir}
         install -m 0644 ${WORKDIR}/apparmor.service ${D}${systemd_system_unitdir}
     fi
+    install -d ${D}${sbindir}
+    install ${B}/parser/apparmor_parser ${D}${sbindir}
 }
 
 #Building ptest on arm fails.
@@ -203,7 +205,7 @@ SYSTEMD_AUTO_ENABLE ?= "enable"
 
 PACKAGES += "mod-${PN}"
 
-FILES:${PN} += "/lib/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
+FILES:${PN} += "${libdir}/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR} ${sbindir}"
 FILES:mod-${PN} = "${libdir}/apache2/modules/*"
 
 # Add coreutils and findutils only if sysvinit scripts are in use
@@ -215,3 +217,4 @@ PRIVATE_LIBS:${PN}-ptest = "libapparmor.so*"
 LDFLAGS:remove = "-flto"
 CFLAGS:remove = "-flto"
 CXXFLAGS:remove = "-flto"
+

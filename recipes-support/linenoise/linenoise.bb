@@ -21,3 +21,5 @@ SRC_URI += "file://002-linenoise-cmakelists.patch"
 S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig
+
+BBCLASSEXTEND = "native"

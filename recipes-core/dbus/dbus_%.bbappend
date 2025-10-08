@@ -5,7 +5,7 @@ SRC_URI:append = " \
 "
 
 SRC_URI:append:broadband = " \
-    file://01-dbus-ccsp-apis-1.14.8.patch \
+    file://01-dbus-ccsp-apis-1.14.10.patch \
 "
 
 #Removed --with-xml expact as the configuration is not supported in 1.14. It was not supported in dunfell version 1.12.16 as well.
@@ -20,6 +20,10 @@ EXTRA_OECONF:broadband = "--disable-tests \
 do_install:append() {
          # Remove <includedir>system.d</includedir> from system.conf since it consumes much CPU cycles for dbus-daemon
          sed -i '/system.d/d' ${D}${sysconfdir}/dbus-1/system.conf
+}
+
+do_configure:append() {
+    sed -i 's/#define DBUS_HAVE_LINUX_EPOLL 1/#undef DBUS_HAVE_LINUX_EPOLL/' ${B}/config.h
 }
 
 inherit breakpad-wrapper
