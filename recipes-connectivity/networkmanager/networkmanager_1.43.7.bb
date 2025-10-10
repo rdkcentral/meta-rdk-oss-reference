@@ -54,6 +54,8 @@ EXTRA_OEMESON = "\
     -Ddhcpcanon=false \
     -Diptables=${sbindir}/iptables \
     -Dnft=${sbindir}/nft \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '-Dnmcli=true', '-Dnmcli=false', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'debug-variant', '-Dreadline=libreadline', '-Dreadline=none', d)} \
 "
 # stolen from https://github.com/void-linux/void-packages/blob/master/srcpkgs/NetworkManager/template
 # avoids:
