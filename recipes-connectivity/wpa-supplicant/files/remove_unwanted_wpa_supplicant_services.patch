@@ -1,0 +1,53 @@
+Index: wpa_supplicant-2.10/wpa_supplicant/Makefile
+===================================================================
+--- wpa_supplicant-2.10.orig/wpa_supplicant/Makefile
++++ wpa_supplicant-2.10/wpa_supplicant/Makefile
+@@ -3,8 +3,6 @@ BINALL=wpa_supplicant wpa_cli
+ ALL = $(BINALL)
+ ALL += systemd/wpa_supplicant.service
+ ALL += systemd/wpa_supplicant@.service
+-ALL += systemd/wpa_supplicant-nl80211@.service
+-ALL += systemd/wpa_supplicant-wired@.service
+ ALL += dbus/fi.w1.wpa_supplicant1.service
+ 
+ EXTRA_TARGETS=dynamic_eap_methods
+Index: wpa_supplicant-2.10/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
+===================================================================
+--- wpa_supplicant-2.10.orig/wpa_supplicant/systemd/wpa_supplicant-nl80211.service.arg.in
++++ /dev/null
+@@ -1,15 +0,0 @@
+-[Unit]
+-Description=WPA supplicant daemon (interface- and nl80211 driver-specific version)
+-Requires=sys-subsystem-net-devices-%i.device
+-After=sys-subsystem-net-devices-%i.device
+-Before=network.target
+-Wants=network.target
+-
+-# NetworkManager users will probably want the dbus version instead.
+-
+-[Service]
+-Type=simple
+-ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-nl80211-%I.conf -Dnl80211 -i%I
+-
+-[Install]
+-WantedBy=multi-user.target
+Index: wpa_supplicant-2.10/wpa_supplicant/systemd/wpa_supplicant-wired.service.arg.in
+===================================================================
+--- wpa_supplicant-2.10.orig/wpa_supplicant/systemd/wpa_supplicant-wired.service.arg.in
++++ /dev/null
+@@ -1,15 +0,0 @@
+-[Unit]
+-Description=WPA supplicant daemon (interface- and wired driver-specific version)
+-Requires=sys-subsystem-net-devices-%i.device
+-After=sys-subsystem-net-devices-%i.device
+-Before=network.target
+-Wants=network.target
+-
+-# NetworkManager users will probably want the dbus version instead.
+-
+-[Service]
+-Type=simple
+-ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-wired-%I.conf -Dwired -i%I
+-
+-[Install]
+-WantedBy=multi-user.target
