@@ -538,7 +538,7 @@ PACKAGE_ARCH:pn-libsndfile1 ?= "${OSS_LAYER_ARCH}"
 PR:pn-libsolv ?= "r0"
 PACKAGE_ARCH:pn-libsolv ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libsoup ?= "r0"
+PR:pn-libsoup ?= "r1"
 PACKAGE_ARCH:pn-libsoup ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libsoup-2.4 ?= "r1"
@@ -549,9 +549,6 @@ PACKAGE_ARCH:pn-libstd-rs ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libtasn1 ?= "r1"
 PACKAGE_ARCH:pn-libtasn1 ?= "${OSS_LAYER_ARCH}"
-
-PR:pn-libsoup-2.4 ?= "r1"
-PACKAGE_ARCH:pn-libsoup-2.4 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libtheora ?= "r1"
 PACKAGE_ARCH:pn-libtheora ?= "${OSS_LAYER_ARCH}"
