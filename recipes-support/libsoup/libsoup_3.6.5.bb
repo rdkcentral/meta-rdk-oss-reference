@@ -15,9 +15,11 @@ SRC_URI = "${GNOME_MIRROR}/libsoup/${SHRT_VER}/libsoup-${PV}.tar.xz"
 SRC_URI[sha256sum] = "6891765aac3e949017945c3eaebd8cc8216df772456dc9f460976fbdb7ada234"
 
 SRC_URI += "file://comcast-RDK-56000-Cookie-size-limit-log_3.0.patch"
+
 SRC_URI += "file://0001-http2-set-error-on-zero-return-from-write.patch"
 SRC_URI += "file://0002-http2-improve-handling-of-io-error-thrown-early-afte.patch"
 SRC_URI += "file://0003-http2-fix-crash-in-on_data_read-after-connection-has.patch"
+SRC_URI += "file://0004-fix-heap-use-after-free-caused-by-Finishing-Queue-item-twice.patch"
 
 PROVIDES = "libsoup-3.0"
 CVE_PRODUCT = "libsoup"
