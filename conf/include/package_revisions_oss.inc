@@ -193,7 +193,7 @@ PACKAGE_ARCH:pn-dbus-glib ?= "${OSS_LAYER_ARCH}"
 PR:pn-dibbler?= "r1"
 PACKAGE_ARCH:pn-dibbler ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq ?= "r4"
+PR:pn-dnsmasq ?= "r5"
 PACKAGE_ARCH:pn-dnsmasq ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools ?= "r0"
