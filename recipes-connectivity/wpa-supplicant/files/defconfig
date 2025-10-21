@@ -549,4 +549,5 @@ CONFIG_WIFI_DISPLAY=y
 # Support Multi Band Operation
 #CONFIG_MBO=y
 
+CONFIG_BGSCAN_SIMPLE=y
 
