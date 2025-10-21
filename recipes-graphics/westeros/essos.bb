@@ -7,7 +7,7 @@ SRC_URI = "${RDKCENTRAL_GITHUB_ROOT}/essos;${RDKCENTRAL_GITHUB_SRC_URI_SUFFIX}"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "wayland virtual/egl libxkbcommon"
+DEPENDS = "wayland virtual/egl libxkbcommon westeros"
 
 REQUIRED_DISTRO_FEATURES += "wayland"
 
