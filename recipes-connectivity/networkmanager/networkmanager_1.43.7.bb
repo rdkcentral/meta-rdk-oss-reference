@@ -26,7 +26,6 @@ SRC_URI = " \
     file://95-logging.conf \
     file://NetworkManager.conf \
     file://NM-wpa-service.patch \
-    file://readline_NM.patch \
     file://NM_Dispatcher.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
