@@ -874,7 +874,7 @@ PACKAGE_ARCH:pn-wireless-tools = "${OSS_LAYER_ARCH}"
 PR:pn-woff2 = "r0"
 PACKAGE_ARCH:pn-woff2 = "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant = "r7"
+PR:pn-wpa-supplicant = "r8"
 PACKAGE_ARCH:pn-wpa-supplicant = "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config = "r0"
