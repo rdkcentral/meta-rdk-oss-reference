@@ -11,6 +11,7 @@ SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.ta
            file://0001-new-SDL-gamedb.patch \
            file://0001-map-key-menu-back-as-btn.patch \
            file://0003-button-values-for-gas-brake.patch \
+           file://0002-add-wayland-inputfd-support.patch \
            "
 
 SRC_URI[sha256sum] = "63653259a821ec7d90d681e52e757e2219d462828c9d74b056a5f53267636bac"
@@ -18,6 +19,7 @@ SRC_URI[sha256sum] = "63653259a821ec7d90d681e52e757e2219d462828c9d74b056a5f53267
 inherit meson pkgconfig gobject-introspection ptest vala
 
 PACKAGECONFIG[wayland-inputfd] = "-Dwayland-inputfd=true,-Dwayland-inputfd=false,wayland wayland-native"
+PACKAGECONFIG:append = "wayland-inputfd"
 
 do_install:append() {
     install -d ${D}${datadir}/libmanette/
