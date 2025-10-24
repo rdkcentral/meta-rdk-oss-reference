@@ -17,7 +17,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.8.0"
+OSS_LAYER_VERSION = "4.9.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -184,7 +184,7 @@ PACKAGE_ARCH:pn-curl ?= "${OSS_LAYER_ARCH}"
 PR:pn-db ?= "r1"
 PACKAGE_ARCH:pn-db ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-dbus ?= "r0"
+PR:pn-dbus ?= "r1"
 PACKAGE_ARCH:pn-dbus ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-dbus-glib ?= "r0"
@@ -370,7 +370,7 @@ PACKAGE_ARCH:pn-lcms ?= "${OSS_LAYER_ARCH}"
 PR:pn-libaio ?= "r0"
 PACKAGE_ARCH:pn-libaio ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libarchive ?= "r1"
+PR:pn-libarchive ?= "r2"
 PACKAGE_ARCH:pn-libarchive ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libatomic-ops ?= "r0"
