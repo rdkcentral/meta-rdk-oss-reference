@@ -370,7 +370,7 @@ PACKAGE_ARCH:pn-lcms ?= "${OSS_LAYER_ARCH}"
 PR:pn-libaio ?= "r0"
 PACKAGE_ARCH:pn-libaio ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libarchive ?= "r1"
+PR:pn-libarchive ?= "r2"
 PACKAGE_ARCH:pn-libarchive ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libatomic-ops ?= "r0"
