@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.8.0"
+PV = "4.9.0"
 PR = "r0"
 
 # poky components
@@ -181,6 +181,7 @@ RDEPENDS:${PN} += "\
      ebtables \
      ethtool \
      evtest \
+     fmt \
      gflags \
      googletest \
      grpc \
@@ -210,12 +211,14 @@ RDEPENDS:${PN} += "\
      lua \
      lvm2 \
      mdns \
+     mosquitto \
      msgpack-c \
      ndisc6-rdnssd \
      ne10 \
      nspr \
      nss \
      openjpeg \
+     paho-mqtt-c \
      protobuf \
      protobuf-c \
      qrencode \

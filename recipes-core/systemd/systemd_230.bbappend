@@ -75,6 +75,9 @@ fi
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-sleep
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
+        rm -rf ${D}${systemd_system_unitdir}/debug-shell.service
+        rm -rf ${D}${systemd_system_unitdir}/console-getty.service
+        rm -rf ${D}${systemd_system_unitdir}/console-shell.service
 	sed -i -e 's/systemd-fsck-root.service//g' ${D}${systemd_unitdir}/system/systemd-remount-fs.service
 if ! ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         sed -i -e '/^L! \/etc\/resolv\.conf*/d' ${D}${exec_prefix}/lib/tmpfiles.d/etc.conf
