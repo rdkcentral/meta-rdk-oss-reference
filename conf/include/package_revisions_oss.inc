@@ -184,7 +184,7 @@ PACKAGE_ARCH:pn-curl ?= "${OSS_LAYER_ARCH}"
 PR:pn-db ?= "r1"
 PACKAGE_ARCH:pn-db ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-dbus ?= "r0"
+PR:pn-dbus ?= "r1"
 PACKAGE_ARCH:pn-dbus ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-dbus-glib ?= "r0"
