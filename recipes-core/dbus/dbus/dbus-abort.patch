@@ -1,0 +1,21 @@
+###################################################################################################
+Subject: [PATCH] btMgrBus crash Observed with fingerprint 90505307
+Date: Sep 08, 2025
+From: tharunkumar_venkatachal@comcast.com
+Source: upstream
+https://gitlab.freedesktop.org/dbus/dbus/-/merge_requests/532/diffs
+Signed-off-by: Tharun Kumar Venkatachalem <tharunkumar_venkatachalem@comcast.com>
+###################################################################################################
+Index: dbus-1.14.0/dbus/dbus-sysdeps-pthread.c
+===================================================================
+--- dbus-1.14.0.orig/dbus/dbus-sysdeps-pthread.c
++++ dbus-1.14.0/dbus/dbus-sysdeps-pthread.c
+@@ -242,7 +242,7 @@ _dbus_platform_condvar_wait_timeout (DBu
+   
+   end_time.tv_sec = time_now.tv_sec + timeout_milliseconds / 1000;
+   end_time.tv_nsec = (time_now.tv_usec + (timeout_milliseconds % 1000) * 1000) * 1000;
+-  if (end_time.tv_nsec > 1000*1000*1000)
++  if (end_time.tv_nsec >= 1000*1000*1000)
+     {
+       end_time.tv_sec += 1;
+       end_time.tv_nsec -= 1000*1000*1000;
