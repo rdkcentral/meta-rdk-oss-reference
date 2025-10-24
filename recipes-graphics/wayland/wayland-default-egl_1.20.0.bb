@@ -11,6 +11,8 @@ LIC_FILES_CHKSUM = "file://../COPYING;md5=b31d8f53b6aaf2b4985d7dd7810a70d1 \
 DEPENDS = "wayland"
 RDEPENDS:${PN} = "wayland"
 
+PROVIDES = "virtual/egl"
+
 SRC_URI = "https://wayland.freedesktop.org/releases/wayland-${PV}.tar.xz \
     file://CMakeLists.txt \
     file://wayland-egl.pc.in \
