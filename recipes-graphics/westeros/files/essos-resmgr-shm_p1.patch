@@ -1,0 +1,31 @@
+diff --git a/essos-resmgr-shm.cpp b/essos-resmgr-shm.cpp
+index e0100407..dafe08c0 100644
+--- a/essos-resmgr-shm.cpp
++++ b/essos-resmgr-shm.cpp
+@@ -653,6 +653,7 @@ exit:
+ bool EssRMgrRequestResource( EssRMgr *rm, int type, EssRMgrRequest *req )
+ {
+    bool result= false;
++   #if 0
+    bool haveSemRequest= false;
+    sem_t *sem= 0;
+    int rc;
+@@ -734,7 +735,8 @@ exit:
+    }
+ 
+    TRACE2("EssRMgrRequestResource: exit: rm %p type %d result %d", rm, type, result );
+-
++   #endif
++    ERROR("Naveen EssRMgrRequestResource: exit: rm %p type %d result %d", rm, type, result );
+    return result;
+ }
+ 
+@@ -3137,5 +3139,4 @@ static void* essRMNotifyThread( void *userData )
+    }
+    DEBUG("notify thread exit");
+    return NULL;
+-}
+-
++}
+\ No newline at end of file
+
