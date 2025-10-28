@@ -1,0 +1,21 @@
+diff --git a/essos-resmgr-uds.cpp b/essos-resmgr-uds.cpp
+index 2761035..9d67fd6 100644
+--- a/essos-resmgr-uds.cpp
++++ b/essos-resmgr-uds.cpp
+@@ -3355,6 +3355,7 @@ bool EssRMgrResourceSetState( EssRMgr *rm, int type, int id, int state )
+ bool EssRMgrRequestResource( EssRMgr *rm, int type, EssRMgrRequest *req )
+ {
+    bool result= false;
++   #if 0
+    EssRMgrRequestInfo *info= 0;
+    int rc;
+    int timeoutMS;
+@@ -3468,7 +3469,8 @@ exit:
+    }
+
+    TRACE2("EssRMgrRequestResource: exit: rm %p type %d result %d", rm, type, result );
+-
++   #endif
++   ERROR("Naveen EssRMgrRequestResource: exit: rm %p type %d result %d", rm, type, result );
+    return result;
+}
