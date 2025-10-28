@@ -13,6 +13,7 @@ SRC_URI:append = " \
                   file://named.conf.options \
                   file://named_start_post_rdm.sh \
                  "
+SYSTEMD_SERVICE:${PN}:remove = "named.service"
 
 do_install:append () {
     install -d ${D}${sysconfdir}/bind
