@@ -74,7 +74,7 @@ SKIP_MAIN_PKG="yes"
 
 do_install:append () {
     rm ${D}${systemd_system_unitdir}/named.service
-    rm -r  ${D}${systemd_system_unitdir}/
+    rm -r ${D}/lib
 }
 
 FILES:${PN}-libs:remove         = "/usr/lib/named/*.so* /usr/lib/*-9.18.5.so"
