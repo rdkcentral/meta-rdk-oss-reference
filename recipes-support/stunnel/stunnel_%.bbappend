@@ -46,5 +46,5 @@ RDEPENDS:${PN}:remove = "perl"
 #meta-rdk-broadband/recipes-support/stunnel/stunnel_%.bbappend
 DEPENDS:remove:broadband = "systemd"
 SYSTEMD_SERVICE:${PN}:remove:broadband = "stunnel.service"
-FILES_${PN}:remove:broadband = "/lib/systemd/system/stunnel.service"
+FILES:${PN}:remove:broadband = "/lib/systemd/system/stunnel.service"
 PACKAGECONFIG:remove:broadband = "systemd"

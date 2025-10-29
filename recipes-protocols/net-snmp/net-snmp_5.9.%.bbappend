@@ -9,7 +9,7 @@
 # Copyright (c) 2018 Comcast. All rights reserved.
 # ============================================================================
 #
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BP}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:"
 
 SRC_URI += "file://support-multiple-local-certs.patch"
 SRC_URI += "file://DELIA-40163.patch"

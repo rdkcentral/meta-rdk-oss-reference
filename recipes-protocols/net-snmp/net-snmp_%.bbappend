@@ -1,10 +1,10 @@
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 CACHED_CONFIGUREVARS = "ac_cv_lib_crypto_EVP_md5=no ac_cv_lib_crypto_AES_cfb128_encrypt=no"
 
 DEPENDS += "openssl"
-DEPENDS_append = " libpcap"
+DEPENDS:append = " libpcap"
 
 CFLAGS += "-DNETSNMP_USE_OPENSSL -DHAVE_LIBSSL -lssl -lcrypto"
 
@@ -32,20 +32,20 @@ EXTRA_OECONF += "--without-rpm --with-perl-modules=no --disable-embedded-perl \
 SRC_URI += "file://netsnmp-fix-ipAddressTable-issue.patch \
 "
 
-SRC_URI_append = " file://pciutils3.5.1_udev_leak.patch \
+SRC_URI:append = " file://pciutils3.5.1_udev_leak.patch \
                          "
 
-SRC_URI_append_broadband = " \
+SRC_URI:append_broadband = " \
             file://double_free.patch  \
             file://snmp-crash.patch \
             file://CiscoXB3-2774.patch \
 "
 
-do_install_prepend() {
+do_install:prepend() {
     rm -f ${D}/snmp/snmp_perl_trapd.pl
 }
 
-do_install_append() {
+do_install:append() {
     rm ${D}${sysconfdir}/snmp/snmptrapd.conf
     rm ${D}${bindir}/agentxtrap
     rm ${D}${bindir}/encode_keychange
@@ -66,5 +66,5 @@ do_install_append() {
     rm ${D}${datadir}/snmp/snmp_perl_trapd.pl
 }
 
-RDEPENDS_${PN}-server = "net-snmp-server-snmpd"
-FILES_${PN}-client_remove = "${bindir}/agentxtrap ${bindir}/encode_keychange ${bindir}/net-snmp-create-v3-user ${bindir}/snmpbulkget ${bindir}/snmpbulkwalk ${bindir}/snmpdelta ${bindir}/snmpgetnext ${bindir}/snmpnetstat ${bindir}/snmpdf ${bindir}/snmpstatus ${bindir}/snmptable ${bindir}/snmptest ${bindir}/snmptls ${bindir}/snmptrap ${bindir}/snmpusm ${bindir}/snmpvacm ${datadir}/snmp/snmp_perl_trapd.pl"
+RDEPENDS:${PN}-server = "net-snmp-server-snmpd"
+FILES:${PN}-client:remove = "${bindir}/agentxtrap ${bindir}/encode_keychange ${bindir}/net-snmp-create-v3-user ${bindir}/snmpbulkget ${bindir}/snmpbulkwalk ${bindir}/snmpdelta ${bindir}/snmpgetnext ${bindir}/snmpnetstat ${bindir}/snmpdf ${bindir}/snmpstatus ${bindir}/snmptable ${bindir}/snmptest ${bindir}/snmptls ${bindir}/snmptrap ${bindir}/snmpusm ${bindir}/snmpvacm ${datadir}/snmp/snmp_perl_trapd.pl"

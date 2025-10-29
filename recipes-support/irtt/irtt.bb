@@ -18,7 +18,7 @@ export GOPROXY = "https://proxy.golang.org,direct"
 PV="0.9.1"
 PACKAGES = "${PN}-dbg ${PN}"
 FILES:${PN} += "/usr/bin/irtt"
-FILES_${PN}-dbg += "/usr/bin/.debug/irtt"
+FILES:${PN}-dbg += "/usr/bin/.debug/irtt"
 
 do_compile() {
     export CGO_ENABLED=0

@@ -83,13 +83,13 @@ CACHED_CONFIGUREVARS = " \
     NETSNMP_CONFIGURE_OPTIONS= \
 "
 export PERLPROG="${bindir}/env perl"
-PERLPROG_append = "${@bb.utils.contains('PACKAGECONFIG', 'perl', ' -I${WORKDIR}', '', d)}"
+PERLPROG:append = "${@bb.utils.contains('PACKAGECONFIG', 'perl', ' -I${WORKDIR}', '', d)}"
 
 HAS_PERL = "${@bb.utils.contains('PACKAGECONFIG', 'perl', '1', '0', d)}"
 
 PTEST_BUILD_HOST_FILES += "net-snmp-config gen-variables"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i -e "s|I/usr/include|I${STAGING_INCDIR}|g" \
         "${S}"/configure \
         "${S}"/configure.d/config_os_libs2
@@ -110,7 +110,7 @@ do_configure_prepend() {
 
 }
 
-do_configure_append() {
+do_configure:append() {
     if [ "${HAS_PERL}" = "1" ]; then
         sed -e "s@^NSC_INCLUDEDIR=.*@NSC_INCLUDEDIR=${STAGING_DIR_TARGET}\$\{includedir\}@g" \
             -e "s@^NSC_LIBDIR=-L.*@NSC_LIBDIR=-L${STAGING_DIR_TARGET}\$\{libdir\}@g" \
@@ -118,7 +118,7 @@ do_configure_append() {
     fi
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}/snmp
     install -d ${D}${sysconfdir}/init.d
     install -m 755 ${WORKDIR}/init ${D}${sysconfdir}/init.d/snmpd
@@ -200,85 +200,85 @@ PACKAGES += "${PN}-libs ${PN}-mibs ${PN}-server ${PN}-client \
 # perl module
 PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'perl', '${PN}-perl-modules', '', d)}"
 
-ALLOW_EMPTY_${PN} = "1"
-ALLOW_EMPTY_${PN}-server = "1"
-ALLOW_EMPTY_${PN}-libs = "1"
+ALLOW_EMPTY:${PN} = "1"
+ALLOW_EMPTY:${PN}-server = "1"
+ALLOW_EMPTY:${PN}-libs = "1"
 
-FILES_${PN}-perl-modules = "${libdir}/perl?/*"
-RDEPENDS_${PN}-perl-modules = "perl"
+FILES:${PN}-perl-modules = "${libdir}/perl?/*"
+RDEPENDS:${PN}-perl-modules = "perl"
 
-FILES_${PN}-libs = ""
-FILES_${PN}-mibs = "${datadir}/snmp/mibs"
-FILES_${PN}-server-snmpd = "${sbindir}/snmpd \
+FILES:${PN}-libs = ""
+FILES:${PN}-mibs = "${datadir}/snmp/mibs"
+FILES:${PN}-server-snmpd = "${sbindir}/snmpd \
                             ${sysconfdir}/snmp/snmpd.conf \
                             ${sysconfdir}/init.d \
                             ${systemd_unitdir}/system/snmpd.service \
 "
 
-FILES_${PN}-server-snmptrapd = "${sbindir}/snmptrapd \
+FILES:${PN}-server-snmptrapd = "${sbindir}/snmptrapd \
                                 ${sysconfdir}/snmp/snmptrapd.conf \
                                 ${systemd_unitdir}/system/snmptrapd.service \
 "
 
-FILES_${PN}-lib-netsnmp = "${libdir}/libnetsnmp${SOLIBS}"
-FILES_${PN}-lib-agent = "${libdir}/libnetsnmpagent${SOLIBS}"
-FILES_${PN}-lib-helpers = "${libdir}/libnetsnmphelpers${SOLIBS}"
-FILES_${PN}-lib-mibs = "${libdir}/libnetsnmpmibs${SOLIBS}"
-FILES_${PN}-lib-trapd = "${libdir}/libnetsnmptrapd${SOLIBS}"
+FILES:${PN}-lib-netsnmp = "${libdir}/libnetsnmp${SOLIBS}"
+FILES:${PN}-lib-agent = "${libdir}/libnetsnmpagent${SOLIBS}"
+FILES:${PN}-lib-helpers = "${libdir}/libnetsnmphelpers${SOLIBS}"
+FILES:${PN}-lib-mibs = "${libdir}/libnetsnmpmibs${SOLIBS}"
+FILES:${PN}-lib-trapd = "${libdir}/libnetsnmptrapd${SOLIBS}"
 
-FILES_${PN} = ""
-FILES_${PN}-client = "${bindir}/* ${datadir}/snmp/"
-FILES_${PN}-dbg += "${libdir}/.debug/ ${sbindir}/.debug/ ${bindir}/.debug/"
-FILES_${PN}-dev += "${bindir}/mib2c \
+FILES:${PN} = ""
+FILES:${PN}-client = "${bindir}/* ${datadir}/snmp/"
+FILES:${PN}-dbg += "${libdir}/.debug/ ${sbindir}/.debug/ ${bindir}/.debug/"
+FILES:${PN}-dev += "${bindir}/mib2c \
                     ${bindir}/mib2c-update \
                     ${bindir}/net-snmp-config \
                     ${bindir}/net-snmp-create-v3-user \
 "
 
-CONFFILES_${PN}-server-snmpd = "${sysconfdir}/snmp/snmpd.conf"
-CONFFILES_${PN}-server-snmptrapd = "${sysconfdir}/snmp/snmptrapd.conf"
+CONFFILES:${PN}-server-snmpd = "${sysconfdir}/snmp/snmpd.conf"
+CONFFILES:${PN}-server-snmptrapd = "${sysconfdir}/snmp/snmptrapd.conf"
 
 INITSCRIPT_PACKAGES = "${PN}-server-snmpd"
-INITSCRIPT_NAME_${PN}-server-snmpd = "snmpd"
-INITSCRIPT_PARAMS_${PN}-server-snmpd = "start 90 2 3 4 5 . stop 60 0 1 6 ."
+INITSCRIPT_NAME:${PN}-server-snmpd = "snmpd"
+INITSCRIPT_PARAMS:${PN}-server-snmpd = "start 90 2 3 4 5 . stop 60 0 1 6 ."
 
 EXTRA_OECONF += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-systemd', '--without-systemd', d)}"
 
 SYSTEMD_PACKAGES = "${PN}-server-snmpd \
                     ${PN}-server-snmptrapd"
 
-SYSTEMD_SERVICE_${PN}-server-snmpd = "snmpd.service"
-SYSTEMD_SERVICE_${PN}-server-snmptrapd =  "snmptrapd.service"
+SYSTEMD_SERVICE:${PN}-server-snmpd = "snmpd.service"
+SYSTEMD_SERVICE:${PN}-server-snmptrapd =  "snmptrapd.service"
 
-RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'net-snmp-perl-modules', '', d)}"
-RDEPENDS_${PN} += "net-snmp-client"
-RDEPENDS_${PN}-server-snmpd += "net-snmp-mibs"
-RDEPENDS_${PN}-server-snmptrapd += "net-snmp-server-snmpd ${PN}-lib-trapd"
-RDEPENDS_${PN}-server += "net-snmp-server-snmpd net-snmp-server-snmptrapd"
-RDEPENDS_${PN}-client += "net-snmp-mibs net-snmp-libs"
-RDEPENDS_${PN}-libs += "libpci \
+RDEPENDS:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'net-snmp-perl-modules', '', d)}"
+RDEPENDS:${PN} += "net-snmp-client"
+RDEPENDS:${PN}-server-snmpd += "net-snmp-mibs"
+RDEPENDS:${PN}-server-snmptrapd += "net-snmp-server-snmpd ${PN}-lib-trapd"
+RDEPENDS:${PN}-server += "net-snmp-server-snmpd net-snmp-server-snmptrapd"
+RDEPENDS:${PN}-client += "net-snmp-mibs net-snmp-libs"
+RDEPENDS:${PN}-libs += "libpci \
                         ${PN}-lib-netsnmp \
                         ${PN}-lib-agent \
                         ${PN}-lib-helpers \
                         ${PN}-lib-mibs \
 "
-RDEPENDS_${PN}-ptest += "perl \
+RDEPENDS:${PN}-ptest += "perl \
                          perl-module-test \
                          perl-module-file-basename \
                          perl-module-getopt-long \
                          perl-module-file-temp \
                          perl-module-data-dumper \
 "
-RDEPENDS_${PN}-dev = "net-snmp-client (= ${EXTENDPKGV}) net-snmp-server (= ${EXTENDPKGV})"
-RRECOMMENDS_${PN}-dbg = "net-snmp-client (= ${EXTENDPKGV}) net-snmp-server (= ${EXTENDPKGV})"
+RDEPENDS:${PN}-dev = "net-snmp-client (= ${EXTENDPKGV}) net-snmp-server (= ${EXTENDPKGV})"
+RRECOMMENDS:${PN}-dbg = "net-snmp-client (= ${EXTENDPKGV}) net-snmp-server (= ${EXTENDPKGV})"
 
-RPROVIDES_${PN}-server-snmpd += "${PN}-server-snmpd-systemd"
-RREPLACES_${PN}-server-snmpd += "${PN}-server-snmpd-systemd"
-RCONFLICTS_${PN}-server-snmpd += "${PN}-server-snmpd-systemd"
+RPROVIDES:${PN}-server-snmpd += "${PN}-server-snmpd-systemd"
+RREPLACES:${PN}-server-snmpd += "${PN}-server-snmpd-systemd"
+RCONFLICTS:${PN}-server-snmpd += "${PN}-server-snmpd-systemd"
 
-RPROVIDES_${PN}-server-snmptrapd += "${PN}-server-snmptrapd-systemd"
-RREPLACES_${PN}-server-snmptrapd += "${PN}-server-snmptrapd-systemd"
-RCONFLICTS_${PN}-server-snmptrapd += "${PN}-server-snmptrapd-systemd"
+RPROVIDES:${PN}-server-snmptrapd += "${PN}-server-snmptrapd-systemd"
+RREPLACES:${PN}-server-snmptrapd += "${PN}-server-snmptrapd-systemd"
+RCONFLICTS:${PN}-server-snmptrapd += "${PN}-server-snmptrapd-systemd"
 
 LEAD_SONAME = "libnetsnmp.so"
 
