@@ -6,6 +6,7 @@ After=previous-log-backup.service
 After=tmp.mount
 Requires=tmp.mount
 DefaultDependencies=no
+ConditionPathExists=/etc/disable-syslog-ng.flag
 
 [Service]
 ExecStartPre=/bin/mkdir -p /tmp/syslog-ng
