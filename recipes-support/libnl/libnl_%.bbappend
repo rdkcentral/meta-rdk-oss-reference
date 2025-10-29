@@ -1,5 +1,10 @@
 PACKAGE_BEFORE_PN += "${PN}-extras"
 
+do_install:append() {
+    install -d ${D}${includedir}/libnl3/netlink/genl
+    install -m 0644 ${S}/include/netlink/genl/* ${D}${includedir}/libnl3/netlink/genl/
+}
+
 FILES:${PN}-extras =  "\
                         ${libdir}/libnl/cli/cls/basic.so \
                         ${libdir}/libnl/cli/cls/cgroup.so \

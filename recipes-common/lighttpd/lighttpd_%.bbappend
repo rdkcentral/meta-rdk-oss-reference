@@ -3,11 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 RDEPENDS:${PN} += " \
     libpcreposix \
     pcregrep \
-    lighttpd-module-cgi \
-    lighttpd-module-redirect \
-    lighttpd-module-setenv \
     lighttpd-module-ssi \
-    lighttpd-module-access \
     lighttpd-module-accesslog \
 	"
 # From meta-rdk-comcast/recipes-common/lighttpd/lighttpd_%.bbappend
@@ -26,8 +22,8 @@ LOGROTATE_ROTATION_MEM_lighttpd  = "1"
 
 SRC_URI:append:qemux86 ="file://lighttpd.conf_emulator "
 
-SRC_URI:append = " file://0001-Force-UTC-for-lighttpd-log-messages.patch "
-SRC_URI:append:broadband = " file://drop_root_lighttpd.patch "
+#SRC_URI:append = " file://0001-Force-UTC-for-lighttpd-log-messages.patch "
+#SRC_URI:append:broadband = " file://drop_root_lighttpd.patch "
 
 DEPENDS:append:broadband = " utopia libunpriv"
 
@@ -40,9 +36,6 @@ LDFLAGS:append:broadband = " -lprivilege -lsyscfg"
 RDEPENDS:${PN} += " \
        libpcreposix \
        pcregrep \
-       lighttpd-module-cgi \
-       lighttpd-module-redirect \
-       lighttpd-module-setenv \
        lighttpd-module-ssi \
        "
 do_install:append:qemux86() {
