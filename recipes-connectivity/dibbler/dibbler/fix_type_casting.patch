@@ -14,16 +14,16 @@ Index: git/SrvMessages/SrvMsg.cpp
 @@ -9,6 +9,11 @@
   * released under GNU GPL v2 only licence
   */
-
+ 
 +/*
-+* Includes MaxLinear's changes dated: 2021.
-+* Changed portions - Copyright 2021, MaxLinear, Inc.
-+*/
++    +* Includes MaxLinear's changes dated: 2021.
++    +* Changed portions - Copyright 2021, MaxLinear, Inc.
++    +*/
 +
  #include <sstream>
  #include "Portable.h"
  #include "SrvMsg.h"
-@@ -255,9 +260,13 @@ void TSrvMsg::processOptions(SPtr<TSrvMs
+@@ -255,9 +260,14 @@ void TSrvMsg::processOptions(SPtr<TSrvMs
          }
          case OPTION_VENDOR_OPTS:
          {
@@ -37,6 +37,7 @@ Index: git/SrvMessages/SrvMsg.cpp
 +                appendVendorSpec(ClientDUID, Iface, v->getVendor(), ORO);
 +                break;
 +            }
++
          }
-
+ 
          case OPTION_PREFERENCE:
