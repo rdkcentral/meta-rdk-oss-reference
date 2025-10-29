@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-SRC_URI += "file://0001-dibbler-crash-fix-for-dunfell.patch \
+SRC_URI += "file://Update-Addr-cache-for-confirmMessage.patch \
+            file://0001-dibbler-crash-fix-for-dunfell.patch \
             file://RDKB-33761_IPv6_delegation.patch \
             file://0001-dibbler-force-UTC.patch"
 

@@ -19,6 +19,7 @@ SRC_URI:append:broadband = " file://client-notify.patch \
                              file://dibbler-server-init.sh \
                              file://server-notify.sh \
                              file://dibbler_clear_sysevent_for_null_option23.patch \
+                             file://fix_type_casting.patch \
                              ${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable','file://oss_dibbler_conf.sh','',d)} \
 "
 
