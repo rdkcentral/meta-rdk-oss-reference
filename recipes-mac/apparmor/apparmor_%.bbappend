@@ -3,6 +3,6 @@ rm -rf ${D}${systemd_system_unitdir}/apparmor.service
 }
 SYSTEMD_SERVICE:apparmor:remove = "apparmor.service"
 
-DEPENDS:append = " python3"
 BBCLASSEXTEND = "native"
-DEPENDS:remove = "linux-libc-headers"
+DEPENDS:${PN}-native:append = " python3"
+DEPENDS:${PN}-native:remove = " linux-libc-headers"
