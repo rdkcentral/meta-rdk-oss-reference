@@ -45,11 +45,11 @@ PACKAGECONFIG[aa-decode] = ",,,bash"
 PAMLIB="${@bb.utils.contains('DISTRO_FEATURES', 'pam', '1', '0', d)}"
 HTTPD="${@bb.utils.contains('PACKAGECONFIG', 'apache2', '1', '0', d)}"
 
-#python() {
-#    if 'apache2' in d.getVar('PACKAGECONFIG').split() and \
-#            'webserver' not in d.getVar('BBFILE_COLLECTIONS').split():
-#        raise bb.parse.SkipRecipe('Requires meta-webserver to be present.')
-#}
+python() {
+    if 'apache2' in d.getVar('PACKAGECONFIG').split() and \
+            'webserver' not in d.getVar('BBFILE_COLLECTIONS').split():
+        raise bb.parse.SkipRecipe('Requires meta-webserver to be present.')
+}
 
 DISABLE_STATIC = ""
 
