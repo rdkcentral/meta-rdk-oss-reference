@@ -5,6 +5,7 @@ SYSTEMD_SERVICE:apparmor:remove = "apparmor.service"
 
 BBCLASSEXTEND = "native"
 DEPENDS:remove:class-native = "linux-libc-headers"
+PACKAGECONFIG:class-native ?= ""
 
 do_install:append:class-native() {
     install -d ${D}${base_sbindir}
