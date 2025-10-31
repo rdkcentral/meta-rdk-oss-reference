@@ -21,10 +21,17 @@ SRC_URI:append:broadband = " file://client-notify.patch \
                              file://dibbler_clear_sysevent_for_null_option23.patch \
                              file://fix_type_casting.patch \
                              ${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable','file://oss_dibbler_conf.sh','',d)} \
+                             file://logging_ipv6_timeoffset.patch \
 "
 
 
 SRC_URI:append:broadband = " ${@bb.utils.contains('DISTRO_FEATURES', 'nat46','file://client-notify-option95.patch','', d)}"
+
+SRC_URI:append:broadband = " file://drop_priv_root_dibbler.patch"
+SRC_URI:append:broadband = " file://DAD_Failed_Log_Redirect.patch"
+
+DEPENDS:append:broadband = " libunpriv"
+LDFLAGS:append:broadband = " -lprivilege"
 
 inherit logrotate_config
 

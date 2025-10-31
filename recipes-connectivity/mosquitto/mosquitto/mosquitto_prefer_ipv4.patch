@@ -1,0 +1,41 @@
+Date: Apr 21, 2021 3:30 PM
+From: Prashanth_Kondedath@comcast.com
+Subject: RDKB-35268 Enforce IPv4 only for the mqtt client tcp connection
+Source: Comcast
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: Prashanth Kondedath <Prashanth_Kondedath@comcast.com>
+Index: mosquitto-1.6.12/src/net.c
+===================================================================
+--- mosquitto-1.6.12.orig/src/net.c
++++ mosquitto-1.6.12/src/net.c
+@@ -608,6 +608,7 @@ int net__socket_listen(struct mosquitto_
+ 	}
+ 	hints.ai_flags = AI_PASSIVE;
+ 	hints.ai_socktype = SOCK_STREAM;
++        hints.ai_family = AF_INET; //Enforce IpV4 only for the mqtt connection
+ 
+ 	rc = getaddrinfo(listener->host, service, &hints, &ainfo);
+ 	if (rc){
+Index: mosquitto-1.6.12/lib/net_mosq.c
+===================================================================
+--- mosquitto-1.6.12.orig/lib/net_mosq.c
++++ mosquitto-1.6.12/lib/net_mosq.c
+@@ -283,7 +283,7 @@ int net__try_connect_step1(struct mosqui
+ 		return MOSQ_ERR_NOMEM;
+ 	}
+ 
+-	hints->ai_family = AF_UNSPEC;
++	hints->ai_family = AF_INET; //Prefer IPv4 for the client connectivity
+ 	hints->ai_socktype = SOCK_STREAM;
+ 
+ 	mosq->adns->ar_name = host;
+@@ -379,7 +379,7 @@ int net__try_connect(const char *host, u
+ 
+ 	*sock = INVALID_SOCKET;
+ 	memset(&hints, 0, sizeof(struct addrinfo));
+-	hints.ai_family = AF_UNSPEC;
++	hints.ai_family = AF_INET;//Prefer IPv4 for the client connectivity 
+ 	hints.ai_socktype = SOCK_STREAM;
+ 
+ 	s = getaddrinfo(host, NULL, &hints, &ainfo);

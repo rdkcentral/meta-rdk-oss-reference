@@ -12,6 +12,13 @@ INITSCRIPT_PARAMS:broadband = ""
 
 FILES:${PN} += "${systemd_unitdir}/system/lighttpd.service"
 
+
+RDEPENDS:${PN}:append:broadband = " \
+  				    lighttpd-module-auth \
+   				    lighttpd-module-authn-file \
+    				    lighttpd-module-openssl \
+				  "
+
 RDEPENDS:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'offline_apps', 'lighttpd-module-alias', '', d)}"
 # From meta-rdk-comcast/recipes-common/lighttpd/lighttpd_1.4.53.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"

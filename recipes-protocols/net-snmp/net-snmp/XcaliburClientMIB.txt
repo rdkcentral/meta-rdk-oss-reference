@@ -1,0 +1,582 @@
+
+-- File Name : XcaliburClientMIB.txt
+-- Date      : Fri May 18 18:12:11 EEST 2012
+-- Author    : WebNMS Agent Toolkit Java Edition - MIB Editor 6
+
+
+
+XcaliburClientMIB	DEFINITIONS ::= BEGIN
+	IMPORTS
+		xcalibur, private
+			FROM COMCAST-SMI
+		RowStatus, DateAndTime, DisplayString, TruthValue
+			FROM SNMPv2-TC
+		DisplayString
+			FROM RFC1213-MIB
+		MODULE-IDENTITY, OBJECT-IDENTITY, OBJECT-TYPE, Integer32, enterprises
+			FROM SNMPv2-SMI;
+
+	xcaliburClient	MODULE-IDENTITY
+		LAST-UPDATED	"201004131613Z"
+		ORGANIZATION	"Organization"
+		CONTACT-INFO	"Contact-info"
+		DESCRIPTION		"Description"
+		REVISION		"201005141325Z"
+		DESCRIPTION		""
+		::=  {  xcalibur  1  }
+
+	enterprises	OBJECT IDENTIFIER
+		::=  {  private  1  }
+
+	xreNativeReceiver	OBJECT-IDENTITY
+		STATUS			current
+		DESCRIPTION		"Description"
+		::=  {  xcaliburClient  1  }
+
+	xreVersion	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Version No string for the native Receiver"
+		::=  {  xreNativeReceiver  1  }
+
+	xreReceiverId	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Unique receiver id - currently same as device id from personalization paackage"
+		::=  {  xreNativeReceiver  2  }
+
+	xreSessionId	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"The opaque session Id for the session established between the receiver & server. Possible values: emtpy<null>, String. E.g.  Empty indicates session has not been established. Need to determine if this will exist for test/anonymous use cases"
+		::=  {  xreNativeReceiver  3  }
+
+	xreSessionLastModTs	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Description"
+		::=  {  xreNativeReceiver  4  }
+
+	xreSessionUptime	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Uptime for the XRE receiver process. Start time = XRE process intializes itself and establishes a session with server"
+		::=  {  xreNativeReceiver  5  }
+
+	xreConnTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  XreConnEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION	"The connections table will have entries for the all the connections that the receiver may have open with server side components. The receiver has to keep at least one open connection (socket) with the server and our aim will be able to capture at least this for R1. This table will evolve more to capture child processes and other connections - e.g. player to youtube, etc. For now this table is expected to have only have one id and that is the connection from client to server"
+		::=  { xreNativeReceiver  6 }
+
+	xreConnEntry	OBJECT-TYPE
+		SYNTAX		XreConnEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION	"Row Description"
+		INDEX		{  xreRowIndex  }
+		::=  { xreConnTable 1 }
+
+	XreConnEntry  ::=  SEQUENCE {
+		xreAppId  DisplayString,
+		xreConnURL  DisplayString,
+		xreConnStatus  DisplayString,
+		xreConnIfName  DisplayString,
+		xreConnEstTs  DisplayString,
+		xreConnRetryAttempts  Integer32,
+		xreConnRowStatus  RowStatus,
+		xreRowIndex  Integer32
+		}
+
+
+	xreAppId	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  1  }
+
+
+	xreConnURL	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  2  }
+
+
+	xreConnStatus	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  3  }
+
+
+	xreConnIfName	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  4  }
+
+
+	xreConnEstTs	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  5  }
+
+
+	xreConnRetryAttempts	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  6  }
+
+
+	xreConnRowStatus	OBJECT-TYPE	
+		SYNTAX			RowStatus
+		MAX-ACCESS		read-create
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreConnEntry  7  }
+
+
+	xreRowIndex	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		not-accessible
+		STATUS			current
+		DESCRIPTION		"Description"
+		::=  {  xreConnEntry  8  }
+
+	xreLastURLAccessed	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"last URL accessed (XRE Url)"
+		::=  {  xreNativeReceiver  7  }
+
+	xreMinCmdProcTime	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Upon receiving a command via the XRE protocol this will measure the time from receipt of the command until command execution is complete"
+		::=  {  xreNativeReceiver  8  }
+
+	xreAvgCmdProcTime	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Upon receiving a command via the XRE protocol will measure the time from receipt of the command until command execution is complete"
+		::=  {  xreNativeReceiver  9  }
+
+	xreMaxCmdProcTime	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Upon receiving a command via the XRE protocol will measure the time from receipt of the command until command execution is complete"
+		::=  {  xreNativeReceiver  10  }
+
+	xreCommandCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"XRE protocol command execution count"
+		::=  {  xreNativeReceiver  11  }
+
+	xreErrorCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Native receiver error count"
+		::=  {  xreNativeReceiver  12  }
+
+	xreEventTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  XreEventEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION	"Last 'n' actions that the receiver performed. Currently only 5 will be available. Actions refer to actual commands/events that are executed(sent or received) by the receiver."
+		::=  { xreNativeReceiver  13 }
+
+	xreEventEntry	OBJECT-TYPE
+		SYNTAX		XreEventEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION	"Row Description"
+		INDEX		{  IMPLIED xreEventID  }
+		::=  { xreEventTable 1 }
+
+	XreEventEntry  ::=  SEQUENCE {
+		xreEventID  DisplayString,
+		xreActionName  DisplayString,
+		xreActionTS  DisplayString,
+		xreActionStatus  DisplayString,
+		xreEventRowStatus  RowStatus
+		}
+
+
+	xreEventID	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		not-accessible
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreEventEntry  1  }
+
+
+	xreActionName	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreEventEntry  2  }
+
+
+	xreActionTS	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreEventEntry  3  }
+
+
+	xreActionStatus	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreEventEntry  4  }
+
+
+	xreEventRowStatus	OBJECT-TYPE	
+		SYNTAX			RowStatus
+		MAX-ACCESS		read-create
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreEventEntry  5  }
+
+	xreErrorsTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  XreErrorsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION	"Description"
+		::=  { xreNativeReceiver  14 }
+
+	xreErrorsEntry	OBJECT-TYPE
+		SYNTAX		XreErrorsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION	"Row Description"
+		INDEX		{  IMPLIED xreErrorId  }
+		::=  { xreErrorsTable 1 }
+
+	XreErrorsEntry  ::=  SEQUENCE {
+		xreErrorId  DisplayString,
+		xreErrorTS  DisplayString,
+		xreErrorDetails  DisplayString,
+		xreErrorRowStatus  RowStatus
+		}
+
+
+	xreErrorId	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		not-accessible
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreErrorsEntry  1  }
+
+
+	xreErrorTS	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreErrorsEntry  2  }
+
+
+	xreErrorDetails	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreErrorsEntry  3  }
+
+
+	xreErrorRowStatus	OBJECT-TYPE	
+		SYNTAX			RowStatus
+		MAX-ACCESS		read-create
+		STATUS			current
+		DESCRIPTION		"Column Description"
+		::=  {  xreErrorsEntry  4  }
+
+	xreTotViewCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total View count  (will span all apps)"
+		::=  {  xreNativeReceiver  15  }
+
+	xreTotAppCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Application count"
+		::=  {  xreNativeReceiver  16  }
+
+	xreTotRectCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Rectangle count (will span all apps)"
+		::=  {  xreNativeReceiver  17  }
+
+	xreTotTxtCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Text count (will span all apps)"
+		::=  {  xreNativeReceiver  18  }
+
+	xreTotHtmlTxtCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total HTML Text count (will span all apps)"
+		::=  {  xreNativeReceiver  19  }
+
+	xreTotTxtIpCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Text Input count (will span all apps)"
+		::=  {  xreNativeReceiver  20  }
+
+	xreTotFontCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Font count (will span all apps)"
+		::=  {  xreNativeReceiver  21  }
+
+	xreTotVideoCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Video count (will span all apps)"
+		::=  {  xreNativeReceiver  22  }
+
+	xreTotSoundCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Sound count (will span all apps)"
+		::=  {  xreNativeReceiver  23  }
+
+	xreTotStyleshtCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Stylesheet count (will span all apps)"
+		::=  {  xreNativeReceiver  24  }
+
+	xreTotImgCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Image count (will span all apps)"
+		::=  {  xreNativeReceiver  25  }
+
+	xreTotNineSliceImgCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Nine-slice Image count (will span all apps)"
+		::=  {  xreNativeReceiver  26  }
+
+	xreTotFlashCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Flash count (will span all apps)"
+		::=  {  xreNativeReceiver  27  }
+
+	xreTotAnimCnt	OBJECT-TYPE	
+		SYNTAX			Integer32  ( -2147483648 .. 2147483647  ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Total Animation count (will span all apps)"
+		::=  {  xreNativeReceiver  28  }
+
+	xreRefreshXreSession	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"client requests a new session from the xre server. This request needs to ask for a new (not cached) session. The refresh will primarily be used to refresh state - entitlements, etc"
+		::=  {  xreNativeReceiver  29  }
+
+	xreFlushLocalCache	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"Flush local caches - images, etc"
+		::=  {  xreNativeReceiver  30  }
+
+	xreClearLocalObject	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"Clear local object storage"
+		::=  {  xreFlushLocalCache  1  }
+
+	xreClearIdentity	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"Clear whitebox storage"
+		::=  {  xreFlushLocalCache  2  }
+
+	xreLogLevel	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"set log levels (warn, debug, info, error, fatal, etc)"
+		::=  {  xreNativeReceiver  31  }
+
+	xreHeartbeatEnabled OBJECT-TYPE
+		SYNTAX		 	TruthValue
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Returns state of the heartbeat's switch"
+		::=  {  xreNativeReceiver  32  }
+
+	xreResetMetrics	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"Reset command execution times"
+		::=  {  xreNativeReceiver  33  }
+
+	xreResetErrorCnt	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"Reset error table & count"
+		::=  {  xreNativeReceiver  34  }
+
+	xreGetTWPDiags  OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Returns the output of the getDiagnostics operation from the Tru2wayProxy"
+		::=  {  xreNativeReceiver  36  }
+
+	xreChannelMapId	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Returns the value of channelMapId from /opt/persistent/usr/1112/703e/diagnostics.json"
+		::=  {  xreNativeReceiver  40  }
+
+	xreControllerId	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Returns the value of controllerId from /opt/persistent/usr/1112/703e/diagnostics.json"
+		::=  {  xreNativeReceiver  41  }
+
+	xrePlantId	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Returns the value of plantId from /opt/persistent/usr/1112/703e/diagnostics.json"
+		::=  {  xreNativeReceiver  42  }
+
+	xreVodId	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"Returns the value of vodId from /opt/persistent/usr/1112/703e/diagnostics.json"
+		::=  {  xreNativeReceiver  43  }
+
+	xreSystemMetrics	OBJECT-IDENTITY
+		STATUS			current
+		DESCRIPTION		"Description"
+		::=  {  xreNativeReceiver  44  }
+		
+	xreSysMetricsInterval	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		"XRE metrics reporting interval"
+		::=  {  xreSystemMetrics  1 }
+		
+	xreSysMetricsReset	OBJECT-TYPE	
+		SYNTAX			Integer32
+		MAX-ACCESS		write-only
+		STATUS			current
+		DESCRIPTION		"XRE metrics reset"
+		::=  {  xreSystemMetrics  2 }
+		
+	xreSysMetricsKeyPress	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		write-only
+		STATUS			current
+		DESCRIPTION		"XRE metrics simulate key press"
+		::=  {  xreSystemMetrics  3 }
+		
+	xreSysMetricsKeyRelease	OBJECT-TYPE	
+		SYNTAX			DisplayString  ( SIZE ( 0 .. 255  ) ) 
+		MAX-ACCESS		write-only
+		STATUS			current
+		DESCRIPTION		"XRE metrics simulate key release"
+		::=  {  xreSystemMetrics  4 }
+		
+	xreSysMetricsConstantAnimation	OBJECT-TYPE	
+		SYNTAX			Integer32 
+		MAX-ACCESS		write-only
+		STATUS			current
+		DESCRIPTION		"XRE metrics constant animation"
+		::=  {  xreSystemMetrics  5 }
+		
+	xreSysMetricsSummaryNames	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"XRE system metrics summary names"
+		::=  {  xreSystemMetrics  6  }
+		
+	xreSysMetricsSummaryValues	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"XRE system metrics summary values"
+		::=  {  xreSystemMetrics  7  }
+
+	xreRemoteStatus	OBJECT-IDENTITY
+		STATUS			current
+		DESCRIPTION		"RemoteStatus"
+		::=  {  xreNativeReceiver  45  }
+
+	xreRemoteBatteryVoltage	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"XR2 Remote Battery voltage in Volt"
+		::=  {  xreRemoteStatus  1  }
+
+	xreRemoteFirmwareVersion	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION		"XR2 Remote SW Firmware version"
+		::=  {  xreRemoteStatus  2  }
+
+END

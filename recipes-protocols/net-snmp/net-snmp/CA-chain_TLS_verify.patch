@@ -1,0 +1,38 @@
+###########################################################
+Date: Dec 6, 2019 12:55 PM
+From: None
+Subject: To verify client certificates signed by intermediate CAs
+Source: None
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+Index: net-snmp-5.8/snmplib/cert_util.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/cert_util.c
++++ net-snmp-5.8/snmplib/cert_util.c
+@@ -2072,6 +2072,8 @@ netsnmp_cert_trust(SSL_CTX *ctx, netsnmp
+ int
+ netsnmp_cert_trust_ca(SSL_CTX *ctx, netsnmp_cert *thiscert)
+ {
++    X509_STORE     *certstore;
++    X509           *cert;
+     netsnmp_assert_or_msgreturn(NULL != thiscert, "NULL certificate passed in",
+                                 SNMPERR_GENERR);
+
+@@ -2079,6 +2081,14 @@ netsnmp_cert_trust_ca(SSL_CTX *ctx, nets
+     DEBUGMSGTL(("cert:trust_ca", "checking roots for %p \n", thiscert));
+     while (thiscert->issuer_cert) {
+         thiscert = thiscert->issuer_cert;
++       /* To install root CA and intermediate CAs if CA-chain is used to sign client certs.
++          If not added, openssl verification will fail with unable to fetch local issuer cert */
++       if (thiscert->issuer_cert != NULL)
++       {
++           certstore = SSL_CTX_get_cert_store(ctx);
++           cert = netsnmp_ocert_get(thiscert);
++           X509_STORE_add_cert(certstore, cert);
++       }
+         DEBUGMSGTL(("cert:trust_ca", "  up one to %p\n", thiscert));
+     }
+
+ 

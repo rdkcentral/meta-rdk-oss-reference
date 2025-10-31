@@ -1,0 +1,109 @@
+###########################################################
+Date: 21 May, 2020 12:55 PM
+From: d6689d6a938e29e02f1964bc7d7a15103817c0fa,408c8919e36feb4e9c1024e74d3b8c77454d89a0
+Subject: Remove the request on the session when the sending is failed
+         remove_request new function definition      
+Source:  http://git.code.sf.net/p/net-snmp/code - V5.8-patches
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+
+From d6689d6a938e29e02f1964bc7d7a15103817c0fa Mon Sep 17 00:00:00 2001
+From: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Date: Mon, 8 Apr 2019 19:56:04 -0400
+Subject: [PATCH] snmplib/snmp_api: Remove the request on the session when the
+ sending is failed
+
+snmpd is terminated abnormally due to an invalid memory access after
+the sending of a request is failed.
+
+The time out callback for the failed request is executed when the
+session is closing because the request remains in the internal session.
+The cleanup for the request is executed on the
+callback(NETSNMP_CALLBACK_OP_SEND_FAILED,) and also on the time out
+callback(NETSNMP_CALLBACK_OP_TIMED_OUT,), so the wrong memory access
+happens.
+
+Remove the failed request from the internal session after the callback
+for the failed request is done.
+
+Signed-off-by: Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>
+Reported-by: Shogo Matsumoto <shogo.matsumoto@jp.fujitsu.com>
+---
+ snmplib/snmp_api.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+Index: net-snmp-5.8/snmplib/snmp_api.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/snmp_api.c
++++ net-snmp-5.8/snmplib/snmp_api.c
+@@ -352,6 +352,7 @@ static int      snmpv3_build(u_char ** p
+                              netsnmp_pdu *pdu);
+ static int      snmp_parse_version(u_char *, size_t);
+ static int      snmp_resend_request(struct session_list *slp,
++                                    netsnmp_request_list *orp,
+                                     netsnmp_request_list *rp,
+                                     int incr_retries);
+ static void     register_default_handlers(void);
+@@ -5717,7 +5718,7 @@ _sess_process_packet_handle_pdu(void *se
+ 	     * * inifinite resend                      
+ 	     */
+ 	    if (rp->retries <= sp->retries) {
+-	      snmp_resend_request(slp, rp, TRUE);
++	      snmp_resend_request(slp, orp, rp, TRUE);
+ 	      break;
+ 	    } else {
+ 	      /* We're done with retries, so no longer waiting for a response */
+@@ -6673,9 +6674,22 @@ snmp_timeout(void)
+     snmp_res_unlock(MT_LIBRARY_ID, MT_LIB_SESSION);
+ }
+
++static void
++remove_request(struct snmp_internal_session *isp,
++               netsnmp_request_list *orp, netsnmp_request_list *rp)
++{
++    if (orp)
++        orp->next_request = rp->next_request;
++    else
++        isp->requests = rp->next_request;
++    if (isp->requestsEnd == rp)
++        isp->requestsEnd = orp;
++    snmp_free_pdu(rp->pdu);
++}
++
+ static int
+-snmp_resend_request(struct session_list *slp, netsnmp_request_list *rp,
+-                    int incr_retries)
++snmp_resend_request(struct session_list *slp, netsnmp_request_list *orp,
++                    netsnmp_request_list *rp, int incr_retries)
+ {
+     struct snmp_internal_session *isp;
+     netsnmp_session *sp;
+@@ -6742,9 +6756,11 @@ snmp_resend_request(struct session_list
+         sp->s_snmp_errno = SNMPERR_BAD_SENDTO;
+         sp->s_errno = errno;
+         snmp_set_detail(strerror(errno));
+-        if (rp->callback)
++        if (rp->callback) {
+             rp->callback(NETSNMP_CALLBACK_OP_SEND_FAILED, sp,
+                          rp->pdu->reqid, rp->pdu, rp->cb_data);
++            remove_request(isp, orp, rp);
++        }
+         return -1;
+     } else {
+         netsnmp_get_monotonic_clock(&now);
+@@ -6830,11 +6846,11 @@ snmp_sess_timeout(void *sessp)
+                     isp->requests = rp->next_request;
+                 if (isp->requestsEnd == rp)
+                     isp->requestsEnd = orp;
+-                snmp_free_pdu(rp->pdu);
++                remove_request(isp, orp, rp);
+                 freeme = rp;
+                 continue;       /* don't update orp below */
+             } else {
+-                if (snmp_resend_request(slp, rp, TRUE)) {
++                if (snmp_resend_request(slp, orp, rp, TRUE)) {
+                     break;
+                 }
+             }

@@ -6,3 +6,9 @@ do_install:append() {
 		sed -i -- '/EnvironmentFile=.*/a EnvironmentFile=/etc/device.properties' ${D}${systemd_unitdir}/system/dropbear@.service
 	fi
 }
+
+DEPENDS:append:broadband = " telemetry"
+
+do_configure:prepend:broadband () {
+    export LIBS="${LIBS} -ltelemetry_msgsender"
+}

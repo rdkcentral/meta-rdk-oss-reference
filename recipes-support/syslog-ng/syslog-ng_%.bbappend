@@ -2,6 +2,14 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service ', '', d)}"
 
+
+DEPENDS:append:broadband = " libunpriv"
+
+LDFLAGS:append:broadband = " -lprivilege"
+
+SRC_URI:append:broadband = " file://drop_root_syslog-ng.patch"
+
+
 RDEPENDS:${PN}:remove = "gawk"
 inherit update-alternatives
 
