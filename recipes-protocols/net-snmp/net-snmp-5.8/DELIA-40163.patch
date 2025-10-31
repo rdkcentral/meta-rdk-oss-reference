@@ -1,0 +1,58 @@
+###########################################################
+Date: 21 May, 2020 12:55 PM
+From: None
+Subject: 1. SIGSEGV during NULL fingerprint comparison
+         2. SIGABRT - cb_data double free in master agent
+Source: cb_data double free - https://sourceforge.net/p/net-snmp/bugs/2943/,
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+Index: net-snmp-5.8/snmplib/cert_util.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/cert_util.c
++++ net-snmp-5.8/snmplib/cert_util.c
+@@ -2548,6 +2548,9 @@ _map_compare(netsnmp_cert_map *lhs, nets
+     else if (lhs->priority > rhs->priority)
+         return 1;
+
++    /* DELIA-40163 - SIGSEGV due to string comparison with NULL fingerprint */
++    if ((lhs->fingerprint == NULL) || (rhs->fingerprint == NULL))
++        return -1;
+     return strcmp(lhs->fingerprint, rhs->fingerprint);
+ }
+
+@@ -2557,6 +2560,9 @@ _map_fp_compare(netsnmp_cert_map *lhs, n
+     int rc;
+     netsnmp_assert((lhs != NULL) && (rhs != NULL));
+
++    /* DELIA-40163 - SIGSEGV due to string comparison with NULL fingerprint */
++    if ((lhs->fingerprint == NULL) || (rhs->fingerprint == NULL))
++        return -1;
+     if ((rc = strcmp(lhs->fingerprint, rhs->fingerprint)) != 0)
+         return rc;
+
+@@ -2573,6 +2579,9 @@ _map_fp_ncompare(netsnmp_cert_map *lhs,
+ {
+     netsnmp_assert((lhs != NULL) && (rhs != NULL));
+
++    /* DELIA-40163 - SIGSEGV due to string comparison with NULL fingerprint */
++    if ((lhs->fingerprint == NULL) || (rhs->fingerprint == NULL))
++        return -1;
+     return strncmp(lhs->fingerprint, rhs->fingerprint,
+                    strlen(rhs->fingerprint));
+ }
+Index: net-snmp-5.8/agent/mibgroup/agentx/master.c
+===================================================================
+--- net-snmp-5.8.orig/agent/mibgroup/agentx/master.c
++++ net-snmp-5.8/agent/mibgroup/agentx/master.c
+@@ -608,7 +608,8 @@ agentx_master_handler(netsnmp_mib_handle
+     result = snmp_async_send(ax_session, pdu, agentx_got_response, cb_data);
+     if (result == 0) {
+         snmp_free_pdu(pdu);
+-        if (cb_data)
++       /* NET-SNMP BUG 2943: Double_free in cb_data */
++        if (cb_data && netsnmp_handler_check_cache(cb_data))
+             netsnmp_free_delegated_cache((netsnmp_delegated_cache*) cb_data);
+     }
+

@@ -1,0 +1,86 @@
+###########################################################
+Date: 21 May, 2020 12:55 PM
+From: None
+Subject: SIGSEGV in _map_fp_comapre(). Added debug prints to check 
+         the pointer details
+Source: None
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+Index: net-snmp-5.8/snmplib/cert_util.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/cert_util.c
++++ net-snmp-5.8/snmplib/cert_util.c
+@@ -2479,6 +2479,7 @@ netsnmp_cert_map_free(netsnmp_cert_map *
+     if (NULL == cert_map)
+         return;
+
++    DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d cert_map: %8p fingerprint : %s ocert: %8p\n", __func__, __LINE__, cert_map, cert_map->fingerprint, cert_map->ocert));
+     SNMP_FREE(cert_map->fingerprint);
+     SNMP_FREE(cert_map->data);
+     /** x509 cert isn't ours */
+@@ -2493,8 +2494,8 @@ netsnmp_cert_map_add(netsnmp_cert_map *m
+     if (NULL == map)
+         return -1;
+
+-    DEBUGMSGTL(("cert:map:add", "pri %d, fp %s\n",
+-                map->priority, map->fingerprint));
++    DEBUGMSGTL(("cert:map:add", "pri %d, fp %s fp %8p\n",
++                map->priority, map->fingerprint, map->fingerprint));
+
+     if ((rc = CONTAINER_INSERT(_maps, map)) != 0)
+         snmp_log(LOG_ERR, "could not insert new certificate map");
+@@ -2560,9 +2561,11 @@ _map_fp_compare(netsnmp_cert_map *lhs, n
+     int rc;
+     netsnmp_assert((lhs != NULL) && (rhs != NULL));
+
++    DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d lhs->cert_map: %8p lhs->FP: %8p rhs->cert_map: %8p rhs->FP: %8p \n", __func__, __LINE__, lhs, lhs->fingerprint, rhs, rhs->fingerprint));
+     /* DELIA-40163 - SIGSEGV due to string comparison with NULL fingerprint */
+     if ((lhs->fingerprint == NULL) || (rhs->fingerprint == NULL))
+         return -1;
++    DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d lhs->fingerprint : %s rhs->fingerprint : %s\n", __func__, __LINE__, lhs->fingerprint, rhs->fingerprint));
+     if ((rc = strcmp(lhs->fingerprint, rhs->fingerprint)) != 0)
+         return rc;
+
+@@ -2686,6 +2689,7 @@ xx
+         if (!(cert_map->flags & NSCM_FROM_CONFIG))
+             continue;
+
++        DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d cert_map: %8p fingerprint : %s ocert: %8p\n", __func__, __LINE__, cert_map, cert_map->fingerprint, cert_map->ocert));
+         if (CONTAINER_REMOVE(cert_maps, cert_map) == 0)
+             netsnmp_cert_map_free(cert_map);
+     }
+@@ -2765,9 +2769,11 @@ netsnmp_certToTSN_parse_common(char **li
+         /* assume it's a raw fingerprint we don't have */
+         netsnmp_fp_lowercase_and_strip_colon(buf);
+         map->fingerprint = strdup(buf);
++        DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d fingerprint _pointer: %8p \n", __func__, __LINE__, map->fingerprint));
+     } else {
+         map->fingerprint =
+             netsnmp_openssl_cert_get_fingerprint(tmpcert->ocert, -1);
++        DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d cert_map: %8p fingerprint : %s fingerprint _pointer: %8p tmpcert: %8p\n", __func__, __LINE__, map, map->fingerprint, map->fingerprint, tmpcert));
+     }
+
+     if (NULL == *line) {
+@@ -2825,6 +2831,7 @@ _parse_map(const char *token, char *line
+     if (NULL == map)
+         return;
+
++    DEBUGMSGTL(("cert:map:reconfig", "%s() -> %d cert_map: %8p fingerprint : %s\n", __func__, __LINE__, map, map->fingerprint));
+     if (netsnmp_cert_map_add(map) != 0) {
+         netsnmp_cert_map_free(map);
+         netsnmp_config_error(MAP_CONFIG_TOKEN
+Index: net-snmp-5.8/snmplib/snmp_openssl.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/snmp_openssl.c
++++ net-snmp-5.8/snmplib/snmp_openssl.c
+@@ -625,7 +625,7 @@ netsnmp_openssl_cert_get_fingerprint(X50
+         if (NULL == result)
+             snmp_log(LOG_ERR, "failed to hexify fingerprint\n");
+         else
+-            DEBUGMSGT(("9:openssl:fingerprint", "fingerprint %s\n", result));
++            DEBUGMSGT(("9:openssl:fingerprint", "fingerprint %s pointer: %8p len: %d\n", result, result, fingerprint_len));
+     }
+     else
+         snmp_log(LOG_ERR,"failed to compute fingerprint\n");

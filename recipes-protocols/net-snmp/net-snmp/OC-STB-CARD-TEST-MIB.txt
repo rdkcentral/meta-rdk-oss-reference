@@ -1,0 +1,207 @@
+OC-STB-CARD-TEST-MIB DEFINITIONS ::= BEGIN
+IMPORTS
+OBJECT-GROUP,
+MODULE-COMPLIANCE
+    FROM SNMPv2-CONF              -- RFC 2580
+Integer32,
+Unsigned32,
+Counter32,
+TimeTicks,  
+OBJECT-TYPE,
+MODULE-IDENTITY,
+OBJECT-IDENTITY
+    FROM SNMPv2-SMI               -- RFC 2578
+AutonomousType,
+DisplayString,
+TruthValue,
+RowPointer,
+TimeStamp,
+PhysAddress,
+MacAddress,
+TEXTUAL-CONVENTION
+    FROM SNMPv2-TC                -- RFC 2579
+SnmpAdminString
+    FROM SNMP-FRAMEWORK-MIB       -- RFC 3411
+clabProjOpenCable
+        FROM CLAB-DEF-MIB
+        ;
+ocStbCardMibModule MODULE-IDENTITY
+    LAST-UPDATED "200709210000Z"        -- September 21, 2007
+    ORGANIZATION "Cable Television Laboratories, Inc."
+    CONTACT-INFO
+         "Postal: Cable Television Laboratories, Inc.
+         858 Coal Creek Circle
+         Louisville, Colorado 80027-9750
+         U.S.A.
+         Phone:  +1 303-661-9100
+         Fax:    +1 303-661-9199
+         E-mail: mibs@cablelabs.com"
+    DESCRIPTION
+            "A sample MIB for Digital Keystone Development
+             and deployment.  Its utility is confined to the
+             testing of the Host 2.x SNMP Proxy functionality"
+    ::= { clabProjOpenCable 10 }
+
+
+--
+-- Node definitions
+--
+
+ocStbCardMibObjects OBJECT IDENTIFIER ::= { ocStbCardMibModule 1 }
+
+ocStbCardSystem OBJECT IDENTIFIER ::= { ocStbCardMibObjects 1 }
+ocStbCardTree OBJECT IDENTIFIER ::= { ocStbCardSystem 1 }
+
+
+ocStbCardShortTextString OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Simple and small text string"
+    DEFVAL 			{ "Short Text String" }
+    ::= { ocStbCardTree 1 }
+
+ocStbCardLongTextString OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Simple 255 octet readable string"
+    DEFVAL 			{ "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+                   abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+                   abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+                   abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
+                   abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" }
+    ::= { ocStbCardTree 2 }
+    
+ocStbCardInteger OBJECT-TYPE
+    SYNTAX      INTEGER 
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION    
+            "Integer with write access for testing SetRequest"
+    DEFVAL 			{ 100 }
+    ::= { ocStbCardTree 3 }
+
+    
+ocStbCardNoSetResponse OBJECT-TYPE
+    SYNTAX      INTEGER 
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION    
+            "Integer for testing the no response to Set condition" 
+    DEFVAL 			{ 200 }
+    ::= { ocStbCardTree 4 }
+     
+-- Sample table
+
+ocStbCardTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF OcStbCardEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "This table used for table walks as well as Host 
+             translation of GetBulkRequest into GetNextRequests.
+             It may also be used to incur an endOfMibView condition"
+		::= { ocStbCardTree 5 }
+
+ocStbCardEntry OBJECT-TYPE
+    SYNTAX      OcStbCardEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "Entry definition."
+    INDEX { ocStbCardIndex }
+    ::= { ocStbCardTable 1 }
+
+OcStbCardEntry ::=
+    SEQUENCE {
+        ocStbCardIndex
+            Unsigned32,
+        ocStbCardTableType
+            Unsigned32,
+        ocStbCardTableDesc
+            SnmpAdminString,
+        ocStbCardTableStatus
+            INTEGER
+     }
+
+ocStbCardIndex OBJECT-TYPE
+    SYNTAX      Unsigned32 (1..4294967295)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "Index of the table."
+    ::= { ocStbCardEntry 1 }
+
+ocStbCardTableType OBJECT-TYPE
+    SYNTAX      Unsigned32 (1..4)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Creating 4 conceptual rows.  First
+             row should have type 1, second row type 2
+             etc, up to four rows."
+    ::= { ocStbCardEntry 2 }
+
+ocStbCardTableDesc OBJECT-TYPE
+    SYNTAX      SnmpAdminString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Textual description for each row.
+             Replace n with number of row."
+    DEFVAL			{ "Row n" }
+    ::= { ocStbCardEntry 3 }
+
+ocStbCardTableStatus OBJECT-TYPE
+    SYNTAX      INTEGER
+                {
+                enabled(1),
+                disabled(2)
+                }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "Status of rows.  First two rows should be enabled.  Last
+             two rows should be disabled."
+    ::= { ocStbCardEntry 4 }
+
+-- Conformance information
+
+ocStbCardConformance OBJECT IDENTIFIER ::= { ocStbCardMibModule 2 }
+ocStbCardMIBCompliances OBJECT IDENTIFIER ::= { ocStbCardConformance 1 }
+ocStbCardMIBGroups OBJECT IDENTIFIER ::= { ocStbCardConformance 2 }
+
+
+-- Compliance statements
+
+ocStbCardMIBCompliance MODULE-COMPLIANCE
+    STATUS      current
+    DESCRIPTION
+            "The requirements for conformance to the Card Test MIB."
+    MODULE -- this module
+    MANDATORY-GROUPS {
+                     ocStbCardGroup
+                     }
+    ::= { ocStbCardMIBCompliances 1 }                     
+
+ocStbCardGroup OBJECT-GROUP
+    OBJECTS     {
+                 ocStbCardShortTextString,
+                 ocStbCardLongTextString,    
+                 ocStbCardInteger,
+                 ocStbCardNoSetResponse,
+                 ocStbCardTableType,
+                 ocStbCardTableDesc,
+                 ocStbCardTableStatus
+                 }
+    STATUS      current
+    DESCRIPTION
+            "Defines the objects contained with the ocStbHost System 
+            Group."
+    ::= { ocStbCardMIBGroups 1 }
+END 
+
+

@@ -1,0 +1,50 @@
+###########################################################
+Date: 21 May, 2020 12:55 PM
+From: 7f88b06bf0f4140bc03cabacd35eaeffdf21d722
+Subject: agentx/master: Return when NETSNMP_CALLBACK_OP_RESEND is set to the callback
+Source: http://git.code.sf.net/p/net-snmp/code - V5.8-patches
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+From 7f88b06bf0f4140bc03cabacd35eaeffdf21d722 Mon Sep 17 00:00:00 2001
+From: Anders Wallin <wallinux@gmail.com>
+Date: Sun, 7 Apr 2019 18:31:16 -0400
+Subject: [PATCH] agentx/master: Return when NETSNMP_CALLBACK_OP_RESEND is set
+ to the callback
+
+snmpd is terminated abnormally due to the double free for the
+request cache after the request is resend.
+
+That is because the callback for NETSNMP_CALLBACK_OP_RESEND isn't
+cared and the cache is freed wrongly.
+
+Let's just return if NETSNMP_CALLBACK_OP_RESEND is set on the
+callback.
+
+Fixes: b7b50bbac ("snmp_send callback updates")
+
+Signed-off-by: Anders Wallin <wallinux@gmail.com>
+---
+ agent/mibgroup/agentx/master.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/agent/mibgroup/agentx/master.c b/agent/mibgroup/agentx/master.c
+index 99c4123ed3..b7a51dfef1 100644
+--- a/agent/mibgroup/agentx/master.c
++++ b/agent/mibgroup/agentx/master.c
+@@ -280,6 +280,11 @@ agentx_got_response(int operation,
+         netsnmp_free_delegated_cache(cache);
+         return 0;
+
++    case NETSNMP_CALLBACK_OP_RESEND:
++        DEBUGMSGTL(("agentx/master", "resend on session %8p req=0x%x\n",
++                    session, (unsigned)reqid));
++        return 0;
++
+     case NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE:
+         /*
+          * This session is alive
+--
+2.14.2
+

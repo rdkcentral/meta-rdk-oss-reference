@@ -1,0 +1,56 @@
+Date: Oct 22, 2024 2:23 PM
+From: LasyaPrakarsha_DonthiVenkata@comcast.com
+Subject: RDKB-56974: snmpd process runs with limited privilege
+Upstream-Status: Pending
+Signed-off-by: LasyaPrakarsha_DonthiVenkata@comcast.com
+Index: net-snmp-5.8/agent/snmpd.c
+===================================================================
+--- net-snmp-5.8.orig/agent/snmpd.c
++++ net-snmp-5.8/agent/snmpd.c
+@@ -116,6 +116,10 @@
+ #include <crtdbg.h>
+ #endif
+ 
++#include <stdbool.h>
++#include "cap.h"
++static cap_user appcaps;
++
+ #ifndef PATH_MAX
+ # ifdef _POSIX_PATH_MAX
+ #  define PATH_MAX _POSIX_PATH_MAX
+@@ -392,6 +396,24 @@ SnmpTrapNodeDown(void)
+      */
+ }
+ 
++int drop_root()
++{
++    int retval = 0;
++    snmp_log(LOG_INFO, "NonRoot feature is enabled, dropping root privileges for snmpd process\n");
++    appcaps.caps = NULL;
++    appcaps.user_name = NULL;
++
++    if(init_capability() != NULL) {
++        if(drop_root_caps(&appcaps) != -1) {
++            if(update_process_caps(&appcaps) != -1) {
++                read_capability(&appcaps);
++                retval = 1;
++            }
++        }
++     }
++     return retval;
++}
++
+ /*******************************************************************-o-******
+  * main - Non Windows
+  * SnmpDaemonMain - Windows to support windows service
+@@ -894,6 +916,10 @@ main(int argc, char *argv[])
+ #endif /* NETSNMP_LOGFILE */
+ #endif /* ! NETSNMP_DEFAULT_LOG_SYSLOG */
+ 
++    if(!drop_root()) {
++        snmp_log(LOG_ERR,"drop_root method failed!\n");
++    }
++
+ #ifdef USING_UTIL_FUNCS_RESTART_MODULE
+     {
+         /*

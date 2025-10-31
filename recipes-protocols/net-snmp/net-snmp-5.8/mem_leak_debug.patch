@@ -1,0 +1,159 @@
+###########################################################
+Date: 21 May, 2020 12:55 PM
+From: None
+Subject: SIGABRT in _sees_read(). Debug to check the pdu pointer
+Source: None
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+Index: net-snmp-5.8/snmplib/snmp_api.c
+===================================================================
+--- net-snmp-5.8.orig/snmplib/snmp_api.c
++++ net-snmp-5.8/snmplib/snmp_api.c
+@@ -1963,7 +1963,9 @@ snmp_sess_close(void *sessp)
+     if (isp) {
+         netsnmp_request_list *rp, *orp;
+
++       DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d FREE isp->packet: %8p \n", __func__, __LINE__, isp->packet));
+         SNMP_FREE(isp->packet);
++       DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d FREE isp->packet: %8p \n", __func__, __LINE__, isp->packet));
+
+         /*
+          * Free each element in the input request list.
+@@ -5603,6 +5605,7 @@ _sess_process_packet_parse_pdu(void *ses
+     }
+   }
+
++  DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d isp->packet: %8p isp->hook_create_pdu:%8p \n", __func__, __LINE__, isp->packet, isp->hook_create_pdu));
+   if (isp->hook_create_pdu) {
+     pdu = isp->hook_create_pdu(transport, opaque, olength);
+   } else {
+@@ -5614,6 +5617,7 @@ _sess_process_packet_parse_pdu(void *ses
+     SNMP_FREE(opaque);
+     return NULL;
+   }
++  DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d isp->packet: %8p pdu: %8p \n", __func__, __LINE__, isp->packet, pdu));
+
+   /* if the transport was a magic tunnel, mark the PDU as having come
+      through one. */
+@@ -5648,6 +5652,7 @@ _sess_process_packet_parse_pdu(void *ses
+     if (pdu->securityStateRef != NULL) {
+       free_securityStateRef(pdu);
+     }
++    DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d FREE isp->packet: %8p pdu: %8p \n", __func__, __LINE__, isp->packet, pdu));
+     snmp_free_pdu(pdu);
+     return NULL;
+   }
+@@ -5858,6 +5863,7 @@ _sess_process_packet(void *sessp, netsnm
+     netsnmp_pdu         *pdu;
+     int                  rc;
+
++    DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d \n", __func__, __LINE__));
+     pdu = _sess_process_packet_parse_pdu(sessp, sp, isp, transport, opaque,
+                                          olength, packetptr, length);
+     if (NULL == pdu)
+@@ -6133,6 +6139,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+         rc = _sess_process_packet(sessp, sp, isp, transport,
+                                   rcvp.opaque, rcvp.olength,
+                                   rcvp.packet, rcvp.packet_len);
++       DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d isp->packet: %8p, rcvp.packet: %8p rcvp.packet_len: %d \n", __func__, __LINE__, isp->packet, rcvp.packet, rcvp.packet_len));
+         SNMP_FREE(rcvp.packet);
+         /** opaque is freed in _sess_process_packet */
+         return rc;
+@@ -6149,6 +6156,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+                             "u bytes for rxbuf\n", rxbuf_len));
+                 return 0;
+             } else {
++               DEBUGMSGTL(("sess_process_packet", "D-40163: %s()-> %d MALLOC isp->packet: %8p rxbuf: %8p buflen: %d \n", __func__, __LINE__, isp->packet, rxbuf, rxbuf_len));
+                 rxbuf = isp->packet;
+                 isp->packet_size = rxbuf_len;
+                 isp->packet_len = 0;
+@@ -6171,6 +6179,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+                                 rxbuf_len, isp->packet_len + rxbuf_len));
+                     return 0;
+                 } else {
++               DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d isp->packet: %8p newbuf: %8p buflen: %d isp->packet_len: %d isp->packet_size: %d \n", __func__, __LINE__, isp->packet, newbuf, rxbuf_len, isp->packet_len, isp->packet_size));
+                     isp->packet = newbuf;
+                     isp->packet_size = isp->packet_len + rxbuf_len;
+                     rxbuf = isp->packet + isp->packet_len;
+@@ -6178,12 +6187,14 @@ _sess_read(void *sessp, netsnmp_large_fd
+             } else {
+                 rxbuf = isp->packet + isp->packet_len;
+                 rxbuf_len = isp->packet_size - isp->packet_len;
++               DEBUGMSGTL(("sess_process_packet", "D-40163: %s() -> %d isp->packet: %8p rxbuf: %8p buflen: %d isp->packet_len: %disp->packet_size: %d \n", __func__, __LINE__, isp->packet, rxbuf, rxbuf_len, isp->packet_len, isp->packet_size));
+             }
+         }
+
+     length = netsnmp_transport_recv(transport, rxbuf, rxbuf_len, &opaque,
+                                     &olength);
+
++    DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d isp->packet: %8p rxbuf: %8p buflen: %d length: %d \n", __func__, __LINE__, isp->packet, rxbuf, rxbuf_len, length));
+     if (0 == length && transport->flags & NETSNMP_TRANSPORT_FLAG_EMPTY_PKT) {
+         /* this allows for a transport that needs to return from
+          * packet processing that doesn't necessarily have any
+@@ -6204,6 +6215,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+          */
+         if (sp->callback != NULL) {
+             DEBUGMSGTL(("sess_read", "perform callback with op=DISCONNECT\n"));
++            DEBUGMSGTL(("sess_process_packet", "perform callback with op=DISCONNECT\n"));
+             (void) sp->callback(NETSNMP_CALLBACK_OP_DISCONNECT, sp, 0,
+                                 NULL, sp->callback_magic);
+         }
+@@ -6212,6 +6224,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+          */
+         DEBUGMSGTL(("sess_read", "fd %d closed\n", transport->sock));
+         transport->f_close(transport);
++    DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d FREE () isp->packet: %8p isp->packet_len %d length: %d \n", __func__, __LINE__, isp->packet, isp->packet_len, length));
+         SNMP_FREE(isp->packet);
+         SNMP_FREE(opaque);
+         return -1;
+@@ -6245,7 +6258,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+                 pdulen = asn_check_packet(pptr, isp->packet_len);
+             }
+
+-            DEBUGMSGTL(("sess_read",
++            DEBUGMSGTL(("sess_process_packet",
+                         "  loop packet_len %" NETSNMP_PRIz "u, PDU length %"
+                         NETSNMP_PRIz "u\n", isp->packet_len, pdulen));
+
+@@ -6316,6 +6329,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+                 if (sp->s_snmp_errno != 0) {
+                     SET_SNMP_ERROR(sp->s_snmp_errno);
+                 }
++                DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d\n", __func__, __LINE__));
+             }
+
+            /*  ocopy has been free()d by _sess_process_packet by this point,
+@@ -6327,6 +6341,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+
+             pptr += pdulen;
+             isp->packet_len -= pdulen;
++           DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d pptr: %8p pdulen: %d isp->packet_len: %d \n", __func__, __LINE__, pptr, pdulen, isp->packet_len));
+         }
+
+        /*  If we had more than one packet, then we were working with copies
+@@ -6344,6 +6359,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+                      "u, dropping connection %d\n",
+                      isp->packet_len, transport->sock);
+             transport->f_close(transport);
++           DEBUGMSGTL(("sess_process_packet", "D-40163: %s() -> %d \n", __func__, __LINE__));
+             /** XXX-rks: why no SNMP_FREE(isp->packet); ?? */
+             return -1;
+         } else if (isp->packet_len == 0) {
+@@ -6353,6 +6369,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+              * time.  We can free() the buffer now to keep the memory
+              * footprint down.
+              */
++               DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d FREE isp->packet: %8p \n", __func__, __LINE__, isp->packet));
+             SNMP_FREE(isp->packet);
+             isp->packet_size = 0;
+             isp->packet_len = 0;
+@@ -6385,6 +6402,7 @@ _sess_read(void *sessp, netsnmp_large_fd
+             isp->packet_size = isp->packet_len;
+         }
+     }
++     DEBUGMSGTL(("sess_process_packet", " D-40163: %s() -> %d \n", __func__, __LINE__));
+
+     return rc;
+ }

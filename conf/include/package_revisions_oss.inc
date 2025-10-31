@@ -31,6 +31,7 @@ PREFERRED_VERSION_openssl-native = "3.0.%"
 PREFERRED_VERSION_nativesdk-openssl = "3.0.%"
 PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
+PREFERRED_VERSION_dnsmasq = "2.90"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
@@ -45,6 +46,7 @@ PREFERRED_VERSION_rust-cross-canadian-native = "1.82.0"
 PREFERRED_VERSION_readline-native = "8.1.2"
 PREFERRED_VERSION_nativesdk-readline = "8.1.2"
 PREFERRED_VERSION_bluez5 = "5.48"
+PREFERRED_VERSION_msgpack-c = "4.0.0"
 
 #To resolve gettext native version mismatch due to layer priority
 PREFERRED_VERSION_gettext-native = "0.21"

@@ -1,0 +1,45 @@
+###########################################################
+Date: 06 Jun, 2020 12:55 PM
+From: 33f8e2e1d63ad5932ade885ffbff379cab1e50bd
+Subject: Fix double free of delegated cache in agentx_got_response()
+Source: http://git.code.sf.net/p/net-snmp/code V5.8-patches
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+###########################################################
+From 33f8e2e1d63ad5932ade885ffbff379cab1e50bd Mon Sep 17 00:00:00 2001
+From: Shogo Matsumoto <shogo.matsumoto@jp.fujitsu.com>
+Date: Tue, 7 May 2019 09:41:13 +0900
+Subject: [PATCH] agent/mibgroup/agentx: Fix double free of delegated cache in
+ agentx_got_response()
+
+If snmpd receives a response from subagent immediately after the agentx
+session closed, agentx_got_response() frees delegated cache twice.
+
+This patch changes return value of "response too late on session"
+in agentx_got_response function to make the caller of this function
+remove the request in order to prevent double free.
+
+See also https://sourceforge.net/p/net-snmp/patches/1392/.
+
+Signed-off-by: Shogo Matsumoto <shogo.matsumoto@jp.fujitsu.com>
+[ bvanassche: added patch tracker URL ]
+---
+ agent/mibgroup/agentx/master.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/agent/mibgroup/agentx/master.c b/agent/mibgroup/agentx/master.c
+index b7a51dfef1..93d562122c 100644
+--- a/agent/mibgroup/agentx/master.c
++++ b/agent/mibgroup/agentx/master.c
+@@ -221,7 +221,7 @@ agentx_got_response(int operation,
+         /* response is too late, free the cache */
+         if (magic)
+             netsnmp_free_delegated_cache((netsnmp_delegated_cache*) magic);
+-        return 0;
++        return 1;
+     }
+     requests = cache->requests;
+
+--
+2.14.2

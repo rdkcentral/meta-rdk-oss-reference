@@ -1,0 +1,25 @@
+Index: busybox-1.24.1/networking/udhcp/dhcpc.c
+===================================================================
+--- busybox-1.24.1.orig/networking/udhcp/dhcpc.c
++++ busybox-1.24.1/networking/udhcp/dhcpc.c
+@@ -1423,6 +1423,20 @@ int udhcpc_main(int argc UNUSED_PARAM, c
+ 		bb_daemonize_or_rexec(0 /* flags */, argv);
+ 		logmode = LOGMODE_NONE;
+ 	}
++#else
++   /* WanManager customization background early  if option -b is set */
++   if (opt & OPT_b) {
++        bb_info_msg("Option -b is set: WAN_MANAGER customization.  forking to background early");
++        client_background();
++        /* do not background again! */
++        opt = ((opt & ~(OPT_b|OPT_n)) | OPT_f);
++        /* ^^^ also disables -n (-b takes priority over -n):
++         * ifup's default udhcpc options are -R -n,
++         * and users want to be able to add -b
++         * (in a config file) to make it background
++         * _and not exit_.
++         */
++    }
+ #endif
+ 	if (opt & OPT_S) {
+ 		openlog(applet_name, LOG_PID, LOG_DAEMON);

@@ -10,6 +10,11 @@ RDEPENDS:${PN} += " \
     lighttpd-module-access \
     lighttpd-module-accesslog \
 	"
+
+RDEPENDS:${PN}:append:broadband = " lighttpd-module-rewrite \
+				    lighttpd-module-secdownload \
+				  "
+
 # From meta-rdk-comcast/recipes-common/lighttpd/lighttpd_%.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/files:"
 
