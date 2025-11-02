@@ -1,0 +1,43 @@
+diff --git a/essos/essos-resmgr-uds.cpp b/essos/essos-resmgr-uds.cpp
+index 2761035..bf9a1ce 100644
+--- a/essos/essos-resmgr-uds.cpp
++++ b/essos/essos-resmgr-uds.cpp
+@@ -2793,6 +2793,7 @@ bool EssRMgrInit()
+       gLogLevel= atoi( env );
+    }
+ 
++   gLogLevel=7;
+    gCtx= (EssRMgrResourceServerCtx*)calloc( 1, sizeof(EssRMgrResourceServerCtx) );
+    if ( gCtx )
+    {
+@@ -2834,6 +2835,7 @@ EssRMgr* EssRMgrCreate()
+       gLogLevel= atoi( env );
+    }
+ 
++   gLogLevel=7;
+    rm= (EssRMgr*)calloc( 1, sizeof(EssRMgr) );
+    if ( rm )
+    {
+diff --git a/essos/essos-resmgr.cpp b/essos/essos-resmgr.cpp
+index 9eef8f5..2573a2b 100644
+--- a/essos/essos-resmgr.cpp
++++ b/essos/essos-resmgr.cpp
+@@ -57,7 +57,8 @@
+ #define TRACE2(...)                 INT_TRACE2(__VA_ARGS__, "")
+ #define TRACE3(...)                 INT_TRACE3(__VA_ARGS__, "")
+ 
+-#define ESSRMGR_DEFAULT_CONFIG_FILE "/etc/default/essrmgr.conf"
++//#define ESSRMGR_DEFAULT_CONFIG_FILE "/etc/default/essrmgr.conf"
++#define ESSRMGR_DEFAULT_CONFIG_FILE "/opt/ERM/essrmgr.conf"
+ 
+ #define ESSRMGR_MAX_ITEMS (16)
+ #define ESSRMGR_MAX_PENDING (ESSRMGR_MAX_ITEMS*3)
+@@ -69,7 +70,7 @@
+ 
+ #define DEFAULT_TIMEOUT_MS (3000)
+ 
+-static int gLogLevel= 2;
++static int gLogLevel=7;
+ 
+ #define SHOW_TASK_ID 1
+ #ifdef SHOW_TASK_ID
