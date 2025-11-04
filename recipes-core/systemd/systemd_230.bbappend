@@ -75,6 +75,9 @@ fi
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-sleep
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
+        rm -rf ${D}${systemd_system_unitdir}/debug-shell.service
+        rm -rf ${D}${systemd_system_unitdir}/console-getty.service
+        rm -rf ${D}${systemd_system_unitdir}/console-shell.service
 	sed -i -e 's/systemd-fsck-root.service//g' ${D}${systemd_unitdir}/system/systemd-remount-fs.service
 if ! ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         sed -i -e '/^L! \/etc\/resolv\.conf*/d' ${D}${exec_prefix}/lib/tmpfiles.d/etc.conf
@@ -201,7 +204,7 @@ SRC_URI += "\
             file://systemd230-forec-reboot-on-freeze.patch \
             file://0001-Added-decrement-of-notify-watchers-when-we-dont-need.patch \
             file://0001-Added-code-to-cleanup-all-the-xisting-watches-on-pat.patch \
-            file://0001-Added-Extra-information-fro-NTP-Status.patch \
+            file://0002-enable-more-ntp-info-logs.patch \
            "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://0001-In-our-echo-system-we-are-managing-last-known-good-t.patch', '', d)} "
