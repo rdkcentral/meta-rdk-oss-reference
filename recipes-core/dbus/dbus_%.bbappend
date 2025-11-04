@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/dbus:"
 
 SRC_URI:append = " \
     file://dbus_rdk_system_configuration.patch \
+    file://dbus-abort.patch \
 "
 
 
