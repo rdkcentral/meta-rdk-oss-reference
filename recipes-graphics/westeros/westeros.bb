@@ -4,7 +4,7 @@ LICENSE = "Apache-2.0"
 LICENSE_LOCATION = "${S}/LICENSE"
 LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
 
-SRC_URI = "${RDKCENTRAL_GITHUB_ROOT}/westeros;${RDKCENTRAL_GITHUB_SRC_URI_SUFFIX}"
+SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
 
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
@@ -38,3 +38,9 @@ do_compile:prepend() {
    oe_runmake -C ${S}/linux-dmabuf/protocol
    oe_runmake -C ${S}/linux-expsync/protocol
 }
+
+do_install:append() {
+    install -m 0644 ${S}/*.h ${D}${includedir}/
+}
+
+FILES_${PN}-dev += "${includedir}/*.h"
