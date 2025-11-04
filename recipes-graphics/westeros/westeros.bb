@@ -38,3 +38,9 @@ do_compile:prepend() {
    oe_runmake -C ${S}/linux-dmabuf/protocol
    oe_runmake -C ${S}/linux-expsync/protocol
 }
+
+do_install:append() {
+    install -m 0644 ${S}/*.h ${D}${includedir}/
+}
+
+FILES_${PN}-dev += "${includedir}/*.h"
