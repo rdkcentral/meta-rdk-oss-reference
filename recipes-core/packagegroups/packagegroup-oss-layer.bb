@@ -4,7 +4,7 @@ LICENSE = "MIT"
 
 PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 
-inherit packagegroup
+inherit packagegroup cvecheck-packagegroup
 
 
 PV = "4.9.0"
