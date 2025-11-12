@@ -19,20 +19,20 @@ UPSTREAM_CHECK_GITTAGREGEX = "libp11-(?P<pver>\d+(\.\d+)+)"
 inherit autotools pkgconfig
 
 EXTRA_OECONF = "--disable-static"
-EXTRA_OECONF_append_class-native = "\
+EXTRA_OECONF:append:class-native = "\
     --with-enginesdir=${RECIPE_SYSROOT_NATIVE}/usr/lib/engines-3 \
     --with-modulesdir=${RECIPE_SYSROOT_NATIVE}/usr/lib/ossl-modules \
 "
 
-do_install_append () {
+do_install:append () {
     rm -rf ${D}${docdir}/${BPN}
 }
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${libdir}/engines*/pkcs11.so \
     ${libdir}/ossl-modules/pkcs11prov.so \
 "
-FILES_${PN}-dev += "\
+FILES:${PN}-dev += "\
     ${libdir}/engines*/libpkcs11${SOLIBSDEV} \
     ${libdir}/ossl-modules/libpkcs11${SOLIBSDEV} \
 "
