@@ -260,20 +260,19 @@ Index: openssl-3.0.5/crypto/pkcs12/p12_kiss.c
 
  /* Simplified PKCS#12 routines */
 
-@@ -112,6 +113,13 @@ int PKCS12_parse(PKCS12 *p12, const char
+@@ -110,6 +111,12 @@ int PKCS12_parse(PKCS12 *p12, const char
+         }
+         X509_free(x);
      }
-     sk_X509_free(ocerts);
-
 +    /* Check if parsed key is PKCS#11 reference and load actual key from hardware */
 +    if (pkey && *pkey && is_pkcs11_reference_key(*pkey, PKCS11_KEY_TYPE_EVP_PKEY)) {
-+        if (!load_pkcs11_private_key(pkey, PKCS11_KEY_TYPE_EVP_PKEY))  {
-+            goto err;
-+        } return 1;
++       if (!load_pkcs11_private_key(pkey, PKCS11_KEY_TYPE_EVP_PKEY))  {
++           goto err;
++       }
 +    }
-+
-     return 1;
+     sk_X509_free(ocerts);
 
-  err:
+     return 1;
 Index: openssl-3.0.5/include/crypto/pkcs11_reference_key.h
 ===================================================================
 --- /dev/null
