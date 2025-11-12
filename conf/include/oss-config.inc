@@ -23,6 +23,15 @@ require license_flags_accepted.inc
 #Fix RDK-48310 & RDK-48267
 INCOMPATIBLE_LICENSE_EXCEPTIONS += "${@bb.utils.contains('DISTRO_FEATURES','build_gplv3', '${MLPREFIX}tar:GPL-3.0-only ${MLPREFIX}gdbserver:GPL-3.0-only ${MLPREFIX}gdbserver:LGPL-3.0-only ${MLPREFIX}gdb:GPL-3.0-only ${MLPREFIX} gdb:LGPL-3.0-only ${MLPREFIX}binutils:GPL-3.0-only ${MLPREFIX}libbfd:GPL-3.0-only', '', d)}"
 
+#Enable uninative
+INHERIT:append = " uninative"
+include  conf/distro/include/yocto-uninative.inc
+
+#Use locked sstate from host machine/docker
+#DISTRO_FEATURES:append = " use_locked_sstate"
+include ${@bb.utils.contains('DISTRO_FEATURES', 'use_locked_sstate', 'use_host_locked_sstate.inc' , '', d)}
+
+
 require package_revisions_oss.inc
 BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/bluez5/bluez5_5.77*"
 
