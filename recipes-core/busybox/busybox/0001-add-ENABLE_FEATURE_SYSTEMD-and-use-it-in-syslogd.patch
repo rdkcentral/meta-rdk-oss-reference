@@ -11,28 +11,25 @@ Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
  3 files changed, 73 insertions(+)
  create mode 100644 libbb/systemd_support.c
 
-diff --git a/include/libbb.h b/include/libbb.h
-index 968bdcf5a..32e25a8d4 100644
---- a/include/libbb.h
-+++ b/include/libbb.h
-@@ -1217,6 +1217,12 @@ extern void selinux_preserve_fcontext(int fdesc) FAST_FUNC;
- #endif
+Index: busybox-1.36.1/include/libbb.h
+===================================================================
+--- busybox-1.36.1.orig/include/libbb.h
++++ busybox-1.36.1/include/libbb.h
+@@ -1727,6 +1727,10 @@ extern void selinux_preserve_fcontext(in
  extern void selinux_or_die(void) FAST_FUNC;
  
-+
+ 
 +/* systemd support */
 +#define SD_LISTEN_FDS_START 3
 +int sd_listen_fds(void);
 +
-+
  /* setup_environment:
-  * if chdir pw->pw_dir: ok: else if to_tmp == 1: goto /tmp else: goto / or die
-  * if clear_env = 1: cd(pw->pw_dir), clear environment, then set
-diff --git a/libbb/systemd_support.c b/libbb/systemd_support.c
-new file mode 100644
-index 000000000..981296dbb
+  * if SETUP_ENV_CHDIR:
+  *   if cd(pw->pw_dir): ok: else if SETUP_ENV_TO_TMP: cd(/tmp) else: cd(/) or die
+Index: busybox-1.36.1/libbb/systemd_support.c
+===================================================================
 --- /dev/null
-+++ b/libbb/systemd_support.c
++++ busybox-1.36.1/libbb/systemd_support.c
 @@ -0,0 +1,62 @@
 +/*
 + * Copyright (C) 2011 Davide Cavalca <davide@geexbox.org>
@@ -96,11 +93,11 @@ index 000000000..981296dbb
 +
 +	return n;
 +}
-diff --git a/sysklogd/syslogd.c b/sysklogd/syslogd.c
-index fb7309538..24cab3b6c 100644
---- a/sysklogd/syslogd.c
-+++ b/sysklogd/syslogd.c
-@@ -512,6 +512,11 @@ static NOINLINE int create_socket(void)
+Index: busybox-1.36.1/sysklogd/syslogd.c
+===================================================================
+--- busybox-1.36.1.orig/sysklogd/syslogd.c
++++ busybox-1.36.1/sysklogd/syslogd.c
+@@ -964,6 +964,11 @@ static NOINLINE int create_socket(void)
  	int sock_fd;
  	char *dev_log_name;
  
@@ -108,10 +105,7 @@ index fb7309538..24cab3b6c 100644
 +	if (sd_listen_fds() == 1)
 +		return SD_LISTEN_FDS_START;
 +#endif
-+
++	 
  	memset(&sunx, 0, sizeof(sunx));
  	sunx.sun_family = AF_UNIX;
  
--- 
-2.17.1
-

@@ -3,54 +3,46 @@ From: mkrish802 <Manoj_Krishnan@comcast.com>
 Source: COMCAST
 Subject: Drop root privileges for lighttpd process
 Signed-off-by: mkrish802 <Manoj_Krishnan@comcast.com>
-Index: lighttpd-1.4.53/src/server.c
+Upstream-Status: Pending
+Index: ssaman560/BPI-4.2/build-img/tmp/work/cortexa53-rdk-linux/lighttpd/1.4.74/lighttpd-1.4.74/src/server.c
 ===================================================================
---- lighttpd-1.4.53.orig/src/server.c
-+++ lighttpd-1.4.53/src/server.c
-@@ -17,6 +17,7 @@
- #include "plugin.h"
- #include "joblist.h"
- #include "network_write.h"
+--- ssaman560.orig/BPI-4.2/build-img/tmp/work/cortexa53-rdk-linux/lighttpd/1.4.74/lighttpd-1.4.74/src/server.c
++++ ssaman560/BPI-4.2/build-img/tmp/work/cortexa53-rdk-linux/lighttpd/1.4.74/lighttpd-1.4.74/src/server.c
+@@ -18,6 +18,7 @@
+ #include "network_write.h"  /* network_write_show_handlers() */
+ #include "reqpool.h"        /* request_pool_init() request_pool_free() */
+ #include "response.h"       /* http_dispatch[] strftime_cache_reset() */
 +#include "cap.h"
  
  #ifdef HAVE_VERSIONSTAMP_H
  # include "versionstamp.h"
-@@ -83,7 +84,7 @@
- /* IRIX doesn't like the alarm based time() optimization */
- /* #define USE_ALARM */
- #endif
--
+@@ -182,6 +183,7 @@ static const struct http_dispatch h1_1_d
+   .send_1xx          = h1_send_1xx
+ };
+ 
 +static cap_user appcaps;
  static int oneshot_fd = 0;
- static volatile int pid_fd = -2;
- static server_socket_array graceful_sockets;
-@@ -974,6 +975,21 @@ static void server_graceful_state (serve
-     }
+ static int oneshot_fdout = -1;
+ static fdnode *oneshot_fdn = NULL;
+@@ -2309,6 +2311,21 @@ static int main_init_once (void) {
+     return 1;
  }
  
 +void drop_root()
 +{
-+    appcaps.caps = NULL;
-+    appcaps.user_name = NULL;
-+    bool ret = false;
-+    ret = isBlocklisted();
-+    if(!ret)
-+    {
-+       init_capability();
-+       drop_root_caps(&appcaps);
-+       update_process_caps(&appcaps);
-+       read_capability(&appcaps);
-+    }
++   appcaps.caps = NULL;
++   appcaps.user_name = NULL;
++   bool ret = false;
++   ret = isBlocklisted();
++   if(!ret)
++   {
++	   init_capability();
++	   drop_root_caps(&appcaps);
++	   update_process_caps(&appcaps);
++	   read_capability(&appcaps);
++   }
 +}
 +
- static int server_main (server * const srv, int argc, char **argv) {
- 	int print_config = 0;
- 	int test_config = 0;
-@@ -1372,6 +1388,7 @@ static int server_main (server * const s
- 			prctl(PR_SET_DUMPABLE, 1, 0, 0, 0);
- 		}
+ #ifndef server_status_running
+ #define server_status_running(srv) do { } while (0)
  #endif
-+                drop_root();
- 	}
- 
- 	/* set max-conns */
