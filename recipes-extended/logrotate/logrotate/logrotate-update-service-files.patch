@@ -20,15 +20,18 @@ diff -Naur logrotate-3.21.0.orig/logrotate_hdd.conf logrotate-3.21.0/logrotate_h
 diff -Naur logrotate-3.21.0.orig/logrotate_nohdd.conf logrotate-3.21.0/logrotate_nohdd.conf
 --- logrotate-3.21.0.orig/logrotate_nohdd.conf	1970-01-01 00:00:00.000000000 +0000
 +++ logrotate-3.21.0/logrotate_nohdd.conf	2023-09-27 14:00:20.373550095 +0000
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,12 @@
 +/opt/logs/*.txt
 +/opt/logs/*.log
 +/opt/logs/*.txt.0{
 +size 2097152
 +rotate 1
-+copytruncate
++create
 +missingok
 +ignoreduplicates
++postrotate
++    syslog-ng-ctl reopen --control=/tmp/syslog-ng/syslog-ng.ctl
++endscript
 +}
 diff -Naur logrotate-3.21.0.orig/logrotate.service logrotate-3.21.0/logrotate.service
 --- logrotate-3.21.0.orig/logrotate.service	1970-01-01 00:00:00.000000000 +0000
