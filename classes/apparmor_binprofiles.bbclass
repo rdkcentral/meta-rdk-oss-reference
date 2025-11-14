@@ -1,8 +1,8 @@
 SUMMARY = "AppArmor profile compilation"
 
 #
-# This recipe compiles AppArmor text profiles in /etc/apparmor.d/ 
-# into binary form in the same directory. This results in 
+# This recipe compiles AppArmor text profiles in /etc/apparmor.d/
+# into binary form in the same directory. This results in
 # the removal of text-based profiles on device, reducing space
 # and improving load times
 #
@@ -31,7 +31,7 @@ execute_aa_compile_std_profiles() {
         while IFS= read -r line || [ -n "$line" ]; do
           line="${line#"${line%%[![:space:]]*}"}"
           case "$line" in
-          # Handle #include if exist entries
+          # Handle #include if exists entries
             \#include\ if\ exists\ \"*\"|\#include\ if\ exists\ *)
               file=${line#\#include if exists }
               file=${file#\"}
