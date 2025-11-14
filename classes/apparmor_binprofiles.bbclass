@@ -15,7 +15,7 @@ execute_aa_compile_std_profiles() {
     install -d ${R}/etc/apparmor/binprofiles/
     install -d ${R}/etc/apparmor/txttmp/
 
-    SRCDIR="${R}/etc//apparmor.d"
+    SRCDIR="${R}/etc/apparmor.d"
     OUTDIR="${R}/etc/apparmor/txttmp"
 
     # The parser's file search functionality considers any #include without < >'s an
@@ -56,8 +56,7 @@ execute_aa_compile_std_profiles() {
           ${STAGING_DIR_NATIVE}/sbin/apparmor_parser -aQTW -I ${R}/ -M ${STAGING_DIR_NATIVE}/usr/lib/features -L ${R}/etc/apparmor/binprofiles/ ${R}/etc/apparmor/txttmp/*
           rm -fr ${R}/etc/apparmor.d/*
           mv ${R}/etc/apparmor/txttmp/* ${R}/etc/apparmor.d/
-          rm -fr ${R}/etc/apparmor/txttmp
+          rm -rf ${R}/etc/apparmor/txttmp
     fi
 }
 FILES:${PN} += "/etc/apparmor/binprofiles/"
-FILES:${PN} += "/etc/apparmor/txttmp/"
