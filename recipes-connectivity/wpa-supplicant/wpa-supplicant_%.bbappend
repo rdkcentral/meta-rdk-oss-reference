@@ -7,6 +7,7 @@ SRC_URI += "file://openssl_no_md4_2.10.patch"
 SRC_URI += "file://fix_HS20_build_with_INTERWORKING.patch"
 SRC_URI += "file://increase_wpa_ctrl_return_buffer.patch"
 SRC_URI += "file://suppress_no_eap_session_id_log.patch"
+SRC_URI += "file://remove_unwanted_wpa_supplicant_services.patch"
 
 inherit syslog-ng-config-gen logrotate_config
 #inherit breakpad-logmapper
