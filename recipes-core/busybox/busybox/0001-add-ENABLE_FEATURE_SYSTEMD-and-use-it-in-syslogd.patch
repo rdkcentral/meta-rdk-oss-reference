@@ -4,6 +4,7 @@ Subject: [PATCH] add ENABLE_FEATURE_SYSTEMD and use it in syslogd
 Source: 9b3b9790b32d440eb89af5edda70a66b1829e861 Mon Sep 17 00:00:00 2001
 Signed-off-by: Davide Cavalca <davide@geexbox.org>
 Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
+Upstream-Status: Pending
 ---
  include/libbb.h         |  6 ++++
  libbb/systemd_support.c | 62 +++++++++++++++++++++++++++++++++++++++++
