@@ -29,6 +29,8 @@ RDEPENDS:${PN} = "\
      base-passwd \
      bash-completion \
      bind \
+     bind-dl \
+     bind-named \
      boost \
      busybox \
      bzip2 \
