@@ -224,7 +224,7 @@ RDEPENDS:${PN}-daemon += "\
 "
 RRECOMMENDS:${PN}-daemon += "\
     ${NETWORKMANAGER_FIREWALL_DEFAULT} \
-    ${@bb.utils.filter('PACKAGECONFIG', 'bind bind-named bind-dl', d)} \
+    ${@bb.utils.filter('PACKAGECONFIG', 'bind', d)} \
 "
 INITSCRIPT_NAME:${PN}-daemon = "network-manager"
 SYSTEMD_SERVICE:${PN}-daemon = "\
