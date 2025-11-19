@@ -450,7 +450,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r1"
+PR:pn-libmanette ?= "r2"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
