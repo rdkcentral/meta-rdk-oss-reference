@@ -17,7 +17,6 @@ SRC_URI:append = " \
 do_install:append () {
     install -d ${D}${sysconfdir}/bind
     install -d ${D}/var/cache/bind
-    install -d ${D}/etc/rdm/post-services
     
     install ${WORKDIR}/named.conf.options ${D}${sysconfdir}/bind/
     sed -i "/.*include.*rndc.*/d" ${D}${sysconfdir}/bind/named.conf
@@ -76,11 +75,6 @@ SKIP_MAIN_PKG="yes"
 
 do_install:append () {
     sed -i "/^ExecStartPre=.*/a ExecStartPre=/bin/sh -c '/bin/mkdir -p /run/named; /bin/chmod -R 777 /run/named'" ${D}${systemd_unitdir}/system/named.service
-    if [ "${@bb.utils.contains('DISTRO_FEATURES', 'rdm', 'true', 'false', d)}" = "true" ]
-    then
-       sed -i "/^EnvironmentFile=.*/a Environment=\"LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/media/apps/bind-dl/usr/lib/\"" ${D}${systemd_unitdir}/system/named.service
-       sed -i "s/^ExecStart=.*/ExecStart=\/media\/apps\/bind-dl\/usr\/sbin\/named \$OPTIONS/g" ${D}${systemd_unitdir}/system/named.service
-    fi
 }
 
 FILES:${PN}-libs:remove         = "/usr/lib/named/*.so* /usr/lib/*-9.18.5.so"
