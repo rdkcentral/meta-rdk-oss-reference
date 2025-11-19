@@ -549,4 +549,9 @@ CONFIG_WIFI_DISPLAY=y
 # Support Multi Band Operation
 #CONFIG_MBO=y
 
-
+# Background scanning modules
+# These can be used to request wpa_supplicant to perform background scanning
+# operations for roaming within an ESS (same SSID). See the bgscan parameter in
+# the wpa_supplicant.conf file for more details.
+# Periodic background scans based on signal strength
+CONFIG_BGSCAN_SIMPLE=y
