@@ -452,7 +452,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r2"
+PR:pn-libmanette ?= "r3"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -917,7 +917,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r7"
+PR:pn-wpa-supplicant ?= "r8"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
