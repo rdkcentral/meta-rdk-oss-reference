@@ -35,12 +35,6 @@ SRC_URI += "file://netsnmp-fix-ipAddressTable-issue.patch \
 SRC_URI:append = " file://pciutils3.5.1_udev_leak.patch \
                          "
 
-SRC_URI:append_broadband = " \
-            file://double_free.patch  \
-            file://snmp-crash.patch \
-            file://CiscoXB3-2774.patch \
-"
-
 do_install:prepend() {
     rm -f ${D}/snmp/snmp_perl_trapd.pl
 }

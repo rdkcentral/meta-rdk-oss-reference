@@ -9,7 +9,7 @@ SRC_URI = "http://sourceforge.net/projects/pupnp/files/pupnp/libUPnP%20${PV}/${B
           file://private-nets_${PV}.patch \
           "
 
-SRC_URI:append_kirkstone = " file://0001-ithread-Remove-references-to-pthread_mutexattr.patch"
+SRC_URI:append:kirkstone = " file://0001-ithread-Remove-references-to-pthread_mutexattr.patch"
 
 EXTRA_OECONF += "--disable-blocking_tcp_connections --disable-static --enable-ipv6 --disable-notification_reordering"
 

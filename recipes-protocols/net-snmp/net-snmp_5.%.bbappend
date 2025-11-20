@@ -10,8 +10,8 @@ SRC_URI:append = " file://systemd-support.patch \
                    file://agent_registry.patch \
                  "
 
-SRC_URI:append_broadband = " \
+SRC_URI:append:broadband = " \
             file://rdkb_snmp.patch \
 "
 
-SRC_URI:append_kirkstone = "${@bb.utils.contains('PREFERRED_VERSION_net-snmp', '5.8', 'file://CVE-2022-44792_fix.patch' , ' ', d)}"
+SRC_URI:append:kirkstone = "${@bb.utils.contains('PREFERRED_VERSION_net-snmp', '5.8', 'file://CVE-2022-44792_fix.patch' , ' ', d)}"
