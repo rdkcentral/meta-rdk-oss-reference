@@ -55,7 +55,7 @@ FILES:${PN}-dl = "${sbindir}/named \
                  "
 SYSTEMD_SERVICE:${PN}:remove = "named.service"
 SYSTEMD_SERVICE:${PN}-named:append = " named.service "
-
+SYSTEMD_AUTO_ENABLE = "enable"
 USERADD_PACKAGES = "${PN}-named"
 USERADD_PARAM:${PN}-named = "--system --home ${localstatedir}/cache/bind --no-create-home \
                        --user-group bind"
@@ -74,7 +74,6 @@ SKIP_MAIN_PKG="yes"
 
 do_install:append () {
     sed -i "/^ExecStartPre=.*/a ExecStartPre=/bin/sh -c '/bin/mkdir -p /run/named; /bin/chmod -R 777 /run/named'" ${D}${systemd_unitdir}/system/named.service
-    install -d ${D}${systemd_unitdir}/system
 }
 
 FILES:${PN}-libs:remove         = "/usr/lib/named/*.so* /usr/lib/*-9.18.5.so"
