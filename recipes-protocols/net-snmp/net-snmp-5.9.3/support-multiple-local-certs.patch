@@ -2,8 +2,7 @@
 Date: Dec 23, 2019 16:39 PM
 From: None
 Subject: To keep two local identities and choose based on port number on DTLS session
-Source: None
-License: "BSD & MIT"
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 Patch Recreated by: Arjun <arjun_daasuramdass@comcast.com>

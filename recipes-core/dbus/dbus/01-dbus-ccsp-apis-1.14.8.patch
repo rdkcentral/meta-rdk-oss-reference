@@ -10,7 +10,6 @@ Reason for Change:
         OE 4.0 based RDK-B builds to fail during boot-up.
 
 Source: COMCAST
-License: AFL-2.1 | GPLv2+
 
 Upstream-Status: Pending
 

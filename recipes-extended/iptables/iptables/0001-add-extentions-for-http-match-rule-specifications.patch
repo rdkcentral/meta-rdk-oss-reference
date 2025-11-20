@@ -8,8 +8,6 @@ Subject: [PATCH] add extentions for http match rule specifications
 
 Source: GITHUB
 
-License: GPL-2.0-or-later
-
 Upstream-Status: Submitted
 
 Signed-off-by: Khem Raj <raj.khem@gmail.com>

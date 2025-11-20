@@ -4,7 +4,6 @@ From: d6689d6a938e29e02f1964bc7d7a15103817c0fa,408c8919e36feb4e9c1024e74d3b8c774
 Subject: Remove the request on the session when the sending is failed
          remove_request new function definition      
 Source:  http://git.code.sf.net/p/net-snmp/code - V5.8-patches
-License: "BSD & MIT"
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################

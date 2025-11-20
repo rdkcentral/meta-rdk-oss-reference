@@ -3,7 +3,6 @@ Date: 06 Jun, 2020 12:55 PM
 From: 33f8e2e1d63ad5932ade885ffbff379cab1e50bd
 Subject: Fix double free of delegated cache in agentx_got_response()
 Source: http://git.code.sf.net/p/net-snmp/code V5.8-patches
-License: "BSD & MIT"
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ###########################################################

@@ -1,3 +1,13 @@
+Date: Dec 05 09:22:20 2018
+From: Murugan Viswanathan <Murugan.Viswanathan2@cognizant.com>
+Subject: [PATCH] RDKB-15078: Merge XDNS patches + add patched from meta-rdk-mesh
+        XDNS - This patch provides support for DHCP fingerprint.
+        Adds XDNS support in dnsmasq. Changes in Dnsmasq opensource 2.78.
+        Modification in meta-rdk-ext for all platforms.
+        Add ccsp-xdns.bb to meta-rdk and package groups
+Source: COMCAST 462992bf59541b643d194956ce4c245075a0dbf7 Dec 20 16:01:20 2018
+Signed-off-by: Murugan Viswanathan <Murugan.Viswanathan2@cognizant.com>
+---
 Index: dnsmasq-2.83/src/dnsmasq.h
 ===================================================================
 --- dnsmasq-2.83.orig/src/dnsmasq.h

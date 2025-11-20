@@ -1,6 +1,7 @@
 From 321e6014b03ef7621203f94719818af5ba3feec5 Mon Sep 17 00:00:00 2001
 From: mselva006c <mani_selvaraj@comcast.com>
 Date: Mon, 30 Jan 2023 22:30:18 +0000
+Source: Comcast
 Subject: [PATCH] RDK-39819: Parodus build failure with glibc-2.35
 
 Reason for change: The "__dn_expand" has been replaced to "dn_expand" from glibc-2.34.

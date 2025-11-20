@@ -4,7 +4,6 @@ From: None
 Subject: 1. SIGSEGV during NULL fingerprint comparison
          2. SIGABRT - cb_data double free in master agent
 Source: cb_data double free - https://sourceforge.net/p/net-snmp/bugs/2943/,
-License: "BSD & MIT"
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################

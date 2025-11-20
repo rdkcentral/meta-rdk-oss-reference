@@ -1,3 +1,11 @@
+###########################################################
+Date: 09 Apr, 2020 12:55 PM
+From: https://sourceforge.net/p/net-snmp/bugs/2923/
+Subject: snmpd snmpusb.c:usm_rgenerate_out_msg() core dump 
+Source: https://sourceforge.net/p/net-snmp/bugs/_discuss/thread/1ffb6bb91f/8d21/attachment/v3doublefree2.patch
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
 Index: net-snmp-5.9.1/agent/snmp_agent.c
 ===================================================================
 --- net-snmp-5.9.1.orig/agent/snmp_agent.c

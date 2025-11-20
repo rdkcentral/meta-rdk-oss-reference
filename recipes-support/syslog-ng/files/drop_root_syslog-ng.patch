@@ -1,6 +1,7 @@
 Date: Oct 29, 2024 8:46 PM
 From: LasyaPrakarsha_DonthiVenkata@comcast.com
 Subject: RDKB-56794: syslog-ng process runs with limited privilege
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: LasyaPrakarsha_DonthiVenkata@comcast.com
 Index: syslog-ng-3.36.1/lib/gprocess.h

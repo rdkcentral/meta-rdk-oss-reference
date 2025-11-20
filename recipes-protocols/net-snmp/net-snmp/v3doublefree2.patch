@@ -3,7 +3,6 @@ Date: 09 Apr, 2020 12:55 PM
 From: https://sourceforge.net/p/net-snmp/bugs/2923/
 Subject: snmpd snmpusb.c:usm_rgenerate_out_msg() core dump 
 Source: https://sourceforge.net/p/net-snmp/bugs/_discuss/thread/1ffb6bb91f/8d21/attachment/v3doublefree2.patch
-License: "BSD & MIT"
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################

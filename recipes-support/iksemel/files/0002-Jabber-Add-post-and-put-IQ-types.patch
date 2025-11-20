@@ -1,6 +1,7 @@
 From ac5a9cfb555859646a8edfdaeaf41bb26b96727b Mon Sep 17 00:00:00 2001
 From: Jesse Crews <jesse_crews@comcast.com>
 Date: Mon, 12 Nov 2018 15:17:11 -0600
+Source: Comcast
 Subject: [PATCH 2/3] Jabber: Add 'post' and 'put' IQ types
 
 This change expands iksemel's Jabber protocol to support extra 'put' and

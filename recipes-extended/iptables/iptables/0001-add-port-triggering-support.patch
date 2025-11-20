@@ -8,8 +8,6 @@ Subject: [PATCH] RDKBEMU-252 : To add porttriggering related patches into meta-r
 	
 Source: COMCAST
 
-License: GPL-2.0-or-later
-
 Upstream-Status: Pending
 
 Signed-off-by: rnarayanan <rajkumar.narayanan@lnttechservices.com>

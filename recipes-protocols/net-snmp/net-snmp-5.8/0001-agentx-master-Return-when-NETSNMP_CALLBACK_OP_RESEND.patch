@@ -3,7 +3,6 @@ Date: 21 May, 2020 12:55 PM
 From: 7f88b06bf0f4140bc03cabacd35eaeffdf21d722
 Subject: agentx/master: Return when NETSNMP_CALLBACK_OP_RESEND is set to the callback
 Source: http://git.code.sf.net/p/net-snmp/code - V5.8-patches
-License: "BSD & MIT"
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################

@@ -3,6 +3,7 @@ From: Bart Van Assche <bvanassche@acm.org>
 Date: Wed, 8 Sep 2021 20:39:42 -0700
 Subject: [PATCH 1/1] libsnmp: Fix the build against OpenSSL 3.0
 
+Source: Upstream
 Fixes: https://github.com/net-snmp/net-snmp/issues/343
 ---
  snmplib/snmp_openssl.c | 5 +++++

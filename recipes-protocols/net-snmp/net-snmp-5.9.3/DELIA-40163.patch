@@ -2,7 +2,7 @@
 Date: 21 May, 2020 12:55 PM
 From: None
 Subject: 1. SIGSEGV during NULL fingerprint comparison
-License: "BSD & MIT"
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 Patch Recreated by: Arjun <arjun_daasuramdass@comcast.com>

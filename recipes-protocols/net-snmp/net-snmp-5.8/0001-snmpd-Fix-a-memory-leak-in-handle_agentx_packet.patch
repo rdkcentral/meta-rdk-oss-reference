@@ -3,7 +3,6 @@ Date: 24 May, 2020 12:55 PM
 From: ddb3a0b1f8b8cf2734f9c2cc4e434c79370b2cb5
 Subject: Fix a memory leak in handle_agentx_packet()
 Source: http://git.code.sf.net/p/net-snmp/code V5.8-patches
-License: "BSD & MIT"
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ###########################################################

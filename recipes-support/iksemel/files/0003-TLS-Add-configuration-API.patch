@@ -1,6 +1,7 @@
 From 661a0d8dad6607b940bd995eac782ee05d177340 Mon Sep 17 00:00:00 2001
 From: Jesse Crews <jesse_crews@comcast.com>
 Date: Fri, 7 Feb 2020 15:09:21 -0600
+Source: Comcast
 Subject: [PATCH 3/3] TLS: Add configuration API
 
  * Add public functions to set the root CA bundle and server verfification

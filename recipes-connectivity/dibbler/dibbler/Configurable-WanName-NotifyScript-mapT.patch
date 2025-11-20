@@ -1,3 +1,8 @@
+Date: 8, Aug 2024
+Subject: Enable Configurable Wan Name for the Unification enabled builds
+Source: COMCAST 7d16d26d310381084a82119a6f13a17da7049b07
+Signed-off-by: Parthiban Selvaraj <parthiban.selvaraj@sky.uk>
+
 Index: git/scripts/notify-scripts/client-notify-bsd.sh
 ===================================================================
 --- git.orig/scripts/notify-scripts/client-notify-bsd.sh

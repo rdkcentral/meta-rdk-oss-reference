@@ -2,7 +2,6 @@ Date: Apr 21, 2021 3:30 PM
 From: Prashanth_Kondedath@comcast.com
 Subject: RDKB-35268 Enforce IPv4 only for the mqtt client tcp connection
 Source: Comcast
-License: GPLV2
 Upstream-Status: Pending
 Signed-off-by: Prashanth Kondedath <Prashanth_Kondedath@comcast.com>
 Index: mosquitto-1.6.12/src/net.c

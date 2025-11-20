@@ -8,6 +8,8 @@ have the same broadcast address. Hence, only the entries corresponding to the vi
 was considered in ipAddressTable MIB. The entries of the physical interface were considered as 
 duplicates and were neglected. Hence, physical address entries wont be listed in the ipAddressTable MIB 
 
+Source: Comcast
+
 Signed-off-by: Geethu Theres K <Geethu_TheresK@comcast.com>
 
 

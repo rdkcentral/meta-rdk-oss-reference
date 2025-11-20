@@ -2,8 +2,7 @@
 Date: Dec 6, 2019 12:55 PM
 From: None
 Subject: To verify client certificates signed by intermediate CAs
-Source: None
-License: "BSD & MIT"
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################

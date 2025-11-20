@@ -2,7 +2,6 @@ Date: Fri, 24 Dec 2021 16:16:02 -0400
 From  I74a3017891c60dd9ac979ccd68da0b08de4977bb Fri 24 Dec 16:16:02 2021
 From: Surajeet Roy <surajeet_roy@comcast.com>
 Source: Comcast
-License: closed
 Upstream-Status: to be submitted
 Subject: Adding drop root patch to dibbler
 Signed-off-by: Surajeet Roy <surajeet_roy@comcast.com>

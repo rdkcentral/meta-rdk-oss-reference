@@ -1,8 +1,11 @@
 Date: Jan 13, 2025 10:50 PM
 From: LasyaPrakarsha_DonthiVenkata@comcast.com
 Subject: RDKB-58300: aker process runs with limited privilege
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: LasyaPrakarsha_DonthiVenkata@comcast.com
+
+---
 
 Index: git/src/main.c
 ===================================================================

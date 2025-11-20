@@ -4,6 +4,8 @@ json_reformat calls yajl_gen_* functions, which internally use isnan() /
 isinf(). On Glibc, these are provided by libc, but on uClibc you need to
 link with -lm (like the spec says), so ensure we do so.
 
+Source: Upstream https://github.com/lloyd/yajl/commit/5d4bf5250180cec3f12d192023870ea74a19013b
+
 Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
 ---
  reformatter/CMakeLists.txt |    2 +-

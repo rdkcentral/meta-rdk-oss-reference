@@ -3,8 +3,7 @@ Date: 21 May, 2020 12:55 PM
 From: None
 Subject: SIGSEGV in _map_fp_comapre(). Added debug prints to check 
          the pointer details
-Source: None
-License: "BSD & MIT"
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################

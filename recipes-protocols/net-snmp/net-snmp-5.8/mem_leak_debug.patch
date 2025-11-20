@@ -2,8 +2,7 @@
 Date: 21 May, 2020 12:55 PM
 From: None
 Subject: SIGABRT in _sees_read(). Debug to check the pdu pointer
-Source: None
-License: "BSD & MIT"
+Source: Comcast
 Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ##########################################################
