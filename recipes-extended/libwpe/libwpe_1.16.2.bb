@@ -17,3 +17,6 @@ SRC_URI[sha256sum] = "960bdd11c3f2cf5bd91569603ed6d2aa42fd4000ed7cac930a804eac36
 # This is a tweak of upstream-version-is-even needed because
 # ipstream directory contains tarballs for other components as well.
 UPSTREAM_CHECK_REGEX = "libwpe-(?P<pver>\d+\.(\d*[02468])+(\.\d+)+)\.tar"
+
+PR = "r0"
+PACKAGE_ARCH = "${MIDDLEWARE_ARCH}"

@@ -51,3 +51,7 @@ FILES:librsvg-gtk = "${libdir}/gdk-pixbuf-2.0/*/*/*.so \
 RRECOMMENDS:librsvg-gtk = "gdk-pixbuf-bin"
 
 PIXBUF_PACKAGES = "librsvg-gtk"
+
+PV = "2.40.21"
+PR = "r0"
+PACKAGE_ARCH = "${MIDDLEWARE_ARCH}"

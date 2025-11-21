@@ -74,3 +74,5 @@ FILES:${PN} += "${libdir}/*.so"
 
 INSANE_SKIP:${PN} += "ldflags"
 
+
+SRCREV = "d802d561c4a2a4456403d572da75e73032d48d91"
