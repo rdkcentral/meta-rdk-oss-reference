@@ -1,6 +1,7 @@
 From a1134a31d417cc05a1fdb094f613a00a7a5e7ac5 Mon Sep 17 00:00:00 2001
 From: Chong Lu <Chong.Lu@windriver.com>
 Date: Thu, 28 May 2020 09:46:34 -0500
+Source: Backported from OE
 Subject: [PATCH] net-snmp: add knob whether nlist.h are checked
 
 Previously, it still was checked when there was no nlish.h in sysroots directory.

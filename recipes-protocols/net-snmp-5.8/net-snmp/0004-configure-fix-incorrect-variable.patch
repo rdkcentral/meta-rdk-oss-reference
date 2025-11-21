@@ -1,6 +1,7 @@
 From f3c5cd4df7ce8e5639c99b7b918e41fb89e969e3 Mon Sep 17 00:00:00 2001
 From: Wenlin Kang <wenlin.kang@windriver.com>
 Date: Wed, 24 May 2017 17:10:20 +0800
+Source: Backported from OE
 Subject: [PATCH 4/4] configure: fix incorrect variable
 
 For cross compile platform, this variable will not be correct, so fix it.

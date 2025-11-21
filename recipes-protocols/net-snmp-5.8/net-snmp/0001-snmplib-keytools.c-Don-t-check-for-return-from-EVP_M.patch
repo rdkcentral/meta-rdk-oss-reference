@@ -1,6 +1,7 @@
 From 89538a973119f1bf976b3a6df157ea940cf32eb5 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Fri, 18 Sep 2015 00:28:45 -0400
+Source: Backported from OE
 Subject: [PATCH] snmplib/keytools.c: Don't check for return from
 
  EVP_MD_CTX_init()

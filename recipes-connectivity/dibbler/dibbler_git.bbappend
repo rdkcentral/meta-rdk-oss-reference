@@ -20,5 +20,5 @@ SRC_URI:append:broadband:kirkstone = " file://dhcpv6c_handle_system_time_change_
 #SRC_URI:append:broadband = " file://Fix-Dibbler-IPv6-Resolve-Conf-Expiry-Event-Alignment.patch"
 SRC_URI:append:kirkstone = " file://0001-TOptIAPrefix-args-in-TClntOptIA_PD-constructor_kirk.patch"
 SRC_URI:append:kirkstone = " file://0001-fix-misguided-and-broken-usage-of-clock_gettime-CLOC.patch"
-SRC_URI:append:broadband = " ${@bb.utils.contains('DISTRO_FEATURES', 'rdkb_configurable_wan_interface','file://Configurable-WanName-Support.patch','', d)}"
-SRC_URI:append:broadband = " ${@bb.utils.contains('DISTRO_FEATURES', 'rdkb_configurable_wan_interface', bb.utils.contains('DISTRO_FEATURES', 'unified_mapt','file://Configurable-WanName-NotifyScript-mapT.patch','file://Configurable-WanName-NotifyScript.patch', d),'', d)}"
+SRC_URI:append:broadband = " file://Configurable-WanName-Support.patch"
+SRC_URI:append:broadband = " file://Configurable-WanName-NotifyScript-mapT.patch"

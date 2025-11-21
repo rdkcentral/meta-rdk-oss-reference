@@ -1,6 +1,7 @@
 From 0becb4843a40910d5ec9aa11969d4905a22037cf Mon Sep 17 00:00:00 2001
 From: "Roy.Li" <rongqing.li@windriver.com>
 Date: Fri, 16 Jan 2015 14:14:01 +0800
+Source: Backported from OE
 Subject: [PATCH] net-snmp: fix "libtool --finish"
 
 LIB_LDCONFIG_CMD failed since it is using a host dir $(libdir)

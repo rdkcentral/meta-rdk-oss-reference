@@ -1,6 +1,7 @@
 From 383e67e359b89abe0440597ce414297892ade511 Mon Sep 17 00:00:00 2001
 From: Changqing Li <changqing.li@windriver.com>
 Date: Tue, 26 Feb 2019 14:26:07 +0800
+Source: Backported from OE
 Subject: [PATCH] net-snmp: fix compile error with --disable-des
 
 | scapi.c: In function 'sc_encrypt':

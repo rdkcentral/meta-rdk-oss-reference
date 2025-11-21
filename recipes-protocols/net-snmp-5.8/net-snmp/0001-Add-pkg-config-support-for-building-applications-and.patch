@@ -1,6 +1,7 @@
 From 4bf83597379523032663c8e95b3786a217c9a849 Mon Sep 17 00:00:00 2001
 From: Hugh McMaster <hugh.mcmaster@outlook.com>
 Date: Wed, 3 Apr 2019 21:36:03 +1100
+Source: Backported from OE
 Subject: [PATCH] Add pkg-config support for building applications and
  sub-agents
 

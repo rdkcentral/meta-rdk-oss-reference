@@ -16,4 +16,3 @@ SRC_URI:remove:broadband = " file://authkeys.patch "
 
 SRC_URI:append:broadband = " file://dropbear_logging_fix.patch"
 
-CFLAGS:append:broadband = " -DRDK_BROADBAND"

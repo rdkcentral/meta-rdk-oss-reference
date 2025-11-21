@@ -1,6 +1,7 @@
 From 2ad4df6d503be72a8910c3087611adb33d77ffde Mon Sep 17 00:00:00 2001
 From: Li xin <lixin.fnst@cn.fujitsu.com>
 Date: Fri, 21 Aug 2015 18:23:13 +0900
+Source: Backported from OE
 Subject: [PATCH] config_os_headers: Error Fix
 
 ERROR: This autoconf log indicates errors, it looked at host include

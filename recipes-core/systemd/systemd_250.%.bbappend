@@ -45,7 +45,6 @@ SRC_URI += "file://systemd250-tmpfiles.patch \
             file://0001-Added-Extra-information-for-NTP-Status-250.patch  \
             file://systemd250-ntp-event-trigger.patch \
             file://0001-In-our-echo-system-we-are-managing-last-known-good-t-250.patch \
-            ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} \
             file://0001_systemd250_reduce_journal_rotation_logging.patch \
             "
 
@@ -121,11 +120,9 @@ do_install:append:broadband() {
 }
 
 do_install:append:broadband() {
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'morty', 'false', 'true', d)}; then
-        #journal config override
-        sed -i -e 's/.*SystemMaxFiles=.*/SystemMaxFiles=4/g' ${D}${sysconfdir}/systemd/journald.conf
-        sed -i -e 's/.*RuntimeMaxFiles=.*/RuntimeMaxFiles=4/g' ${D}${sysconfdir}/systemd/journald.conf
-    fi
+    #journal config override
+    sed -i -e 's/.*SystemMaxFiles=.*/SystemMaxFiles=4/g' ${D}${sysconfdir}/systemd/journald.conf
+    sed -i -e 's/.*RuntimeMaxFiles=.*/RuntimeMaxFiles=4/g' ${D}${sysconfdir}/systemd/journald.conf
 }
 
 #meta-rdk-ext/recipes-core/systemd/systemd_%.bbappend

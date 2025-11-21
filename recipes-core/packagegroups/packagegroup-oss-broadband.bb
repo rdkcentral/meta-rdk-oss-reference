@@ -174,20 +174,16 @@ RDEPENDS:${PN} += "\
      nlohmann-json \ 
      gupnp \ 
      net-snmp \ 
-     ccronexpr \ 
-     irtt \ 
      log4c \ 
      safec-common-wrapper \ 
      nettle \ 
      gettext \ 
      trower-base64 \ 
-     littlesheens \ 
      libunwind \ 
      mbedtls \ 
      m4 \ 
      sed \ 
      libupnp \ 
-     mustach \ 
      libarchive \ 
      nghttp2 \ 
      libpcre \ 
@@ -196,7 +192,6 @@ RDEPENDS:${PN} += "\
      os-release \ 
      coreutils \ 
      duktape \ 
-     bleadvhci \ 
      breakpad-wrapper \ 
      volatile-binds \ 
      gmp \ 
