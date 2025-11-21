@@ -1,6 +1,7 @@
 From a05d92ae85024d0648f69f95307a1d3e8e51109c Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Sun, 1 Apr 2018 19:55:38 -0700
+Source: Backport from OE
 Subject: [PATCH] Fix -Werror=class-memaccess
 
 Casting to void* make gcc happy since its upset about

@@ -1,6 +1,7 @@
 From 15d8bb6792c9639d85a9ffe2ac81431f1b986c21 Mon Sep 17 00:00:00 2001
 From: Khem Raj <raj.khem@gmail.com>
 Date: Sat, 22 Apr 2017 08:53:50 -0700
+Source: Backport from OE
 Subject: [PATCH] Comment intentional fallthrough in case statements
 
 Fixes build with gcc7
