@@ -34,6 +34,7 @@ PREFERRED_VERSION_nativesdk-openssl = "3.0.%"
 PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
 PREFERRED_VERSION_dnsmasq = "2.90"
+PREFERRED_VERSION_msgpack-c = "4.0.0%"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
