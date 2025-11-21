@@ -290,6 +290,7 @@ RDEPENDS:${PN} += "\
      libndp \
      libnewt \
      libpcre \
+     libp11 \
      libseccomp \
      librsvg \
      libtasn1 \
