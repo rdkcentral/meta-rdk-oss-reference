@@ -722,7 +722,7 @@ PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssl-1.1.1l ?= "r0"
 PACKAGE_ARCH:pn-openssl-1.1.1l ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg ?= "r1"
+PR:pn-opkg ?= "r2"
 PACKAGE_ARCH:pn-opkg ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-opkg-arch-config ?= "r1"
