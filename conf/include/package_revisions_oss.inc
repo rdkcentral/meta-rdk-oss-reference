@@ -929,7 +929,7 @@ PACKAGE_ARCH:pn-xmlsec1 ?= "${OSS_LAYER_ARCH}"
 PR:pn-xz ?= "r0"
 PACKAGE_ARCH:pn-xz ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-yajl ?= "r0"
+PR:pn-yajl ?= "r1"
 PACKAGE_ARCH:pn-yajl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-zlib ?= "r0"
