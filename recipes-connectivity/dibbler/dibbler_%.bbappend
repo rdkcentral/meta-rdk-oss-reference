@@ -27,12 +27,6 @@ SRC_URI:append:broadband = " file://client-notify.patch \
 
 SRC_URI:append:broadband = " ${@bb.utils.contains('DISTRO_FEATURES', 'nat46','file://client-notify-option95.patch','', d)}"
 
-SRC_URI:append:broadband = " file://drop_priv_root_dibbler.patch"
-SRC_URI:append:broadband = " file://DAD_Failed_Log_Redirect.patch"
-
-DEPENDS:append:broadband = " libunpriv"
-LDFLAGS:append:broadband = " -lprivilege"
-
 inherit logrotate_config
 
 LOGROTATE_NAME = "dibbler"
