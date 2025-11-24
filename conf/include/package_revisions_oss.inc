@@ -8,6 +8,8 @@ def get_oss_machine(d):
         arch = "rdk-arm64"
     elif "armv7athf-neon" in default_tune:
         arch = "rdk-arm7a"
+    elif "cortexa15hf-neon" in default_tune:
+        arch = "rdk-cortexa15"
     else:
         arch = "rdk-arm7ve"
     return arch
@@ -31,6 +33,8 @@ PREFERRED_VERSION_openssl-native = "3.0.%"
 PREFERRED_VERSION_nativesdk-openssl = "3.0.%"
 PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
+PREFERRED_VERSION_dnsmasq = "2.90"
+PREFERRED_VERSION_msgpack-c = "4.0.0%"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
@@ -925,7 +929,7 @@ PACKAGE_ARCH:pn-xmlsec1 ?= "${OSS_LAYER_ARCH}"
 PR:pn-xz ?= "r0"
 PACKAGE_ARCH:pn-xz ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-yajl ?= "r0"
+PR:pn-yajl ?= "r1"
 PACKAGE_ARCH:pn-yajl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-zlib ?= "r0"
