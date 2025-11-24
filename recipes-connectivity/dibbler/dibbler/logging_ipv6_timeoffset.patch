@@ -1,0 +1,50 @@
+###############################################################################
+Date: Dec 12 2024
+From: RDKB-57930 : Logging to be added for the offset of DHCPv6
+Subject: RDKB-57930 : Logging to be added for the offset of DHCPv6
+Source: COMCAST
+Upstream-Status: Pending
+Signed-off-by: Sunu Sunil<Sunu_Sunil@comcast.com>
+###############################################################################
+
+Index: dibbler-1.0.1/scripts/notify-scripts/client-notify-bsd.sh
+===================================================================
+diff -Naur dibbler-1.0.1_org/scripts/notify-scripts/client-notify-bsd.sh dibbler-1.0.1/scripts/notify-scripts/client-notify-bsd.sh
+--- dibbler-1.0.1_org/scripts/notify-scripts/client-notify-bsd.sh	2024-12-12 16:02:28.835998095 +0530
++++ dibbler-1.0.1/scripts/notify-scripts/client-notify-bsd.sh	2024-12-12 15:01:42.600603979 +0530
+
+@@ -82,6 +82,22 @@
+      echo "$OPTION_FORMAT"
+ 
+ }
++
++convert_hex_to_decimal()
++{
++    timeoffset_hex_value=$1
++
++    # Convert hex to decimal
++    decimal_value=$((16#$timeoffset_hex_value))
++
++    # Check whether the value exceeds signed 32 bit max
++    if ((decimal_value > 0x7FFFFFFF)); then
++        # convert to signed value
++        decimal_value=$((decimal_value - 0x100000000))
++    fi
++    echo $decimal_value
++}
++
+ RESOLV_CONF_override_needed=0
+ 
+ if [ "$OPTION_NEXT_HOP" != "" ]; then
+@@ -159,7 +175,11 @@
+         ;;
+         "38")
+         echo "Suboption TimeOffset is  $suboption_data in option $SRV_OPTION17" >> $LOGFILE
++        echo "Suboption TimeOffset is  $suboption_data in option $SRV_OPTION17" >> $CONSOLEFILE
+         sysevent set ipv6-timeoffset $(echo "$suboption_data" | tr -d ':')
++        timeoffset_hex_value=$(echo "$suboption_data" | tr -d ':')
++        timeoffset=$(convert_hex_to_decimal $timeoffset_hex_value)
++        echo "DHCPv6TimeOffset:$timeoffset" >> $CONSOLEFILE
+         ;;
+         "39")
+          echo "Suboption IP Mode Preference is  $suboption_data in option $SRV_OPTION17" 

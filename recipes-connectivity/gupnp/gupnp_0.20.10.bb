@@ -18,5 +18,5 @@ DEFAULT_PREFERENCE = "-1"
 EXTRA_OECONF += "--enable-introspection=no"
 
 RDEPENDS:${PN}-dev:append = " ${PYTHON_PN}"
-RDEPENDS:${PN}-dev:remove_broadband = "python-textutils python-xml"
+RDEPENDS:${PN}-dev:remove:broadband = "python-textutils python-xml"
 RDEPENDS:${PN}-dev:append = " ${PYTHON_PN}-xml ${PYTHON_PN}-core"

@@ -1,0 +1,293 @@
+From afa077dd7768657b992e586b08674adea46e4176 Mon Sep 17 00:00:00 2001
+From: "shashank.kumar@sky.uk" <shashank.kumar@sky.uk>
+Date: Wed, 27 Mar 2024 17:52:46 +0000
+Subject: [PATCH] RDKTV-29560: idle metrics v3
+Source: Sky
+Reason for change: Change to fix the crash on 4k platforms while loading av metric plugin
+Test Procedure: Run collectd to load AV metrics
+Risks: Low
+---
+
+diff -Naur linux-4.9_orig/include/uapi/linux/prctl.h linux-4.9/include/uapi/linux/prctl.h
+--- linux-4.9_orig/include/uapi/linux/prctl.h	2024-04-10 01:42:38.750245444 +0100
++++ linux-4.9/include/uapi/linux/prctl.h	2024-04-10 01:48:59.232024927 +0100
+@@ -204,50 +204,50 @@
+ 
+ /* define structure(s) used for logging video and audio metrics */
+ typedef struct {
+-	signed long long lastSyncTime;
+-	signed long long maxSyncTime;
+-	signed long long minSyncTime;
+-	signed long long sumSyncTime;
+-	int numVsyncs1ms;
+-	int numVsyncs2ms;
+-	int numVsyncs3ms;
+-	int numVsyncs4ms;
+-	int numVsyncs5ms;
+-	int numVsyncs6ms;
+-	int numVsyncs7ms;
+-	int numVsyncs8ms;
+-	int numVsyncs9ms;
+-	int numVsyncs10ms;
+-	int vsyncCount;
+-	int framesDisplayed;
+-	int framesFRC;
+-	int framesQDropped;
+-	int framesPTSLateDropped;
+-	int framesSyncFreeDropped;
+-	int framesRepeats;
+-	int underruns;
+-	int Qunderflow;
+-	int gapUnderflow;
+-	int maxConsecQDrops;
+-	int maxConsecPTSLateDrops;
+-	int maxSyncFreeDropped;
+-	int maxConsecRepeats;
+-	int maxUnderruns;
+-	int maxQunderflow;
+-	int maxGapUnderflow;
+-	int consecQDrops;
+-	int consecPTSLateDrops;
+-	int consecSyncFreeDropped;
+-	int consecRepeats;
+-	int consecUnderruns;
+-	int consecQunderflow;
+-	int consecGapUnderflow;
+-	int syncRate;
+-	int syncMode;
+-	int retuneCount;
+-	int decodeErrorCount;
++	__s64 lastSyncTime;
++	__s64 maxSyncTime;
++	__s64 minSyncTime;
++	__s64 sumSyncTime;
++	__s32 numVsyncs1ms;
++	__s32 numVsyncs2ms;
++	__s32 numVsyncs3ms;
++	__s32 numVsyncs4ms;
++	__s32 numVsyncs5ms;
++	__s32 numVsyncs6ms;
++	__s32 numVsyncs7ms;
++	__s32 numVsyncs8ms;
++	__s32 numVsyncs9ms;
++	__s32 numVsyncs10ms;
++	__s32 vsyncCount;
++	__s32 framesDisplayed;
++	__s32 framesFRC;
++	__s32 framesQDropped;
++	__s32 framesPTSLateDropped;
++	__s32 framesSyncFreeDropped;
++	__s32 framesRepeats;
++	__s32 underruns;
++	__s32 Qunderflow;
++	__s32 gapUnderflow;
++	__s32 maxConsecQDrops;
++	__s32 maxConsecPTSLateDrops;
++	__s32 maxSyncFreeDropped;
++	__s32 maxConsecRepeats;
++	__s32 maxUnderruns;
++	__s32 maxQunderflow;
++	__s32 maxGapUnderflow;
++	__s32 consecQDrops;
++	__s32 consecPTSLateDrops;
++	__s32 consecSyncFreeDropped;
++	__s32 consecRepeats;
++	__s32 consecUnderruns;
++	__s32 consecQunderflow;
++	__s32 consecGapUnderflow;
++	__s32 syncRate;
++	__s32 syncMode;
++	__s32 retuneCount;
++	__s32 decodeErrorCount;
+ 	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
+-	int reserved[2];
++	__s32 reserved[2];
+ } VIDEO_METRICS;
+ /* max two AV channels supported */
+ #define MAX_VIDEO_CHANNELS	2
+@@ -266,53 +266,53 @@
+ 
+ /* define structure(s) used for logging audio metrics */
+ typedef struct {
+-	int underrunTime;
++	__s32 underrunTime;
+ } AUDIO_OUTPUT_METRICS;
+ 
+ typedef struct {
+-	int underruns;
+-	int bufFullTime;
+-	int bufLevel;
+-	int sampleRate;
+-	int numChannels;
+-	int discardPkt;
+-	int reconfigCount;
+-	int frameRepeat;
+-	int frameSkip;
+-	int frameInSync;
+-	int resync;
+-	int reserve[5];
++	__s32 underruns;
++	__s32 bufFullTime;
++	__s32 bufLevel;
++	__s32 sampleRate;
++	__s32 numChannels;
++	__s32 discardPkt;
++	__s32 reconfigCount;
++	__s32 frameRepeat;
++	__s32 frameSkip;
++	__s32 frameInSync;
++	__s32 resync;
++	__s32 reserve[5];
+ } AUDIO_INPUT_CHAN_METRICS;
+ 
+ typedef struct {
+-	int count;
+-	int underruns;
+-	int bufFullTime;
+-	int minBufFullTime;
+-	int maxBufFullTime;
+-	int bufLevelBytes;
+-	int maxBufLevelBytes;
+-	int discardPkt;
+-	int reconfigCount;
+-	int sampleRate;
+-	int numChannels;
+-	int resyncCount;
+-	int frameRepeatCount;
+-	int consecRepeats;
+-	int maxConsecRepeats;
+-	int frameSkipCount;
+-	int frameInSync;
+-	int consecSkips;
+-	int maxConsecSkips;
++	__s32 count;
++	__s32 underruns;
++	__s32 bufFullTime;
++	__s32 minBufFullTime;
++	__s32 maxBufFullTime;
++	__s32 bufLevelBytes;
++	__s32 maxBufLevelBytes;
++	__s32 discardPkt;
++	__s32 reconfigCount;
++	__s32 sampleRate;
++	__s32 numChannels;
++	__s32 resyncCount;
++	__s32 frameRepeatCount;
++	__s32 consecRepeats;
++	__s32 maxConsecRepeats;
++	__s32 frameSkipCount;
++	__s32 frameInSync;
++	__s32 consecSkips;
++	__s32 maxConsecSkips;
+ 	/* pad out to 1 cache line (64 bytes) */
+-	int reserved[13];
++	__s32 reserved[13];
+ } AUDIO_INPUT_METRICS;
+ 
+ typedef struct {
+-	int underrunTime;
+-	int underrunCount;
+-	int minUnderrunTime;
+-	int maxUnderrunTime;
++	__s32 underrunTime;
++	__s32 underrunCount;
++	__s32 minUnderrunTime;
++	__s32 maxUnderrunTime;
+ 	AUDIO_INPUT_METRICS input[AUDIO_METRIC_TYPE_MAX_INPUTS];
+ 	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
+ } AUDIO_METRICS;
+@@ -325,54 +325,54 @@
+ #define T962X3_NUM_CPUS 4
+ 
+ typedef struct {
+-	unsigned long long metricStartTime;
+-	unsigned long long metricEndTime;
+-	unsigned long long idle_time[T962X3_NUM_CPUS];
++	__u64 metricStartTime;
++	__u64 metricEndTime;
++	__u64 idle_time[T962X3_NUM_CPUS];
+ } IDLE_METRICS;
+ 
+ typedef struct {
+-	unsigned long long sum_idle_time;
+-	unsigned long max_idle_time;
+-	unsigned long idle_count;
++	__u64 sum_idle_time;
++	__u32 max_idle_time;
++	__u32 idle_count;
+ } PER_CPU_IDLE_METRIC;
+ 
+ /* define structure(s) used for logging idle metrics */
+ typedef struct {
+-	unsigned long long metricStartTime;
+-	unsigned long long metricEndTime;
++	__u64 metricStartTime;
++	__u64 metricEndTime;
+ 	PER_CPU_IDLE_METRIC idle[T962X3_NUM_CPUS];
+-	unsigned long long sum_all_cpus_running_time;
+-	unsigned long long sum_run_time_lt_1ms;
+-	unsigned long long sum_run_time_gt_1ms;
+-	unsigned long long sum_run_time_gt_5ms;
+-	unsigned long long sum_run_time_gt_10ms;
+-	unsigned long long sum_run_time_gt_20ms;
+-	unsigned long long sum_run_time_gt_30ms;
+-	unsigned long long sum_run_time_gt_40ms;
+-	unsigned long long sum_run_time_gt_50ms;
+-	unsigned long long sum_run_time_gt_75ms;
+-	unsigned long long sum_run_time_gt_100ms;
+-	unsigned long max_run_time_lt_1ms;
+-	unsigned long max_run_time_gt_1ms;
+-	unsigned long max_run_time_gt_5ms;
+-	unsigned long max_run_time_gt_10ms;
+-	unsigned long max_run_time_gt_20ms;
+-	unsigned long max_run_time_gt_30ms;
+-	unsigned long max_run_time_gt_40ms;
+-	unsigned long max_run_time_gt_50ms;
+-	unsigned long max_run_time_gt_75ms;
+-	unsigned long max_run_time_gt_100ms;
+-	unsigned long max_all_cpus_running_time;
+-	unsigned long count;
+-	unsigned long run_time_gt_1ms;
+-	unsigned long run_time_gt_5ms;
+-	unsigned long run_time_gt_10ms;
+-	unsigned long run_time_gt_20ms;
+-	unsigned long run_time_gt_30ms;
+-	unsigned long run_time_gt_40ms;
+-	unsigned long run_time_gt_50ms;
+-	unsigned long run_time_gt_75ms;
+-	unsigned long run_time_gt_100ms;
++	__u64 sum_all_cpus_running_time;
++	__u64 sum_run_time_lt_1ms;
++	__u64 sum_run_time_gt_1ms;
++	__u64 sum_run_time_gt_5ms;
++	__u64 sum_run_time_gt_10ms;
++	__u64 sum_run_time_gt_20ms;
++	__u64 sum_run_time_gt_30ms;
++	__u64 sum_run_time_gt_40ms;
++	__u64 sum_run_time_gt_50ms;
++	__u64 sum_run_time_gt_75ms;
++	__u64 sum_run_time_gt_100ms;
++	__u32 max_run_time_lt_1ms;
++	__u32 max_run_time_gt_1ms;
++	__u32 max_run_time_gt_5ms;
++	__u32 max_run_time_gt_10ms;
++	__u32 max_run_time_gt_20ms;
++	__u32 max_run_time_gt_30ms;
++	__u32 max_run_time_gt_40ms;
++	__u32 max_run_time_gt_50ms;
++	__u32 max_run_time_gt_75ms;
++	__u32 max_run_time_gt_100ms;
++	__u32 max_all_cpus_running_time;
++	__u32 count;
++	__u32 run_time_gt_1ms;
++	__u32 run_time_gt_5ms;
++	__u32 run_time_gt_10ms;
++	__u32 run_time_gt_20ms;
++	__u32 run_time_gt_30ms;
++	__u32 run_time_gt_40ms;
++	__u32 run_time_gt_50ms;
++	__u32 run_time_gt_75ms;
++	__u32 run_time_gt_100ms;
+ } IDLE_METRICS_V2;
+ 
+ #define PR_GET_IDLE_METRICS		104
