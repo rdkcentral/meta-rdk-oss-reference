@@ -716,7 +716,7 @@ PACKAGE_ARCH:pn-openjpeg ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-openssl ?= "r0"
+PR:pn-openssl ?= "r1"
 PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssl-1.1.1l ?= "r0"
@@ -937,3 +937,6 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-zstd ?= "r0"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libp11 ?= "r0"
+PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
