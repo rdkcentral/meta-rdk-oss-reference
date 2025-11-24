@@ -5,7 +5,6 @@ SRC_URI += "\
     file://force_tls1_2.patch \
     file://0001-Add-support-for-PKCS-12-encrypted-files.patch \
     file://0001-XRE-14265-request-client-cert-support.patch \
-    file://handle_ZERO_RETURN_as_closed_connection.patch \
 "
 
 PROVIDES += "glib-openssl"
