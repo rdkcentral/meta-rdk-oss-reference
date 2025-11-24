@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.9.0"
+PV = "4.10.0"
 PR = "r0"
 
 # poky components
@@ -290,6 +290,7 @@ RDEPENDS:${PN} += "\
      libndp \
      libnewt \
      libpcre \
+     libp11 \
      libseccomp \
      librsvg \
      libtasn1 \
