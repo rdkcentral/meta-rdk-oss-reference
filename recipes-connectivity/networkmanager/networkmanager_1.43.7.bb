@@ -33,6 +33,7 @@ SRC_URI = " \
     file://NM_dynamicDNS.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
+    file://99-update-named \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
@@ -252,10 +253,12 @@ do_install:append() {
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
     #install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
     install -d ${D}${datadir}/dbus-1/system-services
+    install -d ${D}${sysconfdir}/NetworkManager/dispatcher.d
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
     #install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
     install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
+    install -m 0755 ${WORKDIR}/99-update-named ${D}${sysconfdir}/NetworkManager/dispatcher.d/99-update-named.sh
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 

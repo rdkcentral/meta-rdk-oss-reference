@@ -12,15 +12,20 @@ PACKAGE_BEFORE_PN += "${PN}-dl ${PN}-named"
 SRC_URI:append = " \
                   file://named.conf.options \
                   file://named_start_post_rdm.sh \
+                  file://update_namedoptions.sh \
                  "
 
 do_install:append () {
     install -d ${D}${sysconfdir}/bind
     install -d ${D}/var/cache/bind
+    install -d ${D}${base_libdir}/rdk
     
     install ${WORKDIR}/named.conf.options ${D}${sysconfdir}/bind/
+    install -m 0755 ${WORKDIR}/update_namedoptions.sh ${D}${base_libdir}/rdk/
     sed -i "/.*include.*rndc.*/d" ${D}${sysconfdir}/bind/named.conf
     sed -i 's#.*rndc.*#;#g'  ${D}${sysconfdir}/bind/named.conf
+    sed -i '/^\/\/ prime the server with knowledge of the root servers/,/^};/d' ${D}${sysconfdir}/bind/named.conf
+    install -m 0644 ${S}/systemd_units/named.service ${D}${systemd_unitdir}/system
 }
 
 inherit syslog-ng-config-gen logrotate_config
@@ -50,6 +55,7 @@ FILES:${PN}-named = "${systemd_unitdir}/system/named.service \
                      ${sysconfdir}/bind/db.root \
                      ${localstatedir}/cache/bind \
                      ${sysconfdir}/syslog-ng/* \
+                     ${base_libdir}/rdk/update_namedoptions.sh \
                     "
 FILES:${PN}-dl = "${sbindir}/named \
                  "
