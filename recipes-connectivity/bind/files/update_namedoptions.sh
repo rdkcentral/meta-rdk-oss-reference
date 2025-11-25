@@ -24,13 +24,27 @@ if [ -f /lib/rdk/t2Shared_api.sh ]; then
     source /lib/rdk/t2Shared_api.sh
 fi
 DNS_SERVERS=$*
-echo "`/bin/timestamp` Input parameters: $DNS_SERVERS" >> $LOG_FILE
 LOG_FILE="/opt/logs/named.log"
+echo "`/bin/timestamp` Input parameters: $DNS_SERVERS" >> $LOG_FILE
 DNS64_SERVER1=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server1 2>&1`
+if [ "x$DNS64_SERVER1" = "x" ]; then
+    DNS64_SERVER1="2a00:1098:2b::1" # nat64.net	Amsterdam
+    echo "`/bin/timestamp` DNS64 Server1 not configured, using default: $DNS64_SERVER1" >> $LOG_FILE
+fi
+
 DNS64_SERVER2=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server2 2>&1`
+if [ "x$DNS64_SERVER2" = "x" ]; then
+    DNS64_SERVER2="2a01:4ff:f0:9876::1" # nat64.net	Ashburn
+    echo "`/bin/timestamp` DNS64 Server2 not configured, using default: $DNS64_SERVER2" >> $LOG_FILE
+fi
+
 DNS64_SERVER3=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server3 2>&1`
 DNS64_SERVER4=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server4 2>&1`
+
 RFC_BIND_ENABLED=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Enable 2>&1`
+if [ "x$RFC_BIND_ENABLED" = "x" ]; then
+    RFC_BIND_ENABLED="true"
+fi
 APPENDER_STR="{ \n clients { any; };\n exclude { 64:FF9B::/96; ::ffff:0000:0000/96; }; \n suffix ::; \n };"
 DNS64_STR=""
 if [ "x$DNS64_SERVER1" != "x" ]; then
@@ -54,7 +68,7 @@ if [ "x$DNS64_STR" = "x" ]; then
     echo "`/bin/timestamp` No DNS64 Proxy servers configured" >> $LOG_FILE
 fi
 
-if [ "x$BIND_ENABLED" = "xtrue" -a "x$RFC_BIND_ENABLED" = "xtrue" ]; then
+if [ "x$RFC_BIND_ENABLED" = "xtrue" ]; then
 	BUILD_CONF_PATH="/tmp/named.conf.options"
 	# Refresh the options again. Since resolver config can change while box is running.
 	# Added the following to handle that case.
@@ -81,6 +95,6 @@ if [ "x$BIND_ENABLED" = "xtrue" -a "x$RFC_BIND_ENABLED" = "xtrue" ]; then
     fi
 else
 	# This is to make sure atleast dnsmasq runs even if it fails initially. or some switch happened inbetween.
-	echo "Bind Support is not enabled" >> $LOG_FILE
+	echo "`/bin/timestamp` Bind Support is not enabled" >> $LOG_FILE
 	systemctl stop named.service
 fi

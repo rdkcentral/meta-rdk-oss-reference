@@ -31,7 +31,7 @@ LOG_FILE="/opt/logs/named.log"
 echo "`/bin/timestamp` nm-dispatcher: Interface=$INTERFACE Action=$ACTION" >> $LOG_FILE
 
 case "$ACTION" in
-    up|dhcp4-change|dhcp6-change)
+    dhcp4-change|dhcp6-change)
         # Check if resolv.dnsmasq exists and has DNS servers
         if [ -f /etc/resolv.dnsmasq ] && [ -s /etc/resolv.dnsmasq ]; then
             # Extract DNS servers with semicolons
