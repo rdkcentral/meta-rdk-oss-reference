@@ -25,7 +25,6 @@ do_install:append () {
     sed -i "/.*include.*rndc.*/d" ${D}${sysconfdir}/bind/named.conf
     sed -i 's#.*rndc.*#;#g'  ${D}${sysconfdir}/bind/named.conf
     sed -i '/^\/\/ prime the server with knowledge of the root servers/,/^};/d' ${D}${sysconfdir}/bind/named.conf
-    install -m 0644 ${S}/systemd_units/named.service ${D}${systemd_unitdir}/system
 }
 
 inherit syslog-ng-config-gen logrotate_config
@@ -79,6 +78,7 @@ CUSTOM_PKG_EXTNS="dl"
 SKIP_MAIN_PKG="yes"
 
 do_install:append () {
+    install -m 0644 ${S}/systemd_units/named.service ${D}${systemd_unitdir}/system
     sed -i "/^ExecStartPre=.*/a ExecStartPre=/bin/sh -c '/bin/mkdir -p /run/named; /bin/chmod -R 777 /run/named'" ${D}${systemd_unitdir}/system/named.service
 }
 
