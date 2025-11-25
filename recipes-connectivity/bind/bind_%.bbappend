@@ -58,9 +58,9 @@ FILES:${PN}-named = "${systemd_unitdir}/system/named.service \
                     "
 FILES:${PN}-dl = "${sbindir}/named \
                  "
-SYSTEMD_SERVICE:${PN}:remove = "named.service"
-SYSTEMD_SERVICE:${PN}-named:append = " named.service "
-SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_PACKAGES = "${PN}-named"
+SYSTEMD_SERVICE:${PN}-named = "named.service"
+SYSTEMD_AUTO_ENABLE:${PN}-named = "enable"
 USERADD_PACKAGES = "${PN}-named"
 USERADD_PARAM:${PN}-named = "--system --home ${localstatedir}/cache/bind --no-create-home \
                        --user-group bind"
@@ -78,7 +78,6 @@ CUSTOM_PKG_EXTNS="dl"
 SKIP_MAIN_PKG="yes"
 
 do_install:append () {
-    install -m 0644 ${S}/systemd_units/named.service ${D}${systemd_unitdir}/system
     sed -i "/^ExecStartPre=.*/a ExecStartPre=/bin/sh -c '/bin/mkdir -p /run/named; /bin/chmod -R 777 /run/named'" ${D}${systemd_unitdir}/system/named.service
 }
 
