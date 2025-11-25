@@ -1,6 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}_${PV}:"
 require bluez5_5.66.inc
 
+PR = "r5"
+
 SRC_URI[md5sum] = "3f9496fedf878fba985e56713ed7752e"
 SRC_URI[sha256sum] = "39fea64b590c9492984a0c27a89fc203e1cdc74866086efb8f4698677ab2b574"
 
