@@ -12,17 +12,19 @@ PACKAGE_BEFORE_PN += "${PN}-dl ${PN}-named"
 SRC_URI:append = " \
                   file://named.conf.options \
                   file://named_start_post_rdm.sh \
+                  file://update_namedoptions.sh \
                  "
 
 do_install:append () {
     install -d ${D}${sysconfdir}/bind
     install -d ${D}/var/cache/bind
-    install -d ${D}/etc/rdm/post-services
+    install -d ${D}${base_libdir}/rdk
     
     install ${WORKDIR}/named.conf.options ${D}${sysconfdir}/bind/
+    install -m 0755 ${WORKDIR}/update_namedoptions.sh ${D}${base_libdir}/rdk/
     sed -i "/.*include.*rndc.*/d" ${D}${sysconfdir}/bind/named.conf
     sed -i 's#.*rndc.*#;#g'  ${D}${sysconfdir}/bind/named.conf
-    install -m 755 ${WORKDIR}/named_start_post_rdm.sh ${D}/etc/rdm/post-services
+    sed -i '/^\/\/ prime the server with knowledge of the root servers/,/^};/d' ${D}${sysconfdir}/bind/named.conf
 }
 
 inherit syslog-ng-config-gen logrotate_config
@@ -52,13 +54,13 @@ FILES:${PN}-named = "${systemd_unitdir}/system/named.service \
                      ${sysconfdir}/bind/db.root \
                      ${localstatedir}/cache/bind \
                      ${sysconfdir}/syslog-ng/* \
+                     ${base_libdir}/rdk/update_namedoptions.sh \
                     "
 FILES:${PN}-dl = "${sbindir}/named \
-                  ${sysconfdir}/rdm/post-services/named_start_post_rdm.sh \
                  "
-SYSTEMD_SERVICE:${PN}:remove = "named.service"
-SYSTEMD_SERVICE:${PN}-named:append = " named.service "
-
+SYSTEMD_PACKAGES = "${PN}-named"
+SYSTEMD_SERVICE:${PN}-named = "named.service"
+SYSTEMD_AUTO_ENABLE:${PN}-named = "enable"
 USERADD_PACKAGES = "${PN}-named"
 USERADD_PARAM:${PN}-named = "--system --home ${localstatedir}/cache/bind --no-create-home \
                        --user-group bind"
@@ -71,18 +73,12 @@ EXTRA_OECONF:append = " --without-readline"
 inherit comcast-package-deploy
 
 BIND_DL="bind-dl"
-DOWNLOAD_APPS="${@bb.utils.contains('DISTRO_FEATURES','rdm', d.getVar("BIND_DL", True),' ',d)}"
+DOWNLOAD_APPS="${BIND_DL}"
 CUSTOM_PKG_EXTNS="dl"
 SKIP_MAIN_PKG="yes"
 
 do_install:append () {
     sed -i "/^ExecStartPre=.*/a ExecStartPre=/bin/sh -c '/bin/mkdir -p /run/named; /bin/chmod -R 777 /run/named'" ${D}${systemd_unitdir}/system/named.service
-    if [ "${@bb.utils.contains('DISTRO_FEATURES', 'rdm', 'true', 'false', d)}" = "true" ]
-    then
-       sed -i "/^After=.*/a After=apps-rdm.service" ${D}${systemd_unitdir}/system/named.service
-       sed -i "/^EnvironmentFile=.*/a Environment=\"LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/media/apps/bind-dl/usr/lib/\"" ${D}${systemd_unitdir}/system/named.service
-       sed -i "s/^ExecStart=.*/ExecStart=\/media\/apps\/bind-dl\/usr\/sbin\/named \$OPTIONS/g" ${D}${systemd_unitdir}/system/named.service
-    fi
 }
 
 FILES:${PN}-libs:remove         = "/usr/lib/named/*.so* /usr/lib/*-9.18.5.so"
