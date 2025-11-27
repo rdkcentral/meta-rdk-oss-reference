@@ -1,7 +1,8 @@
 options {
          directory "/var/cache/bind";
          forwarders {
-                     //OPT
+                    //eth0
+                    //wlan0
          };
          forward only;
          max-udp-size 600;

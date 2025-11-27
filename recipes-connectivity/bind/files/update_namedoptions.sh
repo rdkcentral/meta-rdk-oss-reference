@@ -18,14 +18,34 @@
 # limitations under the License.
 ##############################################################################
 if [ -f /etc/device.properties ];then
-     . /etc/device.properties
+    . /etc/device.properties
 fi
 if [ -f /lib/rdk/t2Shared_api.sh ]; then
     source /lib/rdk/t2Shared_api.sh
 fi
+
+# Parse command line arguments
+ACTION=$1
+INTERFACE=$2
+shift 2
 DNS_SERVERS=$*
+
 LOG_FILE="/opt/logs/named.log"
-echo "`/bin/timestamp` Input parameters: $DNS_SERVERS" >> $LOG_FILE
+BUILD_CONF_PATH="/etc/bind/named.conf.options"
+
+echo "`/bin/timestamp` Action: $ACTION, Interface: $INTERFACE, DNS Servers: $DNS_SERVERS" >> $LOG_FILE
+
+# Validate action parameter
+if [ "x$ACTION" != "xadd" ] && [ "x$ACTION" != "xremove" ]; then
+    echo "`/bin/timestamp` ERROR: Invalid action '$ACTION'. Must be 'add' or 'remove'" >> $LOG_FILE
+    exit 1
+fi
+
+# Validate interface parameter
+if [ "x$INTERFACE" != "xeth0" ] && [ "x$INTERFACE" != "xwlan0" ]; then
+    echo "`/bin/timestamp` ERROR: Invalid interface '$INTERFACE'. Must be 'eth0' or 'wlan0'" >> $LOG_FILE
+    exit 1
+fi
 DNS64_SERVER1=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server1 2>&1`
 if [ "x$DNS64_SERVER1" = "x" ]; then
     DNS64_SERVER1="2a00:1098:2b::1" # nat64.net	Amsterdam
@@ -69,20 +89,43 @@ if [ "x$DNS64_STR" = "x" ]; then
 fi
 
 if [ "x$RFC_BIND_ENABLED" = "xtrue" ]; then
-	BUILD_CONF_PATH="/tmp/named.conf.options"
-	# Refresh the options again. Since resolver config can change while box is running.
-	# Added the following to handle that case.
-	/bin/umount /etc/bind/named.conf.options
-	rm -f $BUILD_CONF_PATH
-	/sbin/mount-copybind  $BUILD_CONF_PATH /etc/bind/named.conf.options
-	sed -i "s#\/\/OPT#$DNS_SERVERS#g" $BUILD_CONF_PATH
-	if [ "x$DNS64_STR" != "x" ];  then
-		sed -i "s#\/\/DNS64#$DNS64_STR#g" $BUILD_CONF_PATH
-		echo "DNS64 Servers are Configured" >>$LOG_FILE
-	else
-		echo "DNS64 Servers not Configured" >>$LOG_FILE
+
+    # Refresh the options again. Since resolver config can change while box is running.
+    # Added the following to handle that case.
+    
+    # Handle DNS server configuration based on action and interface
+    if [ "$ACTION" = "remove" ]; then
+        # Remove DNS servers for the specified interface
+        if [ "$INTERFACE" = "eth0" ]; then
+            sed -i '/\/\/eth0/,/\/\/wlan0/{//!d}' $BUILD_CONF_PATH
+            echo "`/bin/timestamp` Removed DNS servers for eth0" >> $LOG_FILE
+        else
+            sed -i '/\/\/wlan0/,/};/{//!d}' $BUILD_CONF_PATH
+            echo "`/bin/timestamp` Removed DNS servers for wlan0" >> $LOG_FILE
+        fi
+    elif [ "$ACTION" = "add" ]; then
+        # Add DNS servers for the specified interface
+        if [ "x$DNS_SERVERS" = "x" ]; then
+            echo "`/bin/timestamp` ERROR: No DNS servers provided for add action" >> $LOG_FILE
+            exit 1
+        fi
+
+        if [ "$INTERFACE" = "eth0" ]; then
+            sed -i "/\/\/eth0/a\\$DNS_SERVERS" $BUILD_CONF_PATH
+            echo "`/bin/timestamp` Added DNS servers for eth0: $DNS_SERVERS" >> $LOG_FILE
+        else
+            sed -i "/\/\/wlan0/a\\$DNS_SERVERS" $BUILD_CONF_PATH
+            echo "`/bin/timestamp` Added DNS servers for wlan0: $DNS_SERVERS" >> $LOG_FILE
+        fi
     fi
-    cat /tmp/named.conf.options >/etc/bind/named.conf.options
+
+    if [ "x$DNS64_STR" != "x" ];  then
+        sed -i "s#\/\/DNS64#$DNS64_STR#g" $BUILD_CONF_PATH
+        echo "`/bin/timestamp` DNS64 Servers are Configured" >>$LOG_FILE
+    else
+        echo "`/bin/timestamp` DNS64 Servers not Configured, Empty" >>$LOG_FILE
+    fi
+
     if [ -f /usr/sbin/named -o -f /media/apps/bind-dl/usr/sbin/named ];then
         pkill -HUP named
         systemctl restart named.service
@@ -94,7 +137,7 @@ if [ "x$RFC_BIND_ENABLED" = "xtrue" ]; then
         echo "`/bin/timestamp` Bind Support is enabled, named binary is not present, dns will fail" >> $LOG_FILE
     fi
 else
-	# This is to make sure atleast dnsmasq runs even if it fails initially. or some switch happened inbetween.
-	echo "`/bin/timestamp` Bind Support is not enabled" >> $LOG_FILE
-	systemctl stop named.service
+    # This is to make sure atleast dnsmasq runs even if it fails initially. or some switch happened inbetween.
+    echo "`/bin/timestamp` Bind Support is not enabled" >> $LOG_FILE
+    systemctl stop named.service
 fi
