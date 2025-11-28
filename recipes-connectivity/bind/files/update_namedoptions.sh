@@ -95,7 +95,7 @@ if [ "x$RFC_BIND_ENABLED" = "xtrue" ]; then
         fi
 
         # Add DNS servers one by one if not present
-        for DNS in $PARSED_DNS; do
+        for DNS in $DNS_SERVERS; do
             # Skip empty entries
             if [ "x$DNS" = "x" ]; then
                 continue
