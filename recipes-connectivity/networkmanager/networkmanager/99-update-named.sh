@@ -24,11 +24,12 @@
 # Note: NetworkManager updates /var/run/NetworkManager/no-stub-resolv.conf
 # which is symlinked to /etc/resolv.dnsmasq
 
+SCRIPT_NAME=$0
 INTERFACE=$1
 ACTION=$2
 LOG_FILE="/opt/logs/named.log"
 
-echo "`/bin/timestamp` nm-dispatcher: Interface=$INTERFACE Action=$ACTION" >> $LOG_FILE
+echo "`/bin/timestamp` $SCRIPT_NAME: Interface=$INTERFACE Action=$ACTION" >> $LOG_FILE
 
 # Determine interface type (eth0 or wlan0)
 IFACE_TYPE=""
@@ -40,7 +41,7 @@ case "$INTERFACE" in
         IFACE_TYPE="wlan0"
         ;;
     *)
-        echo "`/bin/timestamp` nm-dispatcher: Unknown interface type: $INTERFACE" >> $LOG_FILE
+        echo "`/bin/timestamp` $SCRIPT_NAME: Unknown interface type: $INTERFACE" >> $LOG_FILE
         exit 0
         ;;
 esac
@@ -55,27 +56,22 @@ case "$ACTION" in
                 if [ "$line" != "${line#*[0-9].[0-9]}" ]; then
                     # IPv4
                     DNS_ADDR="$DNS_ADDR \n$ADDR;"
-                    echo "`/bin/timestamp` nm-dispatcher: Found IPv4 DNS server: $ADDR" >> $LOG_FILE
+                    echo "`/bin/timestamp` $SCRIPT_NAME: Found IPv4 DNS server: $ADDR" >> $LOG_FILE
                 elif [ "$line" != "${line#*:[0-9a-fA-F]}" ]; then
                     # IPv6
                     DNS_ADDR="$DNS_ADDR \n$ADDR;"
-                    echo "`/bin/timestamp` nm-dispatcher: Found IPv6 DNS server: $ADDR" >> $LOG_FILE
+                    echo "`/bin/timestamp` $SCRIPT_NAME: Found IPv6 DNS server: $ADDR" >> $LOG_FILE
                 fi
             done < /etc/resolv.dnsmasq
 
             # Call update_namedoptions.sh with interface-specific DNS servers
             if [ -n "$DNS_ADDR" ] && [ -n "$IFACE_TYPE" ]; then
                 if [ -f /lib/rdk/update_namedoptions.sh ]; then
-                    # First remove old DNS servers for this interface
-                    echo "`/bin/timestamp` nm-dispatcher: Removing old DNS servers for $IFACE_TYPE" >> $LOG_FILE
-                    /bin/sh /lib/rdk/update_namedoptions.sh remove $IFACE_TYPE
-
-                    # Then add new DNS servers for this interface
-                    echo "`/bin/timestamp` nm-dispatcher: Adding DNS servers for $IFACE_TYPE: $DNS_ADDR" >> $LOG_FILE
+                    echo "`/bin/timestamp` $SCRIPT_NAME: Adding DNS servers for $IFACE_TYPE: $DNS_ADDR" >> $LOG_FILE
                     /bin/sh /lib/rdk/update_namedoptions.sh add $IFACE_TYPE $DNS_ADDR
                 fi
             else
-                echo "`/bin/timestamp` nm-dispatcher: No DNS servers found " >> $LOG_FILE
+                echo "`/bin/timestamp` $SCRIPT_NAME: No DNS servers found " >> $LOG_FILE
             fi
         fi
         ;;
@@ -83,7 +79,7 @@ case "$ACTION" in
         # When interface goes down, remove its DNS servers
         if [ -n "$IFACE_TYPE" ]; then
             if [ -f /lib/rdk/update_namedoptions.sh ]; then
-                echo "`/bin/timestamp` nm-dispatcher: Removing DNS servers for $IFACE_TYPE (interface down)" >> $LOG_FILE
+                echo "`/bin/timestamp` $SCRIPT_NAME: Removing DNS servers for $IFACE_TYPE (interface down)" >> $LOG_FILE
                 /bin/sh /lib/rdk/update_namedoptions.sh remove $IFACE_TYPE
             fi
         fi

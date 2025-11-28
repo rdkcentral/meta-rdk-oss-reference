@@ -47,17 +47,7 @@ if [ "x$INTERFACE" != "xeth0" ] && [ "x$INTERFACE" != "xwlan0" ]; then
     exit 1
 fi
 DNS64_SERVER1=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server1 2>&1`
-if [ "x$DNS64_SERVER1" = "x" ]; then
-    DNS64_SERVER1="2a00:1098:2b::1" # nat64.net	Amsterdam
-    echo "`/bin/timestamp` DNS64 Server1 not configured, using default: $DNS64_SERVER1" >> $LOG_FILE
-fi
-
 DNS64_SERVER2=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server2 2>&1`
-if [ "x$DNS64_SERVER2" = "x" ]; then
-    DNS64_SERVER2="2a01:4ff:f0:9876::1" # nat64.net	Ashburn
-    echo "`/bin/timestamp` DNS64 Server2 not configured, using default: $DNS64_SERVER2" >> $LOG_FILE
-fi
-
 DNS64_SERVER3=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server3 2>&1`
 DNS64_SERVER4=`tr181 -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.DNS64Proxy.Server4 2>&1`
 
@@ -92,15 +82,14 @@ if [ "x$RFC_BIND_ENABLED" = "xtrue" ]; then
 
     # Refresh the options again. Since resolver config can change while box is running.
     # Added the following to handle that case.
-    
-    # Handle DNS server configuration based on action and interface
+
     if [ "$ACTION" = "remove" ]; then
         # Remove DNS servers for the specified interface
         if [ "$INTERFACE" = "eth0" ]; then
-            sed -i '/\/\/eth0/,/\/\/wlan0/{//!d}' $BUILD_CONF_PATH
+            sed -i '/\/\/eth0/,/\/\/wlan0/c\ \t\t//eth0\n\t\t//wlan0' $BUILD_CONF_PATH
             echo "`/bin/timestamp` Removed DNS servers for eth0" >> $LOG_FILE
         else
-            sed -i '/\/\/wlan0/,/};/{//!d}' $BUILD_CONF_PATH
+            sed -i '/\/\/wlan0/,/\};/c\ \t\t//wlan0\n\t};' $BUILD_CONF_PATH
             echo "`/bin/timestamp` Removed DNS servers for wlan0" >> $LOG_FILE
         fi
     elif [ "$ACTION" = "add" ]; then
