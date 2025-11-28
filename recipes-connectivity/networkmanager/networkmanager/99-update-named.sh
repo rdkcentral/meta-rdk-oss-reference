@@ -24,7 +24,7 @@
 # Note: NetworkManager updates /var/run/NetworkManager/no-stub-resolv.conf
 # which is symlinked to /etc/resolv.dnsmasq
 
-SCRIPT_NAME=$0
+SCRIPT_NAME="[nm-dispatcher]"
 INTERFACE=$1
 ACTION=$2
 LOG_FILE="/opt/logs/named.log"
@@ -41,7 +41,7 @@ case "$INTERFACE" in
         IFACE_TYPE="wlan0"
         ;;
     *)
-        echo "`/bin/timestamp` $SCRIPT_NAME: Unknown interface type: $INTERFACE" >> $LOG_FILE
+        echo "`/bin/timestamp` $SCRIPT_NAME: named interface type: $INTERFACE" >> $LOG_FILE
         exit 0
         ;;
 esac
@@ -55,11 +55,11 @@ case "$ACTION" in
                 ADDR=$(echo $line | cut -d " " -f2)
                 if [ "$line" != "${line#*[0-9].[0-9]}" ]; then
                     # IPv4
-                    DNS_ADDR="$DNS_ADDR \n$ADDR;"
+                    DNS_ADDR="$DNS_ADDR $ADDR"
                     echo "`/bin/timestamp` $SCRIPT_NAME: Found IPv4 DNS server: $ADDR" >> $LOG_FILE
                 elif [ "$line" != "${line#*:[0-9a-fA-F]}" ]; then
                     # IPv6
-                    DNS_ADDR="$DNS_ADDR \n$ADDR;"
+                    DNS_ADDR="$DNS_ADDR $ADDR"
                     echo "`/bin/timestamp` $SCRIPT_NAME: Found IPv6 DNS server: $ADDR" >> $LOG_FILE
                 fi
             done < /etc/resolv.dnsmasq
