@@ -33,6 +33,7 @@ SRC_URI = " \
     file://NM_dynamicDNS.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
+    file://99-update-named.sh \
 "
 
 SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
@@ -69,7 +70,7 @@ CFLAGS:append:libc-musl = " \
 do_compile:prepend() {
     export GI_TYPELIB_PATH="${B}}/src/libnm-client-impl${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
 }
-PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala concheck \
+PACKAGECONFIG ??= "readline nss ifupdown bind nmcli vala concheck \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
@@ -84,7 +85,7 @@ PACKAGECONFIG[polkit] = "-Dpolkit=true,-Dpolkit=false,polkit"
 #PACKAGECONFIG[consolekit] = "-Dsession_tracking_consolekit=true,-Dsession_tracking_consolekit=false,consolekit,consolekit"
 PACKAGECONFIG[modemmanager] = "-Dmodem_manager=true,-Dmodem_manager=false,modemmanager mobile-broadband-provider-info"
 PACKAGECONFIG[ppp] = "-Dppp=false -Dpppd=${sbindir}/pppd,-Dppp=false,ppp"
-PACKAGECONFIG[dnsmasq] = "-Ddnsmasq=${bindir}/dnsmasq"
+#PACKAGECONFIG[dnsmasq] = "-Ddnsmasq=${bindir}/dnsmasq"
 PACKAGECONFIG[nss] = "-Dcrypto=nss,,nss"
 #PACKAGECONFIG[resolvconf] = "-Dresolvconf=${base_sbindir}/resolvconf,-Dresolvconf=no,,resolvconf"
 PACKAGECONFIG[gnutls] = "-Dcrypto=gnutls,,gnutls"
@@ -224,7 +225,7 @@ RDEPENDS:${PN}-daemon += "\
 "
 RRECOMMENDS:${PN}-daemon += "\
     ${NETWORKMANAGER_FIREWALL_DEFAULT} \
-    ${@bb.utils.filter('PACKAGECONFIG', 'dnsmasq', d)} \
+    ${@bb.utils.filter('PACKAGECONFIG', 'bind', d)} \
 "
 INITSCRIPT_NAME:${PN}-daemon = "network-manager"
 SYSTEMD_SERVICE:${PN}-daemon = "\
@@ -250,12 +251,14 @@ do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${sysconfdir}/NetworkManager/
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
-    install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
+    #install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
     install -d ${D}${datadir}/dbus-1/system-services
+    install -d ${D}${sysconfdir}/NetworkManager/dispatcher.d
     install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
     install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
-    install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
-     install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
+    #install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
+    install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
+    install -m 0755 ${WORKDIR}/99-update-named.sh ${D}${sysconfdir}/NetworkManager/dispatcher.d/99-update-named.sh
 
     install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
