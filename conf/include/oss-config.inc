@@ -15,7 +15,7 @@ RDKE_GITHUB_PROTOCOL ?= "ssh"
 RDKE_GITHUB_BRANCH ?= "nobranch=1"
 RDKE_GITHUB_SRC_URI_SUFFIX ?= "protocol=${RDKE_GITHUB_PROTOCOL};${RDKE_GITHUB_BRANCH}"
 
-INCOMPATIBLE_LICENSE = "LGPL-3.0-or-later LGPL-3.0-only GPL-3.0-or-later GPL-3.0-only"
+#INCOMPATIBLE_LICENSE = "LGPL-3.0-or-later LGPL-3.0-only GPL-3.0-or-later GPL-3.0-only"
 require license_flags_accepted.inc
 
 #Use or Enable following distro feature if you want to enable gplv3 components such as tar, gdb which are used for debugging purpose
