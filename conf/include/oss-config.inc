@@ -25,5 +25,6 @@ INCOMPATIBLE_LICENSE_EXCEPTIONS += "${@bb.utils.contains('DISTRO_FEATURES','buil
 
 require package_revisions_oss.inc
 BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/bluez5/bluez5_5.77*"
+BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-gplv2/gmp/gmp_4.2.1.bb"
 
 
