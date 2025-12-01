@@ -9,7 +9,6 @@ SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.ta
            file://0001-default-gamepad-db-dir-usr-share.patch \
            file://gamecontrollerdb \
            file://0001-new-SDL-gamedb.patch \
-           file://0002-add-wayland-inputfd-support.patch \
            file://0001-map-key-menu-back-as-btn.patch \
            file://0003-button-values-for-gas-brake.patch \
            file://0001-nintendo-digital-trigger-dpad-fix.patch \
