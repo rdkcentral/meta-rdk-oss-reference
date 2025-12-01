@@ -25,6 +25,7 @@ LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 
+TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
@@ -497,6 +498,9 @@ PACKAGE_ARCH:pn-libomxil ?= "${OSS_LAYER_ARCH}"
 PR:pn-libopus ?= "r0"
 PACKAGE_ARCH:pn-libopus ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libp11 ?= "r0"
+PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-libpam ?= "r0"
 PACKAGE_ARCH:pn-libpam ?= "${OSS_LAYER_ARCH}"
 
@@ -938,5 +942,3 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 PR:pn-zstd ?= "r0"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libp11 ?= "r0"
-PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
