@@ -256,8 +256,8 @@ PACKAGE_ARCH:pn-glib-networking = "${OSS_LAYER_ARCH}"
 PR:pn-openssh = "r0"
 PACKAGE_ARCH:pn-openssh = "${OSS_LAYER_ARCH}"
 
-PR:pn-gmp = "r0"
-PACKAGE_ARCH:pn-gmp = "${OSS_LAYER_ARCH}"
+PR:pn-gmp-6.2.1 = "r0"
+PACKAGE_ARCH:pn-gmp-6.2.1 = "${OSS_LAYER_ARCH}"
 
 PR:pn-mpfr = "r0"
 PACKAGE_ARCH:pn-mpfr = "${OSS_LAYER_ARCH}"
