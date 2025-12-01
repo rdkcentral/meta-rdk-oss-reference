@@ -259,8 +259,8 @@ PACKAGE_ARCH:pn-openssh = "${OSS_LAYER_ARCH}"
 PR:pn-gmp-6.2.1 = "r0"
 PACKAGE_ARCH:pn-gmp-6.2.1 = "${OSS_LAYER_ARCH}"
 
-PR:pn-mpfr = "r0"
-PACKAGE_ARCH:pn-mpfr = "${OSS_LAYER_ARCH}"
+PR:pn-mpfr-4.1.1 = "r0"
+PACKAGE_ARCH:pn-mpfr-4.1.1 = "${OSS_LAYER_ARCH}"
 
 PR:pn-gnutls = "r1"
 PACKAGE_ARCH:pn-gnutls = "${OSS_LAYER_ARCH}"
