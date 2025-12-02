@@ -10,7 +10,8 @@ DEPENDS += "file-native python3-native"
 DEPENDS:append:class-native = " rust-llvm-native"
 
 S = "${RUSTSRC}"
-
+RUST_VERSION = "1.82.0"
+##rust_version = RUST_VERSION
 # We generate local targets, and need to be able to locate them
 export RUST_TARGET_PATH="${WORKDIR}/targets/"
 
@@ -144,14 +145,21 @@ python do_configure() {
     config.add_section("install")
     # ./x.py install doesn't have any notion of "destdir"
     # but we can prepend ${D} to all the directories instead
-    config.set("install", "prefix",  e(d.getVar("D", True) + d.getVar("prefix", True)))
-    config.set("install", "bindir",  e(d.getVar("D", True) + d.getVar("bindir", True)))
-    config.set("install", "libdir",  e(d.getVar("D", True) + d.getVar("libdir", True)))
-    config.set("install", "datadir", e(d.getVar("D", True) + d.getVar("datadir", True)))
-    config.set("install", "mandir",  e(d.getVar("D", True) + d.getVar("mandir", True)))
+    config.set("install", "prefix",     e(d.getVar("D", True) + d.getVar("prefix", True)))
+    config.set("install", "bindir",     e(d.getVar("D", True) + d.getVar("bindir", True)))
+    config.set("install", "libdir",     e(d.getVar("D", True) + d.getVar("libdir", True)))
+    config.set("install", "datadir",    e(d.getVar("D", True) + d.getVar("datadir", True)))
+    config.set("install", "mandir",     e(d.getVar("D", True) + d.getVar("mandir", True)))
+    config.set("install", "sysconfdir", e(d.getVar("D", True) + d.getVar("sysconfdir", True)))
+
+    ##xrust_version = d.getVar("RUST_VERSION", True) or "0.0.0"
+
 
     with open("config.toml", "w") as f:
-        f.write('changelog-seen = 2\n\n')
+        if bb.utils.vercmp_string_op(d.getVar("RUST_VERSION", True), "1.80.0", "<"):
+            f.write('changelog-seen = 2\n\n')
+        elif bb.utils.vercmp_string_op(d.getVar("RUST_VERSION", True), "1.82.0", "<="):
+            f.write('change-id = 115898\n\n')
         config.write(f)
 
     # set up ${WORKDIR}/cargo_home
