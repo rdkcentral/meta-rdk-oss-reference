@@ -17,8 +17,6 @@ SRC_URI[sha256sum] = "63653259a821ec7d90d681e52e757e2219d462828c9d74b056a5f53267
 
 inherit meson pkgconfig gobject-introspection ptest vala
 
-PACKAGECONFIG[wayland-inputfd] = "-Dwayland-inputfd=true,-Dwayland-inputfd=false,wayland wayland-native"
-
 do_install:append() {
     install -d ${D}${datadir}/libmanette/
     cp -f ${WORKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
