@@ -8,6 +8,8 @@ def get_oss_machine(d):
         arch = "rdk-arm64"
     elif "armv7athf-neon" in default_tune:
         arch = "rdk-arm7a"
+    elif "cortexa15hf-neon" in default_tune:
+        arch = "rdk-cortexa15"
     else:
         arch = "rdk-arm7ve"
     return arch
@@ -17,12 +19,13 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.9.0"
+OSS_LAYER_VERSION = "4.10.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 
+TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
@@ -31,6 +34,8 @@ PREFERRED_VERSION_openssl-native = "3.0.%"
 PREFERRED_VERSION_nativesdk-openssl = "3.0.%"
 PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
+PREFERRED_VERSION_dnsmasq = "2.90"
+PREFERRED_VERSION_msgpack-c = "4.0.0%"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
@@ -448,7 +453,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r2"
+PR:pn-libmanette ?= "r3"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -492,6 +497,9 @@ PACKAGE_ARCH:pn-libomxil ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libopus ?= "r0"
 PACKAGE_ARCH:pn-libopus ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libp11 ?= "r0"
+PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libpam ?= "r0"
 PACKAGE_ARCH:pn-libpam ?= "${OSS_LAYER_ARCH}"
@@ -712,13 +720,13 @@ PACKAGE_ARCH:pn-openjpeg ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-openssl ?= "r0"
+PR:pn-openssl ?= "r1"
 PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssl-1.1.1l ?= "r0"
 PACKAGE_ARCH:pn-openssl-1.1.1l ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg ?= "r1"
+PR:pn-opkg ?= "r2"
 PACKAGE_ARCH:pn-opkg ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-opkg-arch-config ?= "r1"
@@ -913,7 +921,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r7"
+PR:pn-wpa-supplicant ?= "r8"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
@@ -925,7 +933,7 @@ PACKAGE_ARCH:pn-xmlsec1 ?= "${OSS_LAYER_ARCH}"
 PR:pn-xz ?= "r0"
 PACKAGE_ARCH:pn-xz ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-yajl ?= "r0"
+PR:pn-yajl ?= "r1"
 PACKAGE_ARCH:pn-yajl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-zlib ?= "r0"
@@ -933,3 +941,4 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-zstd ?= "r0"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
+

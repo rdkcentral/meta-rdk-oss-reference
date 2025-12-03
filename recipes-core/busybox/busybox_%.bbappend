@@ -28,6 +28,8 @@ SRC_URI += " \
    "
 
 SRC_URI:append:broadband = " file://enable_ps_wide.cfg"
+SRC_URI:append:broadband = " file://strings.cfg"
+SRC_URI:append:broadband = " file://Udhcpc_Early_Background.patch"
 
 SRC_URI:remove:broadband += " \
    file://blkid.cfg \
