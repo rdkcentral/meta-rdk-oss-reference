@@ -66,6 +66,8 @@ do_install:append () {
 
 FILES_SOLIBSDEV = ""
 FILES:${PN} += "${libdir}/libwpa_client.so"
+
+PACKAGE_BEFORE_PN += "${PN}-extras"
 FILES:${PN}-extras = "\
                         ${systemd_unitdir}/system/wpa_supplicant-nl80211@.service\
                         ${systemd_unitdir}/system/wpa_supplicant-wired@.service \
