@@ -7,6 +7,7 @@ SRC_URI += "file://openssl_no_md4_2.10.patch"
 SRC_URI += "file://fix_HS20_build_with_INTERWORKING.patch"
 SRC_URI += "file://increase_wpa_ctrl_return_buffer.patch"
 SRC_URI += "file://suppress_no_eap_session_id_log.patch"
+SRC_URI += "file://roaming_threshold.patch"
 
 inherit syslog-ng-config-gen logrotate_config
 #inherit breakpad-logmapper
@@ -38,7 +39,6 @@ do_configure:append () {
    fi
 
    sed -i -- 's/CONFIG_DRIVER_HOSTAP=y/\#CONFIG_DRIVER_HOSTAPAP=y/' wpa_supplicant/.config
-   sed -i -- 's/#CONFIG_NO_ROAMING=y/\CONFIG_NO_ROAMING=y/' wpa_supplicant/.config
    sed -i -- 's/#CONFIG_IEEE80211W=y/\CONFIG_IEEE80211W=y/' wpa_supplicant/.config
 
    #Enable the following supplicant options:
