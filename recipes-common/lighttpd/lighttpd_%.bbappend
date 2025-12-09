@@ -22,8 +22,8 @@ LOGROTATE_ROTATION_MEM_lighttpd  = "1"
 
 SRC_URI:append:qemux86 ="file://lighttpd.conf_emulator "
 
-#SRC_URI:append = " file://0001-Force-UTC-for-lighttpd-log-messages.patch "
-#SRC_URI:append:broadband = " file://drop_root_lighttpd.patch "
+SRC_URI:append = " file://0001-Force-UTC-for-lighttpd-log-messages.patch "
+SRC_URI:append:broadband = " file://drop_root_lighttpd.patch "
 
 DEPENDS:append:broadband = " utopia libunpriv"
 

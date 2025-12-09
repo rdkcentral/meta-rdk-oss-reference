@@ -11,3 +11,5 @@ RDEPENDS:${PN} += " \
     lighttpd-module-openssl \
         "
 FILES:${PN} += "${systemd_system_unitdir}/lighttpd.service"
+RDEPENDS:${PN}:remove = "lighttpd-module-fastcgi"
+RDEPENDS:${PN}:remove = "lighttpd-module-alias"
