@@ -54,7 +54,7 @@ Index: wpa_supplicant-2.10/wpa_supplicant/events.c
 +		int delta_db = selected->level - cur_level; /* dBm; delta>0 => candidate stronger */
 +		if (delta_db < wpa_s->roaming_threshold_db) {
 +			wpa_dbg(wpa_s, MSG_DEBUG,
-+				"Roam blocked: RSSI delta=%d dB < threshold=%d dB",
++				"Skip roam - RSSI delta=%d dB < threshold=%d dB",
 +				delta_db, wpa_s->roaming_threshold_db);
 +			/* Prevent the reassociation for this scan */
 +			return 0;
