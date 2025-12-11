@@ -54,7 +54,7 @@
 +
    for (listener = daemon->listeners; listener; listener = listener->next)
 +  {
-+    int tcp_relax_bind = 0; /* NEW: relax TCP interface gating under bind-dynamic/bind-interfaces */
++    int tcp_relax_bind = 1; /* NEW: relax TCP interface gating under bind-dynamic/bind-interfaces */
 +
 +    if (listener->fd != -1 && poll_check(listener->fd, POLLIN))
 +      receive_query(listener, now);
@@ -73,7 +73,7 @@
 +     * connections regardless of their arrival interface/addr.
 +     * UDP behavior remains unchanged.
 +     */
-+    tcp_relax_bind = (option_bool(OPT_BIND_DYNAMIC) || option_bool(OPT_BIND_INTERFACES)) ? 1 : 0;
++    //tcp_relax_bind = (option_bool(OPT_BIND_DYNAMIC) || option_bool(OPT_BIND_INTERFACES)) ? 1 : 0;
 +
 +    if (listener->tcpfd != -1 && i >= 0 && poll_check(listener->tcpfd, POLLIN))
      {
