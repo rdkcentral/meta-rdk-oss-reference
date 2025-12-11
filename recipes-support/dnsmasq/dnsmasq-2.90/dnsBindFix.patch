@@ -1,0 +1,131 @@
+
+diff --git a/src/dnsmasq.c b/src/dnsmasq.c
+index 1234567..89abcde 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -1,6 +1,7 @@
+ static void check_dns_listeners(time_t now)
+ {
+   struct serverfd *serverfdp;
++  int tcp_relax_bind = 0; /* NEW: relax TCP interface gating under bind-dynamic/bind-interfaces */
+   struct listener *listener;
+   struct randfd_list *rfl;
+   int i;
+@@ -62,6 +63,16 @@ static void check_dns_listeners(time_t now)
+   for (listener = daemon->listeners; listener; listener = listener->next)
+   {
++    /* NEW: decide whether to relax TCP binding constraints.
++     * If bind-dynamic or bind-interfaces is active, we accept TCP
++     * connections regardless of their arrival interface/addr.
++     * UDP behavior remains unchanged.
++     *
++     * This emulates "no bind" for TCP only, which fixes TCP fallback
++     * resolution issues behind bridges (e.g., dobby0).
++     */
++    tcp_relax_bind = (option_bool(OPT_BIND_DYNAMIC) || option_bool(OPT_BIND_INTERFACES)) ? 1 : 0;
++
+     if (listener->fd != -1 && poll_check(listener->fd, POLLIN))
+       receive_query(listener, now);
+ 
+@@ -75,6 +86,7 @@ static void check_dns_listeners(time_t now)
+     if (listener->tcpfd != -1 && i >= 0 && poll_check(listener->tcpfd, POLLIN))
+     {
+       int confd, client_ok = 1;
++      /* NOTE: default to allowed. We'll only run the original interface checks if tcp_relax_bind == 0. */
+       struct irec *iface = NULL;
+       pid_t p;
+       union mysockaddr tcp_addr;
+@@ -92,41 +104,46 @@ static void check_dns_listeners(time_t now)
+         continue;
+       }
+ 
+-      /* Make sure that the interface list is up-to-date. */
+-      enumerate_interfaces(0);
+-
+-      if (option_bool(OPT_NOWILD))
+-        iface = listener->iface; /* May be NULL */
+-      else
+-      {
+-        int if_index;
+-        char intr_name[IF_NAMESIZE];
+-        /* if we can find the arrival interface, check it's one that's allowed */
+-        if (((if_index = tcp_interface(confd, tcp_addr.sa.sa_family)) != 0 &&
+-             indextoname(listener->tcpfd, if_index, intr_name)))
+-        {
+-          union all_addr addr;
+-          if (tcp_addr.sa.sa_family == AF_INET6)
+-            addr.addr6 = tcp_addr.in6.sin6_addr;
+-          else
+-            addr.addr4 = tcp_addr.in.sin_addr;
+-          for (iface = daemon->interfaces; iface; iface = iface->next)
+-            if (iface->index == if_index &&
+-                iface->addr.sa.sa_family == tcp_addr.sa.sa_family)
+-              break;
+-          if (!iface && !loopback_exception(listener->tcpfd, tcp_addr.sa.sa_family, &addr, intr_name))
+-            client_ok = 0;
+-        }
+-        if (option_bool(OPT_CLEVERBIND))
+-          iface = listener->iface; /* May be NULL */
+-        else
+-        {
+-          /* Check for allowed interfaces when binding the wildcard address... */
+-          for (iface = daemon->interfaces; iface; iface = iface->next)
+-            if (sockaddr_isequal(&iface->addr, &tcp_addr))
+-              break;
+-          if (!iface)
+-            client_ok = 0;
+-        }
+-      }
++      /* Make sure that the interface list is up-to-date for UDP/localisation paths. */
++      if (!tcp_relax_bind)
++        enumerate_interfaces(0);
++
++      if (!tcp_relax_bind)
++      {
++        /* ORIGINAL interface gating logic (unchanged) */
++        if (option_bool(OPT_NOWILD))
++          iface = listener->iface; /* May be NULL */
++        else
++        {
++          int if_index;
++          char intr_name[IF_NAMESIZE];
++          /* arrival interface must be allowed */
++          if (((if_index = tcp_interface(confd, tcp_addr.sa.sa_family)) != 0 &&
++               indextoname(listener->tcpfd, if_index, intr_name)))
++          {
++            union all_addr addr;
++            if (tcp_addr.sa.sa_family == AF_INET6)
++              addr.addr6 = tcp_addr.in6.sin6_addr;
++            else
++              addr.addr4 = tcp_addr.in.sin_addr;
++            for (iface = daemon->interfaces; iface; iface = iface->next)
++              if (iface->index == if_index &&
++                  iface->addr.sa.sa_family == tcp_addr.sa.sa_family)
++                break;
++            if (!iface && !loopback_exception(listener->tcpfd, tcp_addr.sa.sa_family, &addr, intr_name))
++              client_ok = 0;
++          }
++          if (option_bool(OPT_CLEVERBIND))
++            iface = listener->iface; /* May be NULL */
++          else
++          {
++            /* wildcard bind path: ensure local addr matches an allowed interface */
++            for (iface = daemon->interfaces; iface; iface = iface->next)
++              if (sockaddr_isequal(&iface->addr, &tcp_addr))
++                break;
++            if (!iface)
++              client_ok = 0;
++          }
++        }
++      } /* END if !tcp_relax_bind: interface gating */
+ 
+       if (!client_ok)
+       {
+@@ -163,6 +180,7 @@ static void check_dns_listeners(time_t now)
+       int flags;
+       struct in_addr netmask;
+       int auth_dns;
++      /* iface may be NULL when tcp_relax_bind==1; fallback to netmask=0 (no localisation). */
+       if (iface)
+       {
+         netmask = iface->netmask;
