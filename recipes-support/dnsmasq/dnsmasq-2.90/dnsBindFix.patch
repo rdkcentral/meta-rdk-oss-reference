@@ -26,7 +26,6 @@ index 1234567..89abcde 100644
 +
      if (listener->fd != -1 && poll_check(listener->fd, POLLIN))
        receive_query(listener, now);
- 
 @@ -75,6 +86,7 @@ static void check_dns_listeners(time_t now)
      if (listener->tcpfd != -1 && i >= 0 && poll_check(listener->tcpfd, POLLIN))
      {
