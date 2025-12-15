@@ -70,8 +70,6 @@ do_install(){
     mkdir -p ${D}${sysconfdir}/logrotate.d
     mkdir -p ${D}${localstatedir}/lib
     install -p -m 644 ${S}/examples/logrotate.conf ${D}${sysconfdir}/logrotate.conf
-    install -p -m 644 ${S}/examples/btmp ${D}${sysconfdir}/logrotate.d/btmp
-    install -p -m 644 ${S}/examples/wtmp ${D}${sysconfdir}/logrotate.d/wtmp
     touch ${D}${localstatedir}/lib/logrotate.status
 
    
@@ -82,7 +80,3 @@ do_install(){
     fi
 }
 
-
-do_install:append:client(){
-    install -m 0644 ${S}/logrotate_nohdd.conf ${D}${sysconfdir}/logrotatemax.conf
-}
