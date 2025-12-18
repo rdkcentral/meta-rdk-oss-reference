@@ -385,3 +385,5 @@ RDEPENDS:${PN} += "\
      woff2 \
      brotli \
 "
+
+RDEPENDS:${PN}:remove:scarthgap += "libol libcroco sqlite"

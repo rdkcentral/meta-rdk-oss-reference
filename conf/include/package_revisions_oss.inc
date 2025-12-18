@@ -29,13 +29,15 @@ TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
-PREFERRED_VERSION_openssl = "3.0.%"
-PREFERRED_VERSION_openssl-native = "3.0.%"
-PREFERRED_VERSION_nativesdk-openssl = "3.0.%"
+PREFERRED_VERSION_openssl = "3.%"
+PREFERRED_VERSION_openssl-native = "3.%"
+PREFERRED_VERSION_nativesdk-openssl = "3.%"
 PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
 PREFERRED_VERSION_dnsmasq = "2.90"
 PREFERRED_VERSION_msgpack-c = "4.0.0%"
+PREFERRED_VERSION_zlib = "1.3.1"
+PREFERRED_VERSION_linux-libc-headers = "6.6"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
@@ -52,7 +54,8 @@ PREFERRED_VERSION_nativesdk-readline = "8.1.2"
 PREFERRED_VERSION_bluez5 = "5.48"
 
 #To resolve gettext native version mismatch due to layer priority
-PREFERRED_VERSION_gettext-native = "0.21"
+PREFERRED_VERSION_gettext-native:kirkstone = "0.21"
+PREFERRED_VERSION_gettext-native = "0.22.5"
 
 #Preferred versions from Vendor layer
 PREFERRED_VERSION_libdrm = "2.4.110"

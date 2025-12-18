@@ -3,3 +3,5 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI:append = " file://0001-Use-gssdp-1.2.patch"
 
 SRC_URI:append = " file://CVE-2021-33516_fix.patch "
+
+DEPENDS:append = " gtk-doc-native"

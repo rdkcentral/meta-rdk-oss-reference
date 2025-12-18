@@ -22,8 +22,8 @@ LOGROTATE_ROTATION_dnsmasq="3"
 LOGROTATE_SIZE_MEM_dnsmasq="1572864"
 LOGROTATE_ROTATION_MEM_dnsmasq="3"
 
-PACKAGECONFIG:append = " dbus"
-PACKAGECONFIG[dbus] = "--enable-dbus,--disable-dbus,dbus"
+#PACKAGECONFIG:append = " dbus"
+#PACKAGECONFIG[dbus] = "--enable-dbus,--disable-dbus,dbus"
 # dnsmasq-service package will contain dnsmasq.service and dnsmasqLauncher.sh
 # By default, NetworkManager will start and manage dnsmasq. 
 # If you wish to use dnsmasq as a standlaone service through this package, make sure to disable dnsmasq configuration in NetworkManager.

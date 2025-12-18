@@ -63,7 +63,7 @@ USERADD_PACKAGES = "${PN}-named"
 USERADD_PARAM:${PN}-named = "--system --home ${localstatedir}/cache/bind --no-create-home \
                        --user-group bind"
 
-SRC_URI += "file://comcast_9_18_5.dns64.patch \
+SRC_URI:append:kirkstone += "file://comcast_9_18_5.dns64.patch \
             file://read-only-sessionkey-kirkstone.patch \
            "
 EXTRA_OECONF:append = " --without-readline"
