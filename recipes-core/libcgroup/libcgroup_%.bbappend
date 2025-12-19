@@ -7,6 +7,8 @@ SRC_URI:append = " file://init.patch \
                    file://cgconfig.service \
                    file://cgrules.service \
                  "
+SRC_URI:remove:scarthgap = " file://init.patch "
+
 EXTRA_OECONF:append = " --enable-initscript-install"
 
 do_install:append () {

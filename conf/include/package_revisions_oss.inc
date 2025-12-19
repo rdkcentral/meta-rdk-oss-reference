@@ -38,6 +38,7 @@ PREFERRED_VERSION_dnsmasq = "2.90"
 PREFERRED_VERSION_msgpack-c = "4.0.0%"
 PREFERRED_VERSION_zlib = "1.3.1"
 PREFERRED_VERSION_linux-libc-headers = "6.6"
+PREFERRED_VERSION_systemd = "1:255%"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
