@@ -19,7 +19,8 @@ SRC_URI:append:broadband += " ${@bb.utils.contains('DISTRO_FEATURES', 'bci', 'fi
 SRC_URI:append:broadband += " ${@bb.utils.contains('DISTRO_FEATURES', 'device_gateway_association', 'file://ManageableDevice.patch', '', d)}"
 
 
-SRC_URI:append = " file://130-fingerprint-dhcp-lease-file-V2.90.patch \
+SRC_URI:append = " file://dnsBindFix.patch \
+                   file://130-fingerprint-dhcp-lease-file-V2.90.patch \
                    file://client_notify.patch"
 
 do_install:append() {
