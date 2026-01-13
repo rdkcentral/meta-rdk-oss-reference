@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/rdkcentral/essos;protocol=https;nobranch=1"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr"
+DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr westeros"
 
 REQUIRED_DISTRO_FEATURES += "wayland"
 
