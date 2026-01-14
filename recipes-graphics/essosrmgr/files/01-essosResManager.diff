@@ -1,4 +1,4 @@
-From 324845452801c392d6c826220b55f6c2e8d834fb Mon Sep 17 00:00:00 2001
+From ae037ce4ad9a49fd7eea56fe6981b75538b45fe8 Mon Sep 17 00:00:00 2001
 From: Sajna Nazeer K <sajna_nazeerk@comcast.com>
 Date: Wed, 07 Jan 2026 08:04:02 +0000
 Subject: [PATCH] NOT TO MERGE : added for testing purpose
@@ -15,7 +15,7 @@ Change-Id: I502552d2c13ff671d7692526b61296d1357187c9
 ---
 
 diff --git a/Makefile.am b/Makefile.am
-index 5d732e5..9bb778c 100644
+index 5d732e5..237b9b0 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -1,5 +1,8 @@
@@ -48,7 +48,7 @@ index 5d732e5..9bb778c 100644
 +bin_PROGRAMS = essos-sample-resmgr
 +BUILT_SOURCES = libessosrmgr.la
 +
-+pcfiles = ermgr.pc
++pcfiles = essosrmgr.pc
 +pkgconfigdir = $(libdir)/pkgconfig
 +pkgconfig_DATA = $(pcfiles)
 +
@@ -57,7 +57,7 @@ index 5d732e5..9bb778c 100644
 +libessosrmgr_la_includedir = $(includedir)
 +
 +libessosrmgr_la_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)/..
-+libessosrmgr_la_LDFLAGS = $(AM_LDFLAGS) -lpthread
++libessosrmgr_la_LDFLAGS = $(AM_LDFLAGS) -lEGL -ldl -lpthread
 +
  bin_PROGRAMS = ermgr
 -
@@ -88,10 +88,10 @@ index 5d732e5..9bb778c 100644
  	rm -rf $(abs_top_builddir)/ipk/data.tar.gz
 +	
 diff --git a/configure.ac b/configure.ac
-index 7e3c2a6..8c2697f 100644
+index 7e3c2a6..30bfad7 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -49,7 +49,19 @@
+@@ -49,7 +49,46 @@
  [AM_DEFAULT_VERBOSITY=1
  AC_SUBST(AM_DEFAULT_VERBOSITY)])
  
@@ -105,31 +105,40 @@ index 7e3c2a6..8c2697f 100644
 +AM_CONDITIONAL([HAVE_XKB], [test x$HAVE_XKB = xtrue])
  
 -AC_CONFIG_FILES([Makefile])
-+AC_CONFIG_FILES([Makefile ermgr.pc])
++AC_ARG_ENABLE([essoswesterosfree],
++  [ --enable-essoswesterosfree   Build Essos without Westeros],
++  [ case "${enableval}" in
++    yes) essoswesterosfree=true ;;
++    no)  essoswesterosfree=false ;;
++    *) AC_MSG_ERROR([bad value ${enableval} for --enable-essoswesterosfree]) ;;
++   esac],[essoswesterosfree=false])
++AM_CONDITIONAL([NO_WESTEROS], [test x$essoswesterosfree = xtrue])
++
++AC_ARG_ENABLE([essosresmgrfree],
++  [ --enable-essosresmgrfree   Build Essos without resmgr],
++  [ case "${enableval}" in
++    yes) essosresmgrfree=true ;;
++    no)  essosresmgrfree=false ;;
++    *) AC_MSG_ERROR([bad value ${enableval} for --enable-essosresmgrfree]) ;;
++   esac],[essosresmgrfree=false])
++AM_CONDITIONAL([NO_RESMGR], [test x$essosresmgrfree = xtrue])
++
++LIB_ESSOS_EXTRA_CFLAG=""
++LIB_ESSOS_EXTRA_LIBS=""
++if test "x$essoswesterosfree" != xtrue; then
++  LIB_ESSOS_EXTRA_CFLAGS="-DHAVE_WESTEROS"
++  LIB_ESSOS_EXTRA_LIBS="-lwesteros_gl -lwesteros_simpleshell_client"
++fi
++AC_SUBST(LIB_ESSOS_EXTRA_CFLAGS)
++AC_SUBST(LIB_ESSOS_EXTRA_LIBS)
++
++AC_CONFIG_FILES([Makefile essosrmgr.pc])
 +AC_SUBST(HAVE_EGL)
 +AC_SUBST(HAVE_WAYLAND)
 +AC_SUBST(HAVE_WAYLAND_EGL)
 +AC_SUBST(HAVE_XKB)
  AC_OUTPUT
  
-diff --git a/ermgr.pc.in b/ermgr.pc.in
-new file mode 100644
-index 0000000..a350f25
---- /dev/null
-+++ b/ermgr.pc.in
-@@ -0,0 +1,12 @@
-+prefix=@prefix@
-+exec_prefix=@exec_prefix@
-+libdir=@libdir@
-+includedir=@includedir@
-+
-+Name: ermgr
-+Description: A library making it simple to create applications that run either as native EGL or Wayland clients.
-+Version: @VERSION@
-+Requires.private: egl wayland-egl xkbcommon
-+Libs.private: -ldl -lm @PTHREAD_LIBS@
-+Libs: -L${libdir} -lermgr @LIB_ESSOS_EXTRA_LIBS@
-+Cflags: -I${includedir} @LIB_ESSOS_EXTRA_CFLAGS@ @PTHREAD_CFLAGS@
 diff --git a/essos-resmgr-shm.cpp b/essos-resmgr-shm.cpp
 new file mode 100644
 index 0000000..3616b1f
@@ -9588,3 +9597,21 @@ index 0000000..f46438c
 +   return rc;
 +}
 +
+diff --git a/essosrmgr.pc.in b/essosrmgr.pc.in
+new file mode 100644
+index 0000000..a350f25
+--- /dev/null
++++ b/essosrmgr.pc.in
+@@ -0,0 +1,12 @@
++prefix=@prefix@
++exec_prefix=@exec_prefix@
++libdir=@libdir@
++includedir=@includedir@
++
++Name: ermgr
++Description: A library making it simple to create applications that run either as native EGL or Wayland clients.
++Version: @VERSION@
++Requires.private: egl wayland-egl xkbcommon
++Libs.private: -ldl -lm @PTHREAD_LIBS@
++Libs: -L${libdir} -lermgr @LIB_ESSOS_EXTRA_LIBS@
++Cflags: -I${includedir} @LIB_ESSOS_EXTRA_CFLAGS@ @PTHREAD_CFLAGS@

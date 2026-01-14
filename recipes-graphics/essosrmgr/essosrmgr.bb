@@ -7,10 +7,16 @@ SRC_URI += "file://01-essosResManager.diff"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "wayland libgles-eabihf-dvalin-wayland-drm libxkbcommon"
 
-# inherit line
-inherit pkgconfig autotools
+DEPENDS = "wayland virtual/egl libxkbcommon westeros"
+
+REQUIRED_DISTRO_FEATURES += "wayland"
+
+inherit autotools pkgconfig features_check
+
+PACKAGECONFIG ??= "westeros resmgr"
+PACKAGECONFIG[westeros] = "--disable-essoswesterosfree,--enable-essoswesterosfree,westeros-simpleshell virtual/westeros-soc"
+PACKAGECONFIG[resmgr] = "--disable-essosresmgrfree,--enable-essosresmgrfree"
 
 # Specify any options you want to pass to the configure script using EXTRA_OECONF:
 EXTRA_OECONF = ""
