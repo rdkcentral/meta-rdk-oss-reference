@@ -13,6 +13,8 @@ SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.ta
            file://0001-map-key-menu-back-as-btn.patch \
            file://0003-button-values-for-gas-brake.patch \
            file://0001-nintendo-digital-trigger-dpad-fix.patch \
+           file://0001-nintendo-joycon-L-R-detect.patch \
+           file://99-gamepad-set-attr.rules \
            "
 
 SRC_URI[sha256sum] = "63653259a821ec7d90d681e52e757e2219d462828c9d74b056a5f53267636bac"
@@ -23,6 +25,9 @@ PACKAGECONFIG:append = "wayland-inputfd"
 PACKAGECONFIG[wayland-inputfd] = "-Dwayland-inputfd=true,-Dwayland-inputfd=false,wayland wayland-native"
 
 do_install:append() {
+    install -d ${D}${sysconfdir}/udev
+    install -d ${D}${sysconfdir}/udev/rules.d
+    install -m 0644 ${WORKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
     install -d ${D}${datadir}/libmanette/
     cp -f ${WORKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
     chmod 0644 ${D}${datadir}/libmanette/gamecontrollerdb
@@ -32,6 +37,7 @@ do_install:append() {
 }
 
 FILES:${PN} += "${datadir}/libmanette/"
+FILES:${PN} += "${sysconfdir}/udev/"
 #FILES:${PN}-ptest =+ "${bindir}/manette-test"
 #FILES:${PN}-ptest =+ "${bindir}/ManetteEventMapping"
 #FILES:${PN}-ptest =+ "${bindir}/ManetteMapping"
