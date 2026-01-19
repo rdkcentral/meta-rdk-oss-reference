@@ -19,8 +19,8 @@
 050000005e040000050b000003090000,Xbox One Elite Series 2,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b3,y:b2,
 050000005e040000220b000017050000,Xbox One Elite Series 2,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b3,y:b2,
 050000007e0500000920000001800000,Nintendo Switch Pro Controller,a:b1,b:b0,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,miswc1:b13,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a3,righty:a4,start:b9,x:b3,y:b2,
-050000007e0500000620000001800000,Nintendo Switch Joy-Con (L),a:b1,b:b0,guide:b12,leftshoulder:b4,leftstick:b10,leftx:a0,lefty:a1,rightshoulder:b5,start:b9,x:b2,y:b3,
-050000007e0500000720000001800000,Nintendo Switch Joy-Con (R),a:b1,b:b0,guide:b12,leftshoulder:b4,leftstick:b10,leftx:a0,lefty:a1,rightshoulder:b5,start:b9,x:b2,y:b3,
+050000007e0500000620000001800000,Nintendo Switch Joy-Con (L),dpdown:b7,dpleft:b8,dpright:b9,dpup:b6,leftx:a0,lefty:a1,leftshoulder:b0,lefttrigger:b2,back:b4,leftstick:b5,
+050000007e0500000720000001800000,Nintendo Switch Joy-Con (R),a:b1,b:b0,x:b3,y:b2,rightx:a3,righty:a4,rightshoulder:b5,righttrigger:b7,start:b8,rightstick:b9,guide:b10,
 05000000d11800000094000000010000,Google Stadia Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a10,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a9,rightx:a2,righty:a5,start:b7,x:b3,y:b2,
 050000004c050000c405000000810000,PS4 Controller,a:b0,b:b1,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b10,leftshoulder:b4,leftstick:b11,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b12,righttrigger:a5,rightx:a3,righty:a4,start:b9,x:b2,y:b3,
 
