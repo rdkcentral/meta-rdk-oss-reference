@@ -377,4 +377,6 @@ RDEPENDS:${PN}:remove += "\
 RDEPENDS:${PN} += "\
      woff2 \
      brotli \
+     perf \
+     binutils \
 "
