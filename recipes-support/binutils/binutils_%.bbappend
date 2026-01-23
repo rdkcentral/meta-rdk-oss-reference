@@ -4,5 +4,5 @@ inherit ${INHERIT_COMCAST_PACKAGE_DEPLOY}
 DOWNLOAD_ON_DEMAND="${@bb.utils.contains('DISTRO_FEATURES','debugtools_rdm','yes',' ',d)}"
 DOWNLOAD_METHOD_CONTROLLER="${@bb.utils.contains('DISTRO_FEATURES','debugtools_rdm','RFC',' ',d)}"
 
-PACKAGE_BEFORE_PN_remove += " libbfd libopcodes "
+PACKAGE_BEFORE_PN:remove += " libbfd libopcodes "
 PACKAGE += "libbfd libopcodes"
