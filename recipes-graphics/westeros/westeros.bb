@@ -1,5 +1,8 @@
 include westeros.inc
-
+WESTEROS_URI = "git://github.com/rdkcentral/westeros.git;protocol=https;branch=topic/RDKEMW-12584;name=westeros"
+WESTEROS_SRCREV = "6fc8110907fa23f932266529ea4103eb73012325"
+SRC_URI = "${WESTEROS_URI}"
+SRCREV_westeros = "${WESTEROS_SRCREV}"
 SUMMARY = "This receipe compiles the westeros compositor component"
 
 LICENSE = "Apache-2.0"

@@ -9,6 +9,9 @@ WESTEROS_URI ?= "${CMF_GIT_ROOT}/components/opensource/westeros;protocol=${CMF_G
 # Tip of westeros master as of Feb 26 2025 Westeros-1.01.58
 WESTEROS_SRCREV ?= "169eb0d501c814c0386573a4046990724a1d2fcb"
 
+#WESTEROS_URI = "git://github.com/rdkcentral/westeros.git;protocol=https;branch=topic/RDKEMW-12584;name=westeros"
+#WESTEROS_SRCREV ?= "cefee2bf60a33561825bf7c99a0db25170d33dad"
+
 LICENSE_LOCATION ?= "${S}/LICENSE"
 LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
 
