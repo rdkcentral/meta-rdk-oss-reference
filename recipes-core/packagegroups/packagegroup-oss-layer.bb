@@ -378,5 +378,4 @@ RDEPENDS:${PN} += "\
      woff2 \
      brotli \
      perf \
-     binutils \
 "
