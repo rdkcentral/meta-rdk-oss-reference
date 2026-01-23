@@ -1,1 +1,2 @@
-RDEPENDS:perf += " binutils "
+DEPENDS += " binutils "
+RDEPENDS:perf += " libbfd libopcodes "
