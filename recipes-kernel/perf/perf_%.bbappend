@@ -1,0 +1,1 @@
+RDEPENDS:perf += " binutils "
