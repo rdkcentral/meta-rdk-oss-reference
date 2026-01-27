@@ -23,7 +23,9 @@ OSS_LAYER_VERSION = "4.12.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
+TOOLCHAIN_LAYER_ARCH = "${@get_oss_arch(d)}-toolchain"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
+PACKAGE_EXTRA_ARCHS:append = " ${TOOLCHAIN_LAYER_ARCH}"
 
 TARGET_VENDOR ?= "-rdk"
 
@@ -254,10 +256,10 @@ PR:pn-gawk ?= "r4"
 PACKAGE_ARCH:pn-gawk ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gcc-runtime ?= "r0"
-PACKAGE_ARCH:pn-gcc-runtime ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-gcc-runtime ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-gcc-sanitizers ?= "r0"
-PACKAGE_ARCH:pn-gcc-sanitizers ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-gcc-sanitizers ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-sed ?= "r1"
 PACKAGE_ARCH:pn-sed ?= "${OSS_LAYER_ARCH}"
@@ -278,13 +280,13 @@ PR:pn-glib-2.0 ?= "r1"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc ?= "r1"
-PACKAGE_ARCH:pn-glibc ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-glibc ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-glibc-locale ?= "r0"
-PACKAGE_ARCH:pn-glibc-locale ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-glibc-locale ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-glibc-mtrace ?= "r0"
-PACKAGE_ARCH:pn-glibc-mtrace ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-glibc-mtrace ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-glib-networking ?= "r2"
 PACKAGE_ARCH:pn-glib-networking ?= "${OSS_LAYER_ARCH}"
@@ -428,10 +430,10 @@ PR:pn-libffi ?= "r0"
 PACKAGE_ARCH:pn-libffi ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libgcc ?= "r0"
-PACKAGE_ARCH:pn-libgcc ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-libgcc ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-libgcc-initial ?= "r0"
-PACKAGE_ARCH:pn-libgcc-initial ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-libgcc-initial ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-libgcrypt ?= "r1"
 PACKAGE_ARCH:pn-libgcrypt ?= "${OSS_LAYER_ARCH}"
