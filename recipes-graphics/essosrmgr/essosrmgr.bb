@@ -21,6 +21,11 @@ PACKAGECONFIG[resmgr] = "--disable-essosresmgrfree,--enable-essosresmgrfree"
 # Specify any options you want to pass to the configure script using EXTRA_OECONF:
 EXTRA_OECONF = ""
 
+#temporarily added to resolve fullstack build error in vendor builds. Should be removed when ermgr recipe removed from MW build.
+ROVIDES:${PN} = "ermgr"
+RREPLACES:${PN} = "ermgr"
+RCONFLICTS:${PN} = "ermgr"
+
 acpaths = "-I cfg"
 
 do_install:append() {
