@@ -1,1 +1,2 @@
-RDEPENDS:perf += " libbfd libopcodes "
+PACKAGECONFIG:remove = "libunwind"
+DEPENDS:remove = "${MLPREFIX}binutils"
