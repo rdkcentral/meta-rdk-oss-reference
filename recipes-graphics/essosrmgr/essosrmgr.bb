@@ -22,7 +22,7 @@ PACKAGECONFIG[resmgr] = "--disable-essosresmgrfree,--enable-essosresmgrfree"
 EXTRA_OECONF = ""
 
 #temporarily added to resolve fullstack build error in vendor builds. Should be removed when ermgr recipe removed from MW build.
-ROVIDES:${PN} = "ermgr"
+RPROVIDES:${PN} = "ermgr"
 RREPLACES:${PN} = "ermgr"
 RCONFLICTS:${PN} = "ermgr"
 
