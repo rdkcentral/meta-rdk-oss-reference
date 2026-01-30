@@ -3,7 +3,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1d13a8bfca16dbdad01fe5f270451aaa \
                     file://LICENSE;md5=1d13a8bfca16dbdad01fe5f270451aaa"
 
 SRC_URI = "https://code.rdkcentral.com/r/rdk/components/generic/ermgr;branch=rdk-next"
-SRC_URI += "file://01-essosResManager.diff"
 
 S = "${WORKDIR}/git"
 
@@ -14,6 +13,10 @@ inherit pkgconfig autotools
 
 # Specify any options you want to pass to the configure script using EXTRA_OECONF:
 EXTRA_OECONF = ""
+
+RPROVIDES:${PN} = "ermgr"
+RREPLACES:${PN} = "ermgr"
+RCONFLICTS:${PN} = "ermgr"
 
 #acpaths = "-I cfg"
 

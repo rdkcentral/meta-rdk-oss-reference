@@ -11,6 +11,8 @@ DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr"
 
 REQUIRED_DISTRO_FEATURES += "wayland"
 
+DEBIAN_NOAUTONAME:${PN} = "1"
+
 inherit autotools pkgconfig features_check
 
 PACKAGECONFIG ??= "westeros resmgr"
