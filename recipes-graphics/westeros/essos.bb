@@ -9,6 +9,8 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr westeros"
 
+DEBIAN_NOAUTONAME:${PN} = "1"
+
 REQUIRED_DISTRO_FEATURES += "wayland"
 
 inherit autotools pkgconfig features_check
