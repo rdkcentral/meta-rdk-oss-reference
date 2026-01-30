@@ -4,7 +4,9 @@ LICENSE = "Apache-2.0"
 LICENSE_LOCATION = "${S}/LICENSE"
 LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
 
-SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
+#SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
+SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;branch=topic/RDKEMW-12584"
+SRCREV = "6fc8110907fa23f932266529ea4103eb73012325"
 
 PV = "1.0+gitr${SRCPV}"
 # Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
