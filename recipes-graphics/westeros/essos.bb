@@ -20,6 +20,8 @@ DEBIAN_NOAUTONAME:${PN}-dbg = "1"
 DEBIAN_NOAUTONAME:${PN}-dev = "1"
 DEBIAN_NOAUTONAME:${PN}-staticdev = "1"
 
+DEBIAN_NOAUTONAME:${PN} = "1"
+
 REQUIRED_DISTRO_FEATURES += "wayland"
 
 inherit autotools pkgconfig features_check
