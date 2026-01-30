@@ -5,8 +5,8 @@ LICENSE_LOCATION = "${S}/LICENSE"
 LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
 
 #SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
-SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;branch=topic/RDKEMW-12584"
-SRCREV = "6fc8110907fa23f932266529ea4103eb73012325"
+SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;branch=testrev-000"
+SRCREV = "68adcd00fc0c67f39f0136f1db958749273a1d1d"
 
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
