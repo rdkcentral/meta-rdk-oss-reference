@@ -27,6 +27,9 @@ TOOLCHAIN_LAYER_ARCH = "${@get_oss_arch(d)}-toolchain"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 PACKAGE_EXTRA_ARCHS:append = " ${TOOLCHAIN_LAYER_ARCH}"
 
+TOOLCHAIN_TARGET_LIBS_URI = ""
+IPK_FEED_URIS:append = " ${@(' %s##file:%s' % (d.getVar('TOOLCHAIN_LAYER_ARCH'), d.getVar('TOOLCHAIN_TARGET_LIBS_URI')) if d.getVar('TOOLCHAIN_TARGET_LIBS_URI') and (d.getVar('ENABLE_DOCKER_TARGET_TOOLCHAIN_FEED') == '0' or not os.path.isdir(d.getVar('PREBUILT_TOOLCHAIN_TARGET_LIBS') or '')) else '')}"
+
 TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
