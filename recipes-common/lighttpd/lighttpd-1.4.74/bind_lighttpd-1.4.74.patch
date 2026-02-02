@@ -1,0 +1,65 @@
+Upstream-Status: Pending
+Index: lighttpd-1.4.74/src/network.c
+===================================================================
+--- lighttpd-1.4.74.orig/src/network.c
++++ lighttpd-1.4.74/src/network.c
+@@ -556,11 +556,13 @@ static int network_server_init(server *s
+ 
+ #ifdef HAVE_IPV6
+ 		if (set_v6only) {
++#ifndef SO_BINDTODEVICE			
+ 				int val = (set_v6only > 0);
+ 				if (-1 == setsockopt(srv_socket->fd, IPPROTO_IPV6, IPV6_V6ONLY, &val, sizeof(val))) {
+ 					log_serror(srv->errh, __FILE__, __LINE__, "setsockopt(IPV6_V6ONLY)");
+ 					return -1;
+ 				}
++#endif
+ 		}
+ #endif
+ 	}
+Index: lighttpd-1.4.74/src/sock_addr.c
+===================================================================
+--- lighttpd-1.4.74.orig/src/sock_addr.c
++++ lighttpd-1.4.74/src/sock_addr.c
+@@ -494,6 +494,9 @@ int sock_addr_from_str_hints(sock_addr *
+             hints.ai_protocol = IPPROTO_TCP;
+ 
+             if (0 != (rc = getaddrinfo(str, NULL, &hints, &res))) {
++            #ifdef SO_BINDTODEVICE
++                saddr->ipv6.sin6_addr = in6addr_any;
++            #else
+                 hints.ai_family = AF_INET;
+                 if (
+                   #if defined(__GLIBC__) && defined(EAI_ADDRFAMILY)
+@@ -513,10 +516,12 @@ int sock_addr_from_str_hints(sock_addr *
+                   "getaddrinfo failed: %s '%s'", gai_strerror(rc), str);
+ 
+                 return 0;
++	    #endif
+             }
+-
++           #ifndef SO_BINDTODEVICE
+             memcpy(saddr, res->ai_addr, res->ai_addrlen);
+             freeaddrinfo(res);
++           #endif
+         }
+         saddr->ipv6.sin6_port = htons(port);
+         *len = sizeof(struct sockaddr_in6);
+@@ -532,6 +537,9 @@ int sock_addr_from_str_hints(sock_addr *
+             saddr->ipv4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+         }
+         else {
++#ifdef SO_BINDTODEVICE
++          saddr->ipv4.sin_addr.s_addr = htonl(INADDR_ANY);
++#else
+           #ifdef HAVE_INET_PTON
+             /*(reuse HAVE_INET_PTON for presence of getaddrinfo())*/
+             struct addrinfo hints, *res;
+@@ -572,6 +580,7 @@ int sock_addr_from_str_hints(sock_addr *
+             memcpy(&saddr->ipv4.sin_addr.s_addr,
+                    he->h_addr_list[0], he->h_length);
+           #endif
++#endif
+         }
+         saddr->ipv4.sin_port = htons(port);
+         *len = sizeof(struct sockaddr_in);
