@@ -6,6 +6,9 @@ SRC_URI = "${CMF_GIT_ROOT}/rdk/components/generic/ermgr;protocol=${CMF_GIT_PROTO
 
 S = "${WORKDIR}/git"
 
+PV = "1.99+gitr${SRCPV}"
+SRCREV_westeros = "c539ce0a7044b4396c36cdb609067c5d3b1761bf"
+
 
 DEPENDS = "wayland virtual/egl libxkbcommon westeros"
 
