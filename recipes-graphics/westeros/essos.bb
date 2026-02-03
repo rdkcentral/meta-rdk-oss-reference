@@ -5,6 +5,10 @@ LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ff
 
 SRC_URI = "git://github.com/rdkcentral/essos;protocol=https;nobranch=1"
 
+PV = "1.0+gitr${SRCPV}"
+# Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
+SRCREV_westeros = "f1c893419a8f2387d995ef56bbad7072b4d80337"
+
 S = "${WORKDIR}/git"
 
 DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr westeros"
