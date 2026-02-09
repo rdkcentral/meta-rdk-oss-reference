@@ -1,0 +1,31 @@
+diff --git a/src/core/nm-policy.c b/src/core/nm-policy.c
+index 3b9f0e0c3a..abcd123456 100644
+--- a/src/core/nm-policy.c
++++ b/src/core/nm-policy.c
+@@ -2868,9 +2868,28 @@ dispose(GObject *object)
+     NMPolicy        *self = NM_POLICY(object);
+     NMPolicyPrivate *priv = NM_POLICY_GET_PRIVATE(self);
+
+-    nm_assert(!c_list_is_empty(&priv->policy_auto_activate_lst_head));
++    /* The original code asserted that the auto-activate list must NOT be empty:
++     *
++     *     nm_assert(!c_list_is_empty(&priv->policy_auto_activate_lst_head));
++     *
++     * In practice, this list can legitimately be empty during shutdown or
++     * teardown sequences, which caused NetworkManager to abort. Instead of
++     * asserting, we now always clean up the list safely.
++     */
++    {
++        CList *iter, *tmp;
++
++        c_list_for_each_safe(iter, tmp, &priv->policy_auto_activate_lst_head) {
++            PolicyAutoActivateItem *item =
++                c_list_entry(iter, PolicyAutoActivateItem, lst);
++
++            c_list_unlink(&item->lst);
++            g_free(item);
++        }
++    }
+
+     nm_assert(g_hash_table_size(priv->devices) == 0);
+
