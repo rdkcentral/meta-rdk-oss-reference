@@ -28,4 +28,3 @@ index 3b9f0e0c3a..abcd123456 100644
 +    }
 
      nm_assert(g_hash_table_size(priv->devices) == 0);
-
