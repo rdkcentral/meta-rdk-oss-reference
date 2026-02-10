@@ -940,3 +940,6 @@ PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libp11 ?= "r0"
 PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-yaml-cpp ?= "r0"
+PACKAGE_ARCH:pn-yaml-cpp ?= "${OSS_LAYER_ARCH}"
