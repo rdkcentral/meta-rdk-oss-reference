@@ -24,5 +24,3 @@ diff --git a/src/core/nm-policy.c b/src/core/nm-policy.c
     nm_assert(g_hash_table_size(priv->devices) == 0);
 
     nm_clear_g_object(&priv->default_ac4);
-    nm_clear_g_object(&priv->default_ac6);
-
