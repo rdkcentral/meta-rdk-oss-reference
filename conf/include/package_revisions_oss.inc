@@ -249,7 +249,7 @@ PACKAGE_ARCH:pn-freetype ?= "${OSS_LAYER_ARCH}"
 PR:pn-fribidi ?= "r0"
 PACKAGE_ARCH:pn-fribidi ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-gawk ?= "r2"
+PR:pn-gawk ?= "r3"
 PACKAGE_ARCH:pn-gawk ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gcc-runtime ?= "r0"
@@ -453,7 +453,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r3"
+PR:pn-libmanette ?= "r4"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
