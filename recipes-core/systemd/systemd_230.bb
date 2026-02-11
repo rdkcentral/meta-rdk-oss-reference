@@ -86,6 +86,7 @@ PACKAGECONFIG ??= "xz \
 PACKAGECONFIG:remove:libc-musl = "resolved"
 PACKAGECONFIG:remove:libc-musl = "selinux"
 PACKAGECONFIG:remove:libc-musl = "smack"
+PACKAGECONFIG:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'chrony', 'timesyncd', '', d)}"
 
 # Use the upstream systemd serial-getty@.service and rely on
 # systemd-getty-generator instead of using the OE-core specific
@@ -197,12 +198,27 @@ do_configure:prepend() {
 }
 
 do_install() {
+    
+   
 	autotools_do_install
 	install -d ${D}/${base_sbindir}
 	if ${@bb.utils.contains('PACKAGECONFIG', 'serial-getty-generator', 'false', 'true', d)}; then
 		# Provided by a separate recipe
 		rm ${D}${systemd_unitdir}/system/serial-getty* -f
 	fi
+
+     if echo " ${DISTRO_FEATURES} " | grep -q " chrony "; then
+        echo "DBG: chrony is ENABLED" 
+    else
+        echo "DBG: chrony is NOT enabled"
+    fi
+      install -d ${D}${sysconfdir}
+    # Marker file showing if chrony is enabled
+    if echo " ${DISTRO_FEATURES} " | grep -q " chrony "; then
+        echo "chrony_enabled" > ${D}${sysconfdir}/systemd-chrony-test
+    else
+        echo "chrony_disabled" > ${D}${sysconfdir}/systemd-chrony-test
+    fi 
 
 	# Provide support for initramfs
 	[ ! -e ${D}/init ] && ln -s ${rootlibexecdir}/systemd/systemd ${D}/init
@@ -490,6 +506,7 @@ FILES:${PN} = " ${base_bindir}/* \
                 ${nonarch_base_libdir}/udev/rules.d/71-seat.rules \
                 ${nonarch_base_libdir}/udev/rules.d/73-seat-late.rules \
                 ${nonarch_base_libdir}/udev/rules.d/99-systemd.rules \
+                ${D}${sysconfdir}/systemd-chrony-test
                "
 
 FILES:${PN}-dev += "${base_libdir}/security/*.la ${datadir}/dbus-1/interfaces/ ${sysconfdir}/rpm/macros.systemd"
