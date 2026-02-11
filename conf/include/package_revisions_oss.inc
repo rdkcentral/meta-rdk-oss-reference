@@ -838,7 +838,7 @@ PACKAGE_ARCH:pn-sqlite3 ?= "${OSS_LAYER_ARCH}"
 PR:pn-strace ?= "r0"
 PACKAGE_ARCH:pn-strace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-stunnel ?= "r2"
+PR:pn-stunnel ?= "r3"
 PACKAGE_ARCH:pn-stunnel ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-sysfsutils ?= "r6"
