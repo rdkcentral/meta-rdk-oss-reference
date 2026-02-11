@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ff
 #SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
 SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;branch=topic/RDKEMW-13685"
 SRCREV = "b9acff80d8ab71f4dba9887847a68f2f9eb0f80c"
-#
+##
 
 PV = "1.0+gitr${SRCPV}"
 # Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
