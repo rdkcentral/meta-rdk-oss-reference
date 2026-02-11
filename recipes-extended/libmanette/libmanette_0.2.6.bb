@@ -7,7 +7,6 @@ SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.ta
            file://0001-old-kernel-and-64-bit-kernel-build-error-fix.patch \
            file://0001-send-event-in-thread-context.patch \
            file://0001-default-gamepad-db-dir-usr-share.patch \
-           file://gamecontrollerdb \
            file://0001-new-SDL-gamedb.patch \
            file://0002-add-wayland-inputfd-support.patch \
            file://0001-map-key-menu-back-as-btn.patch \
@@ -28,15 +27,11 @@ do_install:append() {
     install -d ${D}${sysconfdir}/udev
     install -d ${D}${sysconfdir}/udev/rules.d
     install -m 0644 ${WORKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
-    install -d ${D}${datadir}/libmanette/
-    cp -f ${WORKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
-    chmod 0644 ${D}${datadir}/libmanette/gamecontrollerdb
 
     rm ${D}/usr/bin/manette-test
     rmdir --ignore-fail-on-non-empty ${D}/usr/bin/
 }
 
-FILES:${PN} += "${datadir}/libmanette/"
 FILES:${PN} += "${sysconfdir}/udev/"
 #FILES:${PN}-ptest =+ "${bindir}/manette-test"
 #FILES:${PN}-ptest =+ "${bindir}/ManetteEventMapping"
