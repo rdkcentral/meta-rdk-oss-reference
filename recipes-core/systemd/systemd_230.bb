@@ -506,7 +506,7 @@ FILES:${PN} = " ${base_bindir}/* \
                 ${nonarch_base_libdir}/udev/rules.d/71-seat.rules \
                 ${nonarch_base_libdir}/udev/rules.d/73-seat-late.rules \
                 ${nonarch_base_libdir}/udev/rules.d/99-systemd.rules \
-                ${sysconfdir}/systemd-chrony-test"
+                ${sysconfdir}/systemd-chrony-test \
                "
 
 FILES:${PN}-dev += "${base_libdir}/security/*.la ${datadir}/dbus-1/interfaces/ ${sysconfdir}/rpm/macros.systemd"
