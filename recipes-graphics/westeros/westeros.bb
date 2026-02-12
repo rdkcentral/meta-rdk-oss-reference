@@ -4,11 +4,12 @@ LICENSE = "Apache-2.0"
 LICENSE_LOCATION = "${S}/LICENSE"
 LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
 
-SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
+#SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
+SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;branch=topic/RDKEMW-13685"
 
 PV = "1.0+gitr${SRCPV}"
 # Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
-SRCREV_westeros = "0228f9e85fd0c44b85cf4af532c627dbf3d9b518"
+SRCREV_westeros = "19cf677bde3177b3989b9b2d44a3086942dcced6"
 
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
