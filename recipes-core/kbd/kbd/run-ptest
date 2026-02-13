@@ -1,18 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 # kbd ptest run-ptest
 # Based on upstream OE-Core implementation by Qiu Tingting
 
 # Define test work dir
-WORKDIR=/usr/lib/kbd/ptest/tests/
+WORKDIR=@PTEST_PATH@/tests/
 
 # Run test
 cd ${WORKDIR}
 
 # create atconfig
-if [[ ! -f "atconfig" ]]; then
-    echo 'abs_builddir="/usr/lib/kbd/ptest/tests/"' > atconfig
-    echo 'abs_srcdir="/usr/lib/kbd/ptest/tests/"' >> atconfig
-    echo 'abs_top_builddir="/usr/lib/kbd/ptest/"' >> atconfig
+if [ ! -f "atconfig" ]; then
+    echo "abs_builddir=\"@PTEST_PATH@/tests/\"" > atconfig
+    echo "abs_srcdir=\"@PTEST_PATH@/tests/\"" >> atconfig
+    echo "abs_top_builddir=\"@PTEST_PATH@/\"" >> atconfig
 fi
 
 ./testsuite -k unittest | sed -e '/[0-9]:/s/://' \
