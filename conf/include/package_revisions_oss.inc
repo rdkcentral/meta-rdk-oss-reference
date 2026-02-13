@@ -49,6 +49,8 @@ PREFERRED_VERSION_rust-cross-canadian-native = "1.82.0"
 PREFERRED_VERSION_readline-native = "8.1.2"
 PREFERRED_VERSION_nativesdk-readline = "8.1.2"
 PREFERRED_VERSION_bluez5 = "5.48"
+PREFERRED_VERSION_glib-2.0 = "2.74.6"
+PREFERRED_VERSION_glib-networking = "2.74.0"
 
 #To resolve gettext native version mismatch due to layer priority
 PREFERRED_VERSION_gettext-native = "0.21"
@@ -272,7 +274,7 @@ PACKAGE_ARCH:pn-gettext ?= "${OSS_LAYER_ARCH}"
 PR:pn-gflags ?= "r0"
 PACKAGE_ARCH:pn-gflags ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-2.0 ?= "r1"
+PR:pn-glib-2.0 ?= "r0"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc ?= "r1"
@@ -284,7 +286,7 @@ PACKAGE_ARCH:pn-glibc-locale ?= "${OSS_LAYER_ARCH}"
 PR:pn-glibc-mtrace ?= "r0"
 PACKAGE_ARCH:pn-glibc-mtrace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-networking ?= "r2"
+PR:pn-glib-networking ?= "r0"
 PACKAGE_ARCH:pn-glib-networking ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssh ?= "r0"
