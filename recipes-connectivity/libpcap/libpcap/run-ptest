@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Run libpcap test programs (only safe, non-blocking tests)
+cd testprogs || exit 1
+
+# Tests that work without arguments or special setup
+SAFE_TESTS="findalldevstest findalldevstest-perf opentest reactivatetest"
+
+for test in $SAFE_TESTS; do
+    if [ -x "$test" ]; then
+        if timeout 30 ./"$test" > /dev/null 2>&1; then
+            echo "PASS: $test"
+        else
+            ret=$?
+            if [ $ret -eq 124 ]; then
+                echo "TIMEOUT: $test"
+            else
+                echo "FAIL: $test"
+            fi
+        fi
+    fi
+done
