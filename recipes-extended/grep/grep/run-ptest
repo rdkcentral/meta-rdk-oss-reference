@@ -3,25 +3,28 @@
 
 cd tests
 
+# Timeout for each test (in seconds)
+TEST_TIMEOUT=10
+
 # Skip slow/performance tests and tests that fail due to environment/locale issues
 skip_tests="hash-collision-perf long-line-vs-2GiB-read long-pattern-perf many-regex-performance mb-non-UTF8-performance backref-multibyte-slow big-hole big-match bre c-locale case-fold-titlecase dfa-infloop empty equiv-classes ere false-match-mb-non-utf8 fgrep-infloop fmbtest get-mb-cur-max grep-dev-null-out help-version in-eq-out-infloop invalid-multibyte-infloop khadafy max-count-overread mb-non-UTF8-perf-Fw null-byte pcre-infloop pcre-invalid-utf8-infloop pcre-invalid-utf8-input pcre-jitstack sjis-mb skip-device spencer1 spencer1-locale triple-backref unibyte-bracket-expr"
 
 # Run all test scripts except the skipped ones
 for test in *; do
     # Skip non-executable files, directories, support files, and problematic tests
-    if [ -f "$test" ] && [ -x "$test" ] && [[ ! "$test" =~ \.(c|awk|pl|pm|sh|in|am|tests|txt|regexp|lines)$ ]]; then
+    if [[ -f "$test" && -x "$test" && ! "$test" =~ \.(c|awk|pl|pm|sh|in|am|tests|txt|regexp|lines)$ ]]; then
         # Check if test is in skip list
         skip=0
         for skip_test in $skip_tests; do
-            if [ "$test" = "$skip_test" ]; then
+            if [[ "$test" == "$skip_test" ]]; then
                 skip=1
                 break
             fi
         done
         
-        if [ $skip -eq 0 ]; then
+        if [[ $skip -eq 0 ]]; then
             echo -n "Test $test: "
-            if timeout 10 bash "$test" > /dev/null 2>&1; then
+            if timeout "$TEST_TIMEOUT" bash "$test" > /dev/null 2>&1; then
                 echo "PASS"
             else
                 echo "FAIL"
