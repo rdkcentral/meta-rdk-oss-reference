@@ -1,0 +1,93 @@
+#!/bin/sh
+
+# Change to tests subdirectory
+cd tests || {
+    echo "ERROR: Cannot change to tests directory"
+    exit 1
+}
+
+# Export paths for test_vars sourcing in shell scripts
+export SRCDIR="$(pwd)"
+export OBJDIR="$(pwd)"
+export TOP_SRCDIR="$(dirname "$(pwd)")"
+export TOP_BUILDDIR="$(dirname "$(pwd)")"
+export LD_LIBRARY_PATH="${PTEST_PATH}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+# Source test_vars if it exists (some tests need this)
+if [ -f ./test_vars ]; then
+    . ./test_vars
+fi
+
+# Function to run a binary test
+run_binary_test() {
+    local test_bin=$1
+    local test_name=$(basename "$test_bin")
+
+    if [ ! -f "./$test_bin" ]; then
+        echo "SKIP: $test_name (not found)"
+        return
+    fi
+
+    if [ ! -x "./$test_bin" ]; then
+        echo "SKIP: $test_name (not executable)"
+        return
+    fi
+
+    # Run the test, capture exit code
+    ./"$test_bin" > /dev/null 2>&1
+    ret=$?
+
+    if [ $ret -eq 0 ]; then
+        echo "PASS: $test_name"
+    else
+        echo "FAIL: $test_name (exit code: $ret)"
+    fi
+}
+
+# Function to run a shell script test
+run_script_test() {
+    local test_script=$1
+    local test_name=$(basename "$test_script")
+
+    if [ ! -f "./$test_script" ]; then
+        echo "SKIP: $test_name (not found)"
+        return
+    fi
+
+    if [ ! -x "./$test_script" ]; then
+        # Make executable if not already
+        chmod +x "./$test_script" 2>/dev/null || true
+    fi
+
+    # Run the script test
+    if [ -x "./$test_script" ]; then
+        ./"$test_script" > /dev/null 2>&1
+        ret=$?
+
+        if [ $ret -eq 0 ]; then
+            echo "PASS: $test_name"
+        else
+            echo "FAIL: $test_name (exit code: $ret)"
+        fi
+    else
+        echo "SKIP: $test_name (cannot execute)"
+    fi
+}
+
+# Run binary tests
+echo "Running binary tests..."
+run_binary_test check_check_export
+run_binary_test check_check
+run_binary_test check_nofork
+
+# Run shell script tests
+echo "Running script tests..."
+run_script_test test_output.sh
+run_script_test test_check_nofork.sh
+run_script_test test_check_nofork_teardown.sh
+run_script_test test_xml_output.sh
+run_script_test test_log_output.sh
+run_script_test test_set_max_msg_size.sh
+run_script_test test_tap_output.sh
+
+exit 0
