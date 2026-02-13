@@ -1,0 +1,28 @@
+#!/bin/bash
+# run-ptest script for curl
+
+# 1. Determine the absolute path of the ptest directory
+PTEST_PATH=$(dirname $(readlink -f $0))
+
+# 2. Fix the Perl Library Path for the specific target architecture
+# This ensures File::Basename and other modules are found
+export PERL5LIB="$PTEST_PATH/../../perl5/5.34.3:$PTEST_PATH/../../perl5/5.34.3/arm-linux:$PERL5LIB"
+export LD_LIBRARY_PATH="$PTEST_PATH/tests/libtest:$LD_LIBRARY_PATH"
+
+# 3. Locate the curl binary
+# We prioritize the system binary, but check the ptest folder as fallback
+CURL_BIN=$(which curl)
+if [ -z "$CURL_BIN" ]; then
+    CURL_BIN="/usr/bin/curl"
+fi
+
+# 4. Execute the test runner
+# -a: autostart mock servers
+# -n: no valgrind (usually not on embedded)
+# -s: short output for scannability
+# -c: path to the curl binary to test
+cd $PTEST_PATH/tests
+./runtests.pl -a -n -s -c "$CURL_BIN" | sed \
+    -e 's|test \([0-9]*\)...OK|PASS: curl \1|' \
+    -e 's|test \([0-9]*\)...FAILED|FAIL: curl \1|' \
+    -e 's|test \([0-9]*\)...SKIPPED|SKIP: curl \1|'
