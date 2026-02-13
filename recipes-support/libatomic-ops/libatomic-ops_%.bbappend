@@ -6,6 +6,8 @@ SRC_URI += "file://run-ptest"
 
 do_compile_ptest() {
     oe_runmake -C ${B}/tests test_atomic test_atomic_generalized test_stack test_malloc
+    # Try to build test_atomic_pthreads if pthread support is available
+    oe_runmake -C ${B}/tests test_atomic_pthreads || bbwarn "test_atomic_pthreads could not be built (pthread support may not be available)"
 }
 
 do_install_ptest() {
