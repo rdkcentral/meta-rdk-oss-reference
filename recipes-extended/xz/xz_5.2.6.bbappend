@@ -45,7 +45,9 @@ do_install_ptest() {
         echo "abcdefghijklmnopqrstuvwxyz" > ${D}${PTEST_PATH}/tests/compress_prepared_abc
         echo "ABCDEFGHIJKLMNOPQRSTUVWXYZ" >> ${D}${PTEST_PATH}/tests/compress_prepared_abc
         
-        dd if=/dev/urandom bs=1024 count=10 2>/dev/null > ${D}${PTEST_PATH}/tests/compress_prepared_random
+        # Create deterministic pseudo-random data for reproducible builds
+        # Using a fixed pattern repeated to generate predictable test data
+        yes "0123456789abcdefghijklmnopqrstuvwxyz" | head -c 10240 > ${D}${PTEST_PATH}/tests/compress_prepared_random
         
         cat > ${D}${PTEST_PATH}/tests/compress_prepared_text << 'EOF'
 This is a test file for XZ compression testing.

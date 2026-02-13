@@ -28,7 +28,7 @@ for j in ${test_shell}; do
         continue
     fi
     
-    if [ "$j" == "test_compress.sh" ]; then
+    if [ "$j" = "test_compress.sh" ]; then
         ./$j create_compress_files
     else
         ./$j
