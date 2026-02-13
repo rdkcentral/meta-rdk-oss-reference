@@ -9,6 +9,7 @@ do_install_ptest() {
     install -d ${D}${PTEST_PATH}/lib
     
     # Install test binaries from .libs directory (actual executables, not wrappers)
+    # NOTE: This list must be kept in sync with the binaries executed in run-ptest
     for bin in check_check check_check_export ex_output check_nofork check_nofork_teardown check_set_max_msg_size; do
         if [ -f ${B}/tests/.libs/$bin ]; then
             install -m 0755 ${B}/tests/.libs/$bin ${D}${PTEST_PATH}/tests/

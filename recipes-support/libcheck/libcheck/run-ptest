@@ -75,13 +75,11 @@ run_script_test() {
 }
 
 # Run binary tests
-echo "Running binary tests..."
 run_binary_test check_check_export
 run_binary_test check_check
 run_binary_test check_nofork
 
 # Run shell script tests
-echo "Running script tests..."
 run_script_test test_output.sh
 run_script_test test_check_nofork.sh
 run_script_test test_check_nofork_teardown.sh
