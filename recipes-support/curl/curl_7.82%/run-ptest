@@ -6,6 +6,8 @@ PTEST_PATH=$(dirname $(readlink -f $0))
 
 # 2. Fix the Perl Library Path for the specific target architecture
 # This ensures File::Basename and other modules are found
+# NOTE: Hardcoded Perl version (5.34.3) and architecture (arm-linux) from problem statement
+# May need adjustment for different target architectures or Perl versions
 export PERL5LIB="$PTEST_PATH/../../perl5/5.34.3:$PTEST_PATH/../../perl5/5.34.3/arm-linux:$PERL5LIB"
 export LD_LIBRARY_PATH="$PTEST_PATH/tests/libtest:$LD_LIBRARY_PATH"
 

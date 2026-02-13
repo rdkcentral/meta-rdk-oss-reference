@@ -39,16 +39,6 @@ do_install_ptest() {
     cp -rf ${S}/tests/*.py ${D}${PTEST_PATH}/tests/
     cp -rf ${S}/tests/data ${D}${PTEST_PATH}/tests/
 
-    if [ -f ${S}/tests/stunnel.pem ]; then
-        install -m 0644 ${S}/tests/stunnel.pem ${D}${PTEST_PATH}/tests/
-    fi
-    cp -rf ${S}/tests/data/* ${D}${PTEST_PATH}/tests/data/
-    
-    # 4. Copy certificates (Fixes the HTTPS server failure)
-    if [ -d ${S}/tests/certs ]; then
-        cp -rf ${S}/tests/certs/*.pem ${D}${PTEST_PATH}/tests/certs/
-        cp -rf ${S}/tests/certs/*.der ${D}${PTEST_PATH}/tests/certs/
-    fi
     [ -f ${S}/tests/stunnel.conf ] && cp -f ${S}/tests/stunnel.conf ${D}${PTEST_PATH}/tests/
     [ -f ${S}/tests/tgsservice.conf ] && cp -f ${S}/tests/tgsservice.conf ${D}${PTEST_PATH}/tests/
 
@@ -82,9 +72,8 @@ do_install_ptest() {
     chmod 777 ${D}${PTEST_PATH}/tests/log
     chmod -R 755 ${D}${PTEST_PATH}/tests 
     
-    cd ${D}${PTEST_PATH}/tests/data
-    ln -sf . data
-    cd -
+    # Create data symlink in data directory
+    ln -sf . ${D}${PTEST_PATH}/tests/data/data
 }
 
 FILES:${PN}-ptest += "${PTEST_PATH}/tests/*"
