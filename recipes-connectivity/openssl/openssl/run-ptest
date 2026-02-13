@@ -54,7 +54,9 @@ fi
 # 4. Set up Perl library path for the specific target architecture
 # CRITICAL: System Perl paths MUST come FIRST to find core modules (strict.pm, warnings.pm)
 # Then add OpenSSL-specific paths for OpenSSL::* and Text::Template modules
-export PERL5LIB="/tmp/data/hanuk/usr/lib/perl5/5.34.3:/tmp/data/hanuk/usr/lib/perl5/5.34.3/arm-linux:$PTEST_PATH/util/perl:$PTEST_PATH/external/perl/Text-Template-1.56/lib:$PTEST_PATH/external/perl:$PERL5LIB"
+# NOTE: Hardcoded architecture paths removed - rely on system Perl configuration
+# Add OpenSSL-specific paths for OpenSSL::* and Text::Template modules
+export PERL5LIB="$PTEST_PATH/util/perl:$PTEST_PATH/external/perl/Text-Template-1.56/lib:$PTEST_PATH/external/perl:$PERL5LIB"
 
 # 5. Set up OpenSSL environment variables
 export OPENSSL_MODULES="$PTEST_PATH/providers"
