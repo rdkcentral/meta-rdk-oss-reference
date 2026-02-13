@@ -10,7 +10,9 @@ do_compile_ptest() {
     oe_runmake -C ${B}/testprogs \
         capturetest can_set_rfmon_test filtertest \
         findalldevstest findalldevstest-perf opentest reactivatetest \
-        selpolltest threadsignaltest writecaptest valgrindtest
+        selpolltest threadsignaltest writecaptest
+    # Try to build valgrindtest if valgrind support is available
+    oe_runmake -C ${B}/testprogs valgrindtest || bbwarn "valgrindtest could not be built (valgrind support may not be available)"
 }
 
 do_install_ptest() {

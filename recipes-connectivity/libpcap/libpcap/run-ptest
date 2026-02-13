@@ -13,7 +13,7 @@ for test in $SAFE_TESTS; do
         else
             ret=$?
             if [ $ret -eq 124 ]; then
-                echo "TIMEOUT: $test"
+                echo "FAIL: $test (timeout)"
             else
                 echo "FAIL: $test"
             fi
