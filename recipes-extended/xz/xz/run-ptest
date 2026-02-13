@@ -1,0 +1,42 @@
+#!/bin/bash
+# run-ptest for xz 5.2.6
+# Adapted from upstream OE-Core xz 5.4.5 ptest
+
+ptestdir=$(dirname "$(readlink -f "$0")")
+cd "$ptestdir"/tests || exit
+
+# Run executable test cases (compiled C tests)
+tests_exec=$(file $(ls test_* 2>/dev/null) | grep "ELF" | awk -F: '{print $1}')
+for i in ${tests_exec}; do
+    if [ -x "$i" ]; then
+        ./$i
+        if [ $? -eq 0 ]; then
+            echo "PASS: $i"
+        else
+            echo "FAIL: $i"
+        fi
+    fi
+done
+
+# Run POSIX shell script test cases
+export srcdir=${ptestdir}/tests
+test_shell="test_files.sh test_scripts.sh test_compress.sh"
+
+for j in ${test_shell}; do
+    if [ ! -f "$j" ]; then
+        echo "SKIP: $j (not found)"
+        continue
+    fi
+    
+    if [ "$j" == "test_compress.sh" ]; then
+        ./$j create_compress_files
+    else
+        ./$j
+    fi
+    
+    if [ $? -eq 0 ]; then
+        echo "PASS: $j"
+    else
+        echo "FAIL: $j"
+    fi
+done
