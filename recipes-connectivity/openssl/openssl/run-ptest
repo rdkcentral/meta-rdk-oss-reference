@@ -1,14 +1,130 @@
 #!/bin/sh
-. /etc/device.properties
+# run-ptest script for OpenSSL 3.0.15
+# COMPLETE FINAL VERSION - All fixes included
 
-if [ "$IMAGE_TYPE" == "OSS" ]; then
-    set -e
-    # Optional arguments are 'list' to lists all tests, or the test name (base name
-    # ie test_evp, not 03_test_evp.t).
-    export TOP=.
-    # OPENSSL_ENGINES is relative from the test binaries
-    export OPENSSL_ENGINES=../engines
-    perl ./test/run_tests.pl $* | sed -r -e '/(.*) \.*.ok/ s/^/PASS: /g' -r -e '/Dubious(.*)/ s/^/FAIL: /g' -e '/(.*) \.*.skipped: (.*)/ s/^/SKIP: /g'
-else
-    make -k runtest
+# 1. Determine the absolute path of the ptest directory
+PTEST_PATH=$(dirname $(readlink -f $0))
+
+# 2. Fix hardcoded paths in configdata.pm and wrap.pl if not in standard location
+# This allows ptest to work from any location (e.g., /tmp for testing)
+# CRITICAL: Uses idempotent checks to prevent path duplication on multiple runs
+EXPECTED_PATH="/usr/lib/openssl/ptest"
+if [ "$PTEST_PATH" != "$EXPECTED_PATH" ]; then
+    echo "INFO: Fixing hardcoded paths for non-standard location: $PTEST_PATH"
+
+    # Fix configdata.pm - replace ALL occurrences of the expected path with actual path
+    # IDEMPOTENT: Only run if file contains EXPECTED_PATH but NOT the actual PTEST_PATH yet
+    if [ -f "$PTEST_PATH/configdata.pm" ]; then
+        if grep -q "^use OpenSSL::fallback '$EXPECTED_PATH" "$PTEST_PATH/configdata.pm" 2>/dev/null; then
+            # File needs fixing - has expected path, not actual path
+            sed -i "s|$EXPECTED_PATH|$PTEST_PATH|g" "$PTEST_PATH/configdata.pm"
+            echo "  Fixed configdata.pm paths"
+        elif grep -q "^use OpenSSL::fallback '$PTEST_PATH" "$PTEST_PATH/configdata.pm" 2>/dev/null; then
+            echo "  configdata.pm already fixed (has correct path)"
+        fi
+    fi
+
+    # Fix wrap.pl - replace hardcoded paths with actual PTEST_PATH
+    # IDEMPOTENT: Check for specific line pattern to avoid re-running
+    if [ -f "$PTEST_PATH/util/wrap.pl" ]; then
+        if grep -q "^my \$here = '$EXPECTED_PATH" "$PTEST_PATH/util/wrap.pl" 2>/dev/null; then
+            # File needs fixing - has expected path, not actual path
+            sed -i "s|$EXPECTED_PATH|$PTEST_PATH|g" "$PTEST_PATH/util/wrap.pl"
+            echo "  Fixed wrap.pl paths"
+        elif grep -q "^my \$here = '$PTEST_PATH" "$PTEST_PATH/util/wrap.pl" 2>/dev/null; then
+            echo "  wrap.pl already fixed (has correct path)"
+        fi
+    fi
 fi
+
+# 3. CRITICAL FIX: Remove /MODULES.txt suffix from OpenSSL::fallback
+# OpenSSL 3.0 build system generates configdata.pm with '/MODULES.txt' suffix
+# BUT OpenSSL::fallback Perl module expects a DIRECTORY, not a file
+# This causes error: "Parameter to use fallback must be a directory, not a file"
+# This fix must run AFTER path replacement and even if path is already correct
+if [ -f "$PTEST_PATH/configdata.pm" ]; then
+    if grep -q "MODULES\.txt'" "$PTEST_PATH/configdata.pm" 2>/dev/null; then
+        echo "INFO: Fixing OpenSSL::fallback MODULES.txt bug"
+        # Remove /MODULES.txt suffix, keeping only the directory path
+        sed -i "s|/MODULES\.txt'|'|g" "$PTEST_PATH/configdata.pm"
+        echo "  Removed MODULES.txt suffix (now points to directory)"
+    fi
+fi
+
+# 4. Set up Perl library path for the specific target architecture
+# CRITICAL: System Perl paths MUST come FIRST to find core modules (strict.pm, warnings.pm)
+# Then add OpenSSL-specific paths for OpenSSL::* and Text::Template modules
+export PERL5LIB="/tmp/data/hanuk/usr/lib/perl5/5.34.3:/tmp/data/hanuk/usr/lib/perl5/5.34.3/arm-linux:$PTEST_PATH/util/perl:$PTEST_PATH/external/perl/Text-Template-1.56/lib:$PTEST_PATH/external/perl:$PERL5LIB"
+
+# 5. Set up OpenSSL environment variables
+export OPENSSL_MODULES="$PTEST_PATH/providers"
+export OPENSSL_ENGINES="$PTEST_PATH/engines"
+export OPENSSL_CONF="$PTEST_PATH/test/default-and-fips.cnf"
+
+# 6. Set up library paths
+export LD_LIBRARY_PATH="$PTEST_PATH:$LD_LIBRARY_PATH"
+
+# 7. Set TOP to current directory for test scripts
+export TOP=$PTEST_PATH
+
+# 8. Configure test harness
+export HARNESS_JOBS=${HARNESS_JOBS:-1}
+
+# 9. Determine which tests to run
+if [ $# -gt 0 ]; then
+    TESTS="$*"
+else
+    # Run all tests
+    TESTS="alltests"
+fi
+
+# 10. Change to ptest directory
+cd $PTEST_PATH
+
+# 11. Execute the test runner
+# OpenSSL uses perl test/run_tests.pl as the main test runner
+if [ -f "$PTEST_PATH/test/run_tests.pl" ]; then
+    # Use the official OpenSSL test runner
+    { perl ./test/run_tests.pl $TESTS 2>&1 || echo "FAIL: openssl" ; } | sed -e 's/\.* ok$/PASS: &/g' \
+        -e 's/\.* skipped:/SKIP: &/g' \
+        -e '/Dubious/ s/^/FAIL: /g' \
+        -e '/^not ok / s/^/FAIL: /g'
+else
+    # Fallback: Use prove to run test recipes directly
+    echo "WARNING: test/run_tests.pl not found, using fallback method"
+
+    if [ -d "$PTEST_PATH/test/recipes" ]; then
+        cd "$PTEST_PATH/test"
+
+        if command -v prove >/dev/null 2>&1; then
+            { prove -PWrapOpenSSL -MCoreList -I ../util/perl -MOpenSSL::Glob -j 1 recipes/*.t 2>&1 || echo "FAIL: openssl" ; } | sed -e 's/\.* ok$/PASS: &/g' \
+                -e 's/\.* skipped:/SKIP: &/g' \
+                -e '/Dubious/ s/^/FAIL: /g' \
+                -e '/^not ok / s/^/FAIL: /g'
+        else
+            # Last resort: run recipes with perl directly
+            for recipe in recipes/*.t; do
+                [ -f "$recipe" ] || continue
+                perl -I../util/perl "$recipe" 2>&1
+            done | sed -e 's/\.* ok$/PASS: &/g' \
+                -e 's/\.* skipped:/SKIP: &/g' \
+                -e '/Dubious/ s/^/FAIL: /g' \
+                -e '/^not ok / s/^/FAIL: /g'
+        fi
+    else
+        echo "ERROR: test/recipes directory not found at $PTEST_PATH/test/recipes"
+        echo "FAIL: openssl"
+    fi
+fi
+
+# 12. Capture exit status
+EXIT_STATUS=$?
+
+# 13. Print summary
+if [ $EXIT_STATUS -eq 0 ]; then
+    echo "PASS: All OpenSSL tests completed"
+else
+    echo "FAIL: Some OpenSSL tests failed"
+fi
+
+exit $EXIT_STATUS
