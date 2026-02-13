@@ -1,5 +1,5 @@
 #!/bin/sh
-# -e: exit on error, -u: error on undefined vars, -x: print commands
+# Run ptest for alsa-lib
 
 # The list of binaries we compiled in the recipe
 for t in config control midi_event client_event_filter namehint
