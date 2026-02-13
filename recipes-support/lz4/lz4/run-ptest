@@ -9,7 +9,11 @@ if ./datagen -g1M > testfile 2>/dev/null; then
     echo "PASS"
 else
     echo "FAIL"
+    exit 1
 fi
+
+# Create compressed file for tests that need it
+lz4 testfile testfile.lz4 > /dev/null 2>&1
 
 # Test 2: Round trip test (compress and decompress) - use testfile as input
 echo -n "Test round trip compression: "
@@ -19,9 +23,9 @@ else
     echo "FAIL"
 fi
 
-# Test 3: Check frame format
+# Test 3: Check frame format (needs compressed file)
 echo -n "Test frame format check: "
-if ./checkFrame testfile > /dev/null 2>&1; then
+if ./checkFrame testfile.lz4 > /dev/null 2>&1; then
     echo "PASS"
 else
     echo "FAIL"
@@ -35,9 +39,9 @@ else
     echo "FAIL"
 fi
 
-# Test 5: Partial decompression
+# Test 5: Partial decompression (needs compressed file)
 echo -n "Test partial decompression: "
-if ./decompress-partial testfile > /dev/null 2>&1; then
+if ./decompress-partial testfile.lz4 > /dev/null 2>&1; then
     echo "PASS"
 else
     echo "FAIL"
@@ -60,4 +64,4 @@ else
 fi
 
 # Cleanup
-rm -f testfile
+rm -f testfile testfile.lz4
