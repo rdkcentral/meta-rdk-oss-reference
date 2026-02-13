@@ -19,15 +19,18 @@ else
     echo "FAIL"
 fi
 
-# Test 3: Test setcap/getcap utilities exist
+# Test 3: Test getcap utility
 echo -n "Test getcap utility: "
-if /usr/sbin/getcap /usr/sbin/capsh 2>&1 | grep -qE "^(/usr/sbin/capsh =|/usr/sbin/capsh$)"; then
+if /usr/sbin/getcap /usr/sbin/capsh 2>&1; then
+    # getcap succeeds whether file has caps or not
     echo "PASS"
 else
-    echo "PASS"  # File with no caps returns empty, which is still valid
+    echo "FAIL"
 fi
 
 # Test 4: Verify capsh can decode capability mask
+# This mask (0x0000000000003fffffffff) represents a full set of capabilities
+# up to CAP_LAST_CAP, used to verify the decode functionality
 echo -n "Test capsh decode capability: "
 output=$(/usr/sbin/capsh --decode=0x0000000000003fffffffff 2>&1)
 if echo "$output" | grep -qE "(cap_|0x)"; then
