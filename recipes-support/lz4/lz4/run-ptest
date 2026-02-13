@@ -1,0 +1,63 @@
+#!/bin/bash
+# lz4 ptest - comprehensive functional tests
+
+cd tests
+
+# Test 1: Generate test data
+echo -n "Test data generation: "
+if ./datagen -g1M > testfile 2>/dev/null; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 2: Round trip test (compress and decompress) - use testfile as input
+echo -n "Test round trip compression: "
+if ./roundTripTest -i1 testfile > /dev/null 2>&1; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 3: Check frame format
+echo -n "Test frame format check: "
+if ./checkFrame testfile > /dev/null 2>&1; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 4: Frame API testing
+echo -n "Test frame API: "
+if ./frametest -i1 > /dev/null 2>&1; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 5: Partial decompression
+echo -n "Test partial decompression: "
+if ./decompress-partial testfile > /dev/null 2>&1; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 6: Quick benchmark test
+echo -n "Test fullbench quick run: "
+if ./fullbench -i1 testfile > /dev/null 2>&1; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 7: Round trip with different block sizes - use testfile
+echo -n "Test round trip with block options: "
+if ./roundTripTest -i1 -B4 testfile > /dev/null 2>&1; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Cleanup
+rm -f testfile
