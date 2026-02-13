@@ -9,6 +9,14 @@ echo "=== Running libxslt 1.1.35 ptests ==="
 PASSED=0
 FAILED=0
 
+# Create temporary files securely
+RESULT_TMP=$(mktemp)
+EXPECTED_TMP=$(mktemp)
+ACTUAL_TMP=$(mktemp)
+
+# Ensure cleanup on exit
+trap 'rm -f "$RESULT_TMP" "$EXPECTED_TMP" "$ACTUAL_TMP"' EXIT INT TERM
+
 echo "Running XSLT transformation tests..."
 
 # Test directories to check
@@ -51,16 +59,16 @@ for dir in general documents keys numbers; do
             # Test with expected output comparison
             # Run xsltproc and capture both stdout and stderr (some tests produce messages)
             # Don't fail on non-zero exit - compare output instead
-            xsltproc "$xsl" "$xml" > /tmp/xslt_result.tmp 2>&1
+            xsltproc "$xsl" "$xml" > "$RESULT_TMP" 2>&1
 
             # Normalize paths: remove ./ prefix and replace with directory path
             # This handles minor path formatting differences between libxslt versions
             # Examples: "./message.xml" -> "documents/message.xml"
             #           "/./message.xml" -> "/message.xml"
-            sed -e 's|/\./|/|g' -e "s|\\./${base}\\.xml|${dir}/${base}.xml|g" "$out" > /tmp/xslt_expected_normalized.tmp
-            sed 's|/\./|/|g' /tmp/xslt_result.tmp > /tmp/xslt_actual_normalized.tmp
+            sed -e 's|/\./|/|g' -e "s|\\./${base}\\.xml|${dir}/${base}.xml|g" "$out" > "$EXPECTED_TMP"
+            sed 's|/\./|/|g' "$RESULT_TMP" > "$ACTUAL_TMP"
 
-            if diff -q /tmp/xslt_expected_normalized.tmp /tmp/xslt_actual_normalized.tmp >/dev/null 2>&1; then
+            if diff -q "$EXPECTED_TMP" "$ACTUAL_TMP" >/dev/null 2>&1; then
                 echo "PASS: $dir/$base"
                 PASSED=$((PASSED + 1))
             else
@@ -79,9 +87,6 @@ for dir in general documents keys numbers; do
         fi
     done
 done
-
-# Clean up temporary files
-rm -f /tmp/xslt_result.tmp /tmp/xslt_expected_normalized.tmp /tmp/xslt_actual_normalized.tmp
 
 # Print summary
 TOTAL=$((PASSED + FAILED))
