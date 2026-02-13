@@ -20,11 +20,12 @@ do_install_ptest() {
     done
 
     # Copy test scripts and data files
-    install -m 0755 ${S}/tests/playTests.sh ${D}${PTEST_PATH}/tests/ || true
-    cp -rf ${S}/tests/*.sh ${D}${PTEST_PATH}/tests/ || true
-    cp -rf ${S}/tests/golden-* ${D}${PTEST_PATH}/tests/ || true
-    cp -rf ${S}/tests/dict-files ${D}${PTEST_PATH}/tests/ || true
-    cp -f ${S}/tests/Makefile ${D}${PTEST_PATH}/tests/ || true
+    if [ -d "${S}/tests" ]; then
+        cp -rf ${S}/tests/*.sh ${D}${PTEST_PATH}/tests/ 2>/dev/null || bbwarn "No shell scripts found"
+        cp -rf ${S}/tests/golden-* ${D}${PTEST_PATH}/tests/ 2>/dev/null || bbwarn "No golden files found"
+        cp -rf ${S}/tests/dict-files ${D}${PTEST_PATH}/tests/ 2>/dev/null || bbwarn "No dict-files found"
+        cp -f ${S}/tests/Makefile ${D}${PTEST_PATH}/tests/ 2>/dev/null || bbwarn "No Makefile found"
+    fi
 
     # Copy zstd binary from programs directory
     install -d ${D}${PTEST_PATH}/programs
