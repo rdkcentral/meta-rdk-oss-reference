@@ -212,11 +212,12 @@ SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file:
 #PACKAGECONFIG:append = " timesyncd"
 #PACKAGECONFIG[timesyncd] = "--enable-timesyncd,--disable-timesyncd"
 
-
+PACKAGECONFIG:remove = " timesyncd"
 do_install:append() {
         install -d ${D}/media/tsb
         #Enable comcast ntp server in timesyncd.conf
         if [ -n "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', 'timesyncd', '', d)}" ]; then
+       echo ">>> DBG: Systemd-timesyncd block executed in ${PN} for build ${BPN}"
            sed -i -e '/ProtectSystem=full/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e '/PrivateTmp=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e 's/^#ShutdownWatchdogSec=.*$/ShutdownWatchdogSec=1min/g' ${D}${sysconfdir}/systemd/system.conf
