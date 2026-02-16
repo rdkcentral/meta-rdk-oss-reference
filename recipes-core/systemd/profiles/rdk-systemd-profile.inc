@@ -1,7 +1,7 @@
 ### RDK SYSTEMD PROFILE ###
 
 # Define the systemd features for RDK
-PACKAGECONFIG = "timesyncd utmp myhostname sysusers"
+PACKAGECONFIG = "utmp myhostname sysusers"
 PACKAGECONFIG += "${@bb.utils.contains('DISTRO_FEATURES', 'wifi', 'rfkill', '', d)}"
 
 PACKAGECONFIG += "${@bb.utils.contains('DISTRO_FEATURES', 'networkd-support', 'networkd', '', d)}"
