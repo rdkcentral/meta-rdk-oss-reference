@@ -1,4 +1,4 @@
-PACKAGECONFIG:remove = "bluez5"
+PACKAGECONFIG:remove += "bluez5"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
