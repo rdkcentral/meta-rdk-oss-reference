@@ -77,7 +77,6 @@ PACKAGECONFIG ??= "xz \
                    backlight \
                    ${@bb.utils.contains('TCLIBC', 'glibc', 'myhostname sysusers', '', d)} \
                    hibernate \
-                   ${@bb.utils.contains('DISTRO_FEATURES', 'chrony', '', 'timesyncd', d)}  \
                    ima \
                    firstboot \
                    utmp \
