@@ -45,7 +45,6 @@ PREFERRED_VERSION_m4 = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1.4.19
 PREFERRED_VERSION_sed = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '4.1.2', '', d)}"
 
 BBMASK:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' meta-rdk-oss-reference/recipes-gplv2/gettext/gettext_0.16.1.bb ', '', d)}"
-BBMASK:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' meta-rdk-oss-reference/recipes-gplv2/sed/sed_4.1.2.bb ', '', d)}"
 
 
 
