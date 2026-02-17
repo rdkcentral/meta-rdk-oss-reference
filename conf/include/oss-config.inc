@@ -46,8 +46,7 @@ PREFERRED_VERSION_sed = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '4.1.2
 
 BBMASK:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' meta-rdk-oss-reference/recipes-gplv2/gettext/gettext_0.16.1.bb ', '', d)}"
 
-PREFERRED_PROVIDER_virtual/kernel = "linux-yocto"
-PREFERRED_VERSION_linux-yocto = "5.15%"
+PREFERRED_PROVIDER_virtual/kernel = "linux-dummy"
 
 
 
