@@ -34,7 +34,7 @@ LICENSE_FLAGS_ACCEPTED += "GPL-3.0-only"
 LICENSE_FLAGS_ACCEPTED += "GPL-3.0-or-later"
 PREFERRED_VERSION_libarchive = "3.6.2"
 PREFERRED_VERSION_gmp = "6.2.1"
-
+PREFERRED_VERSION_m4 = "1.4.19"
 INCOMPATIBLE_LICENSE:remove = " GPL-3.0-only LGPL-3.0-only LGPL-3.0-or-later  GPL-3.0-or-later"
 RDEPENDS:remove:pn-core-image-ptest = "diffutils-ptest"
 INSANE_SKIP:pn-zlib = "ldflags"
