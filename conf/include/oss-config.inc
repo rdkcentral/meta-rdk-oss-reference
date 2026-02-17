@@ -28,9 +28,8 @@ BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/b
 
 DISTRO_FEATURES:append = " ptest "
 EXTRA_IMAGE_FEATURES += "ptest-pkgs"
-PTESTS_REMOVE:pn-core-image-ptest:append  = " diffutils "
-PTEST_ENABLED:pn-bluez5 = "0"
-IMAGE_INSTALL:remove = "diffutils-ptest gawk-ptest gdbm-ptest gettext-ptest gzip-ptest m4-ptest openssl-ptest parted-ptest sed-ptest bluez5-ptest busybox-ptest coreutils-ptest findutils-ptest elfutils-ptest  quilt-ptest e2fsprogs-ptest lttng-tools-ptest strace-ptest apr-util-ptest apr-ptest valgrind-ptest  pango-ptest "
+#IMAGE_INSTALL:remove = "diffutils-ptest gawk-ptest gdbm-ptest gettext-ptest gzip-ptest m4-ptest openssl-ptest parted-ptest sed-ptest bluez5-ptest busybox-ptest coreutils-ptest findutils-ptest elfutils-ptest  quilt-ptest e2fsprogs-ptest lttng-tools-ptest strace-ptest apr-util-ptest apr-ptest valgrind-ptest  pango-ptest "
+IMAGE_INSTALL:remove = "gdbm-ptest pango-ptest bluez5 findutils-ptest"
 LICENSE_FLAGS_ACCEPTED += "GPL-3.0-only"
 LICENSE_FLAGS_ACCEPTED += "GPL-3.0-or-later"
 PREFERRED_VERSION_libarchive = "3.6.2"
@@ -39,8 +38,7 @@ PREFERRED_VERSION_gmp = "6.2.1"
 INCOMPATIBLE_LICENSE:remove = " GPL-3.0-only LGPL-3.0-only LGPL-3.0-or-later  GPL-3.0-or-later"
 RDEPENDS:remove:pn-core-image-ptest = "diffutils-ptest"
 INSANE_SKIP:pn-zlib = "ldflags"
-CFLAGS:append:pn-glibc-tests = " -Wno-error=format-overflow"
-
+BBMASK:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' meta-rdk-oss-reference/recipes-gplv2/gettext/gettext_0.16.1.bb ', '', d)}"
 
 
 
