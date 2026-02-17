@@ -26,4 +26,22 @@ INCOMPATIBLE_LICENSE_EXCEPTIONS += "${@bb.utils.contains('DISTRO_FEATURES','buil
 require package_revisions_oss.inc
 BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/bluez5/bluez5_5.77*"
 
+# Global: Enable ptest framework for all packages
+PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 1', '', d)}"
+
+# Image content: What to include in the image (when ptest enabled)
+EXTRA_IMAGE_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' ptest-pkgs', '', d)}"
+IMAGE_INSTALL:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' gdbm-ptest pango-ptest bluez5 findutils-ptest', '', d)}"
+
+# License policy: What licenses are acceptable in this build
+LICENSE_FLAGS_ACCEPTED:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' GPL-3.0-only GPL-3.0-or-later', '', d)}"
+INCOMPATIBLE_LICENSE:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' GPL-3.0-only LGPL-3.0-only LGPL-3.0-or-later GPL-3.0-or-later', '', d)}"
+
+# Version preferences: May go to distro config or local.conf
+PREFERRED_VERSION_libarchive = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 3.6.2', '', d)}"
+PREFERRED_VERSION_gmp = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 6.2.1', '', d)}"
+PREFERRED_VERSION_m4 = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 1.4.19', '', d)}"
+PREFERRED_VERSION_coreutils = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 9.0', '', d)}"
+
+
 
