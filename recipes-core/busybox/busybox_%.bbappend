@@ -38,5 +38,5 @@ SRC_URI:remove:broadband += " \
 VERSION_PATCHES ?= ""
 VERSION_PATCHES:append:client = " file://busybox-1.35-udhcp-trigger-milestones.patch"
 
-PTEST_ENABLED = "1"
+PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1', '0', d)}"
 inherit ptest-package-deploy
