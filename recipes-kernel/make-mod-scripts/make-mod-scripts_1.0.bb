@@ -32,4 +32,4 @@ do_configure() {
 	done
 }
 
-PARALLEL_MAKE = ""
+CLEANBROKEN = "1"
