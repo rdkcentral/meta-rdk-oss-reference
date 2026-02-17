@@ -5,6 +5,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:${THISDIR}/backports:"
 PACKAGECONFIG:remove = "vconsole ldconfig"
 PACKAGECONFIG:remove = " resolved nss-resolve "
 
+
 PACKAGECONFIG:remove:libc-uclibc = "sysusers machined"
 
 DEPENDS += " ${@bb.utils.contains("DISTRO_FEATURES", "apparmor", " apparmor", "" ,d)}"
@@ -212,7 +213,7 @@ SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file:
 #PACKAGECONFIG:append = " timesyncd"
 #PACKAGECONFIG[timesyncd] = "--enable-timesyncd,--disable-timesyncd"
 
-
+PACKAGECONFIG:remove = " timesyncd"
 do_install:append() {
         install -d ${D}/media/tsb
         #Enable comcast ntp server in timesyncd.conf
