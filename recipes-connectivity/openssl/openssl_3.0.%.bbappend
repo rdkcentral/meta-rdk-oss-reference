@@ -39,7 +39,7 @@ FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"
 SRC_URI += " file://openssl-c_rehash.sh \
            "
 
-PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable', '1', '0', d)}"
+PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1', '0', d)}"
 
 #Disable unapproved cipher algorithms
 EXTRA_OECONF += "no-camellia"
