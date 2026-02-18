@@ -76,7 +76,7 @@ PACKAGECONFIG ??= "xz \
                    binfmt \
                    backlight \
                    ${@bb.utils.contains('TCLIBC', 'glibc', 'myhostname sysusers', '', d)} \
-                   ${@bb.utils.contains('TCLIBC', 'chrony', '', 'timesyncd', d)} \
+                   ${@bb.utils.contains('DISTRO_FEATURES', 'chrony', '', 'timesyncd', d)} \
                    hibernate \
                    ima \
                    firstboot \
@@ -86,7 +86,7 @@ PACKAGECONFIG ??= "xz \
 PACKAGECONFIG:remove:libc-musl = "resolved"
 PACKAGECONFIG:remove:libc-musl = "selinux"
 PACKAGECONFIG:remove:libc-musl = "smack"
-#PACKAGECONFIG:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'chrony', 'timesyncd', '', d)}"
+PACKAGECONFIG:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'chrony', 'timesyncd', '', d)}"
 
 # Use the upstream systemd serial-getty@.service and rely on
 # systemd-getty-generator instead of using the OE-core specific
