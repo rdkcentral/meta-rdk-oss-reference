@@ -838,7 +838,7 @@ PACKAGE_ARCH:pn-sqlite3 ?= "${OSS_LAYER_ARCH}"
 PR:pn-strace ?= "r0"
 PACKAGE_ARCH:pn-strace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-stunnel ?= "r2"
+PR:pn-stunnel ?= "r3"
 PACKAGE_ARCH:pn-stunnel ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-sysfsutils ?= "r6"
@@ -921,7 +921,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r9"
+PR:pn-wpa-supplicant ?= "r10"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
