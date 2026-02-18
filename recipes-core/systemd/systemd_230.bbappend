@@ -152,6 +152,7 @@ EXTRA_OECONF += " --enable-polkit=no"
 PACKAGECONFIG:remove = "pam"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/10-ubi-device-systemd.rules"
 
+
 do_install:append() {
     rm -rf ${D}${sysconfdir}/resolv.conf
     sed -i '/After=swap.target/d' ${D}${systemd_unitdir}/system/tmp.mount
@@ -212,6 +213,7 @@ SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file:
 #PACKAGECONFIG:append = " timesyncd"
 #PACKAGECONFIG[timesyncd] = "--enable-timesyncd,--disable-timesyncd"
 
+PACKAGECONFIG:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'chrony', 'timesyncd', '', d)}"
 
 do_install:append() {
         install -d ${D}/media/tsb
