@@ -36,6 +36,7 @@ LOGROTATE_ROTATION_MEM_sslendpoint="3"
 FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"
 
 SRC_URI += " file://openssl-c_rehash.sh \
+             file://CVE-2025-15467_3.0.5_fix.patch \
            "
 
 PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable', '1', '0', d)}"
