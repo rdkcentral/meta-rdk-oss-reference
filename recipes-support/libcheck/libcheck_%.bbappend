@@ -19,13 +19,6 @@ do_install_ptest() {
         fi
     done
 
-    # Install libcheck shared library for tests
-    if [ -f ${D}${libdir}/libcheck.so.0.0.0 ]; then
-        install -m 0755 ${D}${libdir}/libcheck.so.0.0.0 ${D}${PTEST_PATH}/lib/
-        ln -sf libcheck.so.0.0.0 ${D}${PTEST_PATH}/lib/libcheck.so.0
-        ln -sf libcheck.so.0.0.0 ${D}${PTEST_PATH}/lib/libcheck.so
-    fi
-
     # Install test scripts with proper error checking
     for script in ${S}/tests/*.sh; do
         if [ -f "$script" ]; then
