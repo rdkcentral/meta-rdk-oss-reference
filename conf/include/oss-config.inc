@@ -31,7 +31,7 @@ PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 1', '', d)}"
 
 # Image content: What to include in the image (when ptest enabled)
 EXTRA_IMAGE_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' ptest-pkgs', '', d)}"
-IMAGE_INSTALL:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' gdbm-ptest pango-ptest bluez5 findutils-ptest lttng-tools-ptest', '', d)}"
+IMAGE_INSTALL:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' gdbm-ptest pango-ptest bluez5-ptest findutils-ptest lttng-tools-ptest', '', d)}"
 
 # License policy: What licenses are acceptable in this build
 LICENSE_FLAGS_ACCEPTED:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' GPL-3.0-only GPL-3.0-or-later', '', d)}"
