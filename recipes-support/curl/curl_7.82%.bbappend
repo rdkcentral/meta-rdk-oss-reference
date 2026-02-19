@@ -77,3 +77,5 @@ do_install_ptest() {
 }
 
 FILES:${PN}-ptest += "${PTEST_PATH}/tests/*"
+
+RDEPENDS:${PN}-ptest += "bash"
