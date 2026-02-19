@@ -46,7 +46,7 @@ SRC_URI += "file://run-ptest"
 inherit ptest
 
 # sed 4.1.2 tests need perl, gawk, and file comparison tools
-RDEPENDS:${PN}-ptest += "make perl gawk coreutils diffutils"
+RDEPENDS:${PN}-ptest += "make perl gawk coreutils diffutils bash"
 
 do_compile_ptest() {
     # Compile C test programs in testsuite
