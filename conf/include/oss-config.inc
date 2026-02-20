@@ -47,7 +47,7 @@ CFLAGS:append:pn-glibc-tests = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest',
 PTEST_ENABLED:pn-bluez5 = "0"
 BBMASK:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' meta-rdk-oss-reference/recipes-gplv2/gettext/gettext_0.16.1.bb ', '', d)}"
 
-PTESTS_FAST += " alsa-lib \
+PTESTS_FAST:append = " alsa-lib \
                 libatomic-ops \
                 libcheck \
                 xz \
