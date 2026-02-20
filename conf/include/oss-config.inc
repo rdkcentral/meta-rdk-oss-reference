@@ -46,9 +46,7 @@ PREFERRED_VERSION_sed = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '4.1.2
 CFLAGS:append:pn-glibc-tests = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' -Wno-error=format-overflow', '', d)}"
 PTEST_ENABLED:pn-bluez5 = "0"
 BBMASK:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' meta-rdk-oss-reference/recipes-gplv2/gettext/gettext_0.16.1.bb ', '', d)}"
-    acl-ptest \
-    apr-ptest \
-    apr-util-ptest \
+
 PTEST_FAST += " alsa-lib \
                 libatomic-ops \
                 libcheck \
