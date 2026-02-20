@@ -27,7 +27,7 @@ require package_revisions_oss.inc
 BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/bluez5/bluez5_5.77*"
 
 # Global: Enable ptest framework for all packages
-PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' 1', '', d)}"
+PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1', '', d)}"
 
 # Image content: What to include in the image (when ptest enabled)
 EXTRA_IMAGE_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' ptest-pkgs', '', d)}"
