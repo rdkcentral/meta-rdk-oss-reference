@@ -62,7 +62,5 @@ PTESTS_FAST:append = " alsa-lib-ptest \
                 libpcap-ptest \
                 apr-util-ptest \
                 libxslt-ptest \
-                gmp-ptest \
                 lz4-ptest \
-                opkg-utils-ptest \
               "
