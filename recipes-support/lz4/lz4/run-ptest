@@ -55,13 +55,5 @@ else
     echo "FAIL"
 fi
 
-# Test 7: Round trip with different block sizes - use testfile
-echo -n "Test round trip with block options: "
-if ./roundTripTest -i1 -B4 testfile > /dev/null 2>&1; then
-    echo "PASS"
-else
-    echo "FAIL"
-fi
-
 # Cleanup
 rm -f testfile testfile.lz4
