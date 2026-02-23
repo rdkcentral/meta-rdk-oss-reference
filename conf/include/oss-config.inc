@@ -58,4 +58,8 @@ PTESTS_FAST:append = " alsa-lib-ptest \
                 attr-ptest \
                 grep-ptest \
                 curl-ptest \
+                make-ptest \
+                libpcap-ptest \
+                apr-util-ptest \
+                libxslt-ptest \
               "
