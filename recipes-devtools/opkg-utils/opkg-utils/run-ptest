@@ -1,0 +1,11 @@
+#!/bin/bash
+# Run opkg-utils test suite
+
+cd tests
+
+# Clean up any leftover test state
+rm -rf /tmp/opkgFeedTest
+
+# Run the main test
+bash testOpkgFeedManagement.sh
+exit $?
