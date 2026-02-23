@@ -234,6 +234,7 @@ RDEPENDS:${PN} += "\
      xmlsec1 \
      yajl \
      zstd \
+     yaml-cpp \
 "
 
 # meta-rust components

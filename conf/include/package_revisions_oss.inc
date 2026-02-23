@@ -943,6 +943,12 @@ PR:pn-zstd ?= "r0"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
 
 
+PR:pn-libp11 ?= "r0"
+PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-yaml-cpp ?= "r0"
+PACKAGE_ARCH:pn-yaml-cpp ?= "${OSS_LAYER_ARCH}"
+
 # Package revision for OSS modules that are built and released by other layers
 PR:pn-alsa-plugins ?= "r0"
 PR:pn-bluez5 ?= "r0"
