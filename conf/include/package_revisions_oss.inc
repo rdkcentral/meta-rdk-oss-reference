@@ -25,6 +25,7 @@ LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 
+TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
@@ -248,7 +249,7 @@ PACKAGE_ARCH:pn-freetype ?= "${OSS_LAYER_ARCH}"
 PR:pn-fribidi ?= "r0"
 PACKAGE_ARCH:pn-fribidi ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-gawk ?= "r2"
+PR:pn-gawk ?= "r3"
 PACKAGE_ARCH:pn-gawk ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gcc-runtime ?= "r0"
@@ -452,7 +453,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r3"
+PR:pn-libmanette ?= "r4"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -496,6 +497,9 @@ PACKAGE_ARCH:pn-libomxil ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libopus ?= "r0"
 PACKAGE_ARCH:pn-libopus ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libp11 ?= "r0"
+PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libpam ?= "r0"
 PACKAGE_ARCH:pn-libpam ?= "${OSS_LAYER_ARCH}"
@@ -834,7 +838,7 @@ PACKAGE_ARCH:pn-sqlite3 ?= "${OSS_LAYER_ARCH}"
 PR:pn-strace ?= "r0"
 PACKAGE_ARCH:pn-strace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-stunnel ?= "r2"
+PR:pn-stunnel ?= "r3"
 PACKAGE_ARCH:pn-stunnel ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-sysfsutils ?= "r6"
@@ -917,7 +921,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r8"
+PR:pn-wpa-supplicant ?= "r10"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
@@ -938,8 +942,40 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 PR:pn-zstd ?= "r0"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
 
+
 PR:pn-libp11 ?= "r0"
 PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-yaml-cpp ?= "r0"
 PACKAGE_ARCH:pn-yaml-cpp ?= "${OSS_LAYER_ARCH}"
+
+# Package revision for OSS modules that are built and released by other layers
+PR:pn-alsa-plugins ?= "r0"
+PR:pn-bluez5 ?= "r0"
+PR:pn-cairo ?= "r0"
+PR:pn-directfb ?= "r0"
+PR:pn-dropbear ?= "r0"
+PR:pn-essos ?= "r0"
+PR:pn-fdk-aac ?= "r0"
+PR:pn-ffmpeg ?= "r0"
+PR:pn-gdb ?= "r0"
+PR:pn-gstreamer1.0 ?= "r0"
+PR:pn-gstreamer1.0-libav ?= "r0"
+PR:pn-gstreamer1.0-omx ?= "r0"
+PR:pn-gstreamer1.0-plugins-bad ?= "r0"
+PR:pn-gstreamer1.0-plugins-base ?= "r0"
+PR:pn-gstreamer1.0-plugins-good ?= "r0"
+PR:pn-gstreamer1.0-rtsp-server ?= "r0"
+PR:pn-libbinder ?= "r0"
+PR:pn-libdrm ?= "r0"
+PR:pn-libepoxy ?= "r0"
+PR:pn-librsvg ?= "r0"
+PR:pn-libwpe ?= "r0"
+PR:pn-make-mod-scripts ?= "r0"
+PR:pn-mpg123 ?= "r0"
+PR:pn-os-release ?= "r0"
+PR:pn-pango ?= "r0"
+PR:pn-pulseaudio ?= "r0"
+PR:pn-westeros ?= "r0"
+PR:pn-westeros-simplebuffer ?= "r0"
+PR:pn-westeros-simpleshell ?= "r0"
