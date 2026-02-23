@@ -1,5 +1,5 @@
 inherit ptest
-
+SRC_URI += "file://run-ptest"
 do_compile_ptest() {
     oe_runmake -C tests buildtest-TESTS
 }
