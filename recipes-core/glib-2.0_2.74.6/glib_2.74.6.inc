@@ -21,7 +21,6 @@ DEPENDS = "glib-2.0-native \
            virtual/libintl \
            virtual/libiconv \
            libffi \
-           libpcre \
            libpcre2 \
            zlib"
 
