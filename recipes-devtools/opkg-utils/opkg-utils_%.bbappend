@@ -5,7 +5,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "file://run-ptest"
 
 # opkg-feed requires bash 4.0+ for associative arrays (declare -A)
-RDEPENDS:${PN} += "bash"
 RDEPENDS:${PN}-ptest += "bash opkg-utils"
 
 do_compile_ptest() {
