@@ -2,14 +2,12 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI:append:class-target = " \
-    file://run-ptest \
-"
+SRC_URI += "file://run-ptest"
 
 inherit ptest
 
-DEPENDS += "m4-native"
-EXTRA_OECONF += " --enable-cxx"
+DEPENDS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' m4-native', '', d)}"
+EXTRA_OECONF:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' --enable-cxx', '', d)}"
 
 # Compile tests - build test binaries without running them
 do_compile_ptest() {
