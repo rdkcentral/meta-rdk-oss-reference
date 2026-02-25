@@ -68,6 +68,7 @@ do_install:append () {
         sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
 }
 
+inherit ptest-package-deploy
 inherit ptest
 
 do_compile_ptest() {
