@@ -60,7 +60,7 @@ Index: dnsmasq-2.83/src/dnsmasq.c
 +      if (daemon->presenceMq != -1)
 +      {
 +          poll_listen(daemon->presenceMq, POLLIN);
-+          my_syslog(LOG_WARNING, _("Poll listen presence mq"));
++          my_syslog(LOG_DEBUG, _("Poll listen presence mq"));
 +      }
 +
        if (daemon->dhcp || daemon->relay4)
