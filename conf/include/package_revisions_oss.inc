@@ -25,6 +25,7 @@ LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 
+TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
 PREFERRED_VERSION_bash ?= "3.2.%"
@@ -56,6 +57,8 @@ PREFERRED_VERSION_gettext-native = "0.21"
 #Preferred versions from Vendor layer
 PREFERRED_VERSION_libdrm = "2.4.110"
 PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
+PREFERRED_VERSION_sed = "4.1.2"
+PREFERRED_VERSION_libarchive = "3.6.2"
 
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
@@ -77,7 +80,7 @@ PACKAGE_ARCH:pn-abseil-cpp ?= "${OSS_LAYER_ARCH}"
 PR:pn-acl ?= "r0"
 PACKAGE_ARCH:pn-acl ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-alsa-lib ?= "r0"
+PR:pn-alsa-lib ?= "r1"
 PACKAGE_ARCH:pn-alsa-lib ?= "${OSS_LAYER_ARCH}"
 
 #PR:pn-alsa-plugins = "r0"
@@ -146,7 +149,7 @@ PACKAGE_ARCH:pn-breakpad-wrapper ?= "${OSS_LAYER_ARCH}"
 PR:pn-brotli ?= "r0"
 PACKAGE_ARCH:pn-brotli ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-busybox ?= "r1"
+PR:pn-busybox ?= "r2"
 PACKAGE_ARCH:pn-busybox ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-busybox ?= "r1"
@@ -182,7 +185,7 @@ PACKAGE_ARCH:pn-ctemplate ?= "${OSS_LAYER_ARCH}"
 PR:pn-cunit ?= "r0"
 PACKAGE_ARCH:pn-cunit ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-curl ?= "r1"
+PR:pn-curl ?= "r2"
 PACKAGE_ARCH:pn-curl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-db ?= "r1"
@@ -197,7 +200,7 @@ PACKAGE_ARCH:pn-dbus-glib ?= "${OSS_LAYER_ARCH}"
 PR:pn-dibbler?= "r1"
 PACKAGE_ARCH:pn-dibbler ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq ?= "r4"
+PR:pn-dnsmasq ?= "r5"
 PACKAGE_ARCH:pn-dnsmasq ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools ?= "r0"
@@ -224,7 +227,7 @@ PACKAGE_ARCH:pn-expat ?= "${OSS_LAYER_ARCH}"
 PR:pn-fcgi ?= "r1"
 PACKAGE_ARCH:pn-fcgi ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-file ?= "r0"
+PR:pn-file ?= "r1"
 PACKAGE_ARCH:pn-file ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-findutils ?= "r0"
@@ -248,7 +251,7 @@ PACKAGE_ARCH:pn-freetype ?= "${OSS_LAYER_ARCH}"
 PR:pn-fribidi ?= "r0"
 PACKAGE_ARCH:pn-fribidi ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-gawk ?= "r2"
+PR:pn-gawk ?= "r4"
 PACKAGE_ARCH:pn-gawk ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gcc-runtime ?= "r0"
@@ -257,7 +260,7 @@ PACKAGE_ARCH:pn-gcc-runtime ?= "${OSS_LAYER_ARCH}"
 PR:pn-gcc-sanitizers ?= "r0"
 PACKAGE_ARCH:pn-gcc-sanitizers ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-sed ?= "r0"
+PR:pn-sed ?= "r1"
 PACKAGE_ARCH:pn-sed ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gdbm ?= "r4"
@@ -290,7 +293,7 @@ PACKAGE_ARCH:pn-glib-networking ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-gmp ?= "r0"
+PR:pn-gmp ?= "r1"
 PACKAGE_ARCH:pn-gmp ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gnutls ?= "r1"
@@ -359,7 +362,7 @@ PACKAGE_ARCH:pn-jsoncpp ?= "${OSS_LAYER_ARCH}"
 PR:pn-jsonrpc ?= "r0"
 PACKAGE_ARCH:pn-jsonrpc ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-kbd ?= "r0"
+PR:pn-kbd ?= "r1"
 PACKAGE_ARCH:pn-kbd ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-keyutils ?= "r0"
@@ -377,13 +380,13 @@ PACKAGE_ARCH:pn-libaio ?= "${OSS_LAYER_ARCH}"
 PR:pn-libarchive ?= "r2"
 PACKAGE_ARCH:pn-libarchive ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libatomic-ops ?= "r0"
+PR:pn-libatomic-ops ?= "r1"
 PACKAGE_ARCH:pn-libatomic-ops ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libbsd ?= "r0"
 PACKAGE_ARCH:pn-libbsd ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libcap ?= "r0"
+PR:pn-libcap ?= "r1"
 PACKAGE_ARCH:pn-libcap ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libcap-ng ?= "r0"
@@ -392,7 +395,7 @@ PACKAGE_ARCH:pn-libcap-ng ?= "${OSS_LAYER_ARCH}"
 PR:pn-libcgroup ?= "r0"
 PACKAGE_ARCH:pn-libcgroup ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libcheck ?= "r0"
+PR:pn-libcheck ?= "r1"
 PACKAGE_ARCH:pn-libcheck ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libcroco ?= "r0"
@@ -452,7 +455,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r3"
+PR:pn-libmanette ?= "r4"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -497,10 +500,13 @@ PACKAGE_ARCH:pn-libomxil ?= "${OSS_LAYER_ARCH}"
 PR:pn-libopus ?= "r0"
 PACKAGE_ARCH:pn-libopus ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libp11 ?= "r0"
+PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-libpam ?= "r0"
 PACKAGE_ARCH:pn-libpam ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libpcap ?= "r1"
+PR:pn-libpcap ?= "r2"
 PACKAGE_ARCH:pn-libpcap ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libpciaccess ?= "r0"
@@ -608,7 +614,7 @@ PACKAGE_ARCH:pn-libxkbcommon ?= "${OSS_LAYER_ARCH}"
 PR:pn-libxml2 ?= "r1"
 PACKAGE_ARCH:pn-libxml2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libxslt ?= "r0"
+PR:pn-libxslt ?= "r1"
 PACKAGE_ARCH:pn-libxslt ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libzip ?= "r0"
@@ -626,7 +632,7 @@ PACKAGE_ARCH:pn-linux-libc-headers ?= "${OSS_LAYER_ARCH}"
 PR:pn-log4c ?= "r0"
 PACKAGE_ARCH:pn-log4c ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-logrotate ?= "r2"
+PR:pn-logrotate ?= "r3"
 PACKAGE_ARCH:pn-logrotate ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-lsof ?= "r0"
@@ -641,7 +647,7 @@ PACKAGE_ARCH:pn-lua ?= "${OSS_LAYER_ARCH}"
 PR:pn-lvm2 ?= "r0"
 PACKAGE_ARCH:pn-lvm2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-lz4 ?= "r0"
+PR:pn-lz4 ?= "r1"
 PACKAGE_ARCH:pn-lz4 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-lzo ?= "r0"
@@ -716,19 +722,19 @@ PACKAGE_ARCH:pn-openjpeg ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-openssl ?= "r1"
+PR:pn-openssl ?= "r2"
 PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssl-1.1.1l ?= "r0"
 PACKAGE_ARCH:pn-openssl-1.1.1l ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg ?= "r2"
+PR:pn-opkg ?= "r3"
 PACKAGE_ARCH:pn-opkg ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-opkg-arch-config ?= "r1"
 PACKAGE_ARCH:pn-opkg-arch-config ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg-utils ?= "r1"
+PR:pn-opkg-utils ?= "r2"
 PACKAGE_ARCH:pn-opkg-utils ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-orc ?= "r0"
@@ -834,7 +840,7 @@ PACKAGE_ARCH:pn-sqlite3 ?= "${OSS_LAYER_ARCH}"
 PR:pn-strace ?= "r0"
 PACKAGE_ARCH:pn-strace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-stunnel ?= "r2"
+PR:pn-stunnel ?= "r3"
 PACKAGE_ARCH:pn-stunnel ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-sysfsutils ?= "r6"
@@ -917,7 +923,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r8"
+PR:pn-wpa-supplicant ?= "r10"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
@@ -926,17 +932,54 @@ PACKAGE_ARCH:pn-xkeyboard-config ?= "${OSS_LAYER_ARCH}"
 PR:pn-xmlsec1 ?= "r1"
 PACKAGE_ARCH:pn-xmlsec1 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-xz ?= "r0"
+PR:pn-xz ?= "r1"
 PACKAGE_ARCH:pn-xz ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-yajl ?= "r1"
 PACKAGE_ARCH:pn-yajl ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-zlib ?= "r0"
+PR:pn-zlib ?= "r1"
 PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-zstd ?= "r0"
+PR:pn-zstd ?= "r1"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
+
 
 PR:pn-libp11 ?= "r0"
 PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-yaml-cpp ?= "r0"
+PACKAGE_ARCH:pn-yaml-cpp ?= "${OSS_LAYER_ARCH}"
+
+# Package revision for OSS modules that are built and released by other layers
+PR:pn-alsa-plugins ?= "r0"
+PR:pn-bluez5 ?= "r0"
+PR:pn-cairo ?= "r0"
+PR:pn-directfb ?= "r0"
+PR:pn-dropbear ?= "r0"
+PR:pn-essos ?= "r0"
+PR:pn-fdk-aac ?= "r0"
+PR:pn-ffmpeg ?= "r0"
+PR:pn-gdb ?= "r0"
+PR:pn-gstreamer1.0 ?= "r0"
+PR:pn-gstreamer1.0-libav ?= "r0"
+PR:pn-gstreamer1.0-omx ?= "r0"
+PR:pn-gstreamer1.0-plugins-bad ?= "r0"
+PR:pn-gstreamer1.0-plugins-base ?= "r0"
+PR:pn-gstreamer1.0-plugins-good ?= "r0"
+PR:pn-gstreamer1.0-rtsp-server ?= "r0"
+PR:pn-libbinder ?= "r0"
+PR:pn-libdrm ?= "r0"
+PR:pn-libepoxy ?= "r0"
+PR:pn-librsvg ?= "r0"
+PR:pn-libwpe ?= "r0"
+PR:pn-make-mod-scripts ?= "r0"
+PR:pn-mpg123 ?= "r0"
+PR:pn-os-release ?= "r0"
+PR:pn-pango ?= "r0"
+PR:pn-pulseaudio ?= "r0"
+PR:pn-westeros ?= "r0"
+PR:pn-westeros-simplebuffer ?= "r0"
+PR:pn-westeros-simpleshell ?= "r0"
+PR:pn-make ?= "r1"
+PR:pn-grep ?= "r1"

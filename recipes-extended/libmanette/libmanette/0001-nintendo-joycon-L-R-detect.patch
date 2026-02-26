@@ -1,0 +1,39 @@
+From 793c69260ff49539a884c13d0a1b65236f6f4c27 Mon Sep 17 00:00:00 2001
+From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
+Date: Thu, 15 May 2025 13:49:13 +0000
+Subject: [PATCH] nintendo joycon L/R detect
+
+---
+ src/manette-device.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/manette-device.c b/src/manette-device.c
+index b9b08a2..0fa5a00 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -211,16 +211,22 @@ is_game_controller (struct libevdev *device)
+   has_joystick_axes_or_buttons =
+     has_key (device, BTN_TRIGGER) ||
+     has_key (device, BTN_A) ||
++    has_key (device, BTN_Z) ||
+     has_key (device, BTN_1) ||
++    has_key (device, BTN_TR2) ||
++    has_key (device, BTN_TL2) ||
+     has_abs (device, ABS_RX) ||
+     has_abs (device, ABS_RY) ||
+     has_abs (device, ABS_RZ) ||
++    has_abs (device, ABS_X) ||
++    has_abs (device, ABS_Y) ||
+     has_abs (device, ABS_THROTTLE) ||
+     has_abs (device, ABS_RUDDER) ||
+     has_abs (device, ABS_WHEEL) ||
+     has_abs (device, ABS_GAS) ||
+     has_abs (device, ABS_BRAKE);
+ 
++  g_print("manet-debug: device: %s is gamecontroller=%s\n",libevdev_get_name (device), has_joystick_axes_or_buttons?"Y":"N" );
+   return has_joystick_axes_or_buttons;
+ }
+ 
+-- 
+2.25.1
+
