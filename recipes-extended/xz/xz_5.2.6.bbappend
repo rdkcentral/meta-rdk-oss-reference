@@ -3,10 +3,7 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI:append:ptest = " \
-    file://0001-Update-test-scripts-xz-5.2.6.patch \
-    file://run-ptest \
-"
+SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'ptest', ' file://0001-Update-test-scripts-xz-5.2.6.patch file://run-ptest', '', d)}"
 
 inherit ptest
 
