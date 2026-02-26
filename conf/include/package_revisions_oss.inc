@@ -104,7 +104,7 @@ PACKAGE_ARCH:pn-alsa-utils ?= "${OSS_LAYER_ARCH}"
 PR:pn-alsa-utils-scripts ?= "r0"
 PACKAGE_ARCH:pn-alsa-utils-scripts ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-apparmor ?= "r0"
+PR:pn-apparmor ?= "r1"
 PACKAGE_ARCH:pn-apparmor ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-atk ?= "r0"
