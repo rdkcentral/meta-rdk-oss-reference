@@ -12,5 +12,5 @@ do_install:append:class-native() {
     install -d ${D}${base_sbindir}
     install -d ${D}${libdir}
     install -m 0755 ${S}/parser/apparmor_parser ${D}${base_sbindir}/apparmor_parser
-    install -m 0755 ${WORKDIR}/features ${D}${libdir}/features
+    install -m 0644 ${WORKDIR}/features ${D}${libdir}/features
 }
