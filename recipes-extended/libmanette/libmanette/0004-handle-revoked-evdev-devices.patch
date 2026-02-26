@@ -1,0 +1,66 @@
+From d083a8ccb9ee57659be9efe46ae84b26c10e84ff Mon Sep 17 00:00:00 2001
+From: Ben Gray <ben.gray@sky.uk>
+Date: Thu, 26 Feb 2026 19:28:07 +0000
+Subject: [PATCH] handle revoked evdev devices
+Source: COMCAST
+Signed-off-by: Ganesh Sahu <ganeshprasad_sahu@comcast.com>
+
+---
+ src/manette-device.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/src/manette-device.c b/src/manette-device.c
+index 0fa5a00..eb02e25 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -556,16 +556,25 @@ poll_events (GIOChannel    *source,
+              ManetteDevice *self)
+ {
+   struct input_event evdev_event;
++  int rc;
+ 
+   g_mutex_lock (&self->poll_id_mutex);
+   g_assert (MANETTE_IS_DEVICE (self));
+ 
+-  while (libevdev_has_event_pending (self->evdev_device))
+-    if (libevdev_next_event (self->evdev_device,
+-                             (guint) LIBEVDEV_READ_FLAG_NORMAL,
+-                             &evdev_event) == 0)
++  while (libevdev_has_event_pending (self->evdev_device)) {
++    rc = libevdev_next_event (self->evdev_device,
++                              (guint) LIBEVDEV_READ_FLAG_NORMAL,
++                              &evdev_event);
++    if (rc == LIBEVDEV_READ_STATUS_SUCCESS) {
+       on_evdev_event (self, &evdev_event);
+ 
++    } else if (rc < 0) {
++      g_debug ("Error reading from evdev (%d), removing poll source", rc);
++      g_mutex_unlock (&self->poll_id_mutex);
++      return G_SOURCE_REMOVE;
++    }
++  }
++
+   g_mutex_unlock (&self->poll_id_mutex);
+   return G_SOURCE_CONTINUE;
+ }
+@@ -620,7 +629,7 @@ manette_device_new (int      fd,
+ 
+   // Poll the events in the thread context.
+   channel = g_io_channel_unix_new (self->fd);
+-  self->event_src = g_io_create_watch (channel,G_IO_IN);
++  self->event_src = g_io_create_watch (channel, G_IO_IN | G_IO_HUP | G_IO_ERR);
+   g_source_set_callback (self->event_src, (GSourceFunc) poll_events,self, NULL);
+   g_source_attach (self->event_src, g_main_context_get_thread_default ());
+   buttons_number = 0;
+@@ -708,7 +717,7 @@ manette_device_change_fd (ManetteDevice  *self,
+ 
+   // Add a new poll for the new fd
+   channel = g_io_channel_unix_new (self->fd);
+-  self->event_src = g_io_create_watch (channel, G_IO_IN);
++  self->event_src = g_io_create_watch (channel, G_IO_IN | G_IO_HUP | G_IO_ERR);
+   g_source_set_callback (self->event_src, (GSourceFunc) poll_events, self, NULL);
+   g_source_attach (self->event_src, g_main_context_get_thread_default ());
+ }
+-- 
+2.34.1
+
