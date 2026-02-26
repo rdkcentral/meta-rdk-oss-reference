@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cd tests
+
+echo "Running libatomic-ops tests..."
+
+for test in test_atomic test_atomic_generalized test_stack test_malloc test_atomic_pthreads; do
+    if [ -x "./$test" ]; then
+        echo "Testing $test..."
+        if ./$test; then
+            echo "PASS: $test"
+        else
+            echo "FAIL: $test"
+        fi
+    fi
+done
