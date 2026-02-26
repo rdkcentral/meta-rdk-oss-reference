@@ -198,7 +198,7 @@ PACKAGE_ARCH:pn-dbus-glib ?= "${OSS_LAYER_ARCH}"
 PR:pn-dibbler?= "r1"
 PACKAGE_ARCH:pn-dibbler ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-dnsmasq ?= "r4"
+PR:pn-dnsmasq ?= "r5"
 PACKAGE_ARCH:pn-dnsmasq ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-dosfstools ?= "r0"
@@ -726,7 +726,7 @@ PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssl-1.1.1l ?= "r0"
 PACKAGE_ARCH:pn-openssl-1.1.1l ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg ?= "r2"
+PR:pn-opkg ?= "r3"
 PACKAGE_ARCH:pn-opkg ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-opkg-arch-config ?= "r1"
