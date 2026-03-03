@@ -19,7 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.11.0"
+OSS_LAYER_VERSION = "4.12.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -58,7 +58,6 @@ PREFERRED_VERSION_gettext-native = "0.21"
 PREFERRED_VERSION_libdrm = "2.4.110"
 PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
 PREFERRED_VERSION_sed = "4.1.2"
-PREFERRED_VERSION_libarchive = "3.6.2"
 
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
