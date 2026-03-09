@@ -12,10 +12,10 @@ EXTRA_OECMAKE:append = " -DCUBE_WSI_SELECTION=WAYLAND"
 
 PACKAGECONFIG[wayland] = "-DBUILD_WSI_WAYLAND_SUPPORT=ON, -DBUILD_WSI_WAYLAND_SUPPORT=OFF, wayland wayland-protocols wayland-native"
 
-FILES:${PN} += " \
-    ${bindir}/vulkaninfo \
-    ${bindir}/vkcube \
-"
+#FILES:${PN} += " \
+#    ${bindir}/vulkaninfo \
+#    ${bindir}/vkcube \
+#"
 
 do_install:append() {
     rm -f ${D}${bindir}/vkcubepp || true
