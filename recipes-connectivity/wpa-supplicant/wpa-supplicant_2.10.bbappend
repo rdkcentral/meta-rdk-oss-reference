@@ -1,6 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI += "file://wpa_supplicant_utc_timestamp_2.10.patch \
-            file://auth_timeout_retry_logic_2.10.patch \
+SRC_URI += "file://auth_timeout_retry_logic_2.10.patch \
 	    file://wpa_supp_bss_select_additional_logging_2.10.patch \
             file://auth_timeout_retry_logic_1_2.10.patch \
 	    file://fix_wpa_supplicant_operating-mode.patch \
