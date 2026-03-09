@@ -1,7 +1,7 @@
 include westeros.inc
 
-WESTEROS_URI = "git://github.com/rdkcentral/westeros.git;protocol=https;branch=feature/RDKEMW-14453;name=westeros"
-WESTEROS_SRCREV = "45eb58bc1122c70a2b803c0d9c5c067c2daa7e51"
+WESTEROS_URI = "git://github.com/rdkcentral/westeros.git;protocol=https;branch=main;name=westeros"
+WESTEROS_SRCREV = "ecb2f9296172183012ed0b46649864de1558654a"
 SRC_URI = "${WESTEROS_URI}"
 SRCREV_westeros = "${WESTEROS_SRCREV}"
 
