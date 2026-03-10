@@ -7,7 +7,7 @@ SRC_URI = "${CMF_GITHUB_ROOT}/breakpad_wrapper;${CMF_GITHUB_BRANCH};name=breakpa
 
 DEPENDS += "breakpad"
 
-SRCREV_breakpadwrapper = "d7d5bfb1a2a0802e2389e0b2be1d9afddc2ea342"
+SRCREV_breakpadwrapper = "6126646b5d194cff07514bfe163a1059a323559b"
 SRCREV_FORMAT = "breakpadwrapper"
 PV = "1.0.0"
 
