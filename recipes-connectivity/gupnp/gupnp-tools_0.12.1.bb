@@ -2,7 +2,7 @@ SUMMARY = "Tools for GUPnP"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
-DEPENDS = "gupnp gssdp  gtk+3 libsoup-3.0 libxml2 glib-2.0 "
+DEPENDS = "gupnp gssdp16 gtk+3 libsoup-3.0 libxml2 glib-2.0 "
 
 inherit gnomebase features_check pkgconfig gettext gtk-icon-cache
 
