@@ -3,7 +3,7 @@ LICENSE = "LGPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
                     file://libgupnp-igd/gupnp-simple-igd.c;beginline=1;endline=21;md5=aa292c0d9390463a6e1055dc5fc68e80"
 
-DEPENDS = "glib-2.0 gssdp gupnp"
+DEPENDS = "glib-2.0 gssdp16 gupnp"
 
 inherit gnomebase pkgconfig gtk-doc gobject-introspection
 
