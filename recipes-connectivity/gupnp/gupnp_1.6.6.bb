@@ -3,7 +3,7 @@ DESCRIPTION = "GUPnP is an elegant, object-oriented open source framework for cr
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-DEPENDS = "e2fsprogs gssdp libsoup-3.0 libxml2"
+DEPENDS = "e2fsprogs gssdp16 libsoup-3.0 libxml2"
 
 inherit gnomebase pkgconfig vala gobject-introspection meson
 
