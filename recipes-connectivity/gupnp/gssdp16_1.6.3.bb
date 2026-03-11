@@ -6,8 +6,10 @@ BUGTRACKER = "https://gitlab.gnome.org/GNOME/gssdp/-/issues"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "https://download.gnome.org/sources/gssdp/1.6/gssdp-1.6.3.tar.xz;name=archive"
-SRC_URI[archive.sha256sum] = "2fedb5afdb22cf14d5498a39a773ca89788a250fcf70118783df821e1f3f3446"
+S = "${WORKDIR}/gssdp-1.6.3"
+
+SRC_URI = "https://download.gnome.org/sources/gssdp/1.6/gssdp-1.6.3.tar.xz"
+SRC_URI[sha256sum] = "2fedb5afdb22cf14d5498a39a773ca89788a250fcf70118783df821e1f3f3446"
 
 GTKDOC_MESON_OPTION = 'gtk_doc'
 
