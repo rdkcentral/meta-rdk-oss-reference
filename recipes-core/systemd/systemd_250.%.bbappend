@@ -36,7 +36,7 @@ PACKAGECONFIG:append = " timesyncd"
 
 do_install:append() {
         install -d ${D}/media/tsb
-	#Enable comcast ntp server in timesyncd.conf
+	#Configure NTP server (time.google.com) in timesyncd.conf
 	if [ -n "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', 'timesyncd', '', d)}" ]; then
 	   sed -i -e 's/^#NTP=.*/NTP=time.google.com/g' ${D}${sysconfdir}/systemd/timesyncd.conf
            #Patch for CISCOXI4-2785: remove ProtectSystem=full from systemd-timesyncd.service
