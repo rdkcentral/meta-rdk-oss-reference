@@ -14,26 +14,7 @@ do_install:append:broadband() {
 
 FILES:${PN}:append:broadband = " ${sysconfdir}/sysctl.d/50-reservlocalport.conf "
 
-#meta-rdk-comcast/recipes-core/systemd/systemd_%.bbappend
 
-inherit comcast-package-deploy
-
-def get_download_apps(d):
-    download_apps = d.getVar("BPN", True) + '-analyze'
-    mlprefix = d.getVar("MLPREFIX", True).strip()
-    print("mlprefix is [%s]" %mlprefix)
-    if bb.utils.contains("DISTRO_FEATURES", "rdm mixmode", True, False, d):
-        if mlprefix != "" :
-            return download_apps
-    elif bb.utils.contains("DISTRO_FEATURES", "rdm", True, False, d):
-        return download_apps
-    return ""
-
-DOWNLOAD_APPS = "${@get_download_apps(d)}"
-CUSTOM_PKG_EXTNS = "analyze"
-SKIP_MAIN_PKG = "yes"
-DOWNLOAD_ON_DEMAND = "yes"
-DOWNLOAD_METHOD_CONTROLLER = "RFC"
 #meta-rdk-comcast/recipes-core/systemd/systemd_250.5.bbappend
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:${THISDIR}/backports:${THISDIR}/${BPN}:"
 
@@ -45,6 +26,7 @@ SRC_URI += "file://systemd250-tmpfiles.patch \
             file://0001-Added-Extra-information-for-NTP-Status-250.patch  \
             file://systemd250-ntp-event-trigger.patch \
             file://0001-In-our-echo-system-we-are-managing-last-known-good-t-250.patch \
+            ${@bb.utils.contains('DISTRO_FEATURES', 'systimemgr', ' file://systemtimemgr_ntp.patch', '', d)} \
             file://0001_systemd250_reduce_journal_rotation_logging.patch \
             "
 
@@ -56,7 +38,7 @@ do_install:append() {
         install -d ${D}/media/tsb
 	#Enable comcast ntp server in timesyncd.conf
 	if [ -n "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', 'timesyncd', '', d)}" ]; then
-	   sed -i -e 's/^#NTP=.*/NTP=ntp.ccp.xcal.tv/g' ${D}${sysconfdir}/systemd/timesyncd.conf
+	   sed -i -e 's/^#NTP=.*/NTP=time.google.com/g' ${D}${sysconfdir}/systemd/timesyncd.conf
            #Patch for CISCOXI4-2785: remove ProtectSystem=full from systemd-timesyncd.service
            sed -i -e '/ProtectSystem=/a ReadWritePaths=\/tmp' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e '/PrivateTmp=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
@@ -136,24 +118,14 @@ PACKAGECONFIG:remove:libc-uclibc = "sysusers machined"
 DEPENDS += " ${@bb.utils.contains("DISTRO_FEATURES", "apparmor", " apparmor", "" ,d)}"
 PACKAGECONFIG:append = " ${@bb.utils.contains("DISTRO_FEATURES", "apparmor", " apparmor", "" ,d)}"
 
+#Remove volatile bind dependency as it is not an oss delivered component
+RDEPENDS:${PN}:remove = "volatile-binds"
+
 EXTRA_OECONF += "--disable-ldconfig"
 EXTRA_OECONF:append:libc-uclibc = " --disable-sysusers --disable-machined "
 
 CFLAGS:append:arm = " -fno-lto"
 
-SRC_URI += " \
-	    file://50-coredump.conf \
-	    file://50-panic.conf \
-	    file://50-netfilter.conf \
-           file://50-portreserv.conf \
-           file://traffic-filter.conf \
-           file://protected_regular.conf \
-           "
-SRC_URI:append = " \
-            file://usb-mount@.service \
-            file://usb-mount.sh \
-            file://99-usb-mount.rules \
-           "
 BACKPORTS ?= " "
 
 RRECOMMENDS:${PN} += " \
@@ -161,36 +133,10 @@ RRECOMMENDS:${PN} += " \
         util-linux-libmount util-linux-umount \
 "
 
-PACKAGES =+ "${PN}-usb-support"
-
-FILES:${PN}-usb-support = " \
-        /usb \
-        /usb0 \
-        /usb1 \
-        ${systemd_unitdir}/system/usb-mount@.service \
-        ${sbindir}/usb-mount.sh \
-        ${sysconfdir}/udev/rules.d/99-usb-mount.rules \
-        ${rootlibexecdir}/udev/rules.d/99-usb-mount.rules \
-       "
-
 FILES:${PN}:append = " ${datadir}/bash-completion"
-FILES:${PN}:append = " ${sbindir}/usb-mount.sh"
 
 do_install:append() {
-	install -d ${D}${sysconfdir}/sysctl.d
 	install -d ${D}${localstatedir}/lib/systemd/coredump
-	install -m 644 ${WORKDIR}/50-coredump.conf ${D}${sysconfdir}/sysctl.d
-	install -m 644 ${WORKDIR}/50-panic.conf ${D}${sysconfdir}/sysctl.d
-	install -m 644 ${WORKDIR}/50-netfilter.conf ${D}${sysconfdir}/sysctl.d
-	install -m 644 ${WORKDIR}/traffic-filter.conf ${D}${sysconfdir}/sysctl.d
-        install -m 644 ${WORKDIR}/protected_regular.conf ${D}${sysconfdir}/sysctl.d
-        mkdir -pv ${D}/usb
-        mkdir -pv ${D}/usb0
-        mkdir -pv ${D}/usb1
-        install -D -m 0644 ${S}/../usb-mount@.service ${D}${systemd_unitdir}/system/usb-mount@.service
-        install -D -m 0755 ${S}/../usb-mount.sh ${D}${sbindir}/usb-mount.sh
-        install -D -m 0644 ${S}/../99-usb-mount.rules ${D}${sysconfdir}/udev/rules.d/99-usb-mount.rules
-        install -D -m 0644 ${S}/../99-usb-mount.rules ${D}${rootlibexecdir}/udev/rules.d/99-usb-mount.rules
         ln -s /dev/null ${D}${sysconfdir}/udev/rules.d/80-net-setup-link.rules
 
         sed -i -e 's/^#DumpCore=.*$/DumpCore=yes/g' ${D}${sysconfdir}/systemd/system.conf
@@ -241,9 +187,6 @@ do_install:append:client() {
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-update-done
         rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-update-done.service
         rm -rf ${D}${rootlibexecdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
-	sed -i '$a\net.ipv4.conf.all.send_redirects=0' ${D}${sysconfdir}/sysctl.d/traffic-filter.conf
-        sed -i '$a\net.ipv4.conf.default.send_redirects=0' ${D}${sysconfdir}/sysctl.d/traffic-filter.conf
-        sed -i '$a\net.ipv4.route.flush = 1' ${D}${sysconfdir}/sysctl.d/traffic-filter.conf
         sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-journal-catalog-update.service
         sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-sysusers.service || true
 }
@@ -329,3 +272,47 @@ do_install:append:hybrid() {
 do_install:append() {
     install -Dm 0644 ${WORKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
 }
+#meta-rdk-comcast-video/recipes-core/systemd/systemd_%.bbappend
+SRC_URI:append:client = " file://0001-no-exec-mount-opt-shm_v250.patch"
+
+do_install:append() {
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable', 'false', 'true', d)}; then
+    sed -i -e 's/Options=/Options=nosuid,nodev,noexec,/' ${D}${systemd_unitdir}/system/tmp.mount
+    fi
+
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'false', 'true', d)}; then
+        #Journal conf overide
+        sed -i -e 's/.*ForwardToSyslog=.*/#ForwardToSyslog=no/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxUse=.*/SystemMaxUse=8M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxUse=.*/RuntimeMaxUse=8M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxFileSize=.*/RuntimeMaxFileSize=4M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxFileSize=.*/SystemMaxFileSize=4M/g' ${D}${sysconfdir}/systemd/journald.conf
+    else
+        #Update Journal configuration if syslog-ng is enabled
+        sed -i -e 's/.*ForwardToSyslog=.*/#ForwardToSyslog=no/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxFileSize=.*/RuntimeMaxFileSize=3M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxUse=.*/SystemMaxUse=3M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxFileSize=.*/SystemMaxFileSize=3M/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxFiles=.*/RuntimeMaxFiles=2/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxFiles=.*/SystemMaxFiles=2/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*RuntimeMaxUse=.*/RuntimeMaxUse=3M/g' ${D}${sysconfdir}/systemd/journald.conf
+    fi
+}
+
+do_install:append:client() {
+        install -d ${D}/media/tsb
+}
+
+do_install:append:hybrid() {
+        install -d ${D}/media/tsb
+}
+
+do_install:append() {
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'false', 'true', d)}; then
+        #Journal conf overide
+        sed -i -e 's/.*RuntimeMaxFiles=.*/RuntimeMaxFiles=2/g' ${D}${sysconfdir}/systemd/journald.conf
+        sed -i -e 's/.*SystemMaxFiles=.*/SystemMaxFiles=2/g' ${D}${sysconfdir}/systemd/journald.conf
+    fi
+}
+
+
