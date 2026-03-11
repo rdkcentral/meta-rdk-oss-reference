@@ -32,4 +32,6 @@ REQUIRED_DISTRO_FEATURES = "${@bb.utils.contains('PACKAGECONFIG', 'sniffer', 'op
 
 PACKAGES =+ "${PN}-tools"
 
-FILES:${PN}-tools = "${bindir}/gssdp16* ${datadir}/gssdp16/*.glade"
+FILES:${PN}-tools = "${bindir}/gssdp-device-sniffer ${datadir}/gssdp-1.6/*.glade"
+FILES:${PN} = "${libdir}/libgssdp-1.6${SOLIBS} ${libdir}/girepository-1.0/GSSDP-1.6.typelib"
+FILES:${PN}-dev = "${includedir}/gssdp-1.6 ${libdir}/libgssdp-1.6${SOLIBSDEV} ${libdir}/pkgconfig/gssdp-1.6.pc ${datadir}/gir-1.0/GSSDP-1.6.gir ${datadir}/vala/vapi/gssdp-1.6.*"
