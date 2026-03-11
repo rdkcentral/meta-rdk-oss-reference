@@ -30,6 +30,6 @@ PACKAGECONFIG[sniffer] = "-Dsniffer=true,-Dsniffer=false,gtk4,"
 
 REQUIRED_DISTRO_FEATURES = "${@bb.utils.contains('PACKAGECONFIG', 'sniffer', 'opengl', '', d)}"
 
-PACKAGES =+ "gssdp-tools"
+PACKAGES =+ "${PN}-tools"
 
-FILES:gssdp-tools = "${bindir}/gssdp* ${datadir}/gssdp/*.glade"
+FILES:${PN}-tools = "${bindir}/gssdp16* ${datadir}/gssdp16/*.glade"
