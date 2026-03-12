@@ -1,0 +1,14 @@
+diff --git a/plugins/elements/gstmultiqueue.c b/plugins/elements/gstmultiqueue.c
+index 580478d..f85d444 100644
+--- a/plugins/elements/gstmultiqueue.c
++++ b/plugins/elements/gstmultiqueue.c
+@@ -911,7 +911,8 @@ gst_multi_queue_set_property (GObject * object, guint prop_id,
+   switch (prop_id) {
+     case PROP_MAX_SIZE_BYTES:
+       GST_MULTI_QUEUE_MUTEX_LOCK (mq);
+-      mq->max_size.bytes = g_value_get_uint (value);
++      mq->max_size.bytes = g_value_get_uint (value) * 4;
++      GST_WARNING_OBJECT(mq, "Setting max size bytes to %u", mq->max_size.bytes);
+       SET_CHILD_PROPERTY (mq, bytes);
+       GST_MULTI_QUEUE_MUTEX_UNLOCK (mq);
+       gst_multi_queue_post_buffering (mq);
