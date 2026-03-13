@@ -15,7 +15,6 @@ SRC_URI:append = " file://resources.conf"
 #SRCREV = "${AUTOREV}"
 #SRC_URI = "${RDKE_GITHUB_ROOT}/rdk-resource-manager;protocol=${RDKE_GITHUB_PROTOCOL};branch=feature/uds_implement_branch_v3;name=rdkhal"
 SRC_URI = "${RDKE_GITHUB_ROOT}/rdk-resource-manager;protocol=${RDKE_GITHUB_PROTOCOL};"
-SRCREV = "e6699f1df7f4658b8ba044bbc9fde9bd6d6010ea"
 
 S = "${WORKDIR}/git"
 PACKAGE_ARCH = "${VENDOR_LAYER_EXTENSION}"
