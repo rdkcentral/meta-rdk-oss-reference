@@ -37,3 +37,4 @@ FILES:${PN} = "${libdir}/libgssdp-1.6${SOLIBS} ${libdir}/girepository-1.0/GSSDP-
 FILES:${PN}-dev = "${includedir}/gssdp-1.6 ${libdir}/libgssdp-1.6${SOLIBSDEV} ${libdir}/pkgconfig/gssdp-1.6.pc ${datadir}/gir-1.0/GSSDP-1.6.gir ${datadir}/vala/vapi/gssdp-1.6.*"
 
 PKG:${PN} = "libgssdp-1.6-0"
+RPROVIDES:${PN} += "libgssdp-1.6-0"
