@@ -1,0 +1,5 @@
+#!/bin/bash
+# Run make test suite
+
+cd tests
+perl run_make_tests.pl -make ../make
