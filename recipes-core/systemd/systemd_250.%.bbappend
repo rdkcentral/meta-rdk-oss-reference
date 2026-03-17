@@ -42,7 +42,6 @@ do_install:append() {
            #Patch for CISCOXI4-2785: remove ProtectSystem=full from systemd-timesyncd.service
            sed -i -e '/ProtectSystem=/a ReadWritePaths=\/tmp' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e '/PrivateTmp=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-	   sed -i -e 's/ExecStart=\!\!\/lib\/systemd\/systemd-timesyncd/ExecStartPre=\!\!\/bin\/sh -c \/lib\/rdk\/default-time-setter.sh\n&/' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e 's/^LockPersonality=yes.*/LockPersonality=false/g' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e 's/^MemoryDenyWriteExecute=yes.*/MemoryDenyWriteExecute=false/g' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
            sed -i -e 's/^NoNewPrivileges=yes.*/NoNewPrivileges=false/g' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
