@@ -30,11 +30,13 @@ PACKAGECONFIG[sniffer] = "-Dsniffer=true,-Dsniffer=false,gtk4,"
 
 REQUIRED_DISTRO_FEATURES = "${@bb.utils.contains('PACKAGECONFIG', 'sniffer', 'opengl', '', d)}"
 
-PACKAGES =+ "${PN}-tools"
+PACKAGES =+ "${PN}-tools libgssdp-1.6-0"
 
 FILES:${PN}-tools = "${bindir}/gssdp-device-sniffer ${datadir}/gssdp-1.6/*.glade"
-FILES:${PN} = "${libdir}/libgssdp-1.6${SOLIBS} ${libdir}/girepository-1.0/GSSDP-1.6.typelib"
+FILES:${PN} += "${libdir}/libgssdp-1.6.so.*"
+FILES:${PN} = "${libdir}/girepository-1.0/GSSDP-1.6.typelib"
 FILES:${PN}-dev = "${includedir}/gssdp-1.6 ${libdir}/libgssdp-1.6${SOLIBSDEV} ${libdir}/pkgconfig/gssdp-1.6.pc ${datadir}/gir-1.0/GSSDP-1.6.gir ${datadir}/vala/vapi/gssdp-1.6.*"
 
 PKG:${PN} = "libgssdp-1.6-0"
 RPROVIDES:${PN} += "libgssdp-1.6-0"
+RDEPENDS:${PN} += "libgssdp-1.6-0"
