@@ -6,6 +6,7 @@ hotspots and temporary allocations"
 HOMEPAGE = "https://phabricator.kde.org/source/heaptrack/"
 #LICENSE = "LGPL-2.1-only"
 #LIC_FILES_CHKSUM = "file://README.md;md5=4ef5b760f4d060d021f18b2ecd154ee5"
+LIC_FILES_CHKSUM = "file://README.md;md5=450ce5a2a93cedd86cbe334efda9064e"
 LICENSE = "LGPLv2.1+ & GPLv2+ & BSD-3-Clause & Apache-2.0 & MIT"
 
 DEPENDS = "zlib boost libunwind elfutils zstd"
