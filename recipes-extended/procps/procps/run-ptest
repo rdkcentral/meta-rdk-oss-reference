@@ -229,4 +229,3 @@ echo "PASSED: $PASS_COUNT"
 echo "FAILED: $FAIL_COUNT"
 echo "SKIPPED: $SKIP_COUNT"
 echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"
-pkumar157@dvm-yocto4-docker-pkumar157:~/rdk-500/build-rdk-arm7ve$ 
