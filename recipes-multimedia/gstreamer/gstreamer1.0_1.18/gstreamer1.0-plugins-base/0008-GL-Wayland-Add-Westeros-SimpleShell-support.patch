@@ -1,0 +1,243 @@
+From df90ed9c98b4900d3b5ba554662db90662d9af35 Mon Sep 17 00:00:00 2001
+From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
+Date: Mon, 23 Mar 2026 15:00:16 +0000
+Subject: [PATCH] [GL][Wayland] Add Westeros SimpleShell support
+
+---
+ gst-libs/gst/gl/meson.build                   |   4 +-
+ .../gst/gl/wayland/gstglwindow_wayland_egl.c  | 123 ++++++++++++++++++
+ .../gst/gl/wayland/gstglwindow_wayland_egl.h  |   4 +
+ 3 files changed, 130 insertions(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/gl/meson.build b/gst-libs/gst/gl/meson.build
+index a4d271f..b37bb40 100644
+--- a/gst-libs/gst/gl/meson.build
++++ b/gst-libs/gst/gl/meson.build
+@@ -541,6 +541,7 @@ endif
+ wayland_client_dep = unneeded_dep
+ wayland_cursor_dep = unneeded_dep
+ wayland_egl_dep = unneeded_dep
++westeros_simpleshell_client_dep = unneeded_dep
+ if need_win_wayland != 'no'
+   if need_win_wayland == 'yes'
+     if need_platform_egl == 'no'
+@@ -559,6 +560,7 @@ if need_win_wayland != 'no'
+     wayland_egl_dep = dependency('wayland-egl', version : '>= 0.99', required : false)
+     wayland_protocols_dep = dependency('wayland-protocols', version : '>= 1.15', required : false)
+     wayland_scanner = find_program('wayland-scanner', required: false)
++    westeros_simpleshell_client_dep = cc.find_library('westeros_simpleshell_client')
+ 
+     if wayland_client_dep.found() and wayland_cursor_dep.found() and wayland_egl_dep.found() and wayland_protocols_dep.found() and wayland_scanner.found()
+       # Generate the XDG shell interface
+@@ -589,7 +591,7 @@ if need_win_wayland != 'no'
+         'wayland/gstgldisplay_wayland.h'
+       ]
+       glconf.set('GST_GL_HAVE_WINDOW_WAYLAND', 1)
+-      gl_winsys_deps += [wayland_client_dep, wayland_cursor_dep, wayland_egl_dep]
++      gl_winsys_deps += [wayland_client_dep, wayland_cursor_dep, wayland_egl_dep, westeros_simpleshell_client_dep]
+       enabled_gl_winsys += 'wayland'
+     else
+       if need_win_wayland == 'yes'
+diff --git a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c
+index ecfa03b..f95ed3f 100644
+--- a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c
++++ b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.c
+@@ -39,6 +39,8 @@
+ 
+ #include "../gstglwindow_private.h"
+ 
++#include <simpleshell-client-protocol.h>
++
+ const gchar *WlEGLErrorString ();
+ 
+ #define GST_CAT_DEFAULT gst_gl_window_debug
+@@ -186,6 +188,88 @@ static const struct wl_seat_listener seat_listener = {
+   seat_name
+ };
+ 
++static void simpleshell_surface_id(
++    void *data,
++    struct wl_simple_shell *simple_shell,
++    struct wl_surface *surface,
++    uint32_t surfaceId)
++{
++  gchar *name;
++  wl_fixed_t z;
++  GstGLWindowWaylandEGL *window_egl = data;
++  struct window *window = &window_egl->window;
++
++  name = g_strdup_printf("gstglwindow-%x", surfaceId);
++  z = wl_fixed_from_double(0);
++
++  window->simpleshell_surface_id = surfaceId;
++
++  GST_DEBUG_OBJECT (window_egl, "simpleshell surfaceId: %u has name %s", surfaceId, name);
++  wl_simple_shell_set_name(simple_shell, surfaceId, name);
++  wl_simple_shell_set_zorder(simple_shell, surfaceId, z);
++  GST_DEBUG_OBJECT (
++      window_egl, "init simpleshell surface %u geometry %i,%i+%ix%i",
++      window->simpleshell_surface_id,
++      window->window_x, window->window_y,
++      window->window_width, window->window_height);
++  wl_simple_shell_set_geometry(simple_shell, surfaceId, window->window_x, window->window_y, window->window_width, window->window_height);
++  wl_simple_shell_set_visible(simple_shell, surfaceId, TRUE);
++
++  g_free(name);
++}
++
++static void simpleshell_surface_created(
++    void *data,
++    struct wl_simple_shell *simple_shell,
++    uint32_t surfaceId,
++    const char *name)
++{
++  GstGLWindowWaylandEGL *window_egl = data;
++  GST_DEBUG_OBJECT (window_egl, "simpleshell created surfaceId: %u has name %s", surfaceId, name);
++}
++
++static void simpleshell_surface_destroyed(
++    void *data,
++    struct wl_simple_shell *simple_shell,
++    uint32_t surfaceId,
++    const char *name)
++{
++  GstGLWindowWaylandEGL *window_egl = data;
++  struct window *window = &window_egl->window;
++  if (window->simpleshell_surface_id == surfaceId)
++      window->simpleshell_surface_id = -1u;
++  GST_DEBUG_OBJECT (window_egl, "simpleshell destroyed surfaceId: %u has name %s", surfaceId, name);
++}
++
++static void simpleshell_surface_status(
++    void *data,
++    struct wl_simple_shell *simple_shell,
++    uint32_t surfaceId,
++    const char *name,
++    uint32_t visible,
++    int32_t x,
++    int32_t y,
++    int32_t width,
++    int32_t height,
++    wl_fixed_t opacity,
++    wl_fixed_t zorder)
++{
++}
++
++static void simpleshell_get_surfaces_done(
++    void *data, struct wl_simple_shell *simple_shell)
++{
++}
++
++static const struct wl_simple_shell_listener simpleshell_listener =
++{
++   simpleshell_surface_id,
++   simpleshell_surface_created,
++   simpleshell_surface_destroyed,
++   simpleshell_surface_status,
++   simpleshell_get_surfaces_done
++};
++
+ static void
+ handle_ping (void *data, struct wl_shell_surface *wl_shell_surface,
+     uint32_t serial)
+@@ -432,6 +516,7 @@ static void
+ gst_gl_window_wayland_egl_init (GstGLWindowWaylandEGL * window)
+ {
+   window->window.render_rect.w = window->window.render_rect.h = -1;
++  window->window.simpleshell_surface_id = -1u;
+ }
+ 
+ /* Must be called in the gl thread */
+@@ -473,6 +558,20 @@ gst_gl_window_wayland_egl_close (GstGLWindow * gl_window)
+   g_source_unref (window_egl->wl_source);
+   window_egl->wl_source = NULL;
+ 
++  g_clear_pointer (&window_egl->display.compositor, wl_compositor_destroy);
++  g_clear_pointer (&window_egl->display.shell, wl_shell_destroy);
++  if (window_egl->display.seat) {
++      if ( wl_seat_get_version(window_egl->display.seat) >= WL_SEAT_RELEASE_SINCE_VERSION )
++          wl_seat_release(window_egl->display.seat);
++      else
++          wl_seat_destroy(window_egl->display.seat);
++      window_egl->display.seat = NULL;
++  }
++  g_clear_pointer (&window_egl->display.simple_shell, wl_simple_shell_destroy);
++  g_clear_pointer (&window_egl->display.registry, wl_registry_destroy);
++  g_clear_pointer (&window_egl->display.display, wl_proxy_wrapper_destroy);
++  g_clear_pointer (&window_egl->window.queue, wl_event_queue_destroy);
++
+   GST_GL_WINDOW_CLASS (parent_class)->close (gl_window);
+ }
+ 
+@@ -516,6 +615,11 @@ registry_handle_global (void *data, struct wl_registry *registry,
+         wl_registry_bind (registry, name, &wl_seat_interface, 4);
+     wl_seat_add_listener (window_wayland->display.seat, &seat_listener,
+         window_wayland);
++  } else if (g_strcmp0(interface, wl_simple_shell_interface.name) == 0) {
++    window_wayland->display.simple_shell =
++        wl_registry_bind(registry, name, &wl_simple_shell_interface, version);
++    wl_simple_shell_add_listener(window_wayland->display.simple_shell,
++        &simpleshell_listener, window_wayland);
+   }
+ }
+ 
+@@ -732,6 +836,27 @@ _set_render_rectangle (gpointer data)
+   window_resize (render->window_egl, render->rect.w, render->rect.h);
+ 
+   render->window_egl->window.render_rect = render->rect;
++
++  if (render->window_egl->display.simple_shell != NULL) {
++    struct window *window = &render->window_egl->window;
++    window->window_x = render->rect.x;
++    window->window_y = render->rect.y;
++
++    if (render->window_egl->window.simpleshell_surface_id != -1u) {
++        struct display *display = &render->window_egl->display;
++        GST_DEBUG_OBJECT (
++            render->window_egl, "setting simpleshell surface %u geometry %i,%i+%ix%i",
++            window->simpleshell_surface_id,
++            window->window_x, window->window_y,
++            window->window_width, window->window_height);
++
++        wl_simple_shell_set_geometry(
++            display->simple_shell,
++            window->simpleshell_surface_id,
++            window->window_x, window->window_y,
++            window->window_width, window->window_height);
++    }
++  }
+ }
+ 
+ static gboolean
+diff --git a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h
+index 0212744..1ad9174 100644
+--- a/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h
++++ b/gst-libs/gst/gl/wayland/gstglwindow_wayland_egl.h
+@@ -41,6 +41,7 @@ typedef struct _GstGLWindowWaylandEGL        GstGLWindowWaylandEGL;
+ typedef struct _GstGLWindowWaylandEGLClass   GstGLWindowWaylandEGLClass;
+ 
+ struct window;
++struct wl_simple_shell;
+ 
+ struct display {
+   struct wl_display      *display;
+@@ -57,6 +58,8 @@ struct display {
+   struct wl_surface      *cursor_surface;
+   struct xdg_wm_base     *xdg_wm_base;
+   struct window          *window;
++  struct wl_simple_shell *simple_shell;
++
+   guint32                 serial;
+ 
+   gdouble pointer_x;
+@@ -84,6 +87,7 @@ struct window {
+   int preferred_width, preferred_height;
+   int window_x, window_y;
+   GstVideoRectangle render_rect;
++  uint32_t simpleshell_surface_id;
+ };
+ 
+ struct _GstGLWindowWaylandEGL {
+-- 
+2.34.1
+
