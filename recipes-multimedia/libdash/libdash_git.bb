@@ -30,7 +30,7 @@ DEPENDS += "libxml2 curl zlib"
 inherit pkgconfig cmake
 FILES:${PN} += "${libdir}/libdash.so"
 # Workaround to have dev so to ${PN}. Ideally, the recipe should generate the versioned so file for ${PN}
-FILES:${PN}-dev:remove = "/usr/lib/lib*.so"
+FILES:${PN}-dev:remove = "${libdir}/lib*.so"
 
 do_install:append() {
 	install -d ${D}${includedir}
