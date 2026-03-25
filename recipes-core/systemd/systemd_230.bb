@@ -82,6 +82,7 @@ PACKAGECONFIG ??= "xz \
                    firstboot \
                    utmp \
                    polkit \
+                   timedated \
 "
 PACKAGECONFIG:remove:libc-musl = "resolved"
 PACKAGECONFIG:remove:libc-musl = "selinux"
