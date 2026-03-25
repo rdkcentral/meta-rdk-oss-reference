@@ -279,6 +279,7 @@ RDEPENDS:${PN} += "\
      gstreamer1.0-plugins-good \
      gstreamer1.0-rtsp-server \
      gupnp \
+     gupnp_1.6.6 \
      iw \
      jansson \
      jsoncpp \
