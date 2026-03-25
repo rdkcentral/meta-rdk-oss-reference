@@ -49,7 +49,7 @@ PREFERRED_VERSION_rust-cross-canadian = "1.82.0"
 PREFERRED_VERSION_rust-cross-canadian-native = "1.82.0"
 PREFERRED_VERSION_readline-native = "8.1.2"
 PREFERRED_VERSION_nativesdk-readline = "8.1.2"
-#PREFERRED_VERSION_bluez5 = "5.48"
+PREFERRED_VERSION_bluez5 = "5.48"
 
 #To resolve gettext native version mismatch due to layer priority
 PREFERRED_VERSION_gettext-native = "0.21"
