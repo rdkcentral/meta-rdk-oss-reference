@@ -7,11 +7,11 @@ Index: bluez-5.48/src/main.conf
 ===================================================================
 --- bluez-5.48.orig/src/main.conf
 +++ bluez-5.48/src/main.conf
-@@ -111,7 +111,7 @@ DebugKeys = false
+@@ -111,7 +111,7 @@
  # Enables or disables bluetooth LE "Secure Connections".  This is a BT 4.1
  # feature used at pairing time, ideally it should be enabled but can cause
  # interopt issues with some BLE devices. Defaults to 'true'.
--SecureConnections = false
+-# SecureConnections = true
 +SecureConnections = true
  
  # Sets whether the adapter should be powered off at start-up if already powered

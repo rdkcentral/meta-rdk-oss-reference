@@ -7,14 +7,15 @@ Upstream-Status: Pending
 Signed-off-by: Tijo Thomas John <tijo.thomas@sky.uk>
 ##################################################################
 
-diff -Naur a/src/main.conf b/src/main.conf
---- a/src/main.conf	2019-03-04 11:34:13.005872621 +0000
-+++ b/src/main.conf	2019-03-04 11:35:09.341873040 +0000
+Index: bluez-5.48/src/main.conf
+===================================================================
+--- bluez-5.48.orig/src/main.conf
++++ bluez-5.48/src/main.conf
 @@ -116,7 +116,7 @@
  # Sets whether the adapter should be powered off at start-up if already powered
  # on.  This is useful to reset the adapter and therefore have the kernel and
  # userspace in sync. Defaults to 'false'
--StartupPowerOff = true
+-# StartupPowerOff = false
 +StartupPowerOff = false
  
  # Sets the adapter MTU size for ATT LE connections.  If not set it defaults

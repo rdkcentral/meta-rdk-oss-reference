@@ -20,16 +20,13 @@ SRC_URI += "file://breakpad.patch \
     file://bluez-5.48-013-add-configurable-att-le-mtu.patch \
     file://bluez-5.48-014-add-configurable-delayed-gatt-connection.patch \
     file://bluez-5.48-015-delete-autoconnect-on-remove.patch\
-    file://bluez-5.48-016-disable-irk-storage-for-sky-devices.patch \
     file://bluez-5.48-017-bluetooth_configuration_hardening.patch \
     file://bluez-5.48-019-improve_firmware_upload_ruwido.patch \
-    file://bluez-5.48-020-main_configuration_hardening.patch \
     file://bluez-5.48-021-set-bdaddr-in-phys-uhid.patch \
     file://bluez-5.48-022-enable_bdaddr.patch \
     file://bluez-5.48-023-enable_discovery_filter.patch \
     file://bluez-5.48-024-add-remote-device-name-change-event-handler.patch \
     file://bluez-5.48-025-add-hog-service-for-skyq-rcus.patch \
-    file://bluez-5.48-026-disable-bluez-powercyle-respawn.patch \
     file://bluez-5.48-027-free-discovery-reply-on-error.patch \
     file://bluez-5.48-028-crash-in-gatt-client-callback.patch \
     file://bluez-5.48-029-create_storage_directory_before_starting_service.patch \
@@ -44,7 +41,6 @@ SRC_URI += "file://breakpad.patch \
     file://bluez-5.48-039-bluetooth_a2dp_ref_negative_abort.patch \
     file://bluez-5.48-040-bluez-btrmgr-crash.patch \
     file://bluez-5.48-041-clear_old_cache_list.patch \
-    file://bluez-5.48-043-auto-accept-connection-for_5.10-Kernel.patch \
     file://bluez-5.48-044-add-up-to-date-battery-service.patch \
     file://bluez-5.48-045-ensure-bluez-connects-on-bredr-to-audio-devices.patch \
     file://bluz5_5.48_gatt_db_service_crash.patch \
@@ -72,6 +68,7 @@ SRC_URI += "file://breakpad.patch \
     file://bluez-5.48-066-unregister-batt_io_ccc_written_cb-check-session.patch \
     file://bluez-5.48-067-remove-unused-binaries.patch \
     file://bluez-5.48-068-RDKEMW-8673-stream-use-after-free.patch \
+    file://bluez-5.48-069-disable-bluez-powercyle-respawn.patch \
     "
 SRC_URI:append = " file://bluez-5.48-kirkstone_compile_errors.patch "
 
