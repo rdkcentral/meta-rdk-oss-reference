@@ -313,6 +313,9 @@ PACKAGE_ARCH:pn-gssdp16 ?= "${OSS_LAYER_ARCH}"
 PR:pn-gupnp ?= "r1"
 PACKAGE_ARCH:pn-gupnp ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-gupnp_1.6.6 ?= "r0"
+PACKAGE_ARCH:pn-gupnp_1.6.6 ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-harfbuzz ?= "r0"
 PACKAGE_ARCH:pn-harfbuzz ?= "${OSS_LAYER_ARCH}"
 
