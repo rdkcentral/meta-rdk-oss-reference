@@ -27,6 +27,8 @@ PREFERRED_VERSION_gettext-native = "0.21"
 PREFERRED_VERSION_libdrm = "2.4.110"
 PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
 
+TARGET_VENDOR ?= "-rdk"
+
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
 MULTILIB_VARIANTS:pn-alsa-ucm-conf = " multilib "
