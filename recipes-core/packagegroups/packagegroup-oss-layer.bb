@@ -186,6 +186,7 @@ RDEPENDS:${PN} += "\
      googletest \
      grpc \
      gssdp \
+     gssdp16 \
      hiredis \
      iperf3 \
      jsonrpc \
