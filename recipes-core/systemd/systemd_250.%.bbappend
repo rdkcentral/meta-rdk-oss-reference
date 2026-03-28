@@ -260,7 +260,6 @@ do_install:append:client() {
     rm -rf ${D}${base_libdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
     sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-journal-catalog-update.service
     sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-hwdb-update.service || true
-    sed -i -e 's/^PrivateMounts=.*$/PrivateMounts=no/g' ${D}${systemd_unitdir}/system/systemd-udevd.service
 }
 
 do_install:append:hybrid() {
