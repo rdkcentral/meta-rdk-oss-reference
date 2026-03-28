@@ -311,6 +311,9 @@ PACKAGE_ARCH:pn-grpc ?= "${OSS_LAYER_ARCH}"
 PR:pn-gssdp ?= "r0"
 PACKAGE_ARCH:pn-gssdp ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-gssdp16 ?= "r0"
+PACKAGE_ARCH:pn-gssdp16 ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-gupnp ?= "r1"
 PACKAGE_ARCH:pn-gupnp ?= "${OSS_LAYER_ARCH}"
 
