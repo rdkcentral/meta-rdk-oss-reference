@@ -6,6 +6,8 @@ BUGTRACKER = "https://gitlab.gnome.org/GNOME/gssdp/-/issues"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
+S = "${WORKDIR}/gssdp-1.6.3"
+
 SRC_URI = "https://download.gnome.org/sources/gssdp/1.6/gssdp-1.6.3.tar.xz;name=archive"
 SRC_URI:append = " file://0001-gssdp-enums.c.template-use-basename-instead-of-filen.patch"
 SRC_URI[archive.sha256sum] = "2fedb5afdb22cf14d5498a39a773ca89788a250fcf70118783df821e1f3f3446"
@@ -29,6 +31,6 @@ PACKAGECONFIG[sniffer] = "-Dsniffer=true,-Dsniffer=false,gtk4,"
 
 REQUIRED_DISTRO_FEATURES = "${@bb.utils.contains('PACKAGECONFIG', 'sniffer', 'opengl', '', d)}"
 
-PACKAGES =+ "gssdp-tools"
+PACKAGES =+ "${PN}-tools"
 
 FILES:gssdp-tools = "${bindir}/gssdp* ${datadir}/gssdp/*.glade"
