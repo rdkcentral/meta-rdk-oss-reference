@@ -8,9 +8,8 @@ SRC_URI += "file://run-ptest"
 # (elfutils-ptest depends on the 'bsdtar' package by name)
 PACKAGES =+ "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', 'bsdtar bsdcpio', '', d)}"
 FILES:bsdtar = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '${bindir}/bsdtar', '', d)}"
-FILES:bsdcpio = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '${bindir}/bsdcpio', '', d)}"
 
-RDEPENDS:${PN}-ptest += "bash ${PN}"
+RDEPENDS:${PN}-ptest += "bash ${PN} ${PN}-extras"
 
 do_compile_ptest() {
     :
