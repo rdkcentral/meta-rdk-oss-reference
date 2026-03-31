@@ -274,7 +274,7 @@ PACKAGE_ARCH:pn-gettext ?= "${OSS_LAYER_ARCH}"
 PR:pn-gflags ?= "r0"
 PACKAGE_ARCH:pn-gflags ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-2.0 ?= "r1"
+PR:pn-glib-2.0 ?= "r0"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc ?= "r1"
