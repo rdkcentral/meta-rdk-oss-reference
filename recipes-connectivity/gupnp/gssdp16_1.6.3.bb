@@ -1,6 +1,6 @@
 SUMMARY = "Resource discovery and announcement over SSDP"
 DESCRIPTION = "GSSDP implements resource discovery and announcement over SSDP \
-               (Simpe Service Discovery Protocol)."
+               (Simple Service Discovery Protocol)."
 HOMEPAGE = "https://gitlab.gnome.org/GNOME/gssdp/"
 BUGTRACKER = "https://gitlab.gnome.org/GNOME/gssdp/-/issues"
 LICENSE = "LGPL-2.1-only"
@@ -33,4 +33,4 @@ REQUIRED_DISTRO_FEATURES = "${@bb.utils.contains('PACKAGECONFIG', 'sniffer', 'op
 
 PACKAGES =+ "${PN}-tools"
 
-FILES:gssdp-tools = "${bindir}/gssdp* ${datadir}/gssdp/*.glade"
+FILES:${PN}-tools = "${bindir}/gssdp* ${datadir}/gssdp/*.glade"
