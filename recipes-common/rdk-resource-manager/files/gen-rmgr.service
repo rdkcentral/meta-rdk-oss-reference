@@ -1,0 +1,15 @@
+[Unit]
+Description=Generic Resource Mgr
+After=basic.target
+Before=dsmgr.service audioserver.service
+[Service]
+Type=simple
+Environment="XDG_RUNTIME_DIR=/run"
+Environment="CONFIG_FILE_PATH=/etc/default/resources.conf"
+#ExecStart=/usr/lib/ResourceManager/resourcemanager
+#ExecStart=/bin/bash -c "/usr/bin/ResourceManager/resourcemanager & /usr/bin/ResourceProvider/resourceprovider & wait"
+ExecStart=/bin/bash -c "/usr/bin/ResourceManager/resourcemanager >> /opt/logs/resourcemanager.log 2>&1 & /usr/bin/ResourceProvider/resourceprovider >> /opt/logs/resourceprovider.log 2>&1 & wait"
+Restart=always
+[Install]
+WantedBy=multi-user.target
+
