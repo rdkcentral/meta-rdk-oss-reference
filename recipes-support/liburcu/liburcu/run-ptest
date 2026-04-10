@@ -1,0 +1,79 @@
+#!/bin/bash
+# liburcu ptest - run unit and regression tests
+# Tests output TAP format; we translate to PASS/FAIL
+
+PTEST_PATH="$(dirname "$0")"
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+run_tap_test() {
+    local test_name="$1"
+    local test_bin="$2"
+    local output
+    local ret
+
+    output=$("$test_bin" 2>&1)
+    ret=$?
+
+    if [ $ret -ne 0 ]; then
+        echo "FAIL: $test_name (exit code $ret)"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+        return
+    fi
+
+    # Parse TAP output: count "ok" and "not ok" lines
+    local tap_pass=0
+    local tap_fail=0
+    local tap_skip=0
+
+    while IFS= read -r line; do
+        case "$line" in
+            ok\ *\#\ [Ss][Kk][Ii][Pp]*)
+                tap_skip=$((tap_skip + 1))
+                ;;
+            ok\ *)
+                tap_pass=$((tap_pass + 1))
+                ;;
+            not\ ok\ *)
+                tap_fail=$((tap_fail + 1))
+                ;;
+        esac
+    done <<EOF
+$output
+EOF
+
+    if [ $tap_fail -gt 0 ]; then
+        echo "FAIL: $test_name ($tap_fail TAP failures)"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    elif [ $tap_pass -eq 0 ] && [ $tap_skip -eq 0 ]; then
+        # No TAP output but exit 0
+        echo "PASS: $test_name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "PASS: $test_name ($tap_pass ok, $tap_skip skipped)"
+        PASS_COUNT=$((PASS_COUNT + 1))
+        if [ $tap_skip -gt 0 ]; then
+            SKIP_COUNT=$((SKIP_COUNT + tap_skip))
+        fi
+    fi
+}
+
+# Unit tests
+for test_bin in "$PTEST_PATH"/unit/*; do
+    [ -x "$test_bin" ] || continue
+    test_name=$(basename "$test_bin")
+    run_tap_test "$test_name" "$test_bin"
+done
+
+# Regression test (fork test)
+if [ -x "$PTEST_PATH/regression/test_urcu_fork.tap" ]; then
+    run_tap_test "test_urcu_fork" "$PTEST_PATH/regression/test_urcu_fork.tap"
+fi
+
+echo ""
+echo "=== liburcu ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT))"

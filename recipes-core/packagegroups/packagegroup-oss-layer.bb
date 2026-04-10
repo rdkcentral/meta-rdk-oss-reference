@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.10.0"
+PV = "4.12.0"
 PR = "r0"
 
 # poky components
@@ -234,6 +234,7 @@ RDEPENDS:${PN} += "\
      xmlsec1 \
      yajl \
      zstd \
+     yaml-cpp \
 "
 
 # meta-rust components
