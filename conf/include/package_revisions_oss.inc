@@ -279,7 +279,7 @@ PACKAGE_ARCH:pn-gflags ?= "${OSS_LAYER_ARCH}"
 PR:pn-glib-2.0 ?= "r1"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glibc ?= "r1"
+PR:pn-glibc ?= "r2"
 PACKAGE_ARCH:pn-glibc ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc-locale ?= "r0"
