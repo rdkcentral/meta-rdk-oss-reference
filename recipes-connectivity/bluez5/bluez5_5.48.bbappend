@@ -75,11 +75,6 @@ SRC_URI:append = " file://bluez-5.48-kirkstone_compile_errors.patch "
 ## Disabled SkyQ Patches
 #file://bluez-5.48-018-change_storage_dir.patch
 
-#SRC_URI:append:hybrid += " ${@bb.utils.contains('DISTRO_FEATURES', 'enable-rdkv-bt-voice', '', 'file://0001-bluetooth_autoenable_policy_main_conf.patch', d)}"
-#SRC_URI:append:client += " ${@bb.utils.contains('DISTRO_FEATURES', 'enable-rdkv-bt-voice', '', 'file://0001-bluetooth_autoenable_policy_main_conf.patch', d)}"
-
-SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'flex2_rdk', ' file://bluez-5.48-042-fix-for-autoenable-policy-main-conf.patch', '', d)}"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://0001-Fix-race-issue-with-tools-directory.patch \
