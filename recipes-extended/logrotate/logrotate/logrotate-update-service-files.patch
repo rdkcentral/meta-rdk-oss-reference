@@ -57,7 +57,7 @@ diff -Naur logrotate-3.21.0.orig/logrotate.service logrotate-3.21.0/logrotate.se
 +##############################################################################
 +
 +[Unit]
-+Description=Logrotate Service
++Description=Logrotate Service helper
 +
 +[Service]
 +Type=oneshot
