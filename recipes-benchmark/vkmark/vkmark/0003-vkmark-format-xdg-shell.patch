@@ -1,0 +1,126 @@
+diff --git a/src/ws/kms_window_system.cpp b/src/ws/kms_window_system.cpp
+index 4bf7838..06c3bc4 100644
+--- a/src/ws/kms_window_system.cpp
++++ b/src/ws/kms_window_system.cpp
+@@ -811,7 +811,8 @@ void KMSWindowSystem::create_vk_images()
+         vk::SubresourceLayout layouts[4] = {0};
+         uint32_t num_planes = gbm_bo_get_plane_count(gbm_bo);
+         auto const fd = ManagedResource<int>{gbm_bo_get_fd(gbm_bo), close};
+-        uint64_t modifier = gbm_bo_get_modifier(gbm_bo);
++        //uint64_t modifier = gbm_bo_get_modifier(gbm_bo);
++	uint64_t modifier = DRM_FORMAT_MOD_LINEAR;
+ 
+         if (modifier == DRM_FORMAT_MOD_INVALID && !warned_mod_invalid)
+         {
+diff --git a/src/ws/swapchain_window_system.cpp b/src/ws/swapchain_window_system.cpp
+index 0c70e8d..b99a1f7 100644
+--- a/src/ws/swapchain_window_system.cpp
++++ b/src/ws/swapchain_window_system.cpp
+@@ -206,11 +206,13 @@ bool SwapchainWindowSystem::should_quit()
+ ManagedResource<vk::SwapchainKHR> SwapchainWindowSystem::create_vk_swapchain()
+ {
+     auto const surface_caps = vulkan->physical_device().getSurfaceCapabilitiesKHR(vk_surface);
++    /*
+     if (!(surface_caps.supportedCompositeAlpha &
+           vk::CompositeAlphaFlagBitsKHR::eOpaque))
+     {
+         throw std::runtime_error("Opaque not supported");
+     }
++    */
+ 
+     if (!vulkan->physical_device().getSurfaceSupportKHR(
+             vk_present_queue_family_index,
+@@ -249,21 +251,24 @@ ManagedResource<vk::SwapchainKHR> SwapchainWindowSystem::create_vk_swapchain()
+     if (surface_caps.maxImageCount > 0)
+         min_image_count = std::min(min_image_count, surface_caps.maxImageCount);
+ 
+-    auto const swapchain_create_info = vk::SwapchainCreateInfoKHR{}
++    //auto const swapchain_create_info = vk::SwapchainCreateInfoKHR{}
++    vk_image_format = vk::Format::eR8G8B8A8Unorm;
++    auto const swapchainCreateInfo = vk::SwapchainCreateInfoKHR{}
+         .setSurface(vk_surface)
+         .setMinImageCount(min_image_count)
+         .setImageFormat(vk_image_format)
+         .setImageExtent(vk_extent)
+         .setImageArrayLayers(1)
+-        .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment |
+-                       vk::ImageUsageFlagBits::eTransferDst)
++        .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
++//                       vk::ImageUsageFlagBits::eTransferDst)
+         .setImageSharingMode(vk::SharingMode::eExclusive)
+         .setQueueFamilyIndexCount(1)
+         .setPQueueFamilyIndices(&vk_present_queue_family_index)
+         .setPresentMode(vk_present_mode);
+ 
+     return ManagedResource<vk::SwapchainKHR>{
+-        vulkan->device().createSwapchainKHR(swapchain_create_info),
++        //vulkan->device().createSwapchainKHR(swapchain_create_info),
++	vulkan->device().createSwapchainKHR(swapchainCreateInfo),
+         [this] (auto& s) { vulkan->device().destroySwapchainKHR(s); }};
+ }
+ 
+diff --git a/src/ws/wayland_native_system.cpp b/src/ws/wayland_native_system.cpp
+index 1b9809c..e9e7a82 100644
+--- a/src/ws/wayland_native_system.cpp
++++ b/src/ws/wayland_native_system.cpp
+@@ -159,7 +159,8 @@ uint32_t WaylandNativeSystem::get_presentation_queue_family_index(vk::PhysicalDe
+     for (auto i = 0u; i < queue_families.size(); ++i)
+     {
+         if (queue_families[i].queueCount > 0 &&
+-            pd.getWaylandPresentationSupportKHR(i, display))
++            //pd.getWaylandPresentationSupportKHR(i, display))
++	    (pd.getWaylandPresentationSupportKHR(i, display) || queue_families[i].queueFlags & vk::QueueFlagBits::eGraphics))
+         {
+             return i;
+         }
+@@ -204,10 +205,18 @@ ManagedResource<vk::SurfaceKHR> WaylandNativeSystem::create_vk_surface(VulkanSta
+     auto const wayland_surface_create_info = vk::WaylandSurfaceCreateInfoKHR{}
+         .setDisplay(display)
+         .setSurface(surface);
+-
++/*
+     return ManagedResource<vk::SurfaceKHR>{
+         vulkan.instance().createWaylandSurfaceKHR(wayland_surface_create_info),
+         [vptr=&vulkan] (vk::SurfaceKHR& s) { vptr->instance().destroySurfaceKHR(s); }};
++*/
++    ManagedResource<vk::SurfaceKHR> ret = ManagedResource<vk::SurfaceKHR>{
++        vulkan.instance().createWaylandSurfaceKHR(wayland_surface_create_info),
++           [vptr=&vulkan] (vk::SurfaceKHR& s) {
++                   vptr->instance().destroySurfaceKHR(s);
++	   }
++    };
++    return ret;
+ }
+ 
+ void WaylandNativeSystem::create_native_window()
+@@ -236,6 +245,7 @@ void WaylandNativeSystem::create_native_window()
+     if (!surface)
+         throw std::runtime_error("Failed to create Wayland surface");
+ 
++#if defined(XDG_WM_BASE_PROTO)
+     if (!xdg_wm_base)
+     {
+         throw std::runtime_error(
+@@ -260,10 +270,13 @@ void WaylandNativeSystem::create_native_window()
+ 
+     xdg_toplevel_set_app_id(xdg_toplevel, "com.github.vkmark.vkmark");
+     xdg_toplevel_set_title(xdg_toplevel, "vkmark " VKMARK_VERSION_STR);
++#endif
+ 
+     if (fullscreen_requested())
+     {
++#if defined(XDG_WM_BASE_PROTO)
+         xdg_toplevel_set_fullscreen(xdg_toplevel, output);
++#endif
+         vk_extent = vk::Extent2D{
+             static_cast<uint32_t>(output_width),
+             static_cast<uint32_t>(output_height)};
+@@ -281,6 +294,8 @@ void WaylandNativeSystem::create_native_window()
+         wl_surface_set_buffer_scale(surface, output_scale);
+     }
+ 
++    vk_extent = vk::Extent2D{ 1920, 1080};
++
+     auto const opaque_region = ManagedResource<wl_region*>{
+         wl_compositor_create_region(compositor), wl_region_destroy};
+     wl_region_add(opaque_region, 0, 0, vk_extent.width, vk_extent.height);
