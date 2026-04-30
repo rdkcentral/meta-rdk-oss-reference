@@ -1,3 +1,10 @@
+Date: Thu Apr 30 08:14:14 2026 +0100
+From: sreedhar-reddy.billa
+Subject: Wpa-supplicant to read driver capability of SAE
+Source: NA
+Signed-off-by: Arjun <arjun_daasuramdass@comcast.com>
+---
+
 --- a/src/drivers/driver_nl80211_capa.c
 +++ b/src/drivers/driver_nl80211_capa.c
 @@ -1358,6 +1358,11 @@
