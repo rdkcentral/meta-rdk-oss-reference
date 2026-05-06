@@ -5,7 +5,8 @@ SRC_URI:append:class-target = " \
            file://0002-fix_crash_when_opkg_does_reinit.patch \
 "
 
-SRC_URI:append = " file://multi_thread_installer.patch"
+SRC_URI:append = " file://multi_thread_installer.patch \
+                   file://rdk-45953-fix-pkg-provider-with-version-install-failure.patch"
 
 # libsolv is not compatible with libopkg-api in v0.4.2
 EXTRA_OECONF:remove:class-target = "--with-libsolv"
