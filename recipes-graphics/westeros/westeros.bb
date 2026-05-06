@@ -4,6 +4,14 @@ SUMMARY = "This receipe compiles the westeros compositor component"
 
 LICENSE = "Apache-2.0"
 
+LICENSE_LOCATION = "${S}/LICENSE"
+LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
+
+SRC_URI = "${WESTEROS_URI}"
+
+PV = "1.0+gitr${SRCPV}"
+# Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
+
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
 PACKAGECONFIG[inctest] = "--enable-test=yes"
@@ -36,3 +44,9 @@ do_compile:prepend() {
    oe_runmake -C ${S}/linux-dmabuf/protocol
    oe_runmake -C ${S}/linux-expsync/protocol
 }
+
+do_install:append() {
+    install -m 0644 ${S}/*.h ${D}${includedir}/
+}
+
+FILES_${PN}-dev += "${includedir}/*.h"
