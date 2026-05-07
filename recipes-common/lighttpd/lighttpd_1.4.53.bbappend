@@ -6,17 +6,19 @@ SRC_URI:append = " file://monotonic-time.patch"
 
 CFLAGS:append:broadband = " -DSO_BINDTODEVICE"
 
-SYSTEMD_SERVICE:${PN}_broadband = ""
+SYSTEMD_SERVICE:${PN}:broadband = ""
 INITSCRIPT_NAME:broadband = ""
 INITSCRIPT_PARAMS:broadband = ""
 
 FILES:${PN} += "${systemd_unitdir}/system/lighttpd.service"
 
-RDEPENDS:${PN} += " \
-    lighttpd-module-auth \
-    lighttpd-module-authn-file \
-    lighttpd-module-openssl \
-"
+
+RDEPENDS:${PN}:append:broadband = " \
+  				    lighttpd-module-auth \
+   				    lighttpd-module-authn-file \
+    				    lighttpd-module-openssl \
+				  "
+
 RDEPENDS:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'offline_apps', 'lighttpd-module-alias', '', d)}"
 # From meta-rdk-comcast/recipes-common/lighttpd/lighttpd_1.4.53.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"
@@ -30,13 +32,12 @@ SRC_URI:append = " file://CVE-2019-11072.patch "
 DEPENDS:append = " zlib openssl"
 EXTRA_OECONF:append = " --without-bzip2 --without-mysql --with-zlib --with-openssl"
 
-SYSTEMD_SERVICE:${PN}_broadband = ""
+SYSTEMD_SERVICE:${PN}:broadband = ""
 INITSCRIPT_NAME:broadband = ""
 INITSCRIPT_PARAMS:broadband = ""
 
 RDEPENDS:${PN} += "\
                 lighttpd-module-alias \
-                lighttpd-module-proxy \
                 lighttpd-module-fastcgi \
 "
 
@@ -67,7 +68,7 @@ do_install:append:broadband() {
 }
 
 FILES:${PN} += "${sysconfdir}/lighttpd/lighttpd.conf"
-FILES:${PN}:remove_broadband += "${sysconfdir}/lighttpd/lighttpd.conf"
+FILES:${PN}:remove:broadband += "${sysconfdir}/lighttpd/lighttpd.conf"
 # From meta-rdk-comcast-video/recipes-common/lighttpd/lighttpd_1.4.53.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"
 SRC_URI:append = " file://CVE-2022-22707_fix.patch "

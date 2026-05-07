@@ -1,12 +1,17 @@
-Date: Fri, 17 Mar 2023 19:48:06 +0000
+From b752a0c1725c68838c9945ebb24fd5807115969d Mon Sep 17 00:00:00 2001
 From: anaras440 <aravindan_narasimhapuramchakravarthy@comcast.com>
+Date: Fri, 17 Mar 2023 19:48:06 +0000
 Subject: [PATCH] Remove MS constants from missing header file
+
          Remove MS_* constants from src/basic/missing.h since these
          variables are already defined in linux/fs.h
-         Recreated from https://gerrit.teamccp.com/#/c/492402/4/recipes-core/systemd/files/0003-Remove-MS-constants-from-missing-header-file.patch
-         for yocto kirkstone
-Source: COMCAST b752a0c1725c68838c9945ebb24fd5807115969d Mon Sep 17 00:00:00 2001
+
+Source: COMCAST
+Upstream-Status: Inappropriate 
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+
+Recreated from https://gerrit.teamccp.com/#/c/492402/4/recipes-core/systemd/files/0003-Remove-MS-constants-from-missing-header-file.patch
+for yocto kirkstone
 ---
 Index: git/src/basic/missing_fs.h
 ===================================================================

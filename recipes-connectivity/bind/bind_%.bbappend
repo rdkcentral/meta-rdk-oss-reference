@@ -13,7 +13,6 @@ SRC_URI:append = " \
                   file://named.conf.options \
                   file://named_start_post_rdm.sh \
                  "
-#SRC_URI:append:dunfell = " file://build-error-disable-threads.patch"
 
 do_install:append () {
     install -d ${D}${sysconfdir}/bind

@@ -1,0 +1,48 @@
+From d0eeeeebde8b0785d26a908f49ff19bcd973c127 Mon Sep 17 00:00:00 2001
+From: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+Date: Mon, 17 Mar 2025 11:28:57 +0100
+Subject: [PATCH] RDKTV-35445 Fix localhost DNS resolution
+
+This patch can be dropped after 2.85 glib release
+
+Fixed upstream by:
+https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4566
+
+Gitlab ticket:
+https://gitlab.gnome.org/GNOME/glib/-/issues/3641
+
+A call to getaddrinfo() with AI_ADDRCONFIG set and explicit
+AF_INET or AF_INET6 will always fail when no network avaialble.
+Even if the hostname resolves to localhost in /etc/hosts
+
+Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+---
+ gio/gthreadedresolver.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/gio/gthreadedresolver.c b/gio/gthreadedresolver.c
+index aeeb40e..f7b7b05 100644
+--- a/gio/gthreadedresolver.c
++++ b/gio/gthreadedresolver.c
+@@ -112,6 +112,18 @@ do_lookup_by_name (GTask         *task,
+   addrinfo_hints.ai_family = lookup_data->address_family;
+   retval = getaddrinfo (hostname, NULL, &addrinfo_hints, &res);
+ 
++#ifdef AI_ADDRCONFIG
++  // AI_ADDRCONFIG makes getaddrinfo() to immediately exit if loopback
++  // interface is the only one available. This makes local services,
++  // specified in /etc/hosts, unreachable.
++  if (retval == EAI_NONAME && addrinfo_hints.ai_family == AF_INET && g_str_has_suffix (hostname, ".local"))
++  {
++    // try again without AI_ADDRCONFIG flag
++    addrinfo_hints.ai_flags &= ~AI_ADDRCONFIG;
++    retval = getaddrinfo (hostname, NULL, &addrinfo_hints, &res);
++  }
++#endif
++
+   if (retval == 0)
+     {
+       struct addrinfo *ai;
+-- 
+2.45.2
+

@@ -1,14 +1,17 @@
-Date: Fri, 11 Feb 2022 13:18:58 +0100
+From 1b42022388f7c87929dfa37717a14b7c25fac965 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 11 Feb 2022 13:18:58 +0100
+Source: GITHUB https://github.com/systemd/systemd/commit/1b42022388f7c87929dfa37717a14b7c25fac965
 Subject: [PATCH] cgroup: downgrade warning if we can't get ID off cgroup
+
 The cgroupid feature was not available in old cgroupvs2 kernels, hence
 try to get it but if we can't because it's not supported, then only
 debug log about it and proceed.
+
 (We only needs this for cgroup bpf stuff, but that isn't available on
 such old kernels anyway)
+
 Fixes: #22483
-Source: COMCAST 1b42022388f7c87929dfa37717a14b7c25fac965 Mon Sep 17 00:00:00 2001
-Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  src/core/cgroup.c | 7 ++++---
  1 file changed, 4 insertions(+), 3 deletions(-)
