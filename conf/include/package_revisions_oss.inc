@@ -150,7 +150,7 @@ PACKAGE_ARCH:pn-breakpad-wrapper ?= "${OSS_LAYER_ARCH}"
 PR:pn-brotli ?= "r0"
 PACKAGE_ARCH:pn-brotli ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-busybox ?= "r2"
+PR:pn-busybox ?= "r3"
 PACKAGE_ARCH:pn-busybox ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-busybox ?= "r1"
@@ -168,7 +168,7 @@ PACKAGE_ARCH:pn-c-ares ?= "${OSS_LAYER_ARCH}"
 PR:pn-civetweb ?= "r0"
 PACKAGE_ARCH:pn-civetweb ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-cjson ?= "r0"
+PR:pn-cjson ?= "r1"
 PACKAGE_ARCH:pn-cjson ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-coreutils ?= "r0"
@@ -186,7 +186,7 @@ PACKAGE_ARCH:pn-ctemplate ?= "${OSS_LAYER_ARCH}"
 PR:pn-cunit ?= "r0"
 PACKAGE_ARCH:pn-cunit ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-curl ?= "r2"
+PR:pn-curl ?= "r3"
 PACKAGE_ARCH:pn-curl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-db ?= "r1"
@@ -276,7 +276,7 @@ PACKAGE_ARCH:pn-gettext ?= "${OSS_LAYER_ARCH}"
 PR:pn-gflags ?= "r0"
 PACKAGE_ARCH:pn-gflags ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-2.0 ?= "r1"
+PR:pn-glib-2.0 ?= "r2"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc ?= "r1"
@@ -612,7 +612,7 @@ PACKAGE_ARCH:pn-libxcrypt ?= "${OSS_LAYER_ARCH}"
 PR:pn-libxkbcommon ?= "r0"
 PACKAGE_ARCH:pn-libxkbcommon ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libxml2 ?= "r1"
+PR:pn-libxml2 ?= "r2"
 PACKAGE_ARCH:pn-libxml2 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libxslt ?= "r1"
@@ -723,7 +723,7 @@ PACKAGE_ARCH:pn-openjpeg ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-openssl ?= "r2"
+PR:pn-openssl ?= "r3"
 PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssl-1.1.1l ?= "r0"
