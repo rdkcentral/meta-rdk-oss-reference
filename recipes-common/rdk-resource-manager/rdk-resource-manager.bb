@@ -3,7 +3,7 @@ LICENSE = "CLOSED"
 SRC_URI:append = " file://gen-rmgr.service"
 SRC_URI:append = " file://resources.conf"
 SRCREV = "${AUTOREV}"
-SRC_URI = "${RDKE_GITHUB_ROOT}/rdk-resource-manager;protocol=${RDKE_GITHUB_PROTOCOL};branch=feature/RDKEMW-11032-RDK-RM-Blacklist-Revoke"
+SRC_URI = "${RDKE_GITHUB_ROOT}/rdk-resource-manager;protocol=${RDKE_GITHUB_PROTOCOL};branch=RDKEMW-11032-priority-rm-req"
  
 S = "${WORKDIR}/git"
 
