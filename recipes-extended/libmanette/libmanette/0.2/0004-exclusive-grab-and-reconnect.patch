@@ -1,0 +1,240 @@
+From 3b64045066b801caf2975eb16bdc1f6a2af9ee5b Mon Sep 17 00:00:00 2001
+From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
+Date: Mon, 11 May 2026 20:11:48 +0000
+Subject: [PATCH] exclusive grab and reconnect
+
+---
+ src/manette-device-private.h |  1 +
+ src/manette-device.c         | 98 +++++++++++++++++++++++++++++++++++-
+ src/manette-device.h         |  6 +++
+ src/manette-monitor.c        | 33 +++++++++++-
+ 4 files changed, 135 insertions(+), 3 deletions(-)
+
+diff --git a/src/manette-device-private.h b/src/manette-device-private.h
+index 17240b4..2f9e400 100644
+--- a/src/manette-device-private.h
++++ b/src/manette-device-private.h
+@@ -39,5 +39,6 @@ void manette_device_set_mapping (ManetteDevice  *self,
+ void manette_device_change_fd (ManetteDevice *self,
+                                int            fd);
+ gboolean manette_device_revoked (ManetteDevice *self);
++void manette_device_notify_disconnected (ManetteDevice *self);
+ 
+ G_END_DECLS
+diff --git a/src/manette-device.c b/src/manette-device.c
+index 6719712..65673c3 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -67,6 +67,8 @@ struct _ManetteDevice
+   gchar *guid;
+   gboolean has_rumble;
+   gboolean has_analog_trigger;
++  gboolean exclusive;
++  gboolean disconnected;
+ 
+   ManetteMapping *mapping;
+ 
+@@ -265,13 +267,39 @@ remove_event_source (ManetteDevice *self)
+   }
+ }
+ 
++void
++manette_device_notify_disconnected (ManetteDevice *self)
++{
++  g_return_if_fail (MANETTE_IS_DEVICE (self));
++
++  if (self->disconnected)
++    return;
++
++  self->disconnected = TRUE;
++  self->exclusive = FALSE;
++
++  remove_event_source (self);
++
++  if (self->fd >= 0) {
++    close (self->fd);
++    self->fd = -1;
++  }
++
++  g_signal_emit (self, signals[SIG_DISCONNECTED], 0);
++}
++
++
+ static void
+ manette_device_finalize (GObject *object)
+ {
+   ManetteDevice *self = (ManetteDevice *)object;
+ 
+-  close (self->fd);
+   remove_event_source (self);
++  if (self->fd >= 0) {
++    close (self->fd);
++    self->fd = -1;
++  }
++
+   g_clear_pointer (&self->evdev_device, libevdev_free);
+   g_clear_pointer (&self->guid, g_free);
+   g_clear_object (&self->mapping);
+@@ -708,9 +736,18 @@ manette_device_change_fd (ManetteDevice  *self,
+   g_return_if_fail (fd >= 0);
+ 
+   remove_event_source (self);
+-  close (self->fd);
++  if (self->fd >= 0)
++    close (self->fd);
+ 
+   self->fd = fd;
++  self->disconnected = FALSE;
++
++  if (self->exclusive) {
++    if (ioctl (self->fd, EVIOCGRAB, 1) == -1) {
++      g_debug ("Failed to re-grab device after fd change: %s", strerror (errno));
++      self->exclusive = FALSE;
++    }
++  }
+ 
+   // Change the fd in libevdev and resync events
+   libevdev_change_fd (self->evdev_device, fd);
+@@ -1031,3 +1068,60 @@ manette_device_rumble (ManetteDevice *self,
+ 
+   return TRUE;
+ }
++
++/**
++ * manette_device_get_exclusive:
++ * @self: a #ManetteDevice
++ *
++ * Gets whether @self currently has exclusive access to its input events.
++ *
++ * Returns: whether @self is exclusive
++ */
++gboolean
++manette_device_get_exclusive (ManetteDevice *self)
++{
++  g_return_val_if_fail (MANETTE_IS_DEVICE (self), FALSE);
++
++  return self->exclusive;
++}
++
++/**
++ * manette_device_set_exclusive:
++ * @self: a #ManetteDevice
++ * @exclusive: whether to request exclusive access
++ * @error: return location for a #GError, or %NULL
++ *
++ * Requests (or releases) exclusive access to @self's input events.
++ *
++ * On Linux evdev devices this uses the EVIOCGRAB ioctl, which prevents other
++ * processes that have opened the same evdev node from receiving events while
++ * the grab is active.
++ *
++ * Returns: %TRUE on success, %FALSE on failure
++ */
++gboolean
++manette_device_set_exclusive (ManetteDevice *self,
++                              gboolean       exclusive,
++                              GError       **error)
++{
++  int grab;
++
++  g_return_val_if_fail (MANETTE_IS_DEVICE (self), FALSE);
++  g_return_val_if_fail (self->fd >= 0, FALSE);
++
++  grab = exclusive ? 1 : 0;
++  if (ioctl (self->fd, EVIOCGRAB, grab) == -1) {
++    g_set_error (error,
++                 G_FILE_ERROR,
++                 g_file_error_from_errno (errno),
++                 "Failed to %s device: %s",
++                 exclusive ? "grab" : "ungrab",
++                 strerror (errno));
++    return FALSE;
++  }
++
++  self->exclusive = exclusive;
++
++  return TRUE;
++}
++
+diff --git a/src/manette-device.h b/src/manette-device.h
+index 4f783c1..bc3b92e 100644
+--- a/src/manette-device.h
++++ b/src/manette-device.h
+@@ -41,6 +41,12 @@ void manette_device_save_user_mapping (ManetteDevice *self,
+ void manette_device_remove_user_mapping (ManetteDevice *self);
+ gboolean manette_device_has_rumble (ManetteDevice *self);
+ gboolean manette_device_trigger_type(ManetteDevice *self);
++
++gboolean manette_device_get_exclusive (ManetteDevice *self);
++gboolean manette_device_set_exclusive (ManetteDevice *self,
++                                       gboolean       exclusive,
++                                       GError       **error);
++
+ gboolean manette_device_rumble (ManetteDevice *self,
+                                 guint16        strong_magnitude,
+                                 guint16        weak_magnitude,
+diff --git a/src/manette-monitor.c b/src/manette-monitor.c
+index 2b74c5d..5240d6d 100644
+--- a/src/manette-monitor.c
++++ b/src/manette-monitor.c
+@@ -74,6 +74,7 @@ static guint signals[N_SIGNALS];
+ 
+ /* Private */
+ 
++void device_disconnected_priv_cb (ManetteMonitor *self, ManetteDevice  *device);
+ static void
+ manette_monitor_init (ManetteMonitor *self)
+ {
+@@ -129,6 +130,11 @@ add_device_with_fd (ManetteMonitor *self,
+   g_hash_table_insert (self->devices,
+                        g_strdup (name),
+                        g_object_ref (device));
++  g_signal_connect_object (device,
++                           "disconnected",
++                           (GCallback) device_disconnected_priv_cb,
++                           self,
++                           G_CONNECT_SWAPPED);
+   g_signal_emit (self, signals[SIG_DEVICE_CONNECTED], 0, device);
+ }
+ 
+@@ -167,11 +173,36 @@ remove_device (ManetteMonitor *self,
+ 
+   g_object_ref (device);
+   g_hash_table_remove (self->devices, filename);
+-  g_signal_emit_by_name (device, "disconnected");
++  manette_device_notify_disconnected (device);
+   g_signal_emit (self, signals[SIG_DEVICE_DISCONNECTED], 0, device);
+   g_object_unref (device);
+ }
+ 
++/*callback for internal handling*/
++void
++device_disconnected_priv_cb (ManetteMonitor *self,
++                        ManetteDevice  *device)
++{
++  GHashTableIter iter;
++  gpointer key;
++  gpointer value;
++  g_autofree gchar *name = NULL;
++
++  g_assert (self != NULL);
++  g_assert (device != NULL);
++
++  g_hash_table_iter_init (&iter, self->devices);
++  while (g_hash_table_iter_next (&iter, &key, &value)) {
++    if (value == device) {
++      name = g_strdup ((const gchar *) key);
++      break;
++    }
++  }
++
++  if (name != NULL)
++    remove_device (self, name);
++}
++
+ #if defined(WAYLAND_INPUTFD_ENABLED) /* BACKEND WAYLAND */
+ 
+ static void
+-- 
+2.34.1
+

@@ -1,0 +1,341 @@
+From e56b4208d345a62947592986c3b81b3a764499c0 Mon Sep 17 00:00:00 2001
+From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
+Date: Mon, 17 Aug 2026 18:37:30 +0000
+Subject: [PATCH] exclusive grab and reconnect
+
+---
+ src/manette-backend-private.h | 15 +++++++++
+ src/manette-backend.c         | 47 ++++++++++++++++++++++++++++
+ src/manette-device-private.h  |  1 +
+ src/manette-device.c          | 50 +++++++++++++++++++++++++++++
+ src/manette-device.h          |  8 +++++
+ src/manette-evdev-backend.c   | 59 +++++++++++++++++++++++++++++++++--
+ src/manette-monitor.c         |  2 +-
+ 7 files changed, 178 insertions(+), 4 deletions(-)
+
+diff --git a/src/manette-backend-private.h b/src/manette-backend-private.h
+index 57990d0..823219d 100644
+--- a/src/manette-backend-private.h
++++ b/src/manette-backend-private.h
+@@ -23,6 +23,7 @@
+ #endif
+ 
+ #include <glib-object.h>
++#include <gio/gio.h>
+ 
+ #include "manette-inputs.h"
+ #include "manette-mapping-private.h"
+@@ -62,6 +63,13 @@ struct _ManetteBackendInterface
+                        guint16         strong_magnitude,
+                        guint16         weak_magnitude,
+                        guint16         milliseconds);
++
++  gboolean (* get_exclusive) (ManetteBackend *self);
++  gboolean (* set_exclusive) (ManetteBackend *self,
++                               gboolean        exclusive,
++                               GError        **error);
++
++  void (* disconnect) (ManetteBackend *self);
+ };
+ 
+ gboolean manette_backend_initialize (ManetteBackend *self);
+@@ -90,6 +98,13 @@ gboolean manette_backend_rumble     (ManetteBackend *self,
+                                      guint16         weak_magnitude,
+                                      guint16         milliseconds);
+ 
++gboolean manette_backend_get_exclusive (ManetteBackend *self);
++gboolean manette_backend_set_exclusive (ManetteBackend *self,
++                                        gboolean        exclusive,
++                                        GError        **error);
++
++void manette_backend_disconnect (ManetteBackend *self);
++
+ void manette_backend_emit_button_event (ManetteBackend *self,
+                                         guint64         time,
+                                         ManetteButton   button,
+diff --git a/src/manette-backend.c b/src/manette-backend.c
+index 2666ca5..6b97a1b 100644
+--- a/src/manette-backend.c
++++ b/src/manette-backend.c
+@@ -265,6 +265,53 @@ manette_backend_rumble (ManetteBackend *self,
+   return iface->rumble (self, strong_magnitude, weak_magnitude, milliseconds);
+ }
+ 
++gboolean
++manette_backend_get_exclusive (ManetteBackend *self)
++{
++  ManetteBackendInterface *iface;
++
++  g_assert (MANETTE_IS_BACKEND (self));
++
++  iface = MANETTE_BACKEND_GET_IFACE (self);
++
++  return iface->get_exclusive != NULL && iface->get_exclusive (self);
++}
++
++gboolean
++manette_backend_set_exclusive (ManetteBackend *self,
++                               gboolean        exclusive,
++                               GError        **error)
++{
++  ManetteBackendInterface *iface;
++
++  g_assert (MANETTE_IS_BACKEND (self));
++
++  iface = MANETTE_BACKEND_GET_IFACE (self);
++
++  if (iface->set_exclusive == NULL) {
++    g_set_error_literal (error,
++                         G_IO_ERROR,
++                         G_IO_ERROR_NOT_SUPPORTED,
++                         "Exclusive access is not supported by this backend");
++    return FALSE;
++  }
++
++  return iface->set_exclusive (self, exclusive, error);
++}
++
++void
++manette_backend_disconnect (ManetteBackend *self)
++{
++  ManetteBackendInterface *iface;
++
++  g_assert (MANETTE_IS_BACKEND (self));
++
++  iface = MANETTE_BACKEND_GET_IFACE (self);
++
++  if (iface->disconnect != NULL)
++    iface->disconnect (self);
++}
++
+ void
+ manette_backend_emit_button_event (ManetteBackend *self,
+                                    guint64         time,
+diff --git a/src/manette-device-private.h b/src/manette-device-private.h
+index b7810ec..8f3e422 100644
+--- a/src/manette-device-private.h
++++ b/src/manette-device-private.h
+@@ -37,5 +37,6 @@ int manette_device_get_bustype_id (ManetteDevice *self);
+ int manette_device_get_version_id (ManetteDevice *self);
+ void manette_device_set_mapping (ManetteDevice  *self,
+                                  ManetteMapping *mapping);
++void manette_device_notify_disconnected (ManetteDevice *self);
+ 
+ G_END_DECLS
+diff --git a/src/manette-device.c b/src/manette-device.c
+index 115baa6..0259398 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -47,6 +47,7 @@ struct _ManetteDevice
+   ManetteDeviceType device_type;
+ 
+   guint64 current_event_time;
++  gboolean disconnected;
+ };
+ 
+ G_DEFINE_FINAL_TYPE (ManetteDevice, manette_device, G_TYPE_OBJECT)
+@@ -67,6 +68,19 @@ static guint signals[N_SIGNALS];
+ 
+ /* Private */
+ 
++void
++manette_device_notify_disconnected (ManetteDevice *self)
++{
++  g_return_if_fail (MANETTE_IS_DEVICE (self));
++
++  if (self->disconnected)
++    return;
++
++  self->disconnected = TRUE;
++  manette_backend_disconnect (self->backend);
++  g_signal_emit (self, signals[SIG_DISCONNECTED], 0);
++}
++
+ static void
+ manette_device_finalize (GObject *object)
+ {
+@@ -697,6 +711,42 @@ manette_device_has_rumble (ManetteDevice *self)
+   return manette_backend_has_rumble (self->backend);
+ }
+ 
++/**
++ * manette_device_get_exclusive:
++ * @self: a device
++ *
++ * Gets whether @self has exclusive access to its input events.
++ *
++ * Returns: whether @self is exclusive
++ */
++gboolean
++manette_device_get_exclusive (ManetteDevice *self)
++{
++  g_return_val_if_fail (MANETTE_IS_DEVICE (self), FALSE);
++
++  return manette_backend_get_exclusive (self->backend);
++}
++
++/**
++ * manette_device_set_exclusive:
++ * @self: a device
++ * @exclusive: whether to request exclusive access
++ * @error: return location for a #GError, or %NULL
++ *
++ * Requests or releases exclusive access to @self's input events.
++ *
++ * Returns: %TRUE on success, %FALSE on failure
++ */
++gboolean
++manette_device_set_exclusive (ManetteDevice *self,
++                              gboolean       exclusive,
++                              GError       **error)
++{
++  g_return_val_if_fail (MANETTE_IS_DEVICE (self), FALSE);
++
++  return manette_backend_set_exclusive (self->backend, exclusive, error);
++}
++
+ /**
+  * manette_device_rumble:
+  * @self: a device
+diff --git a/src/manette-device.h b/src/manette-device.h
+index de6efa8..b636b53 100644
+--- a/src/manette-device.h
++++ b/src/manette-device.h
+@@ -80,6 +80,14 @@ void manette_device_remove_user_mapping (ManetteDevice *self);
+ MANETTE_AVAILABLE_IN_ALL
+ gboolean manette_device_has_rumble (ManetteDevice *self);
+ 
++MANETTE_AVAILABLE_IN_ALL
++gboolean manette_device_get_exclusive (ManetteDevice *self);
++
++MANETTE_AVAILABLE_IN_ALL
++gboolean manette_device_set_exclusive (ManetteDevice *self,
++                                       gboolean       exclusive,
++                                       GError       **error);
++
+ MANETTE_AVAILABLE_IN_ALL
+ gboolean manette_device_rumble (ManetteDevice *self,
+                                 double         strong_magnitude,
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index b1631df..1738f87 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -43,6 +43,7 @@ struct _ManetteEvdevBackend
+ 
+   int fd;
+   gboolean has_external_fd;
++  gboolean exclusive;
+   GSource *event_source;
+   struct libevdev *evdev_device;
+ 
+@@ -444,6 +445,19 @@ clear_event_source (ManetteEvdevBackend *self)
+   g_clear_pointer (&self->event_source, g_source_unref);
+ }
+ 
++static void
++manette_evdev_backend_disconnect (ManetteBackend *backend)
++{
++  ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (backend);
++
++  clear_event_source (self);
++
++  if (self->fd >= 0) {
++    close (self->fd);
++    self->fd = -1;
++  }
++}
++
+ /* Watch the evdev fd on the thread-default main context rather than the global
+  * default one. libmanette can be driven from a non-main thread/runloop (the WPE
+  * web process runs the gamepad monitor off a wayland inputfd handover); using
+@@ -466,8 +480,7 @@ manette_evdev_backend_finalize (GObject *object)
+   ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (object);
+ 
+   g_clear_object (&self->mapping);
+-  clear_event_source (self);
+-  close (self->fd);
++  manette_evdev_backend_disconnect (MANETTE_BACKEND (self));
+   libevdev_free (self->evdev_device);
+   g_free (self->filename);
+ 
+@@ -677,6 +690,37 @@ manette_evdev_backend_has_rumble (ManetteBackend *backend)
+   return TRUE;
+ }
+ 
++static gboolean
++manette_evdev_backend_get_exclusive (ManetteBackend *backend)
++{
++  ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (backend);
++
++  return self->exclusive;
++}
++
++static gboolean
++manette_evdev_backend_set_exclusive (ManetteBackend *backend,
++                                     gboolean        exclusive,
++                                     GError        **error)
++{
++  ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (backend);
++  int grab;
++  grab = exclusive ? 1 : 0;
++  if (ioctl (self->fd, EVIOCGRAB, grab) == -1) {
++    g_set_error (error,
++                 G_FILE_ERROR,
++                 g_file_error_from_errno (errno),
++                 "Failed to %s device: %s",
++                 exclusive ? "grab" : "ungrab",
++                 g_strerror (errno));
++    return FALSE;
++  }
++
++  self->exclusive = !!exclusive;
++
++  return TRUE;
++}
++
+ static gboolean
+ manette_evdev_backend_rumble (ManetteBackend *backend,
+                               guint16         strong_magnitude,
+@@ -725,6 +769,9 @@ manette_evdev_backend_backend_init (ManetteBackendInterface *iface)
+   iface->has_input = manette_evdev_backend_has_input;
+   iface->has_rumble = manette_evdev_backend_has_rumble;
+   iface->rumble = manette_evdev_backend_rumble;
++  iface->get_exclusive = manette_evdev_backend_get_exclusive;
++  iface->set_exclusive = manette_evdev_backend_set_exclusive;
++  iface->disconnect = manette_evdev_backend_disconnect;
+ }
+ 
+ ManetteBackend *
+@@ -778,9 +825,15 @@ manette_evdev_backend_change_fd (ManetteBackend *backend,
+   g_return_if_fail (fd >= 0);
+ 
+   clear_event_source (self);
+-  close (self->fd);
++  if (self->fd >= 0)
++    close (self->fd);
+   self->fd = fd;
+ 
++  if (self->exclusive && ioctl (self->fd, EVIOCGRAB, 1) == -1) {
++    g_debug ("Failed to re-grab device after fd change: %s", g_strerror (errno));
++    self->exclusive = FALSE;
++  }
++
+   /* Point libevdev at the new fd and drain any pending re-sync events. */
+   libevdev_change_fd (self->evdev_device, fd);
+   libevdev_next_event (self->evdev_device,
+diff --git a/src/manette-monitor.c b/src/manette-monitor.c
+index c818868..70f52ec 100644
+--- a/src/manette-monitor.c
++++ b/src/manette-monitor.c
+@@ -160,7 +160,7 @@ remove_device (ManetteMonitor *self,
+ 
+   g_object_ref (device);
+   g_hash_table_remove (self->devices, filename);
+-  g_signal_emit_by_name (device, "disconnected");
++  manette_device_notify_disconnected (device);
+   g_signal_emit (self, signals[SIG_DEVICE_DISCONNECTED], 0, device);
+   g_object_unref (device);
+ }
+-- 
+2.34.1
+

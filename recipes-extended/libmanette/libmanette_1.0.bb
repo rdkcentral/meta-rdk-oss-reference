@@ -18,6 +18,7 @@ SRC_URI = "git://gitlab.gnome.org/GNOME/libmanette.git;protocol=https;branch=mai
            file://1.0/0006-evdev-poll-on-thread-default-context.patch \
            file://1.0/0007-add-rdk-controller-mappings.patch \
            file://1.0/0008-fix-dpad-hat-index.patch \
+           file://1.0/0009-exclusive-grab-and-reconnect.patch \
            file://99-gamepad-set-attr.rules \
            "
 S = "${WORKDIR}/git"
