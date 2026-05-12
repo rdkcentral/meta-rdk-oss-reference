@@ -2,9 +2,11 @@ include westeros.inc
 
 SUMMARY = "This receipe compiles the westeros compositor simple-buffer component"
 
-LICENSE = "Apache-2.0"
+include westeros.inc
 
 S = "${WORKDIR}/git/simplebuffer"
+
+SRC_URI = "${WESTEROS_URI}"
 
 LICENSE_LOCATION = "${S}/../LICENSE"
 
