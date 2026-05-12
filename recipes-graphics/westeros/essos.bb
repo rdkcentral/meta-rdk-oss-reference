@@ -1,20 +1,12 @@
-SUMMARY = "Essos is a library making it simple to create applications that run either as native EGL or Wayland clients."
-
 include westeros.inc
 
-LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=7df5a8706277b586ca000838046993d1"
+SUMMARY = "Essos is a library making it simple to create applications that run either as native EGL or Wayland clients."
+LICENSE = "Apache-2.0"
+LICENSE_LOCATION = "${S}/../LICENSE"
 
-SRC_URI = "${ESSOS_URI}"
+S = "${WORKDIR}/git/essos"
 
-S = "${WORKDIR}/git"
-
-DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr westeros"
-RDEPENDS:${PN}-dev += "essosrmgr-dev"
-
-DEBIAN_NOAUTONAME:${PN} = "1"
-DEBIAN_NOAUTONAME:${PN}-dbg = "1"
-DEBIAN_NOAUTONAME:${PN}-dev = "1"
-DEBIAN_NOAUTONAME:${PN}-staticdev = "1"
+DEPENDS = "wayland virtual/egl libxkbcommon"
 
 REQUIRED_DISTRO_FEATURES += "wayland"
 
