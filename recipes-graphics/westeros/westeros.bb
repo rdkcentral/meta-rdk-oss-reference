@@ -1,14 +1,8 @@
-SUMMARY = "This receipe compiles the westeros compositor component"
+SUMMARY = "This recipe compiles the westeros compositor component"
 
-LICENSE = "Apache-2.0"
-LICENSE_LOCATION = "${S}/LICENSE"
-LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
+include westeros.inc
 
-SRC_URI = "git://github.com/rdkcentral/westeros;protocol=https;nobranch=1"
-
-PV = "1.0+gitr${SRCPV}"
-# Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
-SRCREV_westeros = "0228f9e85fd0c44b85cf4af532c627dbf3d9b518"
+SRC_URI = "${WESTEROS_URI}"
 
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
@@ -47,4 +41,4 @@ do_install:append() {
     install -m 0644 ${S}/*.h ${D}${includedir}/
 }
 
-FILES_${PN}-dev += "${includedir}/*.h"
+FILES:${PN}-dev += "${includedir}/*.h"
