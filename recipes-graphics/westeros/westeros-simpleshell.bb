@@ -1,10 +1,10 @@
-SUMMARY = "This recipe compiles the westeros compositor simple-shell component"
-
 include westeros.inc
 
-S = "${WORKDIR}/git/simpleshell"
+SUMMARY = "This receipe compiles the westeros compositor simple-shell component"
 
-SRC_URI = "${WESTEROS_URI}"
+LICENSE = "Apache-2.0"
+
+S = "${WORKDIR}/git/simpleshell"
 
 DEPENDS = "wayland glib-2.0 wayland-native"
 
