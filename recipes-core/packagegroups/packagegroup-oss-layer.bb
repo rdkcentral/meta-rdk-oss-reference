@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.12.0"
+PV = "4.12.5"
 PR = "r0"
 
 # poky components
@@ -186,6 +186,7 @@ RDEPENDS:${PN} += "\
      googletest \
      grpc \
      gssdp \
+     gssdp16 \
      hiredis \
      iperf3 \
      jsonrpc \
