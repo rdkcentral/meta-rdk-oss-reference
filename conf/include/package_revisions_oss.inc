@@ -37,6 +37,7 @@ PREFERRED_VERSION_wpa-supplicant = "2.10"
 PREFERRED_VERSION_dnsmasq = "2.90"
 PREFERRED_VERSION_msgpack-c = "4.0.0%"
 PREFERRED_VERSION_gupnp ?= "0.20.10"
+PREFERRED_VERSION_iw ?= "4.7"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
