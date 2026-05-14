@@ -19,7 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.12.5"
+OSS_LAYER_VERSION = "4.13.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -245,7 +245,7 @@ PACKAGE_ARCH:pn-flex ?= "${OSS_LAYER_ARCH}"
 PR:pn-fmt ?= "r0"
 PACKAGE_ARCH:pn-fmt ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-fontconfig ?= "r0"
+PR:pn-fontconfig ?= "r1"
 PACKAGE_ARCH:pn-fontconfig ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-freetype ?= "r1"
@@ -290,7 +290,7 @@ PACKAGE_ARCH:pn-glibc-locale ?= "${OSS_LAYER_ARCH}"
 PR:pn-glibc-mtrace ?= "r0"
 PACKAGE_ARCH:pn-glibc-mtrace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-networking ?= "r2"
+PR:pn-glib-networking ?= "r0"
 PACKAGE_ARCH:pn-glib-networking ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssh ?= "r0"
@@ -734,7 +734,7 @@ PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssl-1.1.1l ?= "r0"
 PACKAGE_ARCH:pn-openssl-1.1.1l ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg ?= "r3"
+PR:pn-opkg ?= "r4"
 PACKAGE_ARCH:pn-opkg ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-opkg-arch-config ?= "r1"
@@ -929,7 +929,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r10"
+PR:pn-wpa-supplicant ?= "r11"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
