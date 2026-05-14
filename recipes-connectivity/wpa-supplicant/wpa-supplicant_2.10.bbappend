@@ -18,6 +18,4 @@ do_configure:append () {
    sed -i -- 's/#CONFIG_CTRL_IFACE_DBUS=y/\CONFIG_CTRL_IFACE_DBUS=y/' wpa_supplicant/.config
    sed -i -- 's/#CONFIG_CTRL_IFACE_DBUS_INTRO=y/\CONFIG_CTRL_IFACE_DBUS_INTRO=y/' wpa_supplicant/.config
  
-   #configuring SAE support in wpa_supplicant 2.10
-   echo "CONFIG_SAE=y" >> wpa_supplicant/.config
 }
