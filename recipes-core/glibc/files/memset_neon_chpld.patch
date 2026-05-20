@@ -1,0 +1,144 @@
+diff -Naur a/sysdeps/arm/memset.S b/sysdeps/arm/memset.S
+--- a/sysdeps/arm/memset.S	2026-02-04 14:53:01.545550010 +0000
++++ b/sysdeps/arm/memset.S	2026-02-12 13:03:16.527540694 +0000
+@@ -18,51 +18,103 @@
+ /* Thumb requires excessive IT insns here.  */
+ #define NO_THUMB
+ #include <sysdep.h>
++#include <arm-features.h>
+ 
+-	.text
+-	.syntax unified
++/*
++ * Data preload for architectures that support it (ARM V5TE and above)
++ */
++#if (!defined (__ARM_ARCH_2__) && !defined (__ARM_ARCH_3__) \
++     && !defined (__ARM_ARCH_3M__) && !defined (__ARM_ARCH_4__) \
++     && !defined (__ARM_ARCH_4T__) && !defined (__ARM_ARCH_5__) \
++     && !defined (__ARM_ARCH_5T__))
++#define PLD(code...)    code
++#else
++#define PLD(code...)
++#endif
++
++/*
++ * This can be used to enable code to cacheline align the source pointer.
++ * Experiments on tested architectures (StrongARM and XScale) didn't show
++ * this a worthwhile thing to do.  That might be different in the future.
++ */
++//#define CALGN(code...)        code
++#define CALGN(code...)
++
++/*
++ * Endian independent macros for shifting bytes within registers.
++ */
++#ifndef __ARMEB__
++#define PULL            lsr
++#define PUSH            lsl
++#else
++#define PULL            lsl
++#define PUSH            lsr
++#endif
++
++.syntax unified
++.fpu neon
++.text
++.align 4
++.global memset
++.type memset, %function
+ 
+ /* void *memset (dstpp, c, len) */
+ 
+ ENTRY(memset)
+-	mov	r3, r0
+-	cmp	r2, #8
+-	bcc	2f		@ less than 8 bytes to move
+ 
++memset:
++    mov     r3, r0              @ Save original pointer for return
++    cmp     r2, #64             @ Only use PLD and NEON for large blocks
++    blo     .L_small_copy       @ Fallback for small sizes
++
++    @ 1. Prepare NEON register with the fill value
++    uxtb    r1, r1              @ Ensure value is a single byte
++    vdup.8  q0, r1              @ Broadcast byte to 16-byte Q0
++    vmov    q1, q0              @ Duplicate across Q1 for 32-byte stores
++
++    @ 2. Align destination pointer to 64-byte boundary for max performance
++.L_align_to_64:
++    tst     r3, #63
++    beq     .L_pld_loop_prep
++    strb    r1, [r3], #1
++    subs    r2, r2, #1
++    bne     .L_align_to_64
++
++.L_pld_loop_prep:
++    @ Initial prefetch distance (typically 2-3 cache lines ahead)
++    pld     [r3, #64]
++    pld     [r3, #1024]
++
++    @ 3. Main Loop: Store 64 bytes per iteration with PLD
++.L_pld_loop:
++    cmp     r2, #128            @ Ensure enough bytes for another prefetch
++    blo     .L_neon_cleanup
++
++    pld     [r3, #192]          @ Preload 3 cache lines ahead
++    vst1.8  {q0, q1}, [r3]!     @ Store first 32 bytes
++    vst1.8  {q0, q1}, [r3]!     @ Store next 32 bytes
++    subs    r2, r2, #64
++    bhs     .L_pld_loop
++
++    @ 4. Cleanup remaining NEON-sized blocks (no more prefetching)
++.L_neon_cleanup:
++    cmp     r2, #16
++    blo     .L_small_copy
++    vst1.8  {q0}, [r3]!
++    subs    r2, r2, #16
++    bhs     .L_neon_cleanup
++
++    @ 5. Final byte-by-byte copy for remainder
++.L_small_copy:
++    cmp     r2, #0
++    beq     .L_done
+ 1:
+-	tst	r3, #3		@ aligned yet?
+-	strbne	r1, [r3], #1
+-	subne	r2, r2, #1
+-	bne	1b
+-
+-	and	r1, r1, #255	@ clear any sign bits
+-	orr	r1, r1, r1, lsl $8
+-	orr	r1, r1, r1, lsl $16
+-	mov	ip, r1
++    strb    r1, [r3], #1
++    subs    r2, r2, #1
++    bne     1b
+ 
+-1:
+-	subs	r2, r2, #8
+-	stmiacs	r3!, {r1, ip}	@ store up to 32 bytes per loop iteration
+-	subscs	r2, r2, #8
+-	stmiacs	r3!, {r1, ip}
+-	subscs	r2, r2, #8
+-	stmiacs	r3!, {r1, ip}
+-	subscs	r2, r2, #8
+-	stmiacs	r3!, {r1, ip}
+-	bcs	1b
+-
+-	and	r2, r2, #7
+-2:
+-	subs	r2, r2, #1	@ store up to 4 bytes per loop iteration
+-	strbcs	r1, [r3], #1
+-	subscs	r2, r2, #1
+-	strbcs	r1, [r3], #1
+-	subscs	r2, r2, #1
+-	strbcs	r1, [r3], #1
+-	subscs	r2, r2, #1
+-	strbcs	r1, [r3], #1
+-	bcs	2b
++.L_done:
++    bx      lr                  @ Return original r0
+ 
+-	DO_RET(lr)
+ END(memset)
+ libc_hidden_builtin_def (memset)
