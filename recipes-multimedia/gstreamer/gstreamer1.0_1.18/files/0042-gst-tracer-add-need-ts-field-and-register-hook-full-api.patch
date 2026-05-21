@@ -1,0 +1,164 @@
+From acc69305abe0e603a9fe413e4e9eded1cf240f66 Mon Sep 17 00:00:00 2001
+From: Douglas Adler <douglas_adler2@comcast.com>
+Date: Wed, 11 Feb 2026 16:30:57 +0000
+Subject: [PATCH] Change where clock_gettime gets called in the tracer hook
+
+Add need_ts field to GstTracerHook so each hook can declare whether it
+needs a timestamp. Only call GST_TRACER_TS (clock_gettime) if at least
+one registered hook requires it. Also add gst_tracing_register_hook_full
+API to allow callers to opt out of timestamp collection.
+
+Signed-off-by: Douglas Adler <douglas_adler2@comcast.com>
+---
+ gst/gsttracer.h      |  4 ++++
+ gst/gsttracerutils.c | 21 +++++++++++++++------
+ gst/gsttracerutils.h | 55 +++++++++++++++++++++++++++++++++++++++++++--------
+ 3 files changed, 66 insertions(+), 14 deletions(-)
+
+diff --git a/gst/gsttracer.h b/gst/gsttracer.h
+index a2a5ed6..024599d 100644
+--- a/gst/gsttracer.h
++++ b/gst/gsttracer.h
+@@ -67,6 +67,10 @@
+ void gst_tracing_register_hook (GstTracer *tracer, const gchar *detail,
+   GCallback func);
+ 
++GST_API
++void gst_tracing_register_hook_full (GstTracer *tracer, const gchar *detail,
++  GCallback func, gboolean need_ts);
++
+ /* tracing modules */
+ 
+ GST_API
+diff --git a/gst/gsttracerutils.c b/gst/gsttracerutils.c
+index a2a5ed6..024599d 100644
+--- a/gst/gsttracerutils.c
++++ b/gst/gsttracerutils.c
+@@ -163,13 +163,14 @@
+ }
+ 
+ static void
+-gst_tracing_register_hook_id (GstTracer * tracer, GQuark detail, GCallback func)
++gst_tracing_register_hook_id (GstTracer * tracer, GQuark detail, GCallback func, gboolean need_ts)
+ {
+   gpointer key = GINT_TO_POINTER (detail);
+   GList *list = g_hash_table_lookup (_priv_tracers, key);
+   GstTracerHook *hook = g_slice_new0 (GstTracerHook);
+   hook->tracer = gst_object_ref (tracer);
+   hook->func = func;
++  hook->need_ts = need_ts;
+ 
+   list = g_list_prepend (list, hook);
+   g_hash_table_replace (_priv_tracers, key, list);
+@@ -194,7 +194,26 @@
+ gst_tracing_register_hook (GstTracer * tracer, const gchar * detail,
+     GCallback func)
+ {
+-  gst_tracing_register_hook_id (tracer, g_quark_try_string (detail), func);
++  gst_tracing_register_hook_id (tracer, g_quark_try_string (detail), func, TRUE);
++}
++
++/**
++ * gst_tracing_register_hook_full:
++ * @tracer: the tracer
++ * @detail: the detailed hook
++ * @func: (scope async): the callback
++ * @need_ts: True if a timestamp is needed
++ *
++ * Register @func to be called when the trace hook @detail is getting invoked.
++ * Use %NULL for @detail to register to all hooks.
++ *
++ * Since: 1.18
++ */
++void
++gst_tracing_register_hook_full (GstTracer * tracer, const gchar * detail,
++    GCallback func, gboolean need_ts)
++{
++  gst_tracing_register_hook_id (tracer, g_quark_try_string (detail), func, need_ts);
+ }
+ 
+ /**
+diff --git a/gst/gsttracerutils.h b/gst/gsttracerutils.h
+index a2a5ed6..024599d 100644
+--- a/gst/gsttracerutils.h
++++ b/gst/gsttracerutils.h
+@@ -91,6 +91,7 @@
+ typedef struct {
+   GObject *tracer;
+   GCallback func;
++  gboolean need_ts;
+ } GstTracerHook;
+ 
+ extern gboolean _priv_tracer_enabled;
+@@ -104,24 +105,52 @@
+ 
+ /* tracing hooks */
+ 
++/* Dont call GST_TRACER_TS unless the hook is registered */
++#define GST_TRACER_CHECK_NEED_TS(list, need_ts)                     \
++do {                                                                \
++    GList *__n;                                                     \
++    for (__n = list; __n; __n = __n->next) {                        \
++      if (((GstTracerHook *)(__n->data))->need_ts) {                \
++        need_ts = TRUE;                                             \
++        break;                                                      \
++      }                                                             \
++    }                                                               \
++  } while(0)
++
+ #define GST_TRACER_ARGS h->tracer, ts
+-#define GST_TRACER_DISPATCH(key,type,args) G_STMT_START{ \
+-  if (GST_TRACER_IS_ENABLED) {                                         \
+-    GstClockTime ts = GST_TRACER_TS;                                   \
+-    GList *__l, *__n;                                                  \
+-    GstTracerHook *h;                                                  \
+-    __l = g_hash_table_lookup (_priv_tracers, GINT_TO_POINTER (key));  \
+-    for (__n = __l; __n; __n = g_list_next (__n)) {                    \
+-      h = (GstTracerHook *) __n->data;                                 \
+-      ((type)(h->func)) args;                                          \
+-    }                                                                  \
+-    __l = g_hash_table_lookup (_priv_tracers, NULL);                   \
+-    for (__n = __l; __n; __n = g_list_next (__n)) {                    \
+-      h = (GstTracerHook *) __n->data;                                 \
+-      ((type)(h->func)) args;                                          \
+-    }                                                                  \
+-  }                                                                    \
+-}G_STMT_END
++#define GST_TRACER_DISPATCH(key, type, args) G_STMT_START {        \
++    if (G_UNLIKELY (!GST_TRACER_IS_ENABLED)) {                     \
++      /* tracing disabled: no-op */                                \
++    } else {                                                       \
++      GList *__l1 = g_hash_table_lookup (_priv_tracers,            \
++                                         GINT_TO_POINTER (key));   \
++      GList *__l2 = g_hash_table_lookup (_priv_tracers, NULL);     \
++      if (__l1 || __l2) {                                          \
++        gboolean need_ts = FALSE;                                  \
++        /* Walk the lists, check need_ts */                        \
++        if (__l1) {                                                \
++          GST_TRACER_CHECK_NEED_TS(__l1, need_ts);                 \
++        }                                                          \
++        if (need_ts == FALSE && __l2) {                            \
++          GST_TRACER_CHECK_NEED_TS(__l2, need_ts);                 \
++        }                                                          \
++        GstClockTime ts = GST_CLOCK_TIME_NONE;                     \
++        if(need_ts) {                                              \
++          ts = GST_TRACER_TS;                                      \
++        }                                                          \
++        GList *__n;                                                \
++        GstTracerHook *h;                                          \
++        for (__n = __l1; __n; __n = __n->next) {                   \
++          h = (GstTracerHook *) __n->data;                         \
++          ((type) (h->func)) args;                                 \
++        }                                                          \
++        for (__n = __l2; __n; __n = __n->next) {                   \
++          h = (GstTracerHook *) __n->data;                         \
++          ((type) (h->func)) args;                                 \
++        }                                                          \
++      }                                                            \
++    }                                                              \
++  } G_STMT_END
+ 
+ /**
+  * GstTracerHookPadPushPre:
+-- 
+2.34.1
