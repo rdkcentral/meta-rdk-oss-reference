@@ -19,7 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.12.0"
+OSS_LAYER_VERSION = "4.13.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -36,6 +36,8 @@ PREFERRED_VERSION_civetweb = "1.10+git%"
 PREFERRED_VERSION_wpa-supplicant = "2.10"
 PREFERRED_VERSION_dnsmasq = "2.90"
 PREFERRED_VERSION_msgpack-c = "4.0.0%"
+PREFERRED_VERSION_gupnp ?= "0.20.10"
+PREFERRED_VERSION_iw ?= "4.7"
 
 #Fix the version diff against stable2
 PREFERRED_VERSION_libstd-rs = "1.82.0"
@@ -150,7 +152,7 @@ PACKAGE_ARCH:pn-breakpad-wrapper ?= "${OSS_LAYER_ARCH}"
 PR:pn-brotli ?= "r0"
 PACKAGE_ARCH:pn-brotli ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-busybox ?= "r2"
+PR:pn-busybox ?= "r3"
 PACKAGE_ARCH:pn-busybox ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-busybox ?= "r1"
@@ -168,7 +170,7 @@ PACKAGE_ARCH:pn-c-ares ?= "${OSS_LAYER_ARCH}"
 PR:pn-civetweb ?= "r0"
 PACKAGE_ARCH:pn-civetweb ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-cjson ?= "r0"
+PR:pn-cjson ?= "r1"
 PACKAGE_ARCH:pn-cjson ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-coreutils ?= "r0"
@@ -186,7 +188,7 @@ PACKAGE_ARCH:pn-ctemplate ?= "${OSS_LAYER_ARCH}"
 PR:pn-cunit ?= "r0"
 PACKAGE_ARCH:pn-cunit ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-curl ?= "r2"
+PR:pn-curl ?= "r3"
 PACKAGE_ARCH:pn-curl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-db ?= "r1"
@@ -243,7 +245,7 @@ PACKAGE_ARCH:pn-flex ?= "${OSS_LAYER_ARCH}"
 PR:pn-fmt ?= "r0"
 PACKAGE_ARCH:pn-fmt ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-fontconfig ?= "r0"
+PR:pn-fontconfig ?= "r1"
 PACKAGE_ARCH:pn-fontconfig ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-freetype ?= "r1"
@@ -276,7 +278,7 @@ PACKAGE_ARCH:pn-gettext ?= "${OSS_LAYER_ARCH}"
 PR:pn-gflags ?= "r0"
 PACKAGE_ARCH:pn-gflags ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-2.0 ?= "r1"
+PR:pn-glib-2.0 ?= "r0"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc ?= "r1"
@@ -288,7 +290,7 @@ PACKAGE_ARCH:pn-glibc-locale ?= "${OSS_LAYER_ARCH}"
 PR:pn-glibc-mtrace ?= "r0"
 PACKAGE_ARCH:pn-glibc-mtrace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glib-networking ?= "r2"
+PR:pn-glib-networking ?= "r0"
 PACKAGE_ARCH:pn-glib-networking ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssh ?= "r0"
@@ -314,6 +316,9 @@ PACKAGE_ARCH:pn-grpc ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gssdp ?= "r0"
 PACKAGE_ARCH:pn-gssdp ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-gssdp16 ?= "r0"
+PACKAGE_ARCH:pn-gssdp16 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gupnp ?= "r1"
 PACKAGE_ARCH:pn-gupnp ?= "${OSS_LAYER_ARCH}"
@@ -456,7 +461,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r4"
+PR:pn-libmanette ?= "r5"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -612,7 +617,7 @@ PACKAGE_ARCH:pn-libxcrypt ?= "${OSS_LAYER_ARCH}"
 PR:pn-libxkbcommon ?= "r0"
 PACKAGE_ARCH:pn-libxkbcommon ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libxml2 ?= "r1"
+PR:pn-libxml2 ?= "r2"
 PACKAGE_ARCH:pn-libxml2 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libxslt ?= "r1"
@@ -702,7 +707,7 @@ PACKAGE_ARCH:pn-netbase ?= "${OSS_LAYER_ARCH}"
 PR:pn-nettle ?= "r1"
 PACKAGE_ARCH:pn-nettle ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager ?= "r11"
+PR:pn-networkmanager ?= "r12"
 PACKAGE_ARCH:pn-networkmanager ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 ?= "r1"
@@ -723,13 +728,13 @@ PACKAGE_ARCH:pn-openjpeg ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-openssl ?= "r2"
+PR:pn-openssl ?= "r3"
 PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssl-1.1.1l ?= "r0"
 PACKAGE_ARCH:pn-openssl-1.1.1l ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-opkg ?= "r3"
+PR:pn-opkg ?= "r4"
 PACKAGE_ARCH:pn-opkg ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-opkg-arch-config ?= "r1"
@@ -924,7 +929,7 @@ PACKAGE_ARCH:pn-wireless-tools ?= "${OSS_LAYER_ARCH}"
 PR:pn-woff2 ?= "r0"
 PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-wpa-supplicant ?= "r10"
+PR:pn-wpa-supplicant ?= "r11"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-xkeyboard-config ?= "r0"
