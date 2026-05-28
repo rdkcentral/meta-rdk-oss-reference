@@ -65,8 +65,8 @@ index 9c05669864..c3f049981e 100644
 -	cmp	r2, #8
 -	bcc	2f		@ less than 8 bytes to move
 +    mov     r3, r0              @ Save original pointer for return
-+    cmp     r2, #64             @ Only use PLD and NEON for large blocks
-+    blo     .L_small_copy       @ Fallback for small sizes
++    cmp     r2, #128             @ Only use PLD and NEON for large blocks
++    bls     .L_small_copy       @ Fallback for small sizes
 +
 +    @ 1. Prepare NEON register with the fill value
 +    uxtb    r1, r1              @ Ensure value is a single byte
