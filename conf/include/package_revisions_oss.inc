@@ -65,8 +65,6 @@ PREFERRED_VERSION_sed = "4.1.2"
 
 PREFERRED_VERSION_systemd = "1:250%"
 
-PREFERRED_VERSION_systemd = "1:250%"
-
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
 MULTILIB_VARIANTS:pn-alsa-ucm-conf = " multilib "
