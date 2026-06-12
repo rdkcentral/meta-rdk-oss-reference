@@ -9,7 +9,7 @@ DEPENDS += " mbedtls"
 SRCREV = "978b733462e41efd5db72bc9974cb3b0d1d5f6fa"
 PV = "1.6.0+git${SRCPV}"
 
-SRC_URI = "git://github.com/meduketto/iksemel.git;protocol=https"
+SRC_URI = "git://github.com/meduketto/iksemel.git;protocol=https;nobranch=1"
 S = "${WORKDIR}/git"
 
 SRC_URI += "file://0001-Stream-TLS-Add-mbedTLS-support.patch"

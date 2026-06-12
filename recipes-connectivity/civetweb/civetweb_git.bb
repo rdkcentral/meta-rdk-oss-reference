@@ -6,7 +6,7 @@ HOMEPAGE = "https://github.com/civetweb/civetweb"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=da079d81be91ff1d1ca56dcd751f897f"
 
-SRC_URI = "git://github.com/civetweb/civetweb.git"
+SRC_URI = "git://github.com/civetweb/civetweb.git;nobranch=1"
 SRC_URI += "file://0001-civetweb-build-lib-only.patch"
 SRCREV = "0f1b43536d97d9311c73b658b86a9d44be9e5e82"
 PV = "1.10+git+${SRCPV}"

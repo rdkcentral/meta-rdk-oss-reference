@@ -14,7 +14,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=fa2a23dd1dc6c139f35105379d76df2b"
 #LIC_FILES_CHKSUM = "file://LICENSE;md5=5598b558077db8f7f706e1fd1ac4253b"
 
 
-SRC_URI = "git://github.com/open-source-parsers/jsoncpp.git \
+SRC_URI = "git://github.com/open-source-parsers/jsoncpp.git;nobranch=1 \
            file://0001-Build-Issue-Fix-snprintf.patch \
 "
 
