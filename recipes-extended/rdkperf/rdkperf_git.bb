@@ -25,9 +25,9 @@ USE_RDKPERF_SERVICE = "${@bb.utils.contains('DISTRO_FEATURES', 'rdkperf_service'
 # Using the main branch
 SRC_URI = "git://github.com/rdkcentral/rdkperf;protocol=git;branch=main"
 
-SRCREV = "d802d561c4a2a4456403d572da75e73032d48d91"
+SRCREV = "6eeec49b94a97c70da2be491ef4a40e211599535"
 
-PV = "1.0.0+git${SRCPV}"
+PV = "1.0.1+git${SRCPV}"
 PR ?= "r0"
 S = "${UNPACKDIR}/${PN}-${PV}"
 
