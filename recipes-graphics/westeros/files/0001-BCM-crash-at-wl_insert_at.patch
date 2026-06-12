@@ -1,0 +1,70 @@
+From a5c6142f7db721c7815f959898965337322a48f3 Mon Sep 17 00:00:00 2001
+From: tsharm493 <tanuj_sharma@comcast.com>
+Date: Fri, 12 Jun 2026 06:23:23 +0000
+Subject: [PATCH] BCM crash at wl_insert_at
+
+---
+ westeros-sink/brcm/westeros-sink-soc.c | 6 +++++-
+ westeros-sink/brcm/westeros-sink-soc.h | 1 +
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/westeros-sink/brcm/westeros-sink-soc.c b/westeros-sink/brcm/westeros-sink-soc.c
+index a368eff5..6e0c96af 100644
+--- a/westeros-sink/brcm/westeros-sink-soc.c
++++ b/westeros-sink/brcm/westeros-sink-soc.c
+@@ -828,6 +828,7 @@ gboolean gst_westeros_sink_soc_init( GstWesterosSink *sink )
+    sink->soc.latencyTarget= DEFAULT_LATENCY_TARGET;
+    sink->soc.connectId= 0;
+    sink->soc.quitCaptureThread= TRUE;
++   g_mutex_init( &sink->soc.captureStopMutex );
+    sink->soc.captureThread= NULL;
+    sink->soc.captureCount= 0;
+    sink->soc.frameCount= 0;
+@@ -972,6 +973,7 @@ gboolean gst_westeros_sink_soc_init( GstWesterosSink *sink )
+ 
+ void gst_westeros_sink_soc_term( GstWesterosSink *sink )
+ {
++   g_mutex_clear( &sink->soc.captureStopMutex );
+    NxClient_Uninit(); 
+ }
+ 
+@@ -2018,6 +2020,7 @@ void gst_westeros_sink_soc_eos_event( GstWesterosSink *sink )
+ 
+ static void sinkSocStopVideo( GstWesterosSink *sink )
+ {
++   g_mutex_lock( &sink->soc.captureStopMutex );
+    LOCK( sink );
+    if ( sink->soc.captureThread )
+    {
+@@ -2036,6 +2039,7 @@ static void sinkSocStopVideo( GstWesterosSink *sink )
+       g_thread_join( captureThread );
+       LOCK( sink );
+    }
++   g_mutex_unlock( &sink->soc.captureStopMutex );
+ 
+    if ( sink->soc.sb )
+    {
+@@ -2585,7 +2589,7 @@ static gpointer captureThread(gpointer data)
+       if ( sink->display && sink->queue && wl_display_dispatch_queue_pending(sink->display, sink->queue) == 0 )
+       {
+          wl_display_flush(sink->display);
+-         if ( !eosDetected )
++         if ( !eosDetected && !sink->soc.quitCaptureThread)
+          {
+             wl_display_roundtrip_queue(sink->display,sink->queue);
+          }
+diff --git a/westeros-sink/brcm/westeros-sink-soc.h b/westeros-sink/brcm/westeros-sink-soc.h
+index b33450c1..7a6dc209 100644
+--- a/westeros-sink/brcm/westeros-sink-soc.h
++++ b/westeros-sink/brcm/westeros-sink-soc.h
+@@ -76,6 +76,7 @@ struct _GstWesterosSinkSoc
+    int codec;
+    gboolean quitCaptureThread;
+    GThread *captureThread;
++   GMutex captureStopMutex;
+    long long startTime;
+    int captureCount;
+    int frameCount;
+-- 
+2.44.4
+
