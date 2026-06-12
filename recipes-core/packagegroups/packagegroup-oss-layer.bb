@@ -235,6 +235,7 @@ RDEPENDS:${PN} += "\
      xmlsec1 \
      yajl \
      zstd \
+     audit \
      yaml-cpp \
 "
 
