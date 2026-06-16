@@ -8,8 +8,6 @@ ConditionPathExists=/etc/audit/audit.rules
 Type=oneshot
 ExecStart=/sbin/auditctl -R /etc/audit/audit.rules
 RemainAfterExit=yes
-Restart=on-failure
-RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
