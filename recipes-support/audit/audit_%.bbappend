@@ -5,6 +5,8 @@ SRC_URI += " \
     file://audit-rules-reload.service \
 "
 
+inherit systemd
+
 do_install:append() {
     install -d ${D}${sysconfdir}/audit
     touch ${D}${sysconfdir}/audit/audit.rules
@@ -12,9 +14,10 @@ do_install:append() {
 
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/audit-rules-reload.service \
-        ${D}${systemd_system_unitdir}/
+        ${D}${systemd_system_unitdir}/audit-rules-reload.service
 }
 
-SYSTEMD_SERVICE:${PN} += "audit-rules-reload.service"
+FILES:${PN} += "${systemd_system_unitdir}/audit-rules-reload.service"
 
-inherit systemd
+SYSTEMD_SERVICE:${PN} += "audit-rules-reload.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
