@@ -1,0 +1,12 @@
+[Unit]
+Description=Reload audit rules after auditd startup
+After=auditd.service
+Requires=auditd.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/auditctl -R /etc/audit/audit.rules
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
