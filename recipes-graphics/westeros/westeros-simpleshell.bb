@@ -2,15 +2,9 @@ SUMMARY = "This recipe compiles the westeros compositor simple-shell component"
 
 include westeros.inc
 
-S = "${WORKDIR}/git/simpleshell"
-
 SRC_URI = "${WESTEROS_URI}"
 
-PV = "1.0+gitr${SRCPV}"
-# Tip of westeros master as of Jan 12 2026 Westeros 2.0.0
-SRCREV_westeros = "0228f9e85fd0c44b85cf4af532c627dbf3d9b518"
-LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=8fb65319802b0c15fc9e0835350ffa02"
+S = "${WORKDIR}/git/simpleshell"
 
 DEPENDS = "wayland glib-2.0 wayland-native"
 

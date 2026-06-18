@@ -11,7 +11,7 @@ WESTEROS_SINK_URI ?= "git://github.com/rdkcentral/westeros-sink;protocol=https;n
 SRCREV_westeros-sink ?= "2.1.1"
 
 #For essos
-ESSOS_URI ?= "git://github.com/rdkcentral/essos;protocol=https;nobranch=1;name=essos"
+ESSOS_URI ?= "git://github.com/rdkcentral/essos;protocol=https;nobranch=1"
 SRCREV_essos ?= "2.1.1"
 
 LICENSE_LOCATION ?= "${S}/LICENSE"
