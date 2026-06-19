@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:append := "${THISDIR}/files:"
 
 SRC_URI:append = " file://breakpad_disable_format_macros_check.patch "
-SRC_URI:append:lib32 = " file://breakpad_mixedmode_fpregs_git.patch "
+SRC_URI:append:virtclass-multilib-lib32 = " file://breakpad_mixedmode_fpregs_git.patch "
 
 # From meta-rdk-comcast/recipes-devtools/breakpad/breakpad_git.bbappend
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
