@@ -347,6 +347,8 @@ RDEPENDS:${PN} += "\
      libgcc-initial \
      libstdc++ \
      localedef \
+     gcc \
+     g++ \
 "
 
 # Following packages are currently excluded
