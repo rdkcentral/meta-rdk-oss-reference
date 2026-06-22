@@ -2,9 +2,8 @@ FILESEXTRAPATHS:append := "${THISDIR}/files:"
 
 SRC_URI:append = " file://breakpad_disable_format_macros_check.patch "
 
-#SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'mixmode', 'file://breakpad_mixedmode_fpregs_git.patch', '', d)} "
-#Apply this flag for multlib platforms as mixmode feature is not properly maintained in the RDK-E
-SRC_URI:append:lib32 = " file://breakpad_mixedmode_fpregs_git.patch "
+# Apply this patch on lib32 multilib builds (mixed-mode 32-bit on 64-bit kernels). DISTRO_FEATURES[mixmode] isn't consistently set in RDK-E.
+SRC_URI:append:virtclass-multilib-lib32 = " file://breakpad_mixedmode_fpregs_git.patch "
 
 
 # From meta-rdk-comcast/recipes-devtools/breakpad/breakpad_git.bbappend
