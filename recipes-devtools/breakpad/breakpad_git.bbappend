@@ -2,7 +2,7 @@ FILESEXTRAPATHS:append := "${THISDIR}/files:"
 
 SRC_URI:append = " file://breakpad_disable_format_macros_check.patch "
 
-# Apply this patch on lib32 multilib builds (mixed-mode 32-bit on 64-bit kernels). DISTRO_FEATURES[mixmode] isn't consistently set in RDK-E.
+# Apply this patch on lib32 multilib builds (mixed-mode 32-bit on 64-bit kernels). DISTRO_FEATURES 'mixmode' isn't consistently set in RDK-E.
 SRC_URI:append:virtclass-multilib-lib32 = " file://breakpad_mixedmode_fpregs_git.patch "
 
 
