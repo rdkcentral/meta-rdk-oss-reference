@@ -334,6 +334,7 @@ RDEPENDS:${PN} += "\
      westeros-simpleshell \
      wireless-tools \
      wpa-supplicant \
+     libbinder \
      zlib \
 "
 

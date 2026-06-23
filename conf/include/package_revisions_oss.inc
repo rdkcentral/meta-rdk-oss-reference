@@ -925,6 +925,9 @@ PACKAGE_ARCH:pn-woff2 ?= "${OSS_LAYER_ARCH}"
 PR:pn-wpa-supplicant ?= "r10"
 PACKAGE_ARCH:pn-wpa-supplicant ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libbinder ?= "r0"
+PACKAGE_ARCH:pn-libbinder ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-xkeyboard-config ?= "r0"
 PACKAGE_ARCH:pn-xkeyboard-config ?= "${OSS_LAYER_ARCH}"
 
