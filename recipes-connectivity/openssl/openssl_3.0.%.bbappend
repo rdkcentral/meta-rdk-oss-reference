@@ -246,3 +246,6 @@ RDEPENDS:${PN}-ptest += " \
     perl-module-cwd \
     perl-module-exporter \
 "
+
+SRC_URI:append = " file://CVE-2025-69420_openssl_3.0.15_fix.patch \
+"
