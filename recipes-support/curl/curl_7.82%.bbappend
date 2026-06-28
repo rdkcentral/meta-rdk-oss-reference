@@ -79,3 +79,6 @@ do_install_ptest() {
 FILES:${PN}-ptest += "${PTEST_PATH}/tests/*"
 
 RDEPENDS:${PN}-ptest += "bash"
+
+SRC_URI:append = " file://CVE-2025-15079_curl_7.82.0_fix.patch \
+"
