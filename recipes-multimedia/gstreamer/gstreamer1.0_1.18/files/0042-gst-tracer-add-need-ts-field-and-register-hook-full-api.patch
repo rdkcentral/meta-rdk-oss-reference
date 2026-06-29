@@ -63,7 +63,7 @@ index a2a5ed6..024599d 100644
 + * @tracer: the tracer
 + * @detail: the detailed hook
 + * @func: (scope async): the callback
-+ * @need_ts: True if a timestamp is needed
++ * @need_ts: %TRUE if a timestamp is needed; if %FALSE, @func will receive %GST_CLOCK_TIME_NONE
 + *
 + * Register @func to be called when the trace hook @detail is getting invoked.
 + * Use %NULL for @detail to register to all hooks.
