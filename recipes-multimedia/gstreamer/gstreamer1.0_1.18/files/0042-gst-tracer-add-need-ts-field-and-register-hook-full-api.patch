@@ -94,9 +94,9 @@ index a2a5ed6..024599d 100644
  
  /* tracing hooks */
  
-+/* Dont call GST_TRACER_TS unless the hook is registered */
++/* Don't call GST_TRACER_TS unless at least one registered hook needs a timestamp */
 +#define GST_TRACER_CHECK_NEED_TS(list, need_ts)                     \
-+do {                                                                \
++  do {                                                              \
 +    GList *__n;                                                     \
 +    for (__n = list; __n; __n = __n->next) {                        \
 +      if (((GstTracerHook *)(__n->data))->need_ts) {                \
@@ -104,7 +104,7 @@ index a2a5ed6..024599d 100644
 +        break;                                                      \
 +      }                                                             \
 +    }                                                               \
-+  } while(0)
++  } while (0)
 +
  #define GST_TRACER_ARGS h->tracer, ts
 -#define GST_TRACER_DISPATCH(key,type,args) G_STMT_START{ \
