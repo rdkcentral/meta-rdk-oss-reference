@@ -12,6 +12,11 @@ DEPENDS:append:x86:class-target    = " nasm-native"
 
 SRC_URI = "https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-2.0.4.tar.gz"
 SRC_URI:append = " file://0001-libjpeg-turbo-fix-package_qa-error.patch "
+# wrynose migration: patch context doesn't match libjpeg-turbo 2.0.4 (RPATH already handled differently)
+SRC_URI:remove = "file://0001-libjpeg-turbo-fix-package_qa-error.patch"
+INSANE_SKIP:${PN}:append:wrynose = " useless-rpaths"
+# wrynose: jpeg-tools binaries also have redundant RPATH /usr/lib
+INSANE_SKIP:jpeg-tools:append:wrynose = " useless-rpaths"
 
 UPSTREAM_CHECK_URI = "http://sourceforge.net/projects/libjpeg-turbo/files/"
 UPSTREAM_CHECK_REGEX = "/libjpeg-turbo/files/(?P<pver>(\d+[\.\-_]*)+)/"
@@ -21,11 +26,11 @@ SRC_URI[sha256sum] = "33dd8547efd5543639e890efbf2ef52d5a21df81faf41bb940657af916
 
 do_unpack() {
     tar -xf ${DL_DIR}/libjpeg-turbo-2.0.4.tar.gz -C ${WORKDIR}
-    rm -rf ${WORKDIR}/libjpeg
-    mv ${WORKDIR}/libjpeg-turbo-2.0.4/ ${WORKDIR}/libjpeg
+    rm -rf ${UNPACKDIR}/libjpeg
+    mv ${WORKDIR}/libjpeg-turbo-2.0.4/ ${UNPACKDIR}/libjpeg
 }
 
-S = "${WORKDIR}/libjpeg/"
+S = "${UNPACKDIR}/libjpeg/"
 
 PE= "1"
 
@@ -67,4 +72,4 @@ FILES:${PN} += "${libdir}/*.so"
 
 BBCLASSEXTEND = "native nativesdk"
 
-EXTRA_OECMAKE:append = "-DWITH_TURBOJPEG=OFF -DENABLE_SHARED=ON "
+EXTRA_OECMAKE:append = "-DWITH_TURBOJPEG=OFF -DENABLE_SHARED=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 "

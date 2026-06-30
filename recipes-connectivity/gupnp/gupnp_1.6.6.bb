@@ -3,7 +3,9 @@ DESCRIPTION = "GUPnP is an elegant, object-oriented open source framework for cr
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-DEPENDS = "e2fsprogs gssdp16 libsoup-3.0 libxml2"
+# wrynose: use meta-oe's gssdp (1.6.4) instead of our gssdp16 (1.6.3); both are gssdp-1.6 API.
+# gssdp16 conflicts with gssdp in do_packagedata (both install libgssdp-1.6-0). gssdp16 is BBMASKed.
+DEPENDS = "e2fsprogs gssdp libsoup-3.0 libxml2"
 
 inherit gnomebase pkgconfig vala gobject-introspection meson
 

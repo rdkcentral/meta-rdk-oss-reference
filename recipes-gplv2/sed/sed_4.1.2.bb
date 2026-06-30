@@ -1,6 +1,6 @@
 SUMMARY = "Stream EDitor (text filtering utility)"
 HOMEPAGE = "http://www.gnu.org/software/sed/"
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f \
                     file://sed/sed.h;beginline=1;endline=17;md5=e00ffd1837f298439a214fd197f6a407"
 SECTION = "console/utils"
@@ -19,7 +19,7 @@ SRC_URI[sha256sum] = "638e837ba765d5da0a30c98b57c2953cecea96827882f594612acace93
 inherit autotools texinfo update-alternatives gettext
 
 do_configure:prepend () {
-	cp ${WORKDIR}/Makevars ${S}/po/
+	cp ${UNPACKDIR}/Makevars ${S}/po/
 }
 
 do_install () {
@@ -100,3 +100,6 @@ do_install_ptest() {
     # Substitute PTEST_PATH in run-ptest script
     sed -i -e 's|@PTEST_PATH@|${PTEST_PATH}|g' ${D}${PTEST_PATH}/run-ptest
 }
+
+# wrynose-152+164: GCC 15 implicit function declaration + return mismatch + int conversion
+CFLAGS:append:wrynose = " -Wno-implicit-function-declaration -Wno-error=return-mismatch -Wno-int-conversion"

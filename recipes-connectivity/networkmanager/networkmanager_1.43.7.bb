@@ -41,7 +41,7 @@ SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497b
 
 #VOLATILE_BINDS:append = "/var/run/NetworkManager/ /etc/NetworkManager/\n"
 
-S = "${WORKDIR}/NetworkManager-${PV}"
+S = "${UNPACKDIR}/NetworkManager-${PV}"
 # ['auto', 'symlink', 'file', 'netconfig', 'resolvconf']
 NETWORKMANAGER_DNS_RC_MANAGER_DEFAULT ??= "auto"
 # ['dhcpcanon', 'dhclient', 'dhcpcd', 'internal', 'nettools']
@@ -71,11 +71,12 @@ CFLAGS:append:libc-musl = " \
 do_compile:prepend() {
     export GI_TYPELIB_PATH="${B}}/src/libnm-client-impl${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
 }
-PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli vala concheck \
+PACKAGECONFIG ??= "readline nss ifupdown dnsmasq nmcli concheck \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d), d)} \
     ${@bb.utils.filter('DISTRO_FEATURES', 'wifi polkit', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'selinux audit', '', d)} \
 "
+# wrynose: PACKAGECONFIG[vala] was commented out; removed 'vala' from default list to avoid invalid-packageconfig QA error
 #inherit ${@bb.utils.contains('PACKAGECONFIG', 'vala', 'vala', '', d)}
 PACKAGECONFIG[systemd] = "\
     -Dsystemdsystemunitdir=${systemd_unitdir}/system -Dsession_tracking=systemd,\
@@ -253,12 +254,12 @@ do_install:append() {
     install -d ${D}${sysconfdir}/NetworkManager/conf.d/
     install -d ${D}${sysconfdir}/NetworkManager/dnsmasq.d/
     install -d ${D}${datadir}/dbus-1/system-services
-    install ${WORKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
-    install ${WORKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
-    install -m 0755 ${WORKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
-    install ${WORKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
+    install ${UNPACKDIR}/NetworkManager.conf ${D}${sysconfdir}/NetworkManager/NetworkManager.conf
+    install ${UNPACKDIR}/95-logging.conf ${D}${sysconfdir}/NetworkManager/conf.d/95-logging.conf
+    install -m 0755 ${UNPACKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
+    install ${UNPACKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
 
-    install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
+    install -Dm 0755 ${UNPACKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
     rm -rf ${D}/run ${D}${localstatedir}/run
     if ${@bb.utils.contains('PACKAGECONFIG','man-resolv-conf','true','false',d)}; then

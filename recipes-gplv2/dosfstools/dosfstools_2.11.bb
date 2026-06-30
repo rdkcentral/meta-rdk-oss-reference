@@ -5,7 +5,7 @@ SUMMARY = "DOS FAT Filesystem Utilities"
 HOMEPAGE = "https://github.com/dosfstools/dosfstools"
 
 SECTION = "base"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://mkdosfs/COPYING;md5=cbe67f08d6883bff587f615f0cc81aa8"
 PR = "r5"
 
@@ -26,6 +26,8 @@ SRC_URI[md5sum] = "407d405ade410f7597d364ab5dc8c9f6"
 SRC_URI[sha256sum] = "0eac6d12388b3d9ed78684529c1b0d9346fa2abbe406c4d4a3eb5a023c98a484"
 
 CFLAGS += "-D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+# wrynose/gcc-15: dosfstools 2.11 uses K&R C (implicit toupper, return mismatches)
+CFLAGS:append:wrynose = " -std=gnu89"
 
 EXTRA_OEMAKE = "CC='${CC}' CFLAGS='${CFLAGS}' LDFLAGS='${LDFLAGS}'"
 

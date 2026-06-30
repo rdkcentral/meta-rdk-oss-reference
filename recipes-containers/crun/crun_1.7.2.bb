@@ -15,8 +15,6 @@ SRCREV = "0356bf4aff9a133d655dc13b1d9ac9424706cac4"
 DEPENDS += "yajl libseccomp libtool libcap"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'RDKTV_CHECKPOINT_RESTORE', ' criu', '', d)}"
 
-S = "${WORKDIR}/git"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 inherit autotools-brokensep pkgconfig
@@ -28,3 +26,5 @@ do_configure:prepend () {
 
 # Don't need systemd integration, so disable it to remove dependency on libsystemd
 EXTRA_OECONF = "--disable-systemd"
+# wrynose/gcc-15: tests/tests_libcrun_fuzzer.c passes incompatible pointer to signal()
+CFLAGS:append:wrynose = " -Wno-incompatible-pointer-types"

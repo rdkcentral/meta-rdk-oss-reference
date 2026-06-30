@@ -16,3 +16,5 @@ SRC_URI[md5sum] = "237a8767c990b43ae2c89895c2dbc062"
 SRC_URI[sha256sum] = "3fa9daf85ebf35068f090ce51283ddeeb3c75eb5bc70b1a4a7cb05868bfe06a4"
 
 PARALLEL_MAKE = ""
+# wrynose: bashbug script embeds TMPDIR path - false positive for old bash
+INSANE_SKIP:bash += "buildpaths"
