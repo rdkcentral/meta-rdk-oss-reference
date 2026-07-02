@@ -6,6 +6,7 @@ SRC_URI:append:class-target = " \
 "
 
 SRC_URI:append = " file://multi_thread_installer.patch"
+SRC_URI:append += " file://opkg-0.4.2-001-rdk-45953.patch"
 
 # libsolv is not compatible with libopkg-api in v0.4.2
 EXTRA_OECONF:remove:class-target = "--with-libsolv"
