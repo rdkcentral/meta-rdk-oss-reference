@@ -1,6 +1,7 @@
 From 793c69260ff49539a884c13d0a1b65236f6f4c27 Mon Sep 17 00:00:00 2001
 From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
 Date: Thu, 15 May 2025 13:49:13 +0000
+Upstream-Status: Pending
 Subject: [PATCH] nintendo joycon L/R detect
 
 ---

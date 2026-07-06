@@ -1,6 +1,7 @@
 Date: Aug 21, 2018
 From: Vineet Seth <vineet_seth@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Merge mutiple patches for similar feature
 Signed-off-by: Vineet Seth <vineet_seth@comcast.com>
 Index: dnsmasq-2.83/src/arp.c

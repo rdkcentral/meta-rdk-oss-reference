@@ -9,6 +9,7 @@ Fixes: #2687
 Fix the problem by keeping a strong ref to that `GCancellable` around
 until the `ConnectionAttempt` is finished being destroyed.
 Source: https://github.com/GNOME/glib/commit/e2639ce56ebf83f422e2534f034faf9615515629
+Upstream-Status: Pending
 Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
 ---
  gio/gsocketclient.c | 13 +++++++++----

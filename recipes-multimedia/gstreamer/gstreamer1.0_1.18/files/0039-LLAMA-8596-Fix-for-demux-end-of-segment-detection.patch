@@ -3,6 +3,7 @@ From: Jack Howgate <jack.howgate@sky.uk>
 Subject: [PATCH] Convert dts and segment.stop values to the same timescale for
  end of segment check in order to prevent unintended early EOS
 Source: COMCAST 21e4ee67d7fe67f6afc992196fa93855df5125a9 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Jack Howgate <jack.howgate@sky.uk>
 
 ---

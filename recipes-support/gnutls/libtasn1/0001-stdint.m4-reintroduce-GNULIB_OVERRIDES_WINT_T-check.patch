@@ -4,6 +4,7 @@ Subject: [PATCH] stdint.m4: reintroduce GNULIB_OVERRIDES_WINT_T check
 Partially revert the gnulib commit: 5a400b3f5a1f5483dbfd75d38bdb7080218a063b
 to fix the build error with musl library.
 Source: COMCAST b17dbb8d3c5605db3a1d82861fcaeef4636d1117 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Maxin B. John <maxin.john@intel.com>
 ---
  gl/m4/stdint.m4 | 27 +++++++++++++++++++++++++++

@@ -4,6 +4,7 @@ Subject: [PATCH] BCOM-4787: Trickplay of Ondemand movies with Ad content broken
 qtdemux sends a new_segment event due this the position is updated randomly inbetween trickyplay.
 We need to do trickplay in Ondemand contents with ads in it.The position should be properly updated.
 Source: COMCAST 92db4de17b7f463dd6383e33fb57235acba994c4 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Krishna Priya Kanagaraj <Krishnapriya_kanagaraj@comcast.com>
 
 ---

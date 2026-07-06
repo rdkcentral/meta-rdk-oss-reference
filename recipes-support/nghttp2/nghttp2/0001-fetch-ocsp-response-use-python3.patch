@@ -5,6 +5,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Source: 73ec79432fc557a8be4f1500982b1c0f5fdf12a9 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: André Draszik <git@andred.net>
 ---
  script/fetch-ocsp-response | 2 +-

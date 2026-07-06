@@ -3,6 +3,7 @@ From: Balaji Punnuru <Balaji_Punnuru@comcast.com>
 Subject: [PATCH] In our echo system we are managing last known good time.
  Removing setting of time in timesyncd initialization.
 Source: COMCAST 82cb08fa39617908ddd43182fbddfb352017a225 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Balaji Punnuru <Balaji_Punnuru@comcast.com>
 ---
  src/timesync/timesyncd.c | 4 +---

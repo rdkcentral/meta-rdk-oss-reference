@@ -1,6 +1,7 @@
 Date: Jul 24, 2024
 From: smuthu545 <Sindhuja_Muthukrishnan@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: 1. Heaptrack is upgraded to 1.5.0 to support runtime attachment.
 2. Add the thread info change in latest version
 3. remove zstd dependency in heaptrack (if zstd depends not added, 

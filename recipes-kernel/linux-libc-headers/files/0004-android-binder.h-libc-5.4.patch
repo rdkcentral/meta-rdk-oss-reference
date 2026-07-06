@@ -6,6 +6,7 @@ RDK-45658 : Enable Android 13 binder in Element platform
     - Updated linux libc binder headers with kernel-5.4 changes.
     - This is added to support Android13 binder features.
 Source: Sky
+Upstream-Status: Pending
 Signed-off-by: Rahul Raveendran <rahul.raveendran@sky.uk>
 #####################################################################
 

@@ -3,6 +3,7 @@ From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 Subject: [PATCH] Added Log entry for empty resolver entries.
          This is to support dynamic DNS update for SLAAC
 Source: COMCAST 31bdf52dd1b753263a1fb52593a274b38094ab01 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 ---
  rdnssd/rdnssd.c | 24 +++++++++++++-----------

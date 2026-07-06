@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 diff -Naur bluez-5.54/src/bluetooth.service.in bluez-5.54_mod/src/bluetooth.service.in
 --- bluez-5.54/src/bluetooth.service.in	2019-09-19 18:51:03.000000000 +0000
 +++ bluez-5.54_mod/src/bluetooth.service.in	2022-09-26 17:40:09.859889437 +0000

@@ -7,6 +7,7 @@ soft reset leaves qtdemux in a state where it still believes that it has
 streams, but they've been cleared. In that case, a null pointer
 dereference happens and the app crashes.
 Source: c279902df89a0f563371285fc4138d3fe598a2fe Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Part-of: <!4199>
 ---
  gst/isomp4/qtdemux.c | 5 +++--

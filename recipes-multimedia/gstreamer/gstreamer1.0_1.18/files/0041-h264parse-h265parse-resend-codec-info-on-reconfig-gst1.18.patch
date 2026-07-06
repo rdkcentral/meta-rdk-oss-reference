@@ -7,6 +7,7 @@ input switch element connected to the parsers, the decoder may not
 have the correct codec info when a track switch occurs.
 Ensure codec info is sent downstream after such changes
 Source: COMCAST a9a6df1470993b6a7653657f195660aa336c3811 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Filipe Norte <filipe.norte@sky.uk>
 ---
  .../gst/videoparsers/gsth264parse.c   | 11 +++++++++++

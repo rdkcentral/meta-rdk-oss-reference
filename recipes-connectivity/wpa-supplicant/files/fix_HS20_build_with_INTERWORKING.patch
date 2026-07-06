@@ -2,6 +2,7 @@ Date: Thu 23 Jan 12:46:00 GMT 2025
 From: djalad690_comcast <Devika_Jaladi@comcast.com>
 Subject: wpa_supplicant patch "fix_HS20_build_with_MBO.patch" need to be corrected
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: djalad690_comcast <Devika_Jaladi@comcast.com>
 
 Index: wpa_supplicant/interworking.c

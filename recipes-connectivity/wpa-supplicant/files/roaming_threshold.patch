@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Index: wpa_supplicant-2.10/wpa_supplicant/bgscan_simple.c
 ===================================================================
 --- wpa_supplicant-2.10.orig/wpa_supplicant/bgscan_simple.c

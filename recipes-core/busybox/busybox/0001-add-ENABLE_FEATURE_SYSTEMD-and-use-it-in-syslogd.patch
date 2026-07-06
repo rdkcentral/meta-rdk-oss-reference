@@ -2,6 +2,7 @@ Date: Tue, 25 Jan 2011 02:26:03 +0100
 From: Davide Cavalca <davide@geexbox.org>
 Subject: [PATCH] add ENABLE_FEATURE_SYSTEMD and use it in syslogd
 Source: 9b3b9790b32d440eb89af5edda70a66b1829e861 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Davide Cavalca <davide@geexbox.org>
 Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
 ---

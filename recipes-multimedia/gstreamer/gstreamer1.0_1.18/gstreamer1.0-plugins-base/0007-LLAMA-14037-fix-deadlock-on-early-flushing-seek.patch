@@ -14,6 +14,7 @@ This patch fixes the race by avoiding output configuration while
 pipeline is flushing. And rescheduling sticky events on parsebin src
 pad to re-try configuration next time.
 Source: COMCAST 5021981b6ce3bdf41293632ea0a9adf46cc17912 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 ---
  gst/playback/gstdecodebin3.c | 39 +++++++++++++++++++++++++++++++++++-

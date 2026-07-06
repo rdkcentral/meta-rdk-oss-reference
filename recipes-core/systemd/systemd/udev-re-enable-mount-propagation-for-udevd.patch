@@ -11,6 +11,7 @@ c2c13f2df42e0691aecabe3979ea81cd7faa35c7 to re-enable mount propagation for
 udevd. Once affected packages have been fixed, this patch should be dropped
 again.
 Source: Backport [http://http.debian.net/debian/pool/main/s/systemd/systemd_215-17+deb8u4.debian.tar.xz]
+Upstream-Status: Pending
 Closes: #762018
 Signed-off-by: Michael Biebl <biebl@debian.org>
 diff --git a/units/systemd-udevd.service.in b/units/systemd-udevd.service.in

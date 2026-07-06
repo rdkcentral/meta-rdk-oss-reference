@@ -11,6 +11,7 @@ VARIANT_MSE_BYTESTREAM type, conformant to the ISO BMFF Bytestream
 specification[1]. This flush behaviour is the same as the one
 already in use for adaptivedemux sources.
 Source: b3595d12403c0fdcedb084804d59b5c36c8e5129 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 [1] https://www.w3.org/TR/mse-byte-stream-format-isobmff/
 
 https://bugzilla.gnome.org/show_bug.cgi?id=795424

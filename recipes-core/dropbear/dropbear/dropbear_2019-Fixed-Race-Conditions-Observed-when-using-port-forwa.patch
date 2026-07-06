@@ -5,6 +5,7 @@ Subject: [PATCH] Fixed Race Conditions Observed when using port forwarding
  port forwarding, which is causing some timing delays for session
  establishment.
 Source: COMCAST 763686003636e7cf0a48d147b4dbdc0d3cc3caab Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 
 --- a/cli-session.c	2019-03-27 15:15:23.000000000 +0100

@@ -5,6 +5,7 @@ Inside qtdemux_parse_sbgp there is already a check to ensure the fragment group
 properties are not null but it is being hit in some examples and it is better to
 directly avoid the critical.
 Source: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/4576>
+Upstream-Status: Pending
 bdff780fe9733b520f48ff7642afdf877a3a0b26 Mon Sep 17 00:00:00 2001
 Signed-off-by: Xabier Rodriguez Calvar <calvaris@igalia.com>
 ---

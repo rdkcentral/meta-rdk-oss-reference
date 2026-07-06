@@ -2,6 +2,7 @@ Date: Thu Apr 30 08:14:14 2026 +0100
 From: sreedhar-reddy.billa
 Subject: Wpa-supplicant to read driver capability of SAE
 Source: NA
+Upstream-Status: Pending
 Signed-off-by: Arjun <arjun_daasuramdass@comcast.com>
 ---
 

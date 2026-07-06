@@ -3,6 +3,7 @@ Subject: [PATCH] btMgrBus crash Observed with fingerprint 90505307
 Date: Sep 08, 2025
 From: tharunkumar_venkatachal@comcast.com
 Source: upstream
+Upstream-Status: Pending
 https://gitlab.freedesktop.org/dbus/dbus/-/merge_requests/532/diffs
 Signed-off-by: Tharun Kumar Venkatachalem <tharunkumar_venkatachalem@comcast.com>
 ###################################################################################################

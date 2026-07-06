@@ -2,6 +2,7 @@ Date: Thu, 26 Sep 2024 17:12:38 +0000
 From: mselva006c <mani_selvaraj@comcast.com>
 Subject: [PATCH] ssh_telemetry_2020.patch
 Source: COMCAST 9cd7003167b349891d2c34d3a344172fb6cf5374 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  svr-authpubkey.c | 2 ++

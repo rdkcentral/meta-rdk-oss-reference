@@ -2,6 +2,7 @@ Date: Mon, 30 Nov 2020 18:24:48 +0200
 From: Beniamin Sandu <beniaminsandu@gmail.com>
 Subject: [PATCH] trace-cmd: make it build with musl
 Source: b63f13d2df91ede45288653b21e0d30a6b45f2ac Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Beniamin Sandu <beniaminsandu@gmail.com>
 ---
  include/trace-cmd/trace-cmd.h |  1 +

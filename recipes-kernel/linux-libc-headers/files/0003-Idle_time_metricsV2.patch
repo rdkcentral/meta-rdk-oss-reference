@@ -4,6 +4,7 @@ Subject: [PATCH] RDK-42648: Idle CPU Time metrics V2
 Idle Time metrics V2 to include - sum idel time, maxt idle time,
 all cpu running time & it's sum , max runtime etc.
 Source: d82de9e6772f4d7c92a0164f3accff8cd5fa388d Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: deekshit.devadas <deekshit.devadas@sky.uk>
 ---
 

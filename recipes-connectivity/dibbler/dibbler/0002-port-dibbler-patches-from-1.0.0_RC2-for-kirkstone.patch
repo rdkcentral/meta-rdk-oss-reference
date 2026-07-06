@@ -7,6 +7,7 @@ Subject: [PATCH] RDKALL-973: Update dibbler to 1.0.1
                    Without this change, dibbler uses the first available interface for assigning IP
                 2] BPV-8919/DELIA-9823 - Changing the default work and database dir from read-only location to /tmp
 Source: LGI 697b42237ce8bd8f09b9e4cb000bac3194f2fe5d Sep 3, 2018 12:23 PM
+Upstream-Status: Pending
 Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
 Patch recreated by: Arjun <arjun_daasuramdass@comcast.com>
 

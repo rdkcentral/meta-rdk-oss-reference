@@ -2,6 +2,7 @@ Date: Tue, 22 Aug 2023 10:05:47 +0000
 From: Pawel Lampe <pawel.lampe@sky.uk>
 Subject: [PATCH] Avoid sending empty data frames with EOF
 Source: d93d2c7cc3f79bbae2cfd66bd22ee5e075496958 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Pawel Lampe <pawel.lampe@sky.uk>
 
 ---

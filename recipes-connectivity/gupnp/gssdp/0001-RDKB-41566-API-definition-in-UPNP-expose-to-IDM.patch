@@ -1,6 +1,7 @@
 Date: Sat, 30 Apr 2022 10:30:38 +0000
 From: Manish Lepuru <manish_lepuru@Comcast.com>
 Source: COMCAST feab38514be53ee67184c26edede05eda3d3f05f Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Subject: [PATCH] RDKB-41566: API definition in UPNP & expose to IDM
 Signed-off-by: Manish Lepuru <manish_lepuru@Comcast.com>
 ---

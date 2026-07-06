@@ -1,6 +1,7 @@
 From 98434405a86a70bce0be81d3bedfc92eb55e1123 Mon Sep 17 00:00:00 2001
 From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 Date: Tue, 19 Aug 2025 20:02:48 +0000
+Upstream-Status: Pending
 Subject: [PATCH 3/3] [http2] fix crash in on_data_read after connection has
  been destroyed
 

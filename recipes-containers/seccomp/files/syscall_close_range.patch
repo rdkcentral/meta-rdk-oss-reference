@@ -9,6 +9,7 @@ unwanted container capabilities
 4. Restrict the system calls with in the container
 5. Restrict the cgroup memory with in the container
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Swarnalatha <Swarnalatha_SubiramanyaRaju@comcast.com>
 Index: git/src/arch-arm-syscalls.c
 ===================================================================

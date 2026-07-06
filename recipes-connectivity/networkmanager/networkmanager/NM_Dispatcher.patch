@@ -2,6 +2,7 @@ Date: Jun 12 2024
 From: anaras440_comcast <aravindan_narasimhapuramchakravarthy@comcast.com>
 Subject: Add NetworkManager component in RDKE
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: anaras440_comcast <aravindan_narasimhapuramchakravarthy@comcast.com>
 Index: NetworkManager-1.43.7/data/NetworkManager-dispatcher.service.in
 ===================================================================

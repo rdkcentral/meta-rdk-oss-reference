@@ -3,6 +3,7 @@ From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 Subject: Added support for systemtimemgr. Patched systemd-timesyncd to indicate
 ntp time sync happened, by touching a file.
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 Index: git/src/timesync/timesyncd-manager.c
 ===================================================================

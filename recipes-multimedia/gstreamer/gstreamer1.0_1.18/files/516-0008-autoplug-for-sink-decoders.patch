@@ -2,6 +2,7 @@ Date: Thu, 20 Jul 2023 16:40:32 +0200
 From: Xabier Rodriguez Calvar <calvaris@igalia.com>
 Subject: [PATCH 1/2] gst1-plugins-base: Fix autoplug in westeros sink
 Source: COMCAST 8ea57bbabe7cf149d317fc5a59da820a34ce001b Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Filipe Norte <filipe.norte@sky.uk>
 ---
 diff --git a/gst/playback/gstdecodebin3.c b/gst/playback/gstdecodebin3.c

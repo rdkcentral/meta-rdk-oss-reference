@@ -1,6 +1,7 @@
 Date: Jul 25, 2019
 From: Sudheep kolipaka <sudheep_kolipaka@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Added to flag to detect whether the client is under protect browse feature and so that all its dns requests are send to desired DNS server.
 Signed-off-by: Sudheep kolipaka <sudheep_kolipaka@comcast.com>
 Index: dnsmasq-2.83/src/arp.c

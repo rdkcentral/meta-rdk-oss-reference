@@ -2,6 +2,7 @@ Date: Fri, 26 Aug 2016 18:20:32 +0300
 From: Alexander Kanavin <alex.kanavin@gmail.com>
 Subject: [PATCH] Use pkg-config for pcre dependency instead of -config script. RP 2014/5/22
 Source: 22afc5d9aaa215c3c87ba21c77d47da44ab3b113 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Alexander Kanavin <alex.kanavin@gmail.com>
 ---
  configure.ac | 16 ++++++++++++----

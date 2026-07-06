@@ -1,6 +1,7 @@
 Date: Dec 6, 2022
 From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Define macros that are used in the code.
 libxkbcommon uses a .y parser file to recreate .c file.
 The definition should be available in the parser file to take effect in the source .c file.

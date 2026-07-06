@@ -2,6 +2,7 @@ Date: Thu, 31 Aug 2023 15:36:01 +0000
 From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] Add-exposing-flag-to-know-if-configure_s
 Source: COMCAST f3948061ae67f84c587f26f9ddfb213b62fd3211 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  gst/isomp4/qtdemux.c | 18 +++++++++++++++++-

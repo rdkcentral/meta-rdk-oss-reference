@@ -1,6 +1,7 @@
 Date: Sept 24, 2021
 From: Vinod <vinod_kadungoth2@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: libdash patch for event stream RawAttributes support
 Signed-off-by: Vinod <vinod_kadungoth2@comcast.com>
 diff --git a/libdash/source/mpd/Event.cpp b/libdash/source/mpd/Event.cpp

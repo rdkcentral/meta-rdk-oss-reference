@@ -2,6 +2,7 @@ Date: Oct 5 2024 5:31 AM
 From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 Subject: [PATCH] Memory corruption issues on crafted configuration files
 Source: https://github.com/logrotate/logrotate/ 21c614410abe68c894804d0efbae730cb87c14bb
+Upstream-Status: Pending
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 
 Index: logrotate-3.21.0/config.c

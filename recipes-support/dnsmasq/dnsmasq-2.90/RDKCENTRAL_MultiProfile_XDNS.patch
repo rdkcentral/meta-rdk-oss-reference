@@ -1,6 +1,7 @@
 Date: May 16, 2019
 From: Sudheep Kolipaka <Sudheep_Kolipaka@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Develop code to support extended DNS (EDNS) request per RFC6891
 Signed-off-by: Sudheep Kolipaka <Sudheep_Kolipaka@comcast.com>
 Index: dnsmasq-2.83/src/dhcp-protocol.h

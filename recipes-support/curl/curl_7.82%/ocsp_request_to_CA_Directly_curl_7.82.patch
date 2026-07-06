@@ -4,6 +4,7 @@ Recreated in line with curl 7.82: Mon, 06 March 2023
 Subject: [PATCH] Subject: RDK-25249, RDK-25248: Implement curl to send ocsp
  request directly to CA
 Source: COMCAST d5047a3ced7d63186cfe228f2c0d594e9c07400a Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 Patch recreated by : Arjun <arjun_daasuramdass@comcast.com>
 ---

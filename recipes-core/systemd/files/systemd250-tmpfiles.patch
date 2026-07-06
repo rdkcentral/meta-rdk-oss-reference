@@ -4,6 +4,7 @@ Subject: [PATCH] RDK-28776: systemd-tmpfiles-setup failed state
         Removed unnecessary some of the systemd tmpfiles to be created in boot up.
         Boot up and check AV in morty build.
 Source: COMCAST c16f5528bd8fbe0f5f5f049b9179b312d1837d23 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  tmpfiles.d/etc.conf.in         | 2 +-

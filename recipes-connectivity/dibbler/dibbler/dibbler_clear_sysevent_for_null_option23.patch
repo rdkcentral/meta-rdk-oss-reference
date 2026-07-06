@@ -1,6 +1,7 @@
 Date: Mar 12, 2021
 From: Arya Vinod <arya.vinod@sky.uk>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: CPE configuring previous IPv6 DNS server details to resolv.conf
 Signed-off-by: Arya Vinod <arya.vinod@sky.uk>
 Index: dibbler-1.0.1/scripts/notify-scripts/client-notify-bsd.sh

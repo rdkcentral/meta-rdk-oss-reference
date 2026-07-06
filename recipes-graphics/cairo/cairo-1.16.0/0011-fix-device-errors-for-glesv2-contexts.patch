@@ -6,6 +6,7 @@ Fix for graphics memory leak seen on LGI EOS device (broadcom based)
 occuring in euronews app during switching between available movies.
 This commit is a cherry-pick from cairo 1.17.6.
 Source: a75a588bf9ee5b3a8d899ddb510ce980086f4326 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Heiko Lewin <hlewin@gmx.de>
 
 ---

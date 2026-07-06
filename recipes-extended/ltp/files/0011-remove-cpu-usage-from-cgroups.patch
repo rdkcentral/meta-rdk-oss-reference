@@ -7,6 +7,7 @@ Subject: LTP Package patch
 	 Also remove teh first test, which is thrown off when pids are not in the default 
  	set, which is a side effect of some RDK tasks
 Source: RED 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Upstream-Status: Pending
 Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
 ---
 diff -ur git.orig/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh git/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh

@@ -16,6 +16,7 @@ Disable gstreamer provided eac3 and ec-3 parser.
 Plugins which look into audio/video data need to be removed since
 SOC plugins already cover the audio parser functionality.
 Source: COMCAST 7c34bc62903408d6a91d04fdf74102621937c60d Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Azam Ansari <AzamAyub_Ansari@cable.comcast.com>
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---

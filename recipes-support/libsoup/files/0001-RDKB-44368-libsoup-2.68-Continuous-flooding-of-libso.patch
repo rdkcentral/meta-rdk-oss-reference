@@ -4,6 +4,7 @@ Subject: [PATCH] RDKB-44368:[libsoup-2.68]Continuous flooding of libsoup: tls
 error: could not connect to 169.254.100.1 [GTlsCertificateFlags enum value:
 2] in journal log
 Source: COMCAST 9b37caf33dc9a332b76448a6bd94e8da2317537b Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by:manish_lepuru@comcast.com
 ---
  libsoup/soup-socket.c | 5 +++--

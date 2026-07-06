@@ -1,6 +1,7 @@
 Date: May 31, 2021
 From: Uma Kumar <Uma_Kumar@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject:  Update config.h to enable IPV6 support in XDNS
 Signed-off-by: Uma Kumar <Uma_Kumar@comcast.com>
 Index: dnsmasq-2.83/src/config.h

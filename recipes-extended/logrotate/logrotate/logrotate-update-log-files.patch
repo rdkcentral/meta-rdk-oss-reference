@@ -2,6 +2,7 @@ Date: Mon 27 Jan 12:46:00 GMT 2025
 From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 Subject: Add logging mechanism to logrotate
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 Index: logrotate-3.21.0/logrotate.c
 ===================================================================

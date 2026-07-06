@@ -8,6 +8,7 @@ Subject: [PATCH] To operate on U-NII-3 channels in the UK, there is a
 		 the BSS (for the U-NII-3 frequency range) is added, otherwise
 		 it is removed.
 Source: SKY
+Upstream-Status: Pending
 Signed-off-by: Ashok Kamath <ashok.kamath2@sky.uk>
 #####################################################################
 

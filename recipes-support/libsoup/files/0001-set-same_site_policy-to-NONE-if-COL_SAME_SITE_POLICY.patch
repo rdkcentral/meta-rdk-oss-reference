@@ -2,6 +2,7 @@ Date: Mon, 18 Mar 2024 09:50:20 +0000
 From: kkanag314 <krishnapriya_kanagaraj@comcast.com>
 Subject: [PATCH] set same_site_policy to NONE if COL_SAME_SITE_POLICY is NULL
 Source: COMCAST 2038068ff3610c481e61952aab4681ceeadae815 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: kkanag314 <krishnapriya_kanagaraj@comcast.com>
 
 ---

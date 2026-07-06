@@ -1,6 +1,7 @@
 From 3db7d30cc64f6df8f84ce5672dab7eb2213b2f98 Mon Sep 17 00:00:00 2001
 From: Manoj Bhatta <manoj_bhatta@comcast.com>
 Date: Thu, 20 Apr 2023 05:35:08 +0000
+Upstream-Status: Pending
 Subject: [PATCH] new SDL gamedb
 - Remove duplicate GUID 
 - Update gameDB to new SDL database

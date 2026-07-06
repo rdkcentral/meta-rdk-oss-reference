@@ -32,6 +32,7 @@ This kind of tweaks have been done in the past for MSS streams, for instance.
 That code has been refactored to use VARIANT_MSS_FRAGMENTED now, instead of
 its own dedicated boolean flag.
 Source: 36cc70ac8b2a45de036407928d1ab9ca444c726a Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Co-authored by: Alicia Boya García <ntrrgc@gmail.com>
 
 ...who suggested to use "variant: mse-bytestream" in the caps to identify that

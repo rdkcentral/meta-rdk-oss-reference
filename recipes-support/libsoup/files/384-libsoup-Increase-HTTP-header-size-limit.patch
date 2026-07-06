@@ -4,6 +4,7 @@ Subject: [PATCH] Increase HTTP header size limit
 The current limit is insufficient for some application services
 that require support of at least 20 4K cookie sizes
 Source: e725dcffc25e18ebdbda1bd1592d935310a6e96f Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Filipe Norte <filipe.norte@sky.uk>
 ---
  libsoup/http1/soup-client-message-io-http1.c        | 2 +-

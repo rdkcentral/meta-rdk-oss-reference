@@ -2,6 +2,7 @@ Date: Tue, 2 May 2023 11:32:01 +0200
 From: Xabier Rodriguez Calvar <calvaris@igalia.com>
 Subject: [PATCH 14/16] qtdemux: Fix segfault in cenc sample grouping
 Source: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/4523>
+Upstream-Status: Pending
 f59bfa6045fd07fd512bd1ddda3159ace0b33071 Mon Sep 17 00:00:00 2001
 Signed-off-by: Xabier Rodriguez Calvar <calvaris@igalia.com>
 ---

@@ -6,6 +6,7 @@ Subject: LTP Package patch
  	in a failed test, since the first signal without an established handler shuts down the task.
  	Introduce a delay immediately after launch to allow the SIGUSR1 handler to be established
 Source: RED 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Upstream-Status: Pending
 Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
 ---
 diff -ur git.old/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh git/testcases/kernel/controllers/cpuctl_fj/run_cpuctl_test_fj.sh

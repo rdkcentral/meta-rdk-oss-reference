@@ -3,6 +3,7 @@ From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 Subject: [PATCH] DELIA-15649: Fixed dibbler crash.
 	Added a NULL pointer check before accessing the pointer.
 Source: COMCAST 3a76ea4df33befce05f52b8dff016a8488c7a14a Apr 24, 2017 5:38 PM
+Upstream-Status: Pending
 Signed-off-by: Balaji Punnuru <balaji_punnuru@cable.comcast.com> 
 
 ---

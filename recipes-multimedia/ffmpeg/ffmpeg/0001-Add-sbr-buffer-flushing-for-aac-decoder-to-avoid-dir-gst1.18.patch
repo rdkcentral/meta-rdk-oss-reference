@@ -3,6 +3,7 @@ From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] Add sbr buffer flushing for aac decoder to avoid dirty
  output
 Source: COMCAST e3e4ca589e30173c8eefd07687f0a0da57c62c8a Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  libavcodec/aacdec_template.c | 6 ++++++

@@ -1,6 +1,7 @@
 Date: Aug 27, 2020
 From: Deva <Deva_Thiyagarajan2@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Add extraction hooks in opkg code to support Comcast packager. 
 Hooks will extract the two levels of compression done during build time to get the final ipk
 Signed-off-by: Deva <Deva_Thiyagarajan2@comcast.com>

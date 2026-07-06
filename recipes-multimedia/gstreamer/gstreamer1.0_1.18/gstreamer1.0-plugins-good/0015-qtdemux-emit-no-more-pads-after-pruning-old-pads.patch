@@ -5,6 +5,7 @@ If we don't do that, clients can rely on this signal to see the final pad
 topology but it won't be the real one as some of them will disappear after
 emitting that signal. This can happen after injecting a different init segment.
 Source: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/4535>
+Upstream-Status: Pending
 021572de93b364825955073af6493012aac375ac Mon Sep 17 00:00:00 2001
 Signed-off-by: Xabier Rodriguez Calvar <calvaris@igalia.com>
 ---

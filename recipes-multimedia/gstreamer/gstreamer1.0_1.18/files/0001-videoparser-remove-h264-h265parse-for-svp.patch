@@ -12,6 +12,7 @@ Subject: [PATCH] RDK-19714 : 4K DASH IP Linear/VOD Phase 1
         Plugins which look into audio/video data need to be removed since
         SOC plugins already cover video parser functionality.
 Source: COMCAST 02ca676ab46063f2fda50215456b39497c2d0dbf Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  gst/videoparsers/meson.build | 2 --

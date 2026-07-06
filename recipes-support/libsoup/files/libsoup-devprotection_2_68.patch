@@ -2,6 +2,7 @@ Date: Nov 15 14:06:23 2019
 From: Philip Mathew  <philip_mathew@comcast.com>
 Subject: [PATCH] RDK-24171 : UPnP DeviceProtection Service and Authentication
 Source: COMCAST 1b6f297615ef9b79d95a76675292484092735c41 Jun 18 15:06:54 2019
+Upstream-Status: Pending
 Signed-off-by: Philip Mathew  <philip_mathew@comcast.com>
 Index: libsoup-2.68.4/libsoup/soup-session.c
 ===================================================================

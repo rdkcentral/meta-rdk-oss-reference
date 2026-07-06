@@ -5,6 +5,7 @@ In case of using aamp, qtdemxu marks clear stream as protected
 with CENC scheme that leads to a crash because of missing
 protection_scheme_info structure for this stream
 Source: COMCAST 0f3f2cf73298ac36a3a0506cef90c9b170e01c18 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
 ---
  gst/isomp4/qtdemux.c | 9 ++++++---

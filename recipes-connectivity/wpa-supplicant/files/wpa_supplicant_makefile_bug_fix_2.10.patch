@@ -2,6 +2,7 @@ Date: Feb 09 2023
 From: Jaladi <djalad690@cable.comcast.com>
 Subject: wpa_supplicant upgrade to 2.10
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Jaladi <djalad690@cable.comcast.com>
 Index: wpa_supplicant/Makefile
 ===================================================================

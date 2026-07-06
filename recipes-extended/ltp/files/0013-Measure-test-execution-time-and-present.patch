@@ -2,6 +2,7 @@ Date: Tue, 3 Jan 2023 14:22:15 +0000
 From: Peter Bone <peter.bone@consult.red>
 Subject: [PATCH] Measure test execution time and present.
 Source: 23e4b8f8410e1ff33077d8f4bcf46b9d6c99280a Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Peter Bone <peter.bone@consult.red>
 
 ---

@@ -4,6 +4,7 @@ Subject: [PATCH] DELIA-24062: systemd-tmpfiles-setup failed state
 	Removed unnecessary some of the systemd tmpfiles to be created in boot up.
 	Boot up and check AV in morty build.
 Source: COMCAST 877c99264a7a63c2aacbe355c4881f2cddc7bf3d Jan 8, 2018 11:00 AM
+Upstream-Status: Pending
 Signed-off-by: gkumar <Ganesh_Kumar@comcast.com>
 ---
 

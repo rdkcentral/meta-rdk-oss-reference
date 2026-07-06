@@ -2,6 +2,7 @@ Date: May 18 2023
 From: Sushant Daspute <sushant_daspute@comcast.com>
 Subject: Openssl canary patch for kirkstone
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Sushant Daspute <sushant_daspute@comcast.com>
 Index: openssl-3.0.5/include/openssl/ssl.h.in
 ===================================================================
