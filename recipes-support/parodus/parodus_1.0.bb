@@ -21,7 +21,7 @@ RDEPENDS:${PN}:append = " bash"
 RDEPENDS:${PN}:remove_morty = "bash"
 
 PV = "git+${SRCPV}"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 ASNEEDED = ""
 LDFLAGS += "-lm -llog4c -lrdkloggers -lcjson -lnopoll -lwrp-c -lwdmp-c -lmsgpackc -ltrower-base64 -luuid -lnanomsg -lcjwt -lucresolv -lresolv"

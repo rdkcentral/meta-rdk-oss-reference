@@ -15,7 +15,7 @@ SRCREV = "0356bf4aff9a133d655dc13b1d9ac9424706cac4"
 DEPENDS += "yajl libseccomp libtool libcap"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'RDKTV_CHECKPOINT_RESTORE', ' criu', '', d)}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 

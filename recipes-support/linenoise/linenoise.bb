@@ -18,6 +18,6 @@ SRC_URI += "file://001-linenoise-history.patch"
 # To compile and generate liblinenoise.so
 SRC_URI += "file://002-linenoise-cmakelists.patch"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit cmake pkgconfig

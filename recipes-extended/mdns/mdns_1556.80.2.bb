@@ -26,7 +26,7 @@ SRCREV = "b9fbcaf55332bfd3165e59c40718645cef14e5cf"
 #
 # We can't use the approach of setting ${S} to mDNSPosix as we need
 # DEBUG_PREFIX_MAP to cover files which come from the Clients directory too.
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit systemd update-rc.d
 

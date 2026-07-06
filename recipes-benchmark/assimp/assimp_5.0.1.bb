@@ -19,7 +19,7 @@ UPSTREAM_CHECK_GITTAGREGEX = "v(?P<pver>(\d+(\.\d+)+))"
 #assimp_5.0_release
 SRCREV ?= "8f0c6b04b2257a520aaab38421b2e090204b69df"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit cmake
 

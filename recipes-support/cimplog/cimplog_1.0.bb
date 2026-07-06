@@ -10,7 +10,7 @@ SRCREV = "4d96629b8e04230549cd2bee36bc4419a6e5aecc"
 SRC_URI = "git://github.com/xmidt-org/cimplog.git"
 PV = "git+${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 CFLAGS:append += " ${@bb.utils.contains('DISTRO_FEATURES', 'bci', '', '-DFEATURE_SUPPORT_ONBOARD_LOGGING',d)}"
 inherit pkgconfig cmake
 EXTRA_OECMAKE += "-DRDK_LOGGER=ON -DBUILD_TESTING=OFF -DBUILD_YOCTO=true"

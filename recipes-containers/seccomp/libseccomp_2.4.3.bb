@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/seccomp/libseccomp.git;branch=release-2.4 \
            file://syscall_close_range.patch \
         "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 

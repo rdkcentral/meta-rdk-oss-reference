@@ -12,7 +12,7 @@ SRC_URI = "git://github.com/xmidt-org/cpeabs.git"
 
 PV = "git+${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 ASNEEDED = ""
 

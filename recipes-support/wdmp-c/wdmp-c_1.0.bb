@@ -10,7 +10,7 @@ SRCREV = "c7e00d1f159ef8609e7789430d18508fb39d66d3"
 SRC_URI = "git://github.com/xmidt-org/wdmp-c.git"
 PV = "git+${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit pkgconfig cmake
 

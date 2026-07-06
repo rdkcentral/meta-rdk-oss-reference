@@ -10,7 +10,7 @@ SRCREV = "9587e8db33dbbfcd9b78ef66cc2eaf16dfb9afcf"
 SRC_URI = "git://github.com/xmidt-org/wrp-c.git"
 PV = "git+${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 ASNEEDED = ""
 

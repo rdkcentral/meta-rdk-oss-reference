@@ -10,7 +10,7 @@ SRCREV = "8263bb06c8c16dc114c800a3d29d0c8252f15619"
 SRC_URI = "git://github.com/Comcast/libparodus.git"
 PV = "git+${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 ASNEEDED = ""
 inherit pkgconfig cmake

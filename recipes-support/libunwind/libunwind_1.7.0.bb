@@ -7,7 +7,7 @@ SRCREV = "26b0cfc407f2bf89f8a3a9770bd1d73ad2cc3306"
 
 
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'enable_heaptrack','file://core.patch','', d)}"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 #SRC_URI[sha256sum] = "4a6aec666991fb45d0889c44aede8ad6eb108071c3554fcdff671f9c94794976"
 PROVIDES = "${MLPREFIX}${PN}"

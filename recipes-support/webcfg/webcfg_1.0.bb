@@ -15,7 +15,7 @@ RDEPENDS:${PN} += "util-linux-uuidgen"
 
 PV = "git+${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 ASNEEDED = ""
 

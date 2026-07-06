@@ -20,7 +20,7 @@ SRC_URI += "file://remove_zstd_depends.patch \
             file://add_tid_in_heaptrack.patch \
             file://copy_Debugrootfs.sh "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 

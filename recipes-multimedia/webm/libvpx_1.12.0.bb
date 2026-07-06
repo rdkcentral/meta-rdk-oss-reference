@@ -14,7 +14,7 @@ SRC_URI += "git://chromium.googlesource.com/webm/libvpx;protocol=https;branch=ma
             file://CVE-2023-5217_1.12_fix.patch \
            "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 # ffmpeg links with this and fails
 # sysroots/armv4t-oe-linux-gnueabi/usr/lib/libvpx.a(vpx_encoder.c.o)(.text+0xc4): unresolvable R_ARM_THM_CALL relocation against symbol `memcpy@@GLIBC_2.4'

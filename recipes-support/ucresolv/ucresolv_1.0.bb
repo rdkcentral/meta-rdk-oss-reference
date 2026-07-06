@@ -11,7 +11,7 @@ SRC_URI = "git://github.com/Comcast/libucresolv.git \
            file://0001-dn-expand-undefined-with-glibc-2.35.patch \
            "
 PV = "git+${SRCPV}"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 DEPENDS = ""
 
 PR = "r1"

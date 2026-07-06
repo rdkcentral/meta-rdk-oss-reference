@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=8df9e8826734226d08cb412babfa599c"
 
 SRC_URI = "git://github.com/KhronosGroup/Vulkan-ValidationLayers.git;nobranch=1;protocol=https"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 REQUIRED_DISTRO_FEATURES = "vulkan"
 

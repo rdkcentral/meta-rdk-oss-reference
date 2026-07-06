@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/nlohmann/json.git;nobranch=1"
 
 SRCREV = "bc889afb4c5bf1c0d8ee29ef35eaaf4c8bef8a5d"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit cmake
 

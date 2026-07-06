@@ -12,7 +12,7 @@ SRC_URI = "git://github.com/KhronosGroup/SPIRV-Headers;protocol=https;branch=mai
 
 PE = "1"
 UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\\d+(\\.\\d+)+)"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit cmake
 

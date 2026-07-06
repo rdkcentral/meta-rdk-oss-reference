@@ -19,7 +19,7 @@ FILES:${PN} += "${libdir}/*.so"
 
 SRCREV = "4b7e6c52dc7cbb4d51c9abcebcbac91ec256a62b"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit autotools pkgconfig
 

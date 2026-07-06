@@ -16,7 +16,7 @@ LIBARCHIVE_TAG="v3.6.1"
 SRC_URI = "git://github.com/libarchive/libarchive.git;protocol=https;nobranch=1"
 SRCREV = "6c3301111caa75c76e1b2acb1afb2d71341932ef"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit pkgconfig autotools
 

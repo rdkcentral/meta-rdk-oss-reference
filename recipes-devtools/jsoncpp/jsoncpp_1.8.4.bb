@@ -21,7 +21,7 @@ SRC_URI = "git://github.com/open-source-parsers/jsoncpp.git;nobranch=1 \
 # release 1.8.4
 SRCREV = "ddabf50f72cf369bf652a95c4d9fe31a1865a781"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 EXTRA_OECMAKE += "-DBUILD_SHARED_LIBS=ON -DJSONCPP_WITH_PKGCONFIG_SUPPORT=OFF -DBUILD_TESTING=OFF -DJSONCPP_WITH_TESTS=OFF"
 

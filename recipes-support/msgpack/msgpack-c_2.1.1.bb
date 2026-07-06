@@ -20,7 +20,7 @@ inherit cmake pkgconfig
 
 EXTRA_OECMAKE += " -DMSGPACK_BUILD_TESTS=OFF "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 FILES:${PN}-dev += "${libdir}/cmake/msgpack/*.cmake"
 

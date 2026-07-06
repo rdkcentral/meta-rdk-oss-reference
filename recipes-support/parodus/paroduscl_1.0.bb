@@ -11,6 +11,6 @@ SRCREV = "c6b1ee637eab22ac281779546fab7b7ff171cba2"
 SRC_URI = "git://github.com/Comcast/paroduscl.git"
 
 PV = "git+${SRCPV}"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit autotools pkgconfig
