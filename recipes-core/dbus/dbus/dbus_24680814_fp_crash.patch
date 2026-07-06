@@ -98,3 +98,19 @@ Index: dbus-1.14.8/dbus/dbus-internals.c
  #ifdef DBUS_ENABLE_VERBOSE_MODE
  
  static dbus_bool_t verbose_initted = FALSE;
+Index: dbus-1.14.8/dbus/dbus-internals.h
+===================================================================
+--- dbus-1.14.8.orig/dbus/dbus-internals.h
++++ dbus-1.14.8/dbus/dbus-internals.h
+@@ -48,6 +48,11 @@ void _dbus_warn               (const cha
+ DBUS_PRIVATE_EXPORT
+ void _dbus_warn_check_failed  (const char *format,
+                                ...) _DBUS_GNUC_PRINTF (1, 2);
++
++DBUS_PRIVATE_EXPORT
++void _dbus_warn_print  (const char *format,
++                               ...) _DBUS_GNUC_PRINTF (1, 2);
++
+ DBUS_PRIVATE_EXPORT
+ void _dbus_warn_return_if_fail (const char *function,
+                                 const char *assertion,
