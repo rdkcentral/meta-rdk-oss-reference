@@ -75,6 +75,16 @@ do_configure:prepend () {
 	fi
 }
 
+do_addupsteam() {
+    for p in ${DL_DIR}/readline52-*; do
+
+        [-f "$p"] || continue
+        grep -q "^Upstream-Status:" "$p" || \
+        sed -i '/^Patch:/a Upstream-Status: Pending' "$p"
+    done
+}
+addtask do_addupsteam after do_unpack before do_patch
+
 do_install:append () {
 	# Make install doesn't properly install these
 	oe_libinstall -so -C shlib libhistory ${D}${libdir}
