@@ -1,0 +1,14 @@
+Upstream-Status: Pending
+Index: gdbm-1.8.3/gdbmdefs.h
+===================================================================
+--- gdbm-1.8.3.orig/gdbmdefs.h
++++ gdbm-1.8.3/gdbmdefs.h
+@@ -167,7 +167,7 @@ typedef struct {
+ 	int file_locking;
+ 
+ 	/* The fatal error handling routine. */
+-	void (*fatal_err) ();
++	void (*fatal_err) (void *);
+ 
+ 	/* The gdbm file descriptor which is set in gdbm_open.  */
+ 	int desc;
