@@ -3,7 +3,7 @@ DESCRIPTION = "A C library for reading and writing streaming archives"
 SECTION = "libs"
 HOMEPAGE = "https://github.com/libarchive/libarchive"
 
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d499814247adaee08d88080841cb5665"
 
 PR="r0"

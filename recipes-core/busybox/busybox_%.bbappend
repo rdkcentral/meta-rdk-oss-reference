@@ -22,7 +22,6 @@ SRC_URI += " \
    file://enable_ar.cfg \
    file://busybox-support-chinese-display.patch \
    ${VERSION_PATCHES} \
-   file://0001-add-ENABLE_FEATURE_SYSTEMD-and-use-it-in-syslogd.patch \
    file://busybox-1.31-ping-mdev-support.patch \
    file://pgrep.cfg \
    "

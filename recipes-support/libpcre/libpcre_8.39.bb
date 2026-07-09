@@ -17,7 +17,7 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/project/pcre/pcre/${PV}/pcre-${PV}.tar.bz2 \
 SRC_URI[md5sum] = "e3fca7650a0556a2647821679d81f585"
 SRC_URI[sha256sum] = "b858099f82483031ee02092711689e7245586ada49e534a06e678b8ea9549e8b"
 
-S = "${WORKDIR}/pcre-${PV}"
+S = "${UNPACKDIR}/pcre-${PV}"
 
 PROVIDES += "pcre"
 DEPENDS += "bzip2 zlib"

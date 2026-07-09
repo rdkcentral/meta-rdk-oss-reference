@@ -6,7 +6,7 @@ Subject: DELIA-47925 : syssnmpagent crash with signature libc.so.6 reason SIGABR
 
 Source: backported from meta-openembedded
 
-Upstream-Status:N/A
+Upstream-Status: Pending
 
 Signed-off-by: Rense Jacob <Rense_Jacob2@comcast.com>
 

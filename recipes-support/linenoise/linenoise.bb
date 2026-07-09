@@ -21,3 +21,5 @@ SRC_URI += "file://002-linenoise-cmakelists.patch"
 S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit cmake pkgconfig
+
+EXTRA_OECMAKE = '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
