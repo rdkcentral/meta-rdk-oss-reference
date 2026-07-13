@@ -10,6 +10,11 @@ SRC_URI += "file://m4extensions.patch \
     file://avoid_heap_overflow.patch \
     file://0001-lib-argp-parse.c-Fix-compiler-error.patch \
     "
+SRC_URI:append:wrynose  += " file://fix_gcc_err_wrynose.patch"
 
 SRC_URI[md5sum] = "c6c4f1c075dbf0f75c29737faa58f290"
 SRC_URI[sha256sum] = "19f9021dda51a16295e4706e80870e71f87107675e51c176a491eba0fc4ca492"
+
+CFLAGS:append = " -DHAVE_DECL_GETPWNAM=1 \
+                  -DHAVE_DECL_GETGRNAM=1 \
+"

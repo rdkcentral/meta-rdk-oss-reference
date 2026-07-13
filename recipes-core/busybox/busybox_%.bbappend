@@ -34,6 +34,14 @@ SRC_URI:remove:broadband += " \
    file://blkid.cfg \
    "
 
+do_configure:append() {
+    # Ensure math macros and math functions are explicitly injected into ping.c safely
+    if [ -f ${S}/networking/ping.c ]; then
+        sed -i '1s/^/#include <sys\/cdefs.h>\n#include <math.h>\n/' ${S}/networking/ping.c
+    fi
+}
+TARGET_LDFLAGS:append:pn-busybox = " -lm"
+
 VERSION_PATCHES ?= ""
 VERSION_PATCHES:append:client = " file://busybox-1.35-udhcp-trigger-milestones.patch"
 

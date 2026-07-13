@@ -130,14 +130,15 @@ do_install () {
     # sed -i -e 's:/usr/bin/env.*:/usr/bin/python3:' ${D}${bindir}/aa-easyprof
     # chmod 0755 ${D}${bindir}/aa-easyprof
 
-    install ${WORKDIR}/apparmor ${D}/${INIT_D_DIR}/apparmor
-    install ${WORKDIR}/functions ${D}/lib/apparmor
-    sed -i -e 's/getconf _NPROCESSORS_ONLN/nproc/' ${D}/lib/apparmor/functions
-    sed -i -e 's/ls -AU/ls -A/' ${D}/lib/apparmor/functions
+    install ${UNPACKDIR}/apparmor ${D}/${INIT_D_DIR}/apparmor
+    install -d ${D}${libdir}/apparmor
+    install ${UNPACKDIR}/functions ${D}${libdir}/apparmor
+    sed -i -e 's/getconf _NPROCESSORS_ONLN/nproc/' ${D}/${libdir}/apparmor/functions
+    sed -i -e 's/ls -AU/ls -A/' ${D}/${libdir}/apparmor/functions
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_system_unitdir}
-        install -m 0644 ${WORKDIR}/apparmor.service ${D}${systemd_system_unitdir}
+        install -m 0644 ${UNPACKDIR}/apparmor.service ${D}${systemd_system_unitdir}
     fi
 }
 
@@ -209,7 +210,7 @@ SYSTEMD_AUTO_ENABLE ?= "enable"
 
 PACKAGES += "mod-${PN}"
 
-FILES:${PN} += "/lib/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
+FILES:${PN} += "${libdir}/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
 FILES:mod-${PN} = "${libdir}/apache2/modules/*"
 
 # Add coreutils and findutils only if sysvinit scripts are in use
