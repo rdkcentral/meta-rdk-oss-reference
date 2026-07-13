@@ -1,0 +1,15 @@
+--- wpa_supplicant-2.11.orig/src/crypto/crypto_openssl.c	2026-06-16 10:51:07.900314442 +0100
++++ wpa_supplicant-2.11-fix/src/crypto/crypto_openssl.c	2026-06-16 13:05:43.082026292 +0100
+@@ -321,8 +321,12 @@
+ 
+ int md4_vector(size_t num_elem, const u8 *addr[], const size_t *len, u8 *mac)
+ {
++#ifndef OPENSSL_NO_MD4
+ 	openssl_load_legacy_provider();
+ 	return openssl_digest_vector(EVP_md4(), num_elem, addr, len, mac);
++#else
++	return -1;
++#endif
+ }
+ 
+ 
