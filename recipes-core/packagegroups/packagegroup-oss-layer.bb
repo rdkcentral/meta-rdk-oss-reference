@@ -326,6 +326,7 @@ RDEPENDS:${PN} += "\
      slang \
      smcroute \
      systemd \
+     systemd-analyze \
      trower-base64 \
      vmtouch \
      volatile-binds \
