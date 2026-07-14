@@ -30,7 +30,6 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-go
 	   file://0034-qtdemux-dont-error-with-no-protection-events-gst1.18.patch \
 	   file://0035-qtdemux-check-ss_info-gst1.18.patch \
 	   file://0037-qtdemux-aamp-avoid-unwanted-header-logging-gst1.18.patch \
-           file://0038-fix-for-switching-from-clear-to-encrypted-and-vice-v.patch \
            file://0039-LLAMA-8596-Fix-for-demux-end-of-segment-detection.patch \
            file://0040-Migrate-soup3-capable-souphttpsrc-from-gstreamer-1.21.2.patch \
            file://0044-qtdemux-Don-t-emit-GstSegment-correcting-start-time-.patch \
