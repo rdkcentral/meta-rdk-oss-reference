@@ -44,12 +44,52 @@ ROOTFS_POSTPROCESS_COMMAND += "${@'' if \
     bb.utils.contains('DISTRO_FEATURES', 'prodlog-variant', True, False, d) \
     else 'set_testuser1_password; '}"
 
-set_testuser1_password() {
-    if grep -q "^testuser1:" "${IMAGE_ROOTFS}/etc/shadow" 2>/dev/null; then
-        ENCRYPTED_PASS=$(openssl passwd -6 "${MACHINE_IMAGE_NAME}")
-        sed -i "s|^testuser1:[^:]*:|testuser1:${ENCRYPTED_PASS}:|" "${IMAGE_ROOTFS}/etc/shadow"
-        bbnote "testuser1: password set to MACHINE_IMAGE_NAME (${MACHINE_IMAGE_NAME}) in ${IMAGE_ROOTFS}/etc/shadow"
-    else
-        bbwarn "testuser1: entry not found in ${IMAGE_ROOTFS}/etc/shadow — password not set"
-    fi
+python set_testuser1_password() {
+    import subprocess
+    import re
+    import os
+
+    rootfs = d.getVar('IMAGE_ROOTFS')
+    machine_image_name = d.getVar('MACHINE_IMAGE_NAME')
+    shadow_path = os.path.join(rootfs, 'etc', 'shadow')
+    dropbear_default = os.path.join(rootfs, 'etc', 'default', 'dropbear')
+
+    # --- Set password in /etc/shadow ---
+    if not os.path.isfile(shadow_path):
+        bb.warn("testuser1: %s not found — password not set" % shadow_path)
+    else:
+        result = subprocess.run(
+            ['openssl', 'passwd', '-6', machine_image_name],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        if result.returncode != 0:
+            bb.warn("testuser1: openssl passwd failed: %s" % result.stderr.decode().strip())
+        else:
+            encrypted_pass = result.stdout.decode().strip()
+            with open(shadow_path, 'r') as f:
+                content = f.read()
+            if not re.search(r'^testuser1:', content, re.MULTILINE):
+                bb.warn("testuser1: entry not found in %s — password not set" % shadow_path)
+            else:
+                new_content = re.sub(
+                    r'^(testuser1:)[^:]*(:)',
+                    lambda m: m.group(1) + encrypted_pass + m.group(2),
+                    content,
+                    flags=re.MULTILINE
+                )
+                with open(shadow_path, 'w') as f:
+                    f.write(new_content)
+                bb.note("testuser1: password set from MACHINE_IMAGE_NAME (%s)" % machine_image_name)
+
+    # --- Remove -w from DROPBEAR_EXTRA_ARGS ---
+    # dropbear ships with -w which blocks all UID 0 password logins.
+    # testuser1 has UID 0, so -w must be removed for password auth to work.
+    if os.path.isfile(dropbear_default):
+        with open(dropbear_default, 'r') as f:
+            db_content = f.read()
+        if '-w' in db_content:
+            new_db_content = re.sub(r'\s*-w\b', '', db_content)
+            with open(dropbear_default, 'w') as f:
+                f.write(new_db_content)
+            bb.note("testuser1: removed -w from DROPBEAR_EXTRA_ARGS in %s" % dropbear_default)
 }
