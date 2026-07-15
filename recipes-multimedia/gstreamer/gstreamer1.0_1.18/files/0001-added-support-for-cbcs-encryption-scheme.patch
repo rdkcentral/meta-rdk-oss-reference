@@ -216,10 +216,8 @@ index bc675f459..d62ddddb3 100644
      GstStructure *crypto_info;
      QtDemuxCencSampleSetInfo *info =
          (QtDemuxCencSampleSetInfo *) stream->protection_scheme_info;
-@@ -6328,8 +6387,19 @@ gst_qtdemux_push_buffer (GstQTDemux * qtdemux, QtDemuxStream * stream,
-       GST_INFO_OBJECT(qtdemux, "info is NULL");
- 
-     else if (info->crypto_info == NULL) {
+@@ -6330,6 +6389,17 @@ gst_qtdemux_push_buffer (GstQTDemux * qtdemux, QtDemuxStream * stream,
+     if (info->crypto_info == NULL) {
 -      GST_DEBUG_OBJECT (qtdemux,
 -          "cenc metadata hasn't been parsed yet, pushing buffer as if it wasn't encrypted");
 +      if (stream->protection_scheme_type == FOURCC_cbcs) {

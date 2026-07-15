@@ -44,10 +44,11 @@ index 8697e6a..80c0748 100644
    /* @crypto_info holds one GstStructure per sample */
    GPtrArray *crypto_info;
  };
-@@ -2627,6 +2632,12 @@ gst_qtdemux_stream_clear (QtDemuxStream * stream)
+@@ -2624,7 +2629,13 @@ gst_qtdemux_stream_clear (QtDemuxStream * stream)
+       if (info->default_properties)
+         gst_structure_free (info->default_properties);
+       if (info->crypto_info)
          g_ptr_array_free (info->crypto_info, TRUE);
- 	info->crypto_info = NULL;
-       }
 +      if (info->fragment_group_properties)
 +        g_ptr_array_free (info->fragment_group_properties, TRUE);
 +      if (info->track_group_properties)
