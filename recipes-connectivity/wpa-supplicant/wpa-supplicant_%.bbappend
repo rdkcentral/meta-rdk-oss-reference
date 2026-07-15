@@ -10,6 +10,7 @@ SRC_URI += "file://suppress_no_eap_session_id_log.patch"
 SRC_URI += "file://roaming_threshold.patch"
 SRC_URI += "file://roam_off.patch"
 SRC_URI += "file://sae-key_mgmt-capability-from-driver-flag.patch"
+SRC_URI += "file://remove_roam_support.patch"
 
 inherit syslog-ng-config-gen logrotate_config
 #inherit breakpad-logmapper
