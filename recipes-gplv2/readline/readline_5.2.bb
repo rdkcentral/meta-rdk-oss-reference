@@ -78,8 +78,6 @@ do_configure:prepend () {
 do_addupsteam() {
     for p in ${DL_DIR}/readline52-*; do
 
-        [-f "$p"] || continue
-        grep -q "^Upstream-Status:" "$p" || \
         sed -i '/^Patch:/a Upstream-Status: Pending' "$p"
     done
 }
