@@ -8,7 +8,6 @@ SRC_URI += "file://fix_HS20_build_with_INTERWORKING.patch"
 SRC_URI += "file://increase_wpa_ctrl_return_buffer.patch"
 SRC_URI += "file://suppress_no_eap_session_id_log.patch"
 SRC_URI += "file://roaming_threshold.patch"
-SRC_URI += "file://roam_off.patch"
 SRC_URI += "file://sae-key_mgmt-capability-from-driver-flag.patch"
 SRC_URI += "file://remove_roam_support.patch"
 
