@@ -13,7 +13,6 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-ba
            file://0003-viv-fb-Make-sure-config.h-is-included.patch \
            file://0002-ssaparse-enhance-SSA-text-lines-parsing.patch \
            file://0004-glimagesink-Downrank-to-marginal.patch \
-	   file://0001-gst-plugins-base-stubs-soft.h-not-existing-compilati.patch \
 	   file://0001-XRE-12082-Reset-eos-on-appsrc-on-send-flush-gst1.18.patch \
 	   file://0001-decodebin3-continue-parsebin-autoplug-if-requested-gst1.18.patch \
 	   file://516-0007-improve-support-for-decoder-sinks.patch \

@@ -11,7 +11,7 @@ def get_oss_machine(d):
     elif "cortexa15hf-neon" in default_tune:
         arch = "rdk-cortexa15"
     else:
-        arch = "rdk-arm7ve"
+        arch = "rdk-arm64"
     return arch
 
 def get_oss_arch(d):
