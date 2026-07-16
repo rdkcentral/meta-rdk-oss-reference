@@ -2,6 +2,7 @@ Date: Wed, 9 Nov 2022 07:34:44 +0000
 From: mselva006c <mani_selvaraj@comcast.com>
 Subject: [PATCH] DELIA-50903 /dev/shm no-exec option
 Source: COMCAST 58dd101d927f8e0abd1a5b799a78eb309b2b02d5 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  src/shared/mount-setup.c | 2 +-

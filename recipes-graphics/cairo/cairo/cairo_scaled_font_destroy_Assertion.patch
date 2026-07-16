@@ -1,6 +1,7 @@
 Date: Aug 4 2021
 From: cmurug728 <Chockalingam_Murugan@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Cairo_scaled_font_destroy is obviously unsafe for multithread, so the assertion may be triggered occasionally.
 Signed-off-by: cmurug728 <Chockalingam_Murugan@comcast.com>
 diff --git a/cairo-scaled-font.c b/cairo-scaled-font.c

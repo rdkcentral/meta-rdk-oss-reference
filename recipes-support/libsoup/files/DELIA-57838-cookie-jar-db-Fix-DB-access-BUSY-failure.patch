@@ -12,6 +12,7 @@ Add default handler for such case with max 250ms timeout
 (should be sufficient for most cases and still allowing to catch
 any performance degradation (blocking))
 Source: COMCAST 06c8796508945f4126b6279c38e73a5f1e26f732 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
 ---
  libsoup/soup-cookie-jar-db.c | 6 ++++++

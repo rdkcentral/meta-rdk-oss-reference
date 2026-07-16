@@ -4,6 +4,7 @@ Subject: [PATCH 1/1] RDK-30521 h265 parser patch to embed SEI timecodes
 SEI timecode values are available in the elementry stream, h265 parser changes 
 to extract the SEI timecode.
 Source: COMCAST 7ab8d4bbb28c80a62676504d6825c4bfc8d4991e Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Kailash Baskar <kailash_baskar@comcast.com>
 
 ---

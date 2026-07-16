@@ -2,6 +2,7 @@ Date: Feb 22, 2019 11:45 AM
 From: Vijaya Ramarao Mellempudi <Vijaya_RamaraoMellempudi@comcast.com>
 Subject: [PATCH] RDK-23442:Increasing the return_buff size to 16KB [PATCH]:Increasing the return_buff size to 96KB Increase scan results buf size to 96KB.	
 Source: COMCAST ab23b5fcb84ebbe1697b423bee0ec7dfdfb66bad Mar 6, 2019 12:08 PM
+Upstream-Status: Pending
 Signed-off-by: Vijaya Ramarao Mellempudi <Vijaya_RamaraoMellempudi@comcast.com>
 ---
 

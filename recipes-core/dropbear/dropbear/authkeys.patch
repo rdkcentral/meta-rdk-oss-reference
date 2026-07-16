@@ -1,6 +1,7 @@
 From b6998b005dc6831b68365a9219cf21e5fb997ff1 Mon Sep 17 00:00:00 2001
 From: nm296 <nareshkumar_m@comcast.com>
 Date: Thu, 29 May 2025 07:03:46 +0000
+Upstream-Status: Pending
 Subject: [PATCH] From: nm296 <nareshkumar_m@comcast.com> Date: Mon, 7 Apr 2025
  09:38:51 +0000 Subject: [PATCH] Source: Local Subject: Patching dropbear to
  accept custom authorized_keys file

@@ -3,6 +3,7 @@ From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 Subject: [PATCH] XRE-11331: handle ssl read errors similar to libcurl
 	Fix false positive read errors
 Source: COMCAST  c21aa0e8cc1abb2858bb2e67c229469b8b706ff9 May 25 01:55:49 2017
+Upstream-Status: Pending
 Signed-off-by: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 ---
 

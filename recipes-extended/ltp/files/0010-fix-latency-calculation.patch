@@ -11,6 +11,7 @@ Subject: LTP Package patch
  	We also add a return check to the usleep to amit a perror() on short
 	or bad sleep returns. 
 Source: RED 071925a849c9b63d0ca64d5f85d125a8a1cd70fb
+Upstream-Status: Pending
 Signed-off-by: nhanas001c <Naveenkumar_Hanasi@comcast.com>
 ---
 diff -ur git.orig/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c git/testcases/kernel/controllers/cpuctl/cpuctl_latency_check_task.c

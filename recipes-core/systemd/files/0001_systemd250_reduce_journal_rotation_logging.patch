@@ -3,6 +3,7 @@ From: mselva006c <mani_selvaraj@comcast.com>
 Subject: The journal rotation log messages are flooding on console as the default log level for systemd journal is "info".
 Move the rotation log message to "debug" to avoid these logs messages getting printed by default.
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
 index 8fb363c4f7..30c1f45916 100644

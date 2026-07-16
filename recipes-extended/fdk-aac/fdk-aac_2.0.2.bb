@@ -16,7 +16,7 @@ SRC_URI = "git://github.com/mstorsjo/fdk-aac.git;protocol=https;branch=master"
 # Use lastest code as of 6/13/2023
 SRCREV = "3f864cce9736cc8e9312835465fae18428d76295"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 SRC_URI[md5sum] = "fef453b5d6ee28ff302c600b8cded3e7"
 SRC_URI[sha256sum] = "07c2a64b098eb48b2e9d729d5e778c08f7d22f28adc8da7c3f92c58da1cbbd8e"

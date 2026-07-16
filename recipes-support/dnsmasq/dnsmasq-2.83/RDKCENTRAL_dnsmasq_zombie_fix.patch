@@ -1,6 +1,7 @@
 Date: Jun 19, 2019
 From: Ravi <ravi_veldanda@comcast.com>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: In problem case we are seeing PARENT and CHILD processes are getting accessing the common resource.
 That causing to Child process to die with may be SIGPIPE, which is ignored by parent causing the child proces to get into Zombie.
 To mitigate this problem we are introducing 100ms delay in parent process.

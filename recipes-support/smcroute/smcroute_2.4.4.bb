@@ -9,7 +9,7 @@ SRCREV = "a8e5847e5f7e411be424f9b52a6cdf9d2ed4aeb5"
 SRC_URI = "git://github.com/troglobit/smcroute.git;branch=master;protocol=git"
 DEPENDS += " systemd"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 inherit autotools systemd
 
 do_configure:prepend() {

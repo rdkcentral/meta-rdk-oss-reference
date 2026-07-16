@@ -3,6 +3,7 @@ From: mgopal003c <Manigandan_Gopalakirshnan@cable.comcast.com>
 Subject: [PATCH] : Update to latest metro revision in 2017 branch
 Patch to add Cookie APIs in libsoup-2.4 to avoid compilation error in latest revision on wpe-20170728
 Source: COMCAST d3767f0cd38473f296f66d157495fc9b655ccfa2 Dec 26 16:11:01 2018
+Upstream-Status: Pending
 Signed-off-by: mgopal003c <Manigandan_Gopalakirshnan@cable.comcast.com>
 diff -aruN libsoup-2.68.4.orig/libsoup/soup-cookie-jar.c libsoup-2.68.4/libsoup/soup-cookie-jar.c
 --- libsoup-2.68.4.orig/libsoup/soup-cookie-jar.c	2021-12-01 09:17:21.735386680 +0000

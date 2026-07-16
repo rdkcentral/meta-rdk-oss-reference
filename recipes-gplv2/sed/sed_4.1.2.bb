@@ -19,7 +19,7 @@ SRC_URI[sha256sum] = "638e837ba765d5da0a30c98b57c2953cecea96827882f594612acace93
 inherit autotools texinfo update-alternatives gettext
 
 do_configure:prepend () {
-	cp ${WORKDIR}/Makevars ${S}/po/
+	cp ${UNPACKDIR}/Makevars ${S}/po/
 }
 
 do_install () {

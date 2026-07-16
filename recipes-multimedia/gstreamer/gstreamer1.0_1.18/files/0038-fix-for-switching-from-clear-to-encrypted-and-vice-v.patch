@@ -2,6 +2,7 @@ Date: Thu, 14 Apr 2022 08:42:44 +0000
 From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] fix for switching from clear to encrypted and vice-versa
 Source: COMCAST bac6d876839e56933cc9eba3c734bdc8187d2fcc Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  gst/isomp4/qtdemux.c | 30 +++++++++++++++++++++++++-----

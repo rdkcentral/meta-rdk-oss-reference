@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Index: xz-5.2.6/tests/test_compress.sh
 ===================================================================
 --- xz-5.2.6.orig/tests/test_compress.sh

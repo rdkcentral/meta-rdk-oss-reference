@@ -1,6 +1,7 @@
 Date: Apr 6, 2023
 From: nganes961 <nambirajan_ganesan@comcast.com>
 Source: This patch is referred from https://redmine.lighttpd.net/boards/3/topics/6334
+Upstream-Status: Pending
 Subject: NTP time update causing the time jump and results in abrupt Socket closure. So the RA load is failing.
 To fix this, we are converting the time api to monotonic time.
 Signed-off-by:	nganes961 <nambirajan_ganesan@comcast.com>

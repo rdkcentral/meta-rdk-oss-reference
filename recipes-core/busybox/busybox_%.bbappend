@@ -22,7 +22,6 @@ SRC_URI += " \
    file://enable_ar.cfg \
    file://busybox-support-chinese-display.patch \
    ${VERSION_PATCHES} \
-   file://0001-add-ENABLE_FEATURE_SYSTEMD-and-use-it-in-syslogd.patch \
    file://busybox-1.31-ping-mdev-support.patch \
    file://pgrep.cfg \
    "
@@ -34,6 +33,14 @@ SRC_URI:append:broadband = " file://Udhcpc_Early_Background.patch"
 SRC_URI:remove:broadband += " \
    file://blkid.cfg \
    "
+
+do_configure:append() {
+    # Ensure math macros and math functions are explicitly injected into ping.c safely
+    if [ -f ${S}/networking/ping.c ]; then
+        sed -i '1s/^/#include <sys\/cdefs.h>\n#include <math.h>\n/' ${S}/networking/ping.c
+    fi
+}
+TARGET_LDFLAGS:append:pn-busybox = " -lm"
 
 VERSION_PATCHES ?= ""
 VERSION_PATCHES:append:client = " file://busybox-1.35-udhcp-trigger-milestones.patch"

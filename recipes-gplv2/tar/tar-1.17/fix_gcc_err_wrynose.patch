@@ -1,0 +1,19 @@
+Source: RDKM
+Upstream-Status: Pending
+Index: tar-1.17/src/names.c
+===================================================================
+--- tar-1.17.orig/src/names.c
++++ tar-1.17/src/names.c
+@@ -27,8 +27,12 @@
+ 
+ /* User and group names.  */
+ 
++#if ! HAVE_DECL_GETGRNAM
+ struct group *getgrnam ();
++#endif
++#if ! HAVE_DECL_GETPWNAM
+ struct passwd *getpwnam ();
++#endif
+ #if ! HAVE_DECL_GETPWUID
+ struct passwd *getpwuid ();
+ #endif

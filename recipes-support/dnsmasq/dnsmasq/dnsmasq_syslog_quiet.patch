@@ -3,6 +3,7 @@ From: apattu200 <alagupandi_pattu@comcast.com>
 Subject: mute info,debug,notice level logs if we are not in
 debug mode
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: apattu200 <alagupandi_pattu@comcast.com>
 --- dnsmasq-2.83_orig/src/log.c	2021-03-31 13:34:07.806381135 +0000
 +++ dnsmasq-2.83/src/log.c	2021-03-31 13:35:57.406138866 +0000

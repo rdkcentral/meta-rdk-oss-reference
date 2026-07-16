@@ -3,6 +3,7 @@ Date: Tue March 2 16:50:00 2021 +0000
 From: Matthew Golab <matthew.golab@sky.uk>
 Subject: [PATCH] Fix issue where "wpa_cli status" incorrectly reports "ieee80211ac=1" when operating in AX mode.
 Source: SKY
+Upstream-Status: Pending
 Signed-off-by: Matthew Golab <matthew.golab@sky.uk>
 #####################################################################
 

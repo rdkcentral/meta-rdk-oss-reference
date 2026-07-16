@@ -3,6 +3,7 @@ From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] gst1.18 XRE-12082: Reset eos on appsrc on send flush
  event
 Source: COMCAST a6b6703a0dc08c1ee5b03c12223bd35f72ab707a Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  gst-libs/gst/app/gstappsrc.c | 1 +

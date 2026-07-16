@@ -2,6 +2,7 @@ Date: Tue, 26 Oct 2021 15:16:15 +0000
 From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] gst plugins good stubs-soft.h not existing error
 Source: COMCAST ddd574e4204df9d82f73aa37dab03ccff1508f5c Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  ext/taglib/meson.build | 2 +-

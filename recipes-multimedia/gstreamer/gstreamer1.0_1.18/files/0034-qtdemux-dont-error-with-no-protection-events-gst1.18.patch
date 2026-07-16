@@ -4,6 +4,7 @@ Subject: [PATCH] qtdemux: do not error if with no protection events
 This is necessary in cases like CMAF where there won't be any events
 passing thru.
 Source: COMCAST dcd712077f1a172a3bc1476fedea4a85e7340f57 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  gst/isomp4/qtdemux.c | 24 +++++++++++++++++++++---

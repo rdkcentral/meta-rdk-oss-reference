@@ -7,6 +7,7 @@ poking at tools especially in cross env Fixes errors like
 linking -mnan=2008 module with previous -mnan=legacy modules
 failed to merge target specific data of file -Khem
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: pnandyala <pavan.nandyala@lnttechservices.com>
 
 Index: ffmpeg-3.1.1/configure

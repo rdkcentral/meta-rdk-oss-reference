@@ -5,6 +5,7 @@ Subject: [PATCH] Set objects base name as a module name
          the name for a module if it exists(Commit id - 3e56ef9d4e328142c07605a0bde1dfd2ed122611 and 5085b1d0df9c4b6f0f32b100f88611bc2beb3c09).
          This caused a regression in BT extraction with rdk tools. So reverting this change and used base name of a object as in morty version. 
 Source: COMCAST 5e52b80887d518f729dcaecdca14f80205d9702d Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 
 Index: git/src/client/linux/minidump_writer/linux_dumper.cc

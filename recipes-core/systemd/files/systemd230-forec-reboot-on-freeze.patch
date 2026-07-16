@@ -3,6 +3,7 @@ From: Vinu Palackal <Vinu_P@cable.comcast.com>
 Subject: [PATCH] XONE-19886: force reboot on systemd freeze
         Added a force reboot to ensure the box reboot on systemd freeze
 Source: COMCAST a91e26dc7ea57c67227898c2a8cfb685795db173 Sep 20, 2019 2:46 PM
+Upstream-Status: Pending
 Signed-off-by: Vinu Palackal <Vinu_P@cable.comcast.com>
 ---
 

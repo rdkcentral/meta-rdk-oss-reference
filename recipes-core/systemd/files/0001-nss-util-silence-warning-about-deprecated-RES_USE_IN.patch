@@ -15,6 +15,7 @@ DEPRECATED_RES_USE_INET6 which can be used without emitting a warning, but
 it's not exported publicly. Let's do the same, and just copy the definition
 to our header.
 Source: COMCAST 6154d33de3f15bbd5d5df718103af9c37ba0a768 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  src/basic/nss-util.h | 6 +++++-

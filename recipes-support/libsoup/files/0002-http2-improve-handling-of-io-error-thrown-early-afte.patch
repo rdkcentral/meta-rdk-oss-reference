@@ -1,6 +1,7 @@
 From 5235703b5c541a874a702c6881721e5d585bf0ba Mon Sep 17 00:00:00 2001
 From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 Date: Tue, 19 Aug 2025 20:01:55 +0000
+Upstream-Status: Pending
 Subject: [PATCH 2/3] [http2] improve handling of io error thrown early after
  handshake
 

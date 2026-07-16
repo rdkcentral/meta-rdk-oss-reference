@@ -6,6 +6,7 @@ that will update cookies from backing storage if needed.
 Implement it for Cookie Jar DB (sqlite3) based on 'data_version'
 sqlite PRAGMA cmd.
 Source: COMCAST 691fc1e83338d5ccb242fdcf766a3afd7b980621 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
 ---
  libsoup/soup-cookie-jar-db.c | 91 ++++++++++++++++++++++++++++++++++++

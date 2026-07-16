@@ -17,6 +17,7 @@ The laccess() macros was added to systemd some time ago and it's not
 clear if or why it needs to return success for broken symlinks. Maybe
 just historical and not actually necessary or desired behaviour?
 Source: a296b6111394637a9d191873d94db8d6e63a293d Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
 ---
  src/basic/fs-util.h          | 22 +++++++++++++++++++++-

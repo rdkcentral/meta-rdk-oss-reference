@@ -19,6 +19,7 @@ Features/BugFix:  IPv6-Basics
    notifyExpiredInfo() which will be invoked upon expiry of 
    addresses/prefixes.
 Source: Deustche Telekom
+Upstream-Status: Pending
 Signed-off-by: Arunkumar Sivadasan <arunkumar.sivadasan@sky.uk>
 ####################################################################
 Index: git/ClntTransMgr/ClntTransMgr.cpp

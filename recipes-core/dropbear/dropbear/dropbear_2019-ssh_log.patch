@@ -2,6 +2,7 @@ Date: Dec 30 2021
 From: plaksh175 <PiramanayagamMoneka_Lakshmi@comcast.com>
 Subject: Enabling dropbear ssh logging to save the executed ssh commands in rdk_shell.log
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: plaksh175 <PiramanayagamMoneka_Lakshmi@comcast.com>
 Index: dropbear-2019.78/dbutil.c
 ===================================================================

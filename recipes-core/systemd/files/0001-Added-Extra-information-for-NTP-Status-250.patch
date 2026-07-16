@@ -2,6 +2,7 @@ Date: Sat, 5 Aug 2023 02:39:48 +0000
 From: mselva006c <mani_selvaraj@comcast.com>
 Subject: [PATCH] Added Extra  information fro NTP Status.
 Source: COMCAST 4a977ff3dafbfb74f3183b40ca859a8f0e2512e8 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  src/timesync/timesyncd-manager.c | 11 ++++++++++-

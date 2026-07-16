@@ -4,6 +4,7 @@ Subject: [PATCH] Subject: [PATCH] DELIA-12070: authservice Token expiry issue
         Modified the ntp-event trigger to reflect the NTP server timings
         Ensure authservice startup after ntp-event and authservice communications
 Source: COMCAST f5a3f2bc4468f3aec882eaa2801aa8ed2acb7540 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  src/timesync/timesyncd-manager.c | 2 ++

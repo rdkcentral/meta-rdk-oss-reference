@@ -2,6 +2,7 @@ Date: Fri 4 June 14:00:00 EST 2021
 From: Chandresh Pitty <Chandresh.Pitty@cable.comcast.com>
 Subject: Delay systemd-rfkill startup on boot
 Source: Comcast systemd-rfkill Fri 4 June 14:00:00 EST 2021
+Upstream-Status: Pending
 Signed-off-by: Chandresh Pitty <Chandresh.Pitty@cable.comcast.com>
 ---
 Index: git/units/systemd-rfkill.service.in

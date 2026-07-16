@@ -3,6 +3,7 @@ From: Ben Gray <ben.gray@sky.uk>
 Date: Thu, 26 Feb 2026 19:28:07 +0000
 Subject: [PATCH] handle revoked evdev devices
 Source: COMCAST 
+Upstream-Status: Pending
 Signed-off-by: Ganesh Sahu <ganeshprasad_sahu@comcast.com>
 
 ---

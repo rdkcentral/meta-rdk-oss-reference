@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI:append = " file://005_modify_CA_Bundle_path_kirkstone.patch"
+#SRC_URI:append = " file://005_modify_CA_Bundle_path_kirkstone.patch"
 
 SRC_URI:append:class-nativesdk = " file://0001-esdk-cert-path-issue_kirkstone.patch"
 

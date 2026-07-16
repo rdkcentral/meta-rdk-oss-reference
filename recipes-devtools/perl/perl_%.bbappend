@@ -28,3 +28,11 @@ perl_package_preprocess_reduced () {
             ${PKGD}${libdir}/perl5/${PV}/${TARGET_ARCH}-linux/Config_git.pl \
             ${PKGD}${libdir}/perl5/${PV}/${TARGET_ARCH}-linux/Config_heavy.pl
 }
+
+EXTRA_OECONF:append = " -Ui_ndbm -Ui_dbm"
+
+do_configure:prepend() {
+    # Forcefully prevent the config system from enabling ndbm
+    sed -i 's/i_ndbm=define/i_ndbm=undef/g' ${S}/hints/linux.sh || true
+    sed -i 's/i_dbm=define/i_dbm=undef/g' ${S}/hints/linux.sh || true
+}

@@ -4,6 +4,7 @@ Subject: Adds support for OPTIONS HTTP preflight request.
 It enables Lightning based application to access
 SessionMgr API from WEB Browsers.
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 ---
 

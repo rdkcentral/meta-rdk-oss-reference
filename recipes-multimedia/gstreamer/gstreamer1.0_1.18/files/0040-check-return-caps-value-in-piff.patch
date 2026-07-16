@@ -9,6 +9,7 @@ https://developers.canal-plus.com/rx-player/upc/?appTileLocation=[object%20Objec
 Fix was applied to gstreamer upstream (will be present in version 1.21.90):
 https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/3535
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: Jacek Skiba <jacek.skiba@consult.red>
 
 diff --git a/gst/isomp4/qtdemux.c b/gst/isomp4/qtdemux.c

@@ -2,6 +2,7 @@ Date: Jun 05 2025
 From: Aravindan NC <nc.aravindan@gmail.com>
 Subject: Add NetworkManager component in RDKE
 Source: RDKCENTRAL
+Upstream-Status: Pending
 Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
 Index: NetworkManager-1.43.7/data/NetworkManager.service.in
 ===================================================================

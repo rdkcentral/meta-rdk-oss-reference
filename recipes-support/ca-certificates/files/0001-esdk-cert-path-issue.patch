@@ -4,6 +4,7 @@ Subject: [PATCH] esdk cert path issue. The esdk installation and git secure chec
 opensource repos were failing due to broken ca-certificates.crt softlink
 with comcast specific changes.
 Source: COMCAST c43c2d95b9c97f3d6a966ee5cdfdde9d62d75ed8 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 ---
  sbin/update-ca-certificates | 4 +++-

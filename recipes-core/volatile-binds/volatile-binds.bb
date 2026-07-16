@@ -59,7 +59,7 @@ END
         sed -i -e '/^ConditionPathIsReadWrite=!/d' tmp-snmpd.conf.service
     fi
 }
-do_compile[dirs] = "${WORKDIR}"
+do_compile[dirs] = "${UNPACKDIR}"
 
 do_install () {
     install -d ${D}${base_sbindir}
@@ -69,14 +69,14 @@ do_install () {
     for service in ${SYSTEMD_SERVICE:${PN}}; do
         install -m 0644 $service ${D}${systemd_unitdir}/system/
     done
-    install -m 0644 ${WORKDIR}/var-lib.mount ${D}${systemd_unitdir}/system/
+    install -m 0644 ${UNPACKDIR}/var-lib.mount ${D}${systemd_unitdir}/system/
 }
 
 do_install:append:broadband ()  {
     rm -f ${D}${systemd_unitdir}/system/var-lib.mount
 }
 
-do_install[dirs] = "${WORKDIR}"
+do_install[dirs] = "${UNPACKDIR}"
 
 SYSTEMD_SERVICE:${PN} += "var-lib.mount"
 SYSTEMD_SERVICE:${PN}:remove:broadband += "var-lib.mount"

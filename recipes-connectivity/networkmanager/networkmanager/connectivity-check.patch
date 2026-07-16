@@ -2,6 +2,7 @@ Date: Jul 16 2025
 From: Sindhuja <sindhu.muthu25@gmail.com>
 Subject: Enable connectivity check in NetworkManager
 Source: RDKCENTRAL
+Upstream-Status: Pending
 Signed-off-by: Sindhuja M <sindhu.muthu25@gmail.com>
 Index: NetworkManager-1.43.7/src/core/nm-connectivity.c
 ===================================================================

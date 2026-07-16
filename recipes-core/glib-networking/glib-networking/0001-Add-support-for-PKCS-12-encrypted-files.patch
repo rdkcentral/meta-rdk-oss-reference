@@ -1,6 +1,7 @@
 From 242c22bca7a03350ec179e679b4de7c66a576d97 Mon Sep 17 00:00:00 2001
 From: Patrick Griffis <pgriffis@igalia.com>
 Date: Wed, 1 Sep 2021 15:22:34 -0500
+Upstream-Status: Pending
 Subject: [PATCH] Add support for PKCS #12 encrypted files
 
 Part-of: <https://gitlab.gnome.org/GNOME/glib-networking/-/merge_requests/184>

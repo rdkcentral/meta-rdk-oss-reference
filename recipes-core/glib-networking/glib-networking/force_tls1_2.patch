@@ -3,6 +3,7 @@ From: Igor Borovkov <Igor_Borovkov@cable.comcast.com>
 Subject: [PATCH] RDK-22987: enforcing TLS 1.2
 	TLS 1.2 minimal
 Source: COMCAST aef8e592533d1d806a7b46ce836c6929bd9569d1 Apr 01 18:05:22 2019
+Upstream-Status: Pending
 Signed-off-by: Igor Borovkov <Igor_Borovkov@cable.comcast.com>	
 ---
 

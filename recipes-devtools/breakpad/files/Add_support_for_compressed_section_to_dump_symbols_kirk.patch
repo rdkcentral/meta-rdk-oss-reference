@@ -5,6 +5,7 @@ Reviewed-on: https://chromium-review.googlesource.com/c/breakpad/breakpad/+/3938
 Reviewed-by: Manoj Gupta <manojgupta@chromium.org>
 Reviewed-by: Joshua Peraza <jperaza@chromium.org>
 Source: https://github.com/google/breakpad/commit/de086a98595f68715c1dce9860f77014a2a1b187
+Upstream-Status: Pending
 Signed-off-by: thulasiram_kadiyala <thulasiram_kadiyala@comcast.com>
 
 Index: git/Makefile.am

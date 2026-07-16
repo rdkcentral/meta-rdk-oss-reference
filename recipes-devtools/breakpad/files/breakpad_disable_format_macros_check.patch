@@ -1,6 +1,7 @@
 Date: Mar 13, 2023
 From: Mariusz Strozynski <mariusz.strozynski@consult.red>
 Source: COMCAST
+Upstream-Status: Pending
 Subject: Exclude floating point registers in mixmode
 Signed-off-by: Mariusz Strozynski <mariusz.strozynski@consult.red>
 diff --git a/src/google_breakpad/common/breakpad_types.h b/src/google_breakpad/common/breakpad_types.h

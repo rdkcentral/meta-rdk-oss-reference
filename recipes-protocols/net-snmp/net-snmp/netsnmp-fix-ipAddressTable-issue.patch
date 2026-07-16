@@ -9,6 +9,7 @@ was considered in ipAddressTable MIB. The entries of the physical interface were
 duplicates and were neglected. Hence, physical address entries wont be listed in the ipAddressTable MIB 
 
 Source: Comcast
+Upstream-Status: Pending
 
 Signed-off-by: Geethu Theres K <Geethu_TheresK@comcast.com>
 

@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b1e01b26bacfc2232046c90a330332b3"
 SRCREV = "fbb9440ae2bc1118866baefcea7ff814f16613dd"
 SRC_URI = "git://github.com/Comcast/trower-base64.git;branch=main"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit pkgconfig cmake
 

@@ -3,7 +3,7 @@ Date: 24 May, 2020 12:55 PM
 From: 998a1686cbc202d2a5f3b4bc3933719cb13aaebd
 Subject:   Fix a buffer overflow triggered by processing getnext
 Source: http://git.code.sf.net/p/net-snmp/code V5.8-patches
-Upstream-Status: Merged
+Upstream-Status: Pending
 Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
 ###########################################################
 From 998a1686cbc202d2a5f3b4bc3933719cb13aaebd Mon Sep 17 00:00:00 2001

@@ -1,6 +1,7 @@
 Date: Dec 1, 2022
 From: Song Zhao <song.zhao@amlogic.com>
 Source: AMLOGIC
+Upstream-Status: Pending
 Subject: install dma-buf.h to kernel header files
 Signed-off-by: Song Zhao <song.zhao@amlogic.com>
 Index: linux-4.9/include/uapi/linux/Kbuild

@@ -2,6 +2,7 @@ Date: Jan 15, 2016 2:25 AM
 From: 74df33a08b6ccc08704fecc6c4874195d5888f06 Jan 15, 2016 2:32 AM
 Subject: [PATCH] : Log files created is not becoming 0 bytes Some log4c patches were missing in Yocto
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: achelakkode <anoopnair_c@infosys.com>
 ---
 

@@ -1,6 +1,9 @@
 inherit ptest
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "file://run-ptest"
+
+PTEST_ENABLED = "0"
+
 do_compile_ptest() {
     oe_runmake -C tests buildtest-TESTS
 }

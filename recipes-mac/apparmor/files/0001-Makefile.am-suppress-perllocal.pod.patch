@@ -2,6 +2,7 @@ Date: Fri, 20 Sep 2019 18:53:53 +0800
 From: Naveen Saini <naveen.kumar.saini@intel.com>
 Subject: [PATCH] Makefile.am: suppress perllocal.pod
 Source: 9f9cfbf07214ac68a55372a3c2777192765cbeb9 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Naveen Saini <naveen.kumar.saini@intel.com>
 ---
  libraries/libapparmor/swig/perl/Makefile.am | 2 +-

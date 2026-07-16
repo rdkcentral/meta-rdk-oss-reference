@@ -3,6 +3,7 @@ From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] gst plugins base stubs-soft.h not existing compilation
  error
 Source: COMCAST 6af349727d89c8878605ce2284d2008d67150ad6 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Tony Paul <Tony_Paul@comcast.com>
 ---
  tests/check/meson.build | 3 ++-

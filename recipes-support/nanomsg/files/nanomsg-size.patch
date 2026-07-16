@@ -4,6 +4,7 @@ From: Sadhyama Vengilat <Sadhyama_Vengilat2@cable.comcast.com>
 Subject: [PATCH] WEBPA-1980 : Nanomsg size reduction to bring parodus
 Created new nanomsg patch to reduce libnanomsg.so size and to fit parodus on image.
 Source: COMCAST 288253c94d1c6d63d14db90cb362d23db3710720 Apr 11 01:51:30 2017
+Upstream-Status: Pending
 Signed-off-by: Sadhyama Vengilat <Sadhyama_Vengilat2@cable.comcast.com>
 ---
 

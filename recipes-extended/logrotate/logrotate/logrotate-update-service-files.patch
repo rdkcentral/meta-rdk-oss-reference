@@ -3,6 +3,7 @@ From: Anbukannadhasan <anbukannadasan.kar@sky.uk>
 Subject: [PATCH] logrotate-update-service-files.patch: Used to copy the created service files to the module
 Service file will be copied to system path and execute accordingly
 Source: https://github.com/logrotate/logrotate/
+Upstream-Status: Pending
 Signed-off-by: Anbukannadhasan <anbukannadasan.kar@sky.uk>
 
 diff -Naur logrotate-3.21.0.orig/logrotate_hdd.conf logrotate-3.21.0/logrotate_hdd.conf

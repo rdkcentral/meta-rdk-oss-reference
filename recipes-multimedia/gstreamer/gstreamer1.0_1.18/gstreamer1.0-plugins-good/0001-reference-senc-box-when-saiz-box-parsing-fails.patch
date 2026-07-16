@@ -3,6 +3,7 @@ From: kkanag314 <krishnapriya_kanagaraj@comcast.com>
 Subject: [PATCH] For CBCS contents,If the saiz box doesn't have a valid value in the sample_count and default_sample_aux_info_sizes ,reference the senc box for auxilary information .
 If saiz box parsing is failed and the mp4 segment doesn't have a senc box , then return fail
 Source: COMCAST 8403614cd33bef0371c9b2ba930c9f5a9aac5800 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: kkanag314 <krishnapriya_kanagaraj@comcast.com>
 
 ---

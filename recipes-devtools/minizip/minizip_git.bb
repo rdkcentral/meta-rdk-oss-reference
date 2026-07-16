@@ -9,7 +9,7 @@ PR = "r0"
 SRC_URI = "git://github.com/nmoinvaz/minizip.git;branch=1.2;protocol=http"
 SRCREV = "71ef99f6a051c11652502cf31cfef292de2e7736"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${PN}-${PV}"
 B = "${WORKDIR}/git"
 
 EXTRA_OECMAKE += "-DUSE_AES=OFF -DBUILD_SHARED_LIBS=ON"

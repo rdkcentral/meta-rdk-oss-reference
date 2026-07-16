@@ -3,6 +3,7 @@ From:  Anu Chacko <achacko.contractor@libertyglobal.com>
 Subject: [PATCH] RDKBDEV83- Device Gateway Association using Manageable Device
          To get the list of IPv4 manageable devices
 Source: LIBERTYGLOBAL 7e4df1709357b0f764e2e72e27f7a6da86878ffb  15 Jan 2020 15:14:52
+Upstream-Status: Pending
 Signed-off-by: Anu Chacko <achacko.contractor@libertyglobal.com>
 ---
 diff -ruN dnsmasq-2.83.orig/src/rfc2131.c dnsmasq-2.83/src/rfc2131.c

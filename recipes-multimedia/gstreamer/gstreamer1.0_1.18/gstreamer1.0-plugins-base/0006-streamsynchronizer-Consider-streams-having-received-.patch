@@ -33,6 +33,7 @@ implemented in this patch consists on recording when the stream-start event is
 received and then consider those started streams equally valid as those in
 waiting state when evaluating if all the streams should be unblocked.
 Source: https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/4544 
+Upstream-Status: Pending
 6a85fac4525a9865b560cb39a60b46a9bfdebac5 Mon Sep 17 00:00:00 2001
 Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
 ---

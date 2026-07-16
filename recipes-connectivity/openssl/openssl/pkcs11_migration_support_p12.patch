@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Index: openssl-3.0.5/crypto/evp/p_legacy.c
 ===================================================================
 --- openssl-3.0.5.orig/crypto/evp/p_legacy.c

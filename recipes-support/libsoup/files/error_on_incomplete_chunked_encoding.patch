@@ -2,6 +2,7 @@ Date: Thu, 4 Mar 2021 11:40:24 +0000
 From: cmurug728 <Chockalingam_Murugan@comcast.com>
 Subject: [PATCH] libsoup: signal error on incomplete chunked encoding
 Source: COMCAST 51d147998e5767fff06bb6b231fa3ac20ee51687 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: cmurug728 <Chockalingam_Murugan@comcast.com>
 
 ---

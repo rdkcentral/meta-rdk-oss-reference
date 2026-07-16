@@ -3,6 +3,7 @@ From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy
 Subject: [PATCH] In our echo system we are managing last known good time.
  Removing setting of time in timesyncd initialization.
 Source: COMCAST 82cb08fa39617908ddd43182fbddfb352017a225 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Recreated from https://gerrit.teamccp.com/#/c/703327/2/recipes-core/systemd/files/0001-In-our-echo-system-we-are-managing-last-known-good-t.patch
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 ---

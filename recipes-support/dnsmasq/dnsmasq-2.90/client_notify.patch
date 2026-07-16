@@ -5,6 +5,7 @@ Subject: [PATCH] RDKB-22539:[Presence] Device Join/leave detection.
     presence of connected clients using Arp message (ipv4),
     neighbour solicitation (ipv6).
 Source: COMCAST
+Upstream-Status: Pending
 Signed-off-by: apalan608 <arunkumar_palanichamy@comcast.com>
 
 Index: dnsmasq-2.90/Makefile

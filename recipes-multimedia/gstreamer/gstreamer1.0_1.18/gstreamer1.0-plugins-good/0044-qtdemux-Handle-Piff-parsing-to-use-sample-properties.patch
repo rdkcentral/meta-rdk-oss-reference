@@ -5,6 +5,7 @@ instead of default properties, if available
 DELIA-61231 : [AAMP][Charter] Playback failure with keyrotation on Packager 1246
 Handle piff parsing to use sample properties kid if available.
 Source: COMCAST 0ebb34b32dda02115caf472c132679420695e005 Mon Sep 17 00:00:00 2001
+Upstream-Status: Pending
 Signed-off-by: Alsameema.A <Alsameema_AhmedAnsar@Comcast.Com>
 ---
  gst/isomp4/qtdemux.c | 10 ++++++++--
