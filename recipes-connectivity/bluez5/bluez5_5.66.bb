@@ -67,3 +67,4 @@ NOINST_TOOLS_BT ?= " \
     profiles/iap/iapd \
     ${@bb.utils.contains('PACKAGECONFIG', 'btpclient', 'tools/btpclient', '', d)} \
 "
+PR = "r5"
