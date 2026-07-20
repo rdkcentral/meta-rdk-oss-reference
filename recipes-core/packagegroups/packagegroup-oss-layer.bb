@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.12.0"
+PV = "4.13.0"
 PR = "r0"
 
 # poky components
@@ -186,6 +186,7 @@ RDEPENDS:${PN} += "\
      googletest \
      grpc \
      gssdp \
+     gssdp16 \
      hiredis \
      iperf3 \
      jsonrpc \
@@ -261,6 +262,7 @@ RDEPENDS:${PN} += "\
      dnsmasq \
      dosfstools \
      essos \
+     essosrmgr \
      fcgi \
      findutils \
      gawk \
@@ -355,6 +357,7 @@ RDEPENDS:${PN}:remove += "\
      cairo \
      dropbear \
      essos \
+     essosrmgr \
      gstreamer1.0 \
      gstreamer1.0-libav \
      gstreamer1.0-meta-base \

@@ -1,8 +1,8 @@
+SUMMARY = "This recipe compiles the westeros compositor component"
+
 include westeros.inc
 
-SUMMARY = "This receipe compiles the westeros compositor component"
-
-LICENSE = "Apache-2.0"
+SRC_URI = "${WESTEROS_URI}"
 
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
@@ -36,3 +36,9 @@ do_compile:prepend() {
    oe_runmake -C ${S}/linux-dmabuf/protocol
    oe_runmake -C ${S}/linux-expsync/protocol
 }
+
+do_install:append() {
+    install -m 0644 ${S}/*.h ${D}${includedir}/
+}
+
+FILES:${PN}-dev += "${includedir}/*.h"
