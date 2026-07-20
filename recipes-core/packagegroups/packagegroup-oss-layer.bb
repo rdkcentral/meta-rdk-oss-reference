@@ -82,7 +82,6 @@ RDEPENDS:${PN} = "\
      libgpg-error \
      libgudev \
      libical \
-     libidn2 \
      libinput \
      libjpeg \
      libmd \
