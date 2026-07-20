@@ -15,6 +15,9 @@ EXTRA_OECONF += "${@bb.utils.contains('DISTRO_FEATURES', 'largefile', 'ac_cv_siz
 PACKAGECONFIG:append = " ipv6 "
 PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6,"
 
+PACKAGECONFIG:remove = "libidn"
+EXTRA_OECONF:append = " --without-libidn2"
+
 inherit ptest
 
 do_compile_ptest() {
