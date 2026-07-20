@@ -16,7 +16,7 @@ RDKE_GITHUB_BRANCH ?= "nobranch=1"
 RDKE_GITHUB_SRC_URI_SUFFIX ?= "protocol=${RDKE_GITHUB_PROTOCOL};${RDKE_GITHUB_BRANCH}"
 
 INCOMPATIBLE_LICENSE = "LGPL-3.0-or-later LGPL-3.0-only GPL-3.0-or-later GPL-3.0-only"
-require license_flags_accepted.inc
+require license_flags_accepted.inc add-non-root-user-group.inc
 
 #Use or Enable following distro feature if you want to enable gplv3 components such as tar, gdb which are used for debugging purpose
 #DISTRO_FEATURES:append = " build_gplv3"
@@ -25,6 +25,3 @@ INCOMPATIBLE_LICENSE_EXCEPTIONS += "${@bb.utils.contains('DISTRO_FEATURES','buil
 
 require package_revisions_oss.inc
 BBMASK .= "|${RDKROOT}/rdke/common/meta-rdk-oss-reference/recipes-connectivity/bluez5/bluez5_5.77*"
-
-# Root-equivalent SSH user for dropbear (dev/vbn variants only)
-IMAGE_CLASSES += "testuser1-support"
