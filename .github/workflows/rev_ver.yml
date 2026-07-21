@@ -1,4 +1,4 @@
-name: Validate Manifest Revision Policy
+name: Validate Manifest Revision version Policy
 
 on:
   pull_request:
