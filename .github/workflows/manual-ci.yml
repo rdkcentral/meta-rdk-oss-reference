@@ -3,47 +3,95 @@ name: OSS Release Dry Run
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: "Execution mode"
+        required: true
+        default: "run"
+        type: choice
+        options:
+          - preview
+          - run
+
+      manifest_repo:
+        description: "Manifest repository (owner/repo)"
+        required: true
+        default: "rdk-e/rdke-oss-manifest"
+
       last_release_tag:
-        description: "Previous Release Tag"
+        description: "Last release tag"
         required: true
         default: "4.13.0"
 
       next_release_tag:
-        description: "Next Release Tag"
+        description: "Next release tag"
         required: true
         default: "4.14.0"
 
       release_type:
-        description: "Release Type"
+        description: "Release type"
         required: true
         default: "major"
         type: choice
         options:
           - major
-          - minor
-          - patch
+          - hotfix
+
+      manifest_file:
+        description: "Manifest file"
+        required: false
+        default: "rdk-oss.xml"
+
+      default_compare_branch:
+        description: "Default compare branch (optional)"
+        required: false
+        default: ""
+
+      repo_compare_overrides:
+        description: "Repo compare overrides (optional)"
+        required: false
+        default: ""
 
 jobs:
   release-dry-run:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+    permissions:
+      contents: read
 
-      - uses: actions/setup-python@v5
+    env:
+      RDK_E_GITHUB_TOKEN: ${{ secrets.RDK_E_GITHUB_TOKEN }}
+      RDKCENTRAL_GITHUB_TOKEN: ${{ secrets.RDKCENTRAL_GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Execute Release Dry Run
-        env:
-          RDK_E_GITHUB_TOKEN: ${{ secrets.RDK_E_GITHUB_TOKEN }}
-          RDKCENTRAL_GITHUB_TOKEN: ${{ secrets.RDKCENTRAL_GITHUB_TOKEN }}
+      - name: Verify Python
+        run: |
+          python --version
+
+      - name: Run Release Dry Run Script
         run: |
           python3 release_dry_run.py \
-            --mode run \
-            --manifest-repo rdk-e/rdke-oss-manifest \
+            --mode "${{ inputs.mode }}" \
+            --manifest-repo "${{ inputs.manifest_repo }}" \
             --last-release-tag "${{ inputs.last_release_tag }}" \
             --next-release-tag "${{ inputs.next_release_tag }}" \
             --release-type "${{ inputs.release_type }}" \
+            --manifest-file "${{ inputs.manifest_file }}" \
+            --default-compare-branch "${{ inputs.default_compare_branch }}" \
+            --repo-compare-overrides "${{ inputs.repo_compare_overrides }}" \
             --rdk-e-token "$RDK_E_GITHUB_TOKEN" \
             --rdkcentral-token "$RDKCENTRAL_GITHUB_TOKEN"
+
+      - name: Upload Report Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dry-run-report
+          path: out/
