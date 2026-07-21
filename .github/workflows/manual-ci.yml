@@ -1,32 +1,326 @@
-# This is a basic workflow that is manually triggered
+name: Validate Manifest Revision version Policy
 
-name: Manual workflow
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
-  workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Type of test : [Sanity, Quick, L1, L2]'
-        # Default value if no value is explicitly provided
-        default: 'Sanity'
-        # Input has to be provided for the workflow to run
-        required: true
-        # The data type of the input
-        type: string
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
+  validate-manifest:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Runs a single command using the runners shell
-    - name: Run CI tests
-      run: echo "Executing ${{ inputs.name }}"
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Manifest Revision Rules
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          cat > validate_manifest_revision.py << 'EOF'
+          #!/usr/bin/env python3
+
+          import os
+          import re
+          import subprocess
+          import sys
+          from dataclasses import dataclass
+
+
+          @dataclass
+          class Component:
+              name: str
+              version: str
+              revision: str
+              srcrev: str
+
+
+          def run(cmd):
+              return subprocess.check_output(
+                  cmd,
+                  shell=True,
+                  text=True
+              ).strip()
+
+
+          def get_changed_files(base_sha, head_sha):
+              output = run(f"git diff --name-only {base_sha} {head_sha}")
+
+              files = []
+
+              for file in output.splitlines():
+                  if file.endswith((".xml", ".inc", ".conf")):
+                      files.append(file)
+
+              return files
+
+          def get_file_content(revision, filepath):
+              try:
+                  return run(
+                      f"git show {revision}:{filepath}"
+                  )
+              except Exception:
+                  return ""
+
+          def parse_component(content):
+              version = ""
+              revision = ""
+              srcrev = ""
+
+              version_match = re.search(r'version\s*[:=]\s*"?([0-9]+\.[0-9]+\.[0-9]+)', content,re.IGNORECASE)
+              
+              revision_match = re.search(r'r([0-9]+)', content )
+              
+              srcrev_match = re.search(r'(SRCREV|commit|sha)\s*[:= ]\s*"?(.*?)"?$', content, re.MULTILINE)
+             
+              if version_match:
+                  version = version_match.group(1)
+
+              if revision_match:
+                  revision = revision_match.group(1)
+
+              if srcrev_match:
+                  srcrev = srcrev_match.group(2)
+
+              return Component(
+                  name="component",
+                  version=version,
+                  revision=revision,
+                  srcrev=srcrev
+              )
+
+
+          def compare_versions(v1, v2):
+              try:
+                  a = list(map(int, v1.split(".")))
+                  b = list(map(int, v2.split(".")))
+
+                  if b > a:
+                      return 1
+
+                  if b == a:
+                      return 0
+
+                  return -1
+
+              except Exception:
+                  return 0
+
+
+          def release_impact_detected(old_content,new_content):
+
+              diff_lines = []
+
+              old = old_content.splitlines()
+              new = new_content.splitlines()
+
+              max_len = max(len(old),len(new))
+
+              for i in range(max_len):
+
+                  before = (
+                      old[i]
+                      if i < len(old)
+                      else ""
+                  )
+
+                  after = (
+                      new[i]
+                      if i < len(new)
+                      else ""
+                  )
+
+                  if before != after:
+                      diff_lines.append(before)
+                      diff_lines.append(after)
+
+              release_patterns = [
+                  "SRCREV",
+                  "commit",
+                  "sha",
+                  "branch",
+                  "SRC_URI",
+                  "repo",
+                  "revision"
+              ]
+
+              for line in diff_lines:
+                  for pattern in release_patterns:
+                      if pattern.lower() in line.lower():
+                          return True
+
+              return False
+
+
+          def error(msg):
+              print(f"ERROR: {msg}")
+
+
+          def success(msg):
+              print(f"SUCCESS: {msg}")
+
+
+          def warning(msg):
+              print(f"WARNING: {msg}")
+
+
+          def main():
+
+              base_sha = os.environ["BASE_SHA"]
+              head_sha = os.environ["HEAD_SHA"]
+
+              files = get_changed_files(base_sha,head_sha )
+
+              if not files:
+                  print("No manifest files changed." )
+                  sys.exit(0)
+
+              overall_success = True
+
+              print("\n========== REVISION VALIDATION REPORT ==========\n")
+
+              for file in files:
+
+                  print(f"\nChecking: {file}" )
+
+                  old_content = get_file_content( base_sha,file )
+
+                  new_content = get_file_content( head_sha, file )
+
+                  old_component = parse_component( old_content)
+                  new_component = parse_component( new_content )
+                  old_revision = int( old_component.revision or "0" )
+
+                  new_revision = int( new_component.revision or "0" )
+
+                  version_changed = ( old_component.version != new_component.version and old_component.version and new_component.version )
+
+                  revision_changed = ( old_revision  != new_revision  )
+
+                  release_impact = ( release_impact_detected( old_content, new_content )  )
+                  print(
+                      f"Version: "
+                      f"{old_component.version} -> "
+                      f"{new_component.version}"
+                  )
+
+                  print(
+                      f"Revision: "
+                      f"r{old_revision} -> "
+                      f"r{new_revision}"
+                  )
+
+                  print(
+                      f"Release Impact: "
+                      f"{release_impact}"
+                  )
+
+                  #
+                  # Version Change
+                  #
+                  if version_changed:
+                      print( "Type: VERSION CHANGE"  )
+                      if compare_versions( old_component.version,new_component.version ) > 0:
+                          if new_revision != 0:
+
+                              overall_success = False
+
+                              error(
+                                  f"{file}: "
+                                  f"Version increased "
+                                  f"but revision "
+                                  f"not reset to r0"
+                              )
+
+                          else:
+
+                              success(
+                                  f"{file}: "
+                                  f"Version updated "
+                                  f"and revision reset"
+                              )
+
+                      else:
+
+                          warning(
+                              f"{file}: "
+                              f"Version changed "
+                              f"but did not increase"
+                          )
+
+                      continue
+
+                  #
+                  # Component Change
+                  #
+                  if release_impact:
+
+                      print( "Type: COMPONENT CHANGE" )
+                      if ( new_revision <= old_revision  ):
+
+                          overall_success = False
+
+                          error(
+                              f"{file}: "
+                              f"Component change "
+                              f"detected but "
+                              f"revision was "
+                              f"not bumped"
+                          )
+
+                      else:
+
+                          success(
+                              f"{file}: "
+                              f"Revision bump "
+                              f"detected"
+                          )
+
+                      continue
+
+                  #
+                  # Revision Only Change
+                  #
+                  if revision_changed:
+                      print("Type: REVISION ONLY CHANGE" )
+                      warning(
+                          f"{file}: "
+                          f"Revision changed "
+                          f"without release "
+                          f"impacting "
+                          f"modification"
+                      )
+                      continue
+
+                  #
+                  # No Impact
+                  #
+                  print( "Type: NO RELEASE IMPACTING CHANGE"  )
+
+                  success(
+                      f"{file}: "
+                      f"No validation issues" )
+                  
+
+              print( "\n===============================================\n"  )
+
+              if not overall_success:
+                  sys.exit(1)
+
+              print( "All validation checks passed.")
+                  
+          if __name__ == "__main__":
+              main()
+          EOF
+
+          python validate_manifest_revision.py
