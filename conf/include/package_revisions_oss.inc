@@ -485,6 +485,12 @@ PACKAGE_ARCH:pn-libnewt ?= "${OSS_LAYER_ARCH}"
 PR:pn-libnl ?= "r1"
 PACKAGE_ARCH:pn-libnl ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libnetfilter-log ?= "r0"
+PACKAGE_ARCH:pn-libnetfilter-log ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libnfnetlink ?= "r0"
+PACKAGE_ARCH:pn-libnfnetlink ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-libnsl2 ?= "r0"
 PACKAGE_ARCH:pn-libnsl2 ?= "${OSS_LAYER_ARCH}"
 
