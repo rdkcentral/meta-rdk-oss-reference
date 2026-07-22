@@ -141,7 +141,7 @@ index a2a5ed6..024599d 100644
 +          GST_TRACER_CHECK_NEED_TS(__l2, need_ts);                 \
 +        }                                                          \
 +        GstClockTime ts = GST_CLOCK_TIME_NONE;                     \
-+        if (need_ts) {
++        if (need_ts) {                                             \
 +          ts = GST_TRACER_TS;                                      \
 +        }                                                          \
 +        GList *__n;                                                \
