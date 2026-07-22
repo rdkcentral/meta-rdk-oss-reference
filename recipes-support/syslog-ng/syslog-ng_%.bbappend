@@ -2,7 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service ', '', d)}"
 
-SRC_URI += "file://0001-Changes-related-to-Monotonic.patch"
+SRC_URI += "file://0001-monotonic-timestamp.patch"
 
 RDEPENDS:${PN}:remove = "gawk"
 inherit update-alternatives
