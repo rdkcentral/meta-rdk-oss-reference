@@ -7,9 +7,9 @@ Subject: [PATCH] Changes related to Monotonic
  lib/template/macros.c                        | 11 +++++++++++
  lib/template/macros.h                        |  1 +
  modules/systemd-journal/journal-reader.c     | 15 +++++++++++++++
- modules/systemd-journal/journald-subsystem.c |  4 ++++
+ modules/systemd-journal/journald-subsystem.c |  7 +++++++
  modules/systemd-journal/journald-subsystem.h |  1 +
- 5 files changed, 32 insertions(+)
+ 5 files changed, 35 insertions(+)
 
 diff --git a/lib/template/macros.c b/lib/template/macros.c
 index 996e33dd3..48f618863 100644
@@ -21,12 +21,12 @@ index 996e33dd3..48f618863 100644
    { "SYSUPTIME",      M_SYSUPTIME },
 +  { "MONOTONIC_TIMESTAMP", M_MONOTONIC_TIMESTAMP },
    { "UNIXTIME",       M_UNIXTIME },
- 
+
    { "R_DATE",           M_RECVD_OFS + M_DATE },
 @@ -766,6 +767,16 @@ log_macro_expand(gint id, LogTemplateEvalOptions *options, const LogMessage *msg
        break;
      }
- 
+
 +    case M_MONOTONIC_TIMESTAMP:
 +    {
 +      gint64 monotonic_usec = g_get_monotonic_time();
@@ -45,7 +45,7 @@ index 23ee8af6a..32e184e6d 100644
 --- a/lib/template/macros.h
 +++ b/lib/template/macros.h
 @@ -62,6 +62,7 @@ enum
- 
+
    M_LOGHOST,
    M_SYSUPTIME,
 +  M_MONOTONIC_TIMESTAMP,
@@ -59,7 +59,7 @@ index c09798769..3f07be2f3 100644
 @@ -301,6 +301,20 @@ _set_message_timestamp(JournalReader *self, LogMessage *msg)
      }
  }
- 
+
 +static void
 +_set_monotonic_timestamp(JournalReader *self, LogMessage *msg)
 +{
@@ -79,19 +79,19 @@ index c09798769..3f07be2f3 100644
  {
 @@ -313,6 +327,7 @@ _handle_message(JournalReader *self)
    journald_foreach_data(self->journal, _handle_data, args);
- 
+
    _set_message_timestamp(self, msg);
 +  _set_monotonic_timestamp(self, msg);
    _set_program(self->options, msg);
    _set_transport(msg);
- 
+
 diff --git a/modules/systemd-journal/journald-subsystem.c b/modules/systemd-journal/journald-subsystem.c
-index 7d71c6f9e..c3ece392a 100644
+index 7d71c6f9e..b2e717530 100644
 --- a/modules/systemd-journal/journald-subsystem.c
 +++ b/modules/systemd-journal/journald-subsystem.c
-@@ -50,6 +50,7 @@ int (*sd_journal_get_fd)(sd_journal *j);
+@@ -49,6 +49,7 @@ int (*sd_journal_test_cursor)(sd_journal *j, const char *cursor);
+ int (*sd_journal_get_fd)(sd_journal *j);
  int (*sd_journal_process)(sd_journal *j);
- int (*sd_journal_get_realtime_usec)(sd_journal *j, uint64_t *usec);
  int (*sd_journal_get_realtime_usec)(sd_journal *j, uint64_t *usec);
 +int (*sd_journal_get_monotonic_usec)(sd_journal *j, uint64_t *usec, sd_id128_t *boot_id);
  int (*sd_journal_add_match)(sd_journal *j, const void *data, size_t size);
@@ -100,13 +100,13 @@ index 7d71c6f9e..c3ece392a 100644
 @@ -139,6 +140,9 @@ _load_journald_symbols(void)
    if (!LOAD_SYMBOL(journald_module, sd_journal_get_realtime_usec))
      return FALSE;
- 
+
 +  if (!LOAD_SYMBOL(journald_module, sd_journal_get_monotonic_usec))
 +    return FALSE;
 +
    if (!LOAD_SYMBOL(journald_module, sd_journal_test_cursor))
      return FALSE;
- 
+
 diff --git a/modules/systemd-journal/journald-subsystem.h b/modules/systemd-journal/journald-subsystem.h
 index a21a6dd65..ec888b1ac 100644
 --- a/modules/systemd-journal/journald-subsystem.h
@@ -119,6 +119,5 @@ index a21a6dd65..ec888b1ac 100644
  VISIBILITY_HIDDEN extern int (*sd_journal_add_match)(sd_journal *j, const void *data, size_t size);
  VISIBILITY_HIDDEN extern char *(*sd_id128_to_string)(sd_id128_t id, char s[SD_ID128_STRING_MAX]);
  VISIBILITY_HIDDEN extern int (*sd_id128_get_boot)(sd_id128_t *ret);
--- 
+--
 2.34.1
-
