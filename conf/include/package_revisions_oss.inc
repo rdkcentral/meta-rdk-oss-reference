@@ -230,7 +230,7 @@ PACKAGE_ARCH:pn-expat ?= "${OSS_LAYER_ARCH}"
 PR:pn-fcgi ?= "r1"
 PACKAGE_ARCH:pn-fcgi ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-file ?= "r1"
+PR:pn-file ?= "r2"
 PACKAGE_ARCH:pn-file ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-findutils ?= "r0"
