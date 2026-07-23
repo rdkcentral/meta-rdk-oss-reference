@@ -25,6 +25,11 @@ LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
 PACKAGE_EXTRA_ARCHS:append = " ${OSS_LAYER_ARCH}"
 
+TOOLCHAIN_LAYER_ARCH = "${@get_oss_arch(d)}-toolchain"
+PACKAGE_EXTRA_ARCHS:append = " ${TOOLCHAIN_LAYER_ARCH}"
+TOOLCHAIN_TARGET_LIBS_URI ?= ""
+IPK_FEED_URIS:append = " ${@(' %s##%s' % (d.getVar('TOOLCHAIN_LAYER_ARCH'), d.getVar('TOOLCHAIN_TARGET_LIBS_URI')) if d.getVar('TOOLCHAIN_TARGET_LIBS_URI') and (not d.getVar('ENABLE_DOCKER_TARGET_TOOLCHAIN_FEED') == '1' or not os.path.isdir(d.getVar('PREBUILT_TOOLCHAIN_TARGET_LIBS') or '')) else '')}"
+
 TARGET_VENDOR ?= "-rdk"
 
 # PREFERRED VERSION settings
@@ -258,10 +263,10 @@ PR:pn-gawk ?= "r4"
 PACKAGE_ARCH:pn-gawk ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-gcc-runtime ?= "r0"
-PACKAGE_ARCH:pn-gcc-runtime ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-gcc-runtime ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-gcc-sanitizers ?= "r0"
-PACKAGE_ARCH:pn-gcc-sanitizers ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-gcc-sanitizers ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-sed ?= "r1"
 PACKAGE_ARCH:pn-sed ?= "${OSS_LAYER_ARCH}"
@@ -282,13 +287,13 @@ PR:pn-glib-2.0 ?= "r0"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc ?= "r1"
-PACKAGE_ARCH:pn-glibc ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-glibc ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-glibc-locale ?= "r0"
-PACKAGE_ARCH:pn-glibc-locale ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-glibc-locale ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-glibc-mtrace ?= "r0"
-PACKAGE_ARCH:pn-glibc-mtrace ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-glibc-mtrace ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-glib-networking ?= "r0"
 PACKAGE_ARCH:pn-glib-networking ?= "${OSS_LAYER_ARCH}"
@@ -435,10 +440,10 @@ PR:pn-libffi ?= "r1"
 PACKAGE_ARCH:pn-libffi ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libgcc ?= "r0"
-PACKAGE_ARCH:pn-libgcc ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-libgcc ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-libgcc-initial ?= "r0"
-PACKAGE_ARCH:pn-libgcc-initial ?= "${OSS_LAYER_ARCH}"
+PACKAGE_ARCH:pn-libgcc-initial ?= "${TOOLCHAIN_LAYER_ARCH}"
 
 PR:pn-libgcrypt ?= "r1"
 PACKAGE_ARCH:pn-libgcrypt ?= "${OSS_LAYER_ARCH}"
