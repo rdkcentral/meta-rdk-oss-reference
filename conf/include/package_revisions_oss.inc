@@ -19,7 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.13.0"
+OSS_LAYER_VERSION = "4.14.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -230,7 +230,7 @@ PACKAGE_ARCH:pn-expat ?= "${OSS_LAYER_ARCH}"
 PR:pn-fcgi ?= "r1"
 PACKAGE_ARCH:pn-fcgi ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-file ?= "r0"
+PR:pn-file ?= "r1"
 PACKAGE_ARCH:pn-file ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-findutils ?= "r0"
