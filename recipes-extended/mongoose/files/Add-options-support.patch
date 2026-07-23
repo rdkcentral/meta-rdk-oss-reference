@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Jul 30 2020
 From: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
 Subject: Adds support for OPTIONS HTTP preflight request.

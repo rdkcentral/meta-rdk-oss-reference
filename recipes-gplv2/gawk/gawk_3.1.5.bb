@@ -42,3 +42,6 @@ do_install:append() {
 	# remove the link since we don't package it
 	rm ${D}${bindir}/awk
 }
+
+# GCC 15 defaults to C23 which breaks K&R-style empty () declarations in old code.
+CFLAGS:append:wrynose = " -std=gnu11"

@@ -35,3 +35,6 @@ do_install_ptest() {
 }
 
 RDEPENDS:${PN}-ptest += "make bash coreutils"
+
+# OE6 wrynose: [build-deps]/[missing-ptest] make/bash/coreutils runtime-only; ptest not in vanilla list
+INSANE_SKIP:${PN}-ptest:append:wrynose = " build-deps missing-ptest"

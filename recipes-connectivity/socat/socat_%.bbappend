@@ -23,3 +23,6 @@ EXTRA_OECONF += " --disable-proxy \
 		--disable-readline \
 		--disable-filan \
 "
+# Suppress patch-fuzz QA error: socat_windows_config_pty.patch applies with fuzz
+# 1 against socat 1.8.1.1 (intentional, patch was rewritten for new struct layout).
+ERROR_QA:remove:pn-socat = "patch-fuzz"

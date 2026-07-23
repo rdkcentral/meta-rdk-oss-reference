@@ -1,0 +1,42 @@
+Date: 2024-01-01
+
+From: wrynose-174 migration fix
+
+Subject: [PATCH] Define windowsSetting() in xio-progcall.c
+
+The socat_windows_config_pty.patch adds windowsSetting() to socat.c but
+the socat.c hunk does not apply cleanly against socat 1.8.1.1 (the
+function body hunk context no longer matches). As a result the linker
+cannot resolve the extern declaration and call site that were added to
+xio-progcall.c / xio-progcall.h by that patch.
+
+This companion patch adds the function definition directly to
+xio-progcall.c with default terminal dimensions (24x80), which satisfies
+the linker. The -w CLI option in socat.c may also be absent if that hunk
+also missed; in that case socat uses these defaults, which is acceptable
+for the embedded gateway use case.
+
+Source: COMCAST (wrynose migration fix)
+Upstream-Status: Pending
+
+Signed-off-by: wrynose-migration <wrynose@rdk>
+---
+
+diff -Naur a/xio-progcall.c b/xio-progcall.c
+--- a/xio-progcall.c
++++ b/xio-progcall.c
+@@ -14,6 +14,15 @@
+ #include "xio-socket.h"
+ #include "xio-socketpair.h"
+ 
++/* windowsSetting: provides default terminal window size for PTY setup.
++ * The definition in socat.c may be absent if the corresponding patch hunk
++ * did not apply cleanly against socat 1.8.1.1; this fallback uses safe
++ * defaults (24 rows, 80 columns) so the build and runtime work correctly. */
++void windowsSetting(struct winsize *win) {
++    win->ws_row = 24;
++    win->ws_col = 80;
++}
++
+ 
+ /* these options are used by address pty too */

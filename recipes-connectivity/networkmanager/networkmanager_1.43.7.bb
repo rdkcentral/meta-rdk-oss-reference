@@ -40,7 +40,7 @@ SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497b
 
 #VOLATILE_BINDS:append = "/var/run/NetworkManager/ /etc/NetworkManager/\n"
 
-S = "${WORKDIR}/NetworkManager-${PV}"
+S = "${UNPACKDIR}/NetworkManager-${PV}"
 # ['auto', 'symlink', 'file', 'netconfig', 'resolvconf']
 NETWORKMANAGER_DNS_RC_MANAGER_DEFAULT ??= "auto"
 # ['dhcpcanon', 'dhclient', 'dhcpcd', 'internal', 'nettools']

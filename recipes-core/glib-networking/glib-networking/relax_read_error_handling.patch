@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: May 09 15:44:17 2017
 From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 Subject: [PATCH] XRE-11331: handle ssl read errors similar to libcurl

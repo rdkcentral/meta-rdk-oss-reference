@@ -16,3 +16,6 @@ SRC_URI:append:class-target = "\
 SRC_URI[md5sum] = "1ba8e147aff5e79bd2bfb983d86b53d5"
 SRC_URI[sha256sum] = "815ce53853fbf6493617f467389b799208b1ec98296b95be44a683f8bcfd7c47"
 
+
+# GCC 15 defaults to C23 which breaks K&R-style empty () declarations in old code.
+CFLAGS:append:wrynose = " -std=gnu11"

@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Mon, 15 Nov 2021 11:35:27 +0000
 From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH] qtdemux: do not error if with no protection events

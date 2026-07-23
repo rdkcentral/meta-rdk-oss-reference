@@ -28,3 +28,12 @@ perl_package_preprocess_reduced () {
             ${PKGD}${libdir}/perl5/${PV}/${TARGET_ARCH}-linux/Config_git.pl \
             ${PKGD}${libdir}/perl5/${PV}/${TARGET_ARCH}-linux/Config_heavy.pl
 }
+
+# perl-ptest RDEPENDS on sed and procps-ps as runtime test utilities, not build-time deps.
+# Use literal package name (not ${PN}) to ensure d.getVar lookup in insane.bbclass finds it.
+INSANE_SKIP:perl-ptest += "build-deps"
+
+# GCC 15 / glibc 2.42: ndbm function prototypes changed to empty () parameter lists
+# which in C23 means zero arguments. NDBM_File.xs passes arguments, causing compile errors.
+# -Ui_ndbm disables direct ndbm.h; -Ui_gdbmndbm disables gdbm's ndbm compat header (gdbm/ndbm.h).
+PACKAGECONFIG_CONFARGS:append:wrynose = " -Ui_ndbm -Ui_gdbmndbm"

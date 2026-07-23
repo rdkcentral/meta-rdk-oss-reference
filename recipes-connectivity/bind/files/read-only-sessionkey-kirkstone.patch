@@ -1,15 +1,15 @@
+Upstream-Status: Pending
 Date: Dec 14, 2022
 From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
 Source: COMCAST
-Subject: Build bind without readline config since readline-5.2 is casuing build errors in bind.
+Subject: Build bind without readline config since readline-5.2 is causing build errors in bind.
 Re-create version specific patches to fix patch/install errors.
+Ported to bind-9.20.22 for wrynose.
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
-Index: bind-9.18.5/bin/named/server.c
-===================================================================
---- bind-9.18.5.orig/bin/named/server.c
-+++ bind-9.18.5/bin/named/server.c
-@@ -7613,7 +7613,7 @@ generate_session_key(const char *filenam
- 					NULL, now, now, mctx, NULL, &tsigkey));
+--- a/bin/named/server.c
++++ b/bin/named/server.c
+@@ -7727,7 +7727,7 @@
+ 	CHECK(isc_base64_totext(&key_rawregion, -1, "", &key_txtbuffer));
  
  	/* Dump the key to the key file. */
 -	fp = named_os_openfile(filename, S_IRUSR | S_IWUSR, first_time);
@@ -17,14 +17,15 @@ Index: bind-9.18.5/bin/named/server.c
  	if (fp == NULL) {
  		isc_log_write(named_g_lctx, NAMED_LOGCATEGORY_GENERAL,
  			      NAMED_LOGMODULE_SERVER, ISC_LOG_ERROR,
-@@ -7625,9 +7625,7 @@ generate_session_key(const char *filenam
+@@ -7739,10 +7739,7 @@
  	fprintf(fp,
  		"key \"%s\" {\n"
  		"\talgorithm %s;\n"
 -		"\tsecret \"%.*s\";\n};\n",
--		keynamestr, algstr, (int)isc_buffer_usedlength(&key_txtbuffer),
+-		keynamestr, dst_hmac_algorithm_totext(alg),
+-		(int)isc_buffer_usedlength(&key_txtbuffer),
 -		(char *)isc_buffer_base(&key_txtbuffer));
-+		"\n};\n", keynamestr, algstr);
++		"\n};\n", keynamestr, dst_hmac_algorithm_totext(alg));
  
  	CHECK(isc_stdio_flush(fp));
  	result = isc_stdio_close(fp);

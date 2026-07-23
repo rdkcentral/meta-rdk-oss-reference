@@ -6,3 +6,6 @@ do_install:append() {
         ln -s cjson/cJSON.h ${D}${includedir}/cJSON.h
 }
 
+
+# OE6 wrynose: [build-deps] cmake is runtime-only for ptest
+INSANE_SKIP:${PN}-ptest:append:wrynose = " build-deps"

@@ -4,7 +4,7 @@ SUMMARY = "Essos is a library making it simple to create applications that run e
 LICENSE = "Apache-2.0"
 LICENSE_LOCATION = "${S}/../LICENSE"
 
-S = "${WORKDIR}/git/essos"
+S = "${UNPACKDIR}/git/essos"
 
 DEPENDS = "wayland virtual/egl libxkbcommon"
 

@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Tue, 19 Jan 2021 11:26:33 +0000
 From: Heiko Lewin <hlewin@gmx.de>
 Subject: [PATCH] Fix device errors for GLESv2 contexts Ignore GLerrors when

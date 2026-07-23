@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Feb 28 00:31:58 2019
 From: Igor Borovkov <Igor_Borovkov@cable.comcast.com>	
 Subject: [PATCH] RDK-22987: enforcing TLS 1.2

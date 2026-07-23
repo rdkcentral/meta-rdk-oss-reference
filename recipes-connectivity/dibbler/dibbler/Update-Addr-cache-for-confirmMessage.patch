@@ -1,24 +1,20 @@
 Date: Fri, 9 Aug 2019 23:52:54 +0000
-From: Tarun Saha <tarun_saha@comcast.com> 
+From: Tarun Saha <tarun_saha@comcast.com>
 Subject: [PATCH 1/1] Update-Addr-cache-for-confirmMessage
-        If the requested address is valid on this interface,
-        then register this address for this client (DUID).
-        And update Server Address database.
-Source: COMCAST 3764aa50c5a51ecee012394fa4f29dea76e915eb Mon Sep 17 00:00:00 2001
-Signed-off-by: Tarun Saha <tarun_saha@comcast.com> 
----
- SrvMessages/SrvMsgReply.cpp | 10 ++++++++
- SrvOptions/SrvOptIA_NA.cpp  | 56 +++++++++++++++++++++++++++++++++++++++++++++
- SrvOptions/SrvOptIA_NA.h    |  1 +
- 3 files changed, 67 insertions(+)
 
-diff --git a/SrvMessages/SrvMsgReply.cpp b/SrvMessages/SrvMsgReply.cpp
-index 41b27c1..ed4898a 100644
---- a/SrvMessages/SrvMsgReply.cpp
-+++ b/SrvMessages/SrvMsgReply.cpp
-@@ -88,6 +88,16 @@ bool TSrvMsgReply::handleConfirmOptions(TOptList & options) {
- 
-                 SPtr<TSrvOptIAAddress> optAddr = (Ptr*) opt;
+Upstream-Status: Pending
+
+If the requested address is valid on this interface,
+then register this address for this client (DUID).
+And update Server Address database.
+
+Signed-off-by: Tarun Saha <tarun_saha@comcast.com>
+---
+--- a/SrvMessages/SrvMsgReply.cpp	2026-06-29 04:20:29.905776003 +0000
++++ b/SrvMessages/SrvMsgReply.cpp	2026-06-29 04:20:30.889762029 +0000
+@@ -95,6 +95,16 @@
+                     continue;
+                 }
                  onLink = cfgIface->confirmAddress(IATYPE_IA, optAddr->getAddr());
 +
 +                if (onLink == ADDRSTATUS_YES) {
@@ -33,11 +29,9 @@ index 41b27c1..ed4898a 100644
                  checkCnt++;
              }
              break;
-diff --git a/SrvOptions/SrvOptIA_NA.cpp b/SrvOptions/SrvOptIA_NA.cpp
-index 2ccae29..e7a1031 100644
---- a/SrvOptions/SrvOptIA_NA.cpp
-+++ b/SrvOptions/SrvOptIA_NA.cpp
-@@ -372,6 +372,62 @@ bool TSrvOptIA_NA::assignAddr(SPtr<TIPv6Addr> addr, uint32_t pref, uint32_t vali
+--- a/SrvOptions/SrvOptIA_NA.cpp	2026-06-29 04:20:29.905776003 +0000
++++ b/SrvOptions/SrvOptIA_NA.cpp	2026-06-29 04:20:30.893761971 +0000
+@@ -377,6 +377,62 @@
      return true;
  }
  
@@ -100,11 +94,9 @@ index 2ccae29..e7a1031 100644
  /// @brief tries to find address reserved for this particular client 
  ///
  /// @return fixed address (if found)
-diff --git a/SrvOptions/SrvOptIA_NA.h b/SrvOptions/SrvOptIA_NA.h
-index b4ab0f7..b8f6419 100644
---- a/SrvOptions/SrvOptIA_NA.h
-+++ b/SrvOptions/SrvOptIA_NA.h
-@@ -39,6 +39,7 @@ class TSrvOptIA_NA : public TOptIA_NA
+--- a/SrvOptions/SrvOptIA_NA.h	2026-06-29 04:20:29.905776003 +0000
++++ b/SrvOptions/SrvOptIA_NA.h	2026-06-29 04:20:30.893761971 +0000
+@@ -39,6 +39,7 @@
      void rebind(SPtr<TSrvOptIA_NA> queryOpt,  unsigned long &addrCount);
      void release(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
      void decline(SPtr<TSrvOptIA_NA> queryOpt, unsigned long &addrCount);
@@ -112,6 +104,3 @@ index b4ab0f7..b8f6419 100644
      bool doDuties();
   private:
      bool assignCachedAddr(bool quiet);
--- 
-2.16.2
-

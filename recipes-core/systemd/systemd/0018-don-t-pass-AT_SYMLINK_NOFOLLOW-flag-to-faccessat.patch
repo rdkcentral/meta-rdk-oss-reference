@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Tue, 10 Oct 2017 14:33:30 -0700
 From: Andre McCurdy <armccurdy@gmail.com>
 Subject: [PATCH 18/18] don't pass AT_SYMLINK_NOFOLLOW flag to faccessat()

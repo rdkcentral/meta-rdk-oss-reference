@@ -38,18 +38,21 @@ LOGROTATE_ROTATION_MEM_dibbler = "3"
 
 do_install:append() {
         install -d ${D}${sysconfdir}/dibbler
-        install -m 0644 ${WORKDIR}/client_back.conf ${D}${sysconfdir}/dibbler/
+        # wrynose OE6: file:// SRC_URI files in ${UNPACKDIR}, not ${WORKDIR}
+        install -m 0644 ${UNPACKDIR}/client_back.conf ${D}${sysconfdir}/dibbler/
 }
 
 do_install:append:hybrid() {
         install -d ${D}${sysconfdir}/dibbler
-        install -m 0644 ${WORKDIR}/client_back_hybrid.conf ${D}${sysconfdir}/dibbler/client_back.conf
+        # wrynose OE6: UNPACKDIR
+        install -m 0644 ${UNPACKDIR}/client_back_hybrid.conf ${D}${sysconfdir}/dibbler/client_back.conf
 }
 
 do_install:append:client() {
         install -d ${D}${sysconfdir}/dibbler
         install -d ${D}${base_libdir}/rdk
-        install -m 0644 ${WORKDIR}/client_back_client.conf ${D}${sysconfdir}/dibbler/client_back.conf
+        # wrynose OE6: UNPACKDIR
+        install -m 0644 ${UNPACKDIR}/client_back_client.conf ${D}${sysconfdir}/dibbler/client_back.conf
         install -m 755 ${S}/scripts/notify-scripts/client-notify-linux.sh ${D}${base_libdir}/rdk/client-notify.sh
 }
 
@@ -57,18 +60,19 @@ do_install:append:broadband() {
     install -d ${D}${base_libdir}/rdk
 
     install -m 755 ${S}/scripts/notify-scripts/client-notify-bsd.sh ${D}${base_libdir}/rdk/client-notify.sh
-    install -m 755 ${WORKDIR}/dibbler-init.sh ${D}${base_libdir}/rdk/dibbler-init.sh
+    # wrynose OE6: UNPACKDIR
+    install -m 755 ${UNPACKDIR}/dibbler-init.sh ${D}${base_libdir}/rdk/dibbler-init.sh
     if ${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable', 'true', 'false', d)}; then
-        install -m 755 ${WORKDIR}/oss_dibbler_conf.sh ${D}${base_libdir}/rdk/prepare_dhcpv6_config.sh
+        install -m 755 ${UNPACKDIR}/oss_dibbler_conf.sh ${D}${base_libdir}/rdk/prepare_dhcpv6_config.sh
     else
-        install -m 755 ${WORKDIR}/prepare_dhcpv6_config.sh ${D}${base_libdir}/rdk/prepare_dhcpv6_config.sh
+        install -m 755 ${UNPACKDIR}/prepare_dhcpv6_config.sh ${D}${base_libdir}/rdk/prepare_dhcpv6_config.sh
     fi
 
-    install -m 755 ${WORKDIR}/udhcpc.vendor_specific ${D}${sysconfdir}/udhcpc.vendor_specific
+    install -m 755 ${UNPACKDIR}/udhcpc.vendor_specific ${D}${sysconfdir}/udhcpc.vendor_specific
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'bci', 'true', 'false', d)}; then
-        install -m 755 ${WORKDIR}/dibbler-server-init.sh ${D}${base_libdir}/rdk/dibbler-server-init.sh
-        install -m 755 ${WORKDIR}/server-notify.sh ${D}${base_libdir}/rdk/server-notify.sh
+        install -m 755 ${UNPACKDIR}/dibbler-server-init.sh ${D}${base_libdir}/rdk/dibbler-server-init.sh
+        install -m 755 ${UNPACKDIR}/server-notify.sh ${D}${base_libdir}/rdk/server-notify.sh
     fi
 }
 

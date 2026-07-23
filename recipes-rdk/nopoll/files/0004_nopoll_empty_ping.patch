@@ -2,6 +2,7 @@ Date: May 25, 2024
 From: Chris Buchter <Chris_Buchter@cable.comcast.com>
 Source: COMCAST
 Subject: IPControl actually does respond to ping with pong, but handler doesn't get called when ping doesn't contain data. 
+Upstream-Status: Pending
 Update nopoll with patch to make this work
 Signed-off-by: Chris Buchter <Chris_Buchter@cable.comcast.com>
 Index: git/src/nopoll_conn.c

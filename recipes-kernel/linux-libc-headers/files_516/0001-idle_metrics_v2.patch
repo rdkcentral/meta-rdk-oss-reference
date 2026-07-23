@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 --- a/include/uapi/linux/prctl.h	2025-12-16 15:50:41.761927991 +0000
 +++ b/include/uapi/linux/prctl.h	2025-12-16 15:52:25.689668710 +0000
 @@ -272,4 +272,73 @@

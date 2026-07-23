@@ -25,7 +25,6 @@ SRC_URI = " \
 "
 
 SRCREV = "7279fae3d1e4e9e3c3d9a42079184d638a38bd3c"
-S = "${WORKDIR}/git"
 
 PARALLEL_MAKE = ""
 

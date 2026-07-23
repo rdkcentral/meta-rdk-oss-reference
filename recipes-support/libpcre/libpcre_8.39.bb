@@ -5,7 +5,7 @@ to the POSIX regular expression API."
 SUMMARY = "Perl Compatible Regular Expressions"
 HOMEPAGE = "http://www.pcre.org"
 SECTION = "devel"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENCE;md5=b8221cbf43c5587f90ccf228f1185cc2"
 SRC_URI = "${SOURCEFORGE_MIRROR}/project/pcre/pcre/${PV}/pcre-${PV}.tar.bz2 \
            file://pcre-cross.patch \
@@ -17,7 +17,7 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/project/pcre/pcre/${PV}/pcre-${PV}.tar.bz2 \
 SRC_URI[md5sum] = "e3fca7650a0556a2647821679d81f585"
 SRC_URI[sha256sum] = "b858099f82483031ee02092711689e7245586ada49e534a06e678b8ea9549e8b"
 
-S = "${WORKDIR}/pcre-${PV}"
+S = "${UNPACKDIR}/pcre-${PV}"
 
 PROVIDES += "pcre"
 DEPENDS += "bzip2 zlib"
@@ -63,9 +63,13 @@ FILES:pcretest-doc = "${mandir}/man1/pcretest.1"
 
 BBCLASSEXTEND = "native nativesdk"
 
+# The Makefile copied into ptest contains absolute build paths (TMPDIR refs).
+# This is expected for a ptest package and is a false positive.
+INSANE_SKIP:${PN}-ptest = "buildpaths"
+
 do_install_ptest() {
 	t=${D}${PTEST_PATH}
-	cp ${WORKDIR}/Makefile $t
+	cp ${B}/Makefile $t
 	cp -r ${S}/testdata $t
 	for i in pcre_stringpiece_unittest pcregrep pcretest; \
 	  do cp ${B}/.libs/$i $t; \

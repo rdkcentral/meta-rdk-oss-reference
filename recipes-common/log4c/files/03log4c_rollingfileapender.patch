@@ -5,6 +5,7 @@ Source: COMCAST
 Signed-off-by: achelakkode <anoopnair_c@infosys.com>
 ---
 
+Upstream-Status: Inappropriate
 diff --git a/src/log4c/appender_type_rollingfile.c b/src/log4c/appender_type_rollingfile.c
 index fe102a4..1b424e6 100644
 --- a/src/log4c/appender_type_rollingfile.c

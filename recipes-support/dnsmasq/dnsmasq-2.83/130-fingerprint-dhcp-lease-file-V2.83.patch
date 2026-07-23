@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Dec 05 09:22:20 2018
 From: Murugan Viswanathan <Murugan.Viswanathan2@cognizant.com>
 Subject: [PATCH] RDKB-15078: Merge XDNS patches + add patched from meta-rdk-mesh

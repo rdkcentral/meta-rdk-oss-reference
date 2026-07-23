@@ -8,7 +8,6 @@ DEPENDS = "nlohmann-json"
 
 SRC_URI = "git://github.com/pantor/inja.git;branch=main;protocol=https"
 
-S = "${WORKDIR}/git"
 PV = "3.4.0"
 SRCREV = "b2276440be8334aeba9cd5d628c2731d0f6a5809"
 

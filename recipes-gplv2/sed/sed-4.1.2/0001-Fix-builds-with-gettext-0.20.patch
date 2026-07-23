@@ -1,7 +1,8 @@
-Date: Tue, 17 Dec 2019 16:40:58 +0100
+From 2792bccbfd41427a79edd462906aba78144b8c6a Mon Sep 17 00:00:00 2001
 From: Alexander Kanavin <alex.kanavin@gmail.com>
+Date: Tue, 17 Dec 2019 16:40:58 +0100
 Subject: [PATCH] Fix builds with gettext 0.20
-Source: 2792bccbfd41427a79edd462906aba78144b8c6a Mon Sep 17 00:00:00 2001
+
 Upstream-Status: Inappropriate [fixing an old version]
 Signed-off-by: Alexander Kanavin <alex.kanavin@gmail.com>
 ---

@@ -14,7 +14,6 @@ SRC_URI[sha256sum] = "a1a25dcfe8406fcd355568ab0331f24eeec011a7b272df7b34a16db4a2
 
 inherit autotools pkgconfig
 
-S = "${WORKDIR}/git"
 
 FILES:${PN} = "${bindir} ${libdir}/lib*${SOLIBS}"
 

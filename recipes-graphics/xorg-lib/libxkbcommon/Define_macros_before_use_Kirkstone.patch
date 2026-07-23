@@ -5,6 +5,7 @@ Subject: Define macros that are used in the code.
 libxkbcommon uses a .y parser file to recreate .c file.
 The definition should be available in the parser file to take effect in the source .c file.
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Upstream-Status: Inappropriate
 Index: libxkbcommon-0.5.0/src/xkbcomp/parser.y
 ===================================================================
 --- libxkbcommon-0.5.0.orig/src/xkbcomp/parser.y

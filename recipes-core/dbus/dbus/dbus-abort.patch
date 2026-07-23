@@ -4,6 +4,7 @@ Date: Sep 08, 2025
 From: tharunkumar_venkatachal@comcast.com
 Source: upstream
 https://gitlab.freedesktop.org/dbus/dbus/-/merge_requests/532/diffs
+Upstream-Status: Backport [https://gitlab.freedesktop.org/dbus/dbus/-/merge_requests/532]
 Signed-off-by: Tharun Kumar Venkatachalem <tharunkumar_venkatachalem@comcast.com>
 ###################################################################################################
 Index: dbus-1.14.0/dbus/dbus-sysdeps-pthread.c

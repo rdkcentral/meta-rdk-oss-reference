@@ -65,6 +65,11 @@ SRC_URI[patch14.sha256sum] = "6f1a68320d01522ca1ea5a737124ecc8739f3dcbfea2dee21e
 
 inherit autotools
 
+# These patches are official GNU readline 5.2 upstream patches fetched directly
+# from ftp.gnu.org; they cannot have Upstream-Status headers added to them.
+# OE6: INSANE_SKIP does not apply to do_qa_patch; use ERROR_QA:remove per-recipe instead.
+ERROR_QA:remove:pn-readline = "patch-status"
+
 EXTRA_AUTORECONF += "--exclude=autoheader"
 
 LEAD_SONAME = "libreadline.so"
@@ -82,3 +87,7 @@ do_install:append () {
 }
 
 BBCLASSEXTEND = "native nativesdk"
+
+# GCC 15: C23 default breaks K&R signal handler (empty parens = no args); wcwidth
+# implicit decl becomes an error. Restore gnu11 and suppress related errors.
+CFLAGS:append:wrynose = " -std=gnu11 -Wno-implicit-function-declaration -Wno-error=return-mismatch -Wno-error=incompatible-pointer-types"

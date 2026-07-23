@@ -2,7 +2,7 @@ SUMMARY = "Lightweight high-performance web server"
 HOMEPAGE = "http://www.lighttpd.net/"
 BUGTRACKER = "http://redmine.lighttpd.net/projects/lighttpd/issues"
 
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=e4dac5c6ab169aa212feb5028853a579"
 
 SECTION = "net"
@@ -59,12 +59,12 @@ SYSTEMD_SERVICE:${PN} = "lighttpd.service"
 
 do_install:append() {
 	install -d ${D}${sysconfdir}/init.d ${D}${sysconfdir}/lighttpd ${D}${sysconfdir}/lighttpd.d ${D}/www/pages/dav
-	install -m 0755 ${WORKDIR}/lighttpd ${D}${sysconfdir}/init.d
-	install -m 0644 ${WORKDIR}/lighttpd.conf ${D}${sysconfdir}/lighttpd
-	install -m 0644 ${WORKDIR}/index.html.lighttpd ${D}/www/pages/index.html
+	install -m 0755 ${UNPACKDIR}/lighttpd ${D}${sysconfdir}/init.d
+	install -m 0644 ${UNPACKDIR}/lighttpd.conf ${D}${sysconfdir}/lighttpd
+	install -m 0644 ${UNPACKDIR}/index.html.lighttpd ${D}/www/pages/index.html
 
 	install -d ${D}${systemd_unitdir}/system
-        install -m 0644 ${WORKDIR}/lighttpd.service ${D}${systemd_unitdir}/system
+        install -m 0644 ${UNPACKDIR}/lighttpd.service ${D}${systemd_unitdir}/system
 	sed -i -e 's,@SBINDIR@,${sbindir},g' \
 		-e 's,@SYSCONFDIR@,${sysconfdir},g' \
 		-e 's,@BASE_BINDIR@,${base_bindir},g' \

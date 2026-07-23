@@ -9,6 +9,7 @@ Signed-off-by: Maxin B. John <maxin.john@intel.com>
  gl/m4/stdint.m4 | 27 +++++++++++++++++++++++++++
  1 file changed, 27 insertions(+)
 
+Upstream-Status: Inappropriate
 diff --git a/gl/m4/stdint.m4 b/gl/m4/stdint.m4
 index 4ac854d..3dc3da1 100644
 --- a/gl/m4/stdint.m4

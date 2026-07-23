@@ -8,6 +8,7 @@ Subject: [PATCH] gettext libgrep fix compile error -Werror=format-security
  gettext-tools/libgrep/m-regex.c | 12 ++++++------
  2 files changed, 8 insertions(+), 8 deletions(-)
 
+Upstream-Status: Inappropriate
 diff --git a/gettext-tools/libgrep/m-fgrep.c b/gettext-tools/libgrep/m-fgrep.c
 index 28f900c..2e49a74 100644
 --- a/gettext-tools/libgrep/m-fgrep.c

@@ -1,6 +1,7 @@
 Date: Aug 15 2020
 From: Sugasini Velusamy <sugasini@tataelxsi.co.in>
 Subject: Build error in JSON CPP for TDK Enabled RDK-B Builds
+Upstream-Status: Pending
 std::snprintf() is only available in C++11, which is not provided by
 all compilers. Since the C library snprintf() can easily be used as a
 replacement on Linux systems, this patch changes jsoncpp to use the C

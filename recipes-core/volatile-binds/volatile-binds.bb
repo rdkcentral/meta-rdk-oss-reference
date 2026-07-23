@@ -11,6 +11,8 @@ SRC_URI = "\
 
 inherit allarch systemd features_check
 
+S = "${UNPACKDIR}"
+
 REQUIRED_DISTRO_FEATURES = "systemd"
 
 VOLATILE_BINDS ?= "\
@@ -42,7 +44,7 @@ do_compile () {
         servicefile="$(echo "$servicefile" | tr / -).service"
         sed -e "s#@what@#$spec#g; s#@where@#$mountpoint#g" \
             -e "s#@whatparent@#${spec%/*}#g; s#@whereparent@#${mountpoint%/*}#g" \
-            volatile-binds.service.in >$servicefile
+            ${S}/volatile-binds.service.in >$servicefile
     done <<END
 ${@d.getVar('VOLATILE_BINDS', True).replace("\\n", "\n")}
 END
@@ -59,24 +61,22 @@ END
         sed -i -e '/^ConditionPathIsReadWrite=!/d' tmp-snmpd.conf.service
     fi
 }
-do_compile[dirs] = "${WORKDIR}"
 
 do_install () {
     install -d ${D}${base_sbindir}
-    install -m 0755 mount-copybind ${D}${base_sbindir}/
+    install -m 0755 ${S}/mount-copybind ${D}${base_sbindir}/
 
     install -d ${D}${systemd_unitdir}/system
     for service in ${SYSTEMD_SERVICE:${PN}}; do
         install -m 0644 $service ${D}${systemd_unitdir}/system/
     done
-    install -m 0644 ${WORKDIR}/var-lib.mount ${D}${systemd_unitdir}/system/
+    install -m 0644 ${S}/var-lib.mount ${D}${systemd_unitdir}/system/
 }
 
 do_install:append:broadband ()  {
     rm -f ${D}${systemd_unitdir}/system/var-lib.mount
 }
 
-do_install[dirs] = "${WORKDIR}"
 
 SYSTEMD_SERVICE:${PN} += "var-lib.mount"
 SYSTEMD_SERVICE:${PN}:remove:broadband += "var-lib.mount"

@@ -16,7 +16,7 @@ PROVIDES += "openssl10"
 
 SRC_URI = "http://www.openssl.org/source/openssl-${PV}.tar.gz \
           "
-S = "${WORKDIR}/openssl-${PV}"
+S = "${UNPACKDIR}/openssl-${PV}"
 
 PACKAGECONFIG[perl] = ",,,"
 

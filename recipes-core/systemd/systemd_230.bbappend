@@ -139,11 +139,10 @@ SRC_URI += " \
 
 ## The below patches are needed to build systemd V230 with glibc V2.31 on dunfell(Yocto 3.1)
 # journald-minimal-client-metadata-caching patch contains changes the remaining 3 patches as well
+# wrynose: 0001-memfd/0002-xlocale/0003-MS-constants patches removed — no longer available
+# and not needed (RDKB does not build systemd 230; RDKE uses systemd-journal-cache path)
 SRC_URI:append = " \
-            ${@bb.utils.contains('DISTRO_FEATURES', 'systemd-journal-cache', 'file://journald-minimal-client-metadata-caching.patch', '\
-            file://0001-memfd-patch-for-latest-version-of-glibc.patch \
-            file://0002-Remove-include-of-xlocale-header.patch \
-            file://0003-Remove-MS-constants-from-missing-header-file.patch', d)} \
+            ${@bb.utils.contains('DISTRO_FEATURES', 'systemd-journal-cache', 'file://journald-minimal-client-metadata-caching.patch', '', d)} \
             file://0001-nss-util-silence-warning-about-deprecated-RES_USE_IN.patch \
             file://99-default.preset \
             "

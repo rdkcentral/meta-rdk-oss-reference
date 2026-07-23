@@ -11,7 +11,7 @@ PV .= "+git${SRCPV}"
 
 SRCREV = "20ef1f925b007f170ab1c257e4aa61fdd0927773"
 
-SRC_URI = "git://github.com/msgpack/msgpack-c \
+SRC_URI = "git://github.com/msgpack/msgpack-c;nobranch=1 \
            file://0001-Comment-intentional-fallthrough-in-case-statements.patch \
            "
 SRC_URI:append = " file://0001-Fix-Werror-class-memaccess.patch "
@@ -19,8 +19,8 @@ SRC_URI:append = " file://0001-Fix-Werror-class-memaccess.patch "
 inherit cmake pkgconfig
 
 EXTRA_OECMAKE += " -DMSGPACK_BUILD_TESTS=OFF "
+EXTRA_OECMAKE:append:wrynose = " -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
-S = "${WORKDIR}/git"
 
 FILES:${PN}-dev += "${libdir}/cmake/msgpack/*.cmake"
 

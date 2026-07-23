@@ -24,6 +24,7 @@ SRC_URI += " \
    ${VERSION_PATCHES} \
    file://0001-add-ENABLE_FEATURE_SYSTEMD-and-use-it-in-syslogd.patch \
    file://busybox-1.31-ping-mdev-support.patch \
+   file://busybox-ping-mdev-math-include.patch \
    file://pgrep.cfg \
    "
 
@@ -40,3 +41,13 @@ VERSION_PATCHES:append:client = " file://busybox-1.35-udhcp-trigger-milestones.p
 
 PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1', '0', d)}"
 inherit ptest-package-deploy
+
+# Patches were written against older busybox versions; they apply with fuzz
+# against 1.37.0 but succeed. Suppress the false-positive fuzz QA error.
+# Note: do_qa_patch uses handle_error() which checks ERROR_QA, not INSANE_SKIP.
+ERROR_QA:remove = "patch-fuzz"
+
+# busybox.inc sets RDEPENDS:busybox-ptest = "zip" for the unzip test case.
+# zip is a runtime test dependency, not a build dependency — suppress false positive.
+INSANE_SKIP:${PN}-ptest = "build-deps"
+

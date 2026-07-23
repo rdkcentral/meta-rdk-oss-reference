@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Reproducible build: To avoid build host paths being written into binaries,
 accept NETSNMP_CONFIGURE_OPTIONS from the environment.
 NETSNMP_CONFIGURE_OPTIONS can be set either null or to a fixed value.

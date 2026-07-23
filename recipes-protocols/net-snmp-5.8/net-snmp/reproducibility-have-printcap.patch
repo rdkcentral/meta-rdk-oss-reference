@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Reproducible build: Don't check for /etc/printcap on the build machine when
 cross-compiling. Use AC_CHECK_FILE to set the cached variable
 ac_cv_file__etc_printcap instead. When cross-compiling, this variable should be

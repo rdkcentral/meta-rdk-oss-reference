@@ -1,3 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://header_installation.patch"
+# header_installation.patch: pkginclude_HEADERS already in libevent 2.1.12+ upstream, patch obsolete

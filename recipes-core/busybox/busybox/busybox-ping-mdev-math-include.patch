@@ -1,0 +1,24 @@
+Date: 2025-01-01
+From: wrynose-migration
+Subject: busybox ping.c: add math.h include for sqrt() used in mdev calculation
+Source: wrynose migration fix
+Signed-off-by: wrynose-migration
+Upstream-Status: Inappropriate [RDK specific]
+
+busybox-1.31-ping-mdev-support.patch adds tsum2/sqrt() for mdev display
+but does not include <math.h>. In busybox 1.31 this was included
+transitively; in 1.37.0 it is not, causing:
+  networking/ping.c: error: implicit declaration of function 'sqrt'
+
+Index: busybox-1.37.0/networking/ping.c
+===================================================================
+--- busybox-1.37.0.orig/networking/ping.c
++++ busybox-1.37.0/networking/ping.c
+@@ -129,6 +129,7 @@
+ #include <netinet/ip_icmp.h>
+ #include "libbb.h"
+ #include "common_bufsiz.h"
++#include <math.h>
+ 
+ #ifdef __BIONIC__
+ /* should be in netinet/ip_icmp.h */

@@ -107,3 +107,13 @@ python __anonymous() {
     for prog in d.getVar('sbindir_progs').split():
         d.setVarFlag('ALTERNATIVE_LINK_NAME', prog, '%s/%s' % (d.getVar('sbindir'), prog))
 }
+
+# GCC 15 defaults to C23 which breaks K&R-style empty () declarations in old code.
+# GCC 15 also makes -Wimplicit-function-declaration an error even in gnu11 mode;
+# suppress that too (fputs_unlocked implicit decl in unlocked-io.h).
+CFLAGS:append:wrynose = " -std=gnu11 -Wno-implicit-function-declaration"
+
+# OE6 generates wrapper headers (string.h, time.h, sys/time.h) in the build tree
+# that contain TMPDIR-relative include guards. These are compile artifacts in
+# the -src debug package and are a false positive for the buildpaths check.
+INSANE_SKIP:${PN}-src = "buildpaths"

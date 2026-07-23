@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Wed, 1 Nov 2017 15:20:55 -0400
 From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 Subject: [PATCH] Added Log entry for empty resolver entries.

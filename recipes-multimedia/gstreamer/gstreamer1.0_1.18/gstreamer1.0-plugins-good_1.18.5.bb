@@ -55,7 +55,7 @@ SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'sage_svp', 'file://0
 
 SRC_URI[sha256sum] = "3aaeeea7765fbf8801acce4a503a9b05f73f04e8a35352e9d00232cfd555796b"
 
-S = "${WORKDIR}/gst-plugins-good-${PV}"
+S = "${UNPACKDIR}/gst-plugins-good-${PV}"
 
 LICENSE = "GPL-2.0-or-later & LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \

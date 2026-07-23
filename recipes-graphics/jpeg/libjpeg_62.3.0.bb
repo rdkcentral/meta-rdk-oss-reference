@@ -25,7 +25,7 @@ do_unpack() {
     mv ${WORKDIR}/libjpeg-turbo-2.0.4/ ${WORKDIR}/libjpeg
 }
 
-S = "${WORKDIR}/libjpeg/"
+S = "${UNPACKDIR}/libjpeg/"
 
 PE= "1"
 

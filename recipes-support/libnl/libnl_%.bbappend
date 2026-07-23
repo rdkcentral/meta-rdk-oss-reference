@@ -12,3 +12,6 @@ FILES:${PN}-extras =  "\
                         ${libdir}/libnl/cli/qdisc/pfifo.so \
                         ${libdir}/libnl/cli/qdisc/plug.so \
 "
+
+# OE6 wrynose: [build-deps] iproute2-ip is runtime-only for libnl-ptest
+INSANE_SKIP:${PN}-ptest:append:wrynose = " build-deps"

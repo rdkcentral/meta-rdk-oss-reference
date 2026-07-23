@@ -1,0 +1,39 @@
+Upstream-Status: Backport [sched_attr.h: use compat struct when kernel headers lack SCHED_ATTR_SIZE_VER1]
+
+On Linux 4.19, linux/sched/types.h defines only SCHED_ATTR_SIZE_VER0 (48 bytes)
+and the struct sched_attr lacks sched_util_min/sched_util_max.  glibc's own
+compat struct (in bits/sched.h) includes those fields but is guarded by
+"#ifndef SCHED_ATTR_SIZE_VER0" -- which is already set by the kernel header,
+so it is skipped.
+
+util-linux's sched_attr.h also has a compat struct but only activates when
+HAVE_SCHED_SETATTR is unset (i.e. glibc doesn't provide the syscall wrapper).
+On modern glibc HAVE_SCHED_SETATTR IS set, so that path is also skipped, and
+uclampset.c ends up with a struct sched_attr that has no sched_util_min/max.
+
+Fix: also activate the compat struct when SCHED_ATTR_SIZE_VER1 is absent.
+SCHED_ATTR_SIZE_VER1 (= 56) was added to linux/sched/types.h in Linux 5.0
+together with the uclamp fields, so its absence reliably indicates an old
+kernel header that lacks the uclamp struct members.
+
+Signed-off-by: Yocto wrynose migration
+
+diff --git a/schedutils/sched_attr.h b/schedutils/sched_attr.h
+index 1234567..abcdefg 100644
+--- a/schedutils/sched_attr.h
++++ b/schedutils/sched_attr.h
+@@ -81,7 +81,13 @@ static int sched_getattr(pid_t pid, struct sched_attr *attr, unsigned int size,
+ #endif
+ 
+-#if defined (__linux__) && !defined(HAVE_SCHED_SETATTR) && defined(SYS_sched_setattr)
+-# define HAVE_SCHED_SETATTR
++/* Also use the compat struct when HAVE_SCHED_SETATTR is set but the kernel
++ * headers lack SCHED_ATTR_SIZE_VER1 (added in Linux 5.0 alongside
++ * sched_util_min/sched_util_max).  This happens on kernel 4.19 where
++ * linux/sched/types.h only defines SCHED_ATTR_SIZE_VER0.
++ */
++#if defined (__linux__) && (!defined(HAVE_SCHED_SETATTR) || !defined(SCHED_ATTR_SIZE_VER1)) && defined(SYS_sched_setattr)
++# ifdef HAVE_SCHED_SETATTR
++#  undef HAVE_SCHED_SETATTR
++# endif
++# define HAVE_SCHED_SETATTR

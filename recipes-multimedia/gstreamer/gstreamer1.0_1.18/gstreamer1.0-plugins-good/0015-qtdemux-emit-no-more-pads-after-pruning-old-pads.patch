@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Wed, 3 May 2023 13:21:23 +0200
 From: Xabier Rodriguez Calvar <calvaris@igalia.com>
 Subject: [PATCH] qtdemux: emit no-more-pads after pruning old pads

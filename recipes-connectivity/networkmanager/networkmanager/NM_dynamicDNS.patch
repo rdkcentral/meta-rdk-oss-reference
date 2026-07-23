@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Index: NetworkManager-1.43.7/src/core/dnsmasq/nm-dnsmasq-manager.c
 ===================================================================
 --- NetworkManager-1.43.7.orig/src/core/dnsmasq/nm-dnsmasq-manager.c

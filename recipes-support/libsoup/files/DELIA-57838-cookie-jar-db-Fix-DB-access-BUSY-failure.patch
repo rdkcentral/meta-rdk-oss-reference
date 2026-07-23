@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Wed, 31 Aug 2022 15:47:53 +0200
 From: Andrzej Surdej <Andrzej_Surdej@comcast.com>
 Subject: [PATCH] DELIA-57838: cookie-jar-db - Fix DB access BUSY failure

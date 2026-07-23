@@ -10,6 +10,7 @@ unwanted container capabilities
 5. Restrict the cgroup memory with in the container
 Source: COMCAST
 Signed-off-by: Swarnalatha <Swarnalatha_SubiramanyaRaju@comcast.com>
+Upstream-Status: Inappropriate
 Index: git/src/arch-arm-syscalls.c
 ===================================================================
 --- git.orig/src/arch-arm-syscalls.c

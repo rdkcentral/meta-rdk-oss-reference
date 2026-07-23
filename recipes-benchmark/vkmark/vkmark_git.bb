@@ -18,7 +18,6 @@ SRC_URI = "git://github.com/vkmark/vkmark.git;protocol=https;nobranch=1"
 
 SRCREV ?= "36e7d9b2ecf723e876add65534e95f55ec1bc79d"
 
-S = "${WORKDIR}/git"
 
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'wayland xcb', d)}"
 

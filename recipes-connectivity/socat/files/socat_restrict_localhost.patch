@@ -6,6 +6,7 @@ Subject: [PATCH] RDK-22717 : CPE side code development for stunnel based reverse
 
         added socat and stunnel packages restricted socat connection capability to loopback ips
 	127.0.0.1 and [::1]
+        Updated for socat 1.8.1.1 (_xiogetaddrinfo new signature).
 
 Source: COMCAST
 
@@ -16,13 +17,12 @@ Signed-off-by:  Pritam Ghanghas <pritam_ghanghas@comcast.com>
 ---
 
 diff --git a/xio-ip.c b/xio-ip.c
-index 4e125e7..395bff0 100644
 --- a/xio-ip.c
 +++ b/xio-ip.c
-@@ -122,6 +122,20 @@ int xiogetaddrinfo(const char *node, const char *service,
+@@ -455,6 +455,20 @@ int _xiogetaddrinfo(const char *node, const char *service,
  		   int family, int socktype, int protocol,
- 		   union sockaddr_union *sau, socklen_t *socklen,
- 		   unsigned long res_opts0, unsigned long res_opts1) {
+ 		   struct addrinfo **res, const int ai_flags[2]) {
+    char *numnode = NULL;
 +   // this is safest place to limit the ip arguments to take only loopback address
 +   // any other place we run the risk of missing some argument cobination,
 +   // any ip or name will come here for resolution. We will drop names that require
@@ -37,6 +37,6 @@ index 4e125e7..395bff0 100644
 +       exit(1);
 +   }
 +
-    int port = -1;	/* port number in network byte order */
-    char *numnode = NULL;
     size_t nodelen;
+ #if HAVE_GETADDRINFO
+    struct addrinfo hints = {0};

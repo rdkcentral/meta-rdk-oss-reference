@@ -1,5 +1,3 @@
-Source: from opensource upstream
-
 Upstream-Status: Inappropriate [legacy version]
 
 the old AC_USE_SYSTEM_EXTENSIONS won't work with AC_GNU_SOURCE

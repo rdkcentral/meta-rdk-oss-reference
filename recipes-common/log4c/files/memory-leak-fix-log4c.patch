@@ -3,6 +3,7 @@ Date: <May 23 2023>
 Source: Deutsche Telekom AG
 Changes copyright 2023-2024 Deutsche Telekom AG
 ###################################################################
+Upstream-Status: Inappropriate
 Index: log4c-1.2.3/src/log4c/rollingpolicy.c
 ===================================================================
 --- log4c-1.2.3.orig/src/log4c/rollingpolicy.c

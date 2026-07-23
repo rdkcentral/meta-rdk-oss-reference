@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Sept 23 2020
 From: Balaji Punnuru <balaji_punnuru@cable.comcast.com>
 Subject: Added support for systemtimemgr. Patched systemd-timesyncd to indicate

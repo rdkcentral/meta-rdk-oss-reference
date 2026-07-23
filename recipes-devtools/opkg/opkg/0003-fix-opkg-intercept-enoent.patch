@@ -1,0 +1,30 @@
+From: wrynose-migration
+Subject: opkg: Handle ENOENT in finalize_intercepts and rm_r
+
+When pseudo intercepts mkdir but the directory is not created on disk,
+opkg_finalize_intercepts fails with ENOENT. Treat as non-fatal.
+
+Upstream-Status: Pending
+
+--- a/libopkg/opkg_cmd.c
++++ b/libopkg/opkg_cmd.c
+@@ -233,7 +233,7 @@
+             free(path);
+         }
+         closedir(dir);
+-    } else
++    } else if (errno != ENOENT)
+         opkg_perror(ERROR, "Failed to open dir %s", ctx->statedir);
+ 
+     rm_r(ctx->statedir);
+--- a/libopkg/file_util.c
++++ b/libopkg/file_util.c
+@@ -456,6 +456,8 @@
+ 
+     dir = opendir(path);
+     if (dir == NULL) {
++        if (errno == ENOENT)
++            return 0;
+         opkg_perror(ERROR, "Failed to open dir %s", path);
+         return -1;
+     }

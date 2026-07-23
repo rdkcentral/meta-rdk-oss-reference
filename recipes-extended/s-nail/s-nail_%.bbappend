@@ -1,4 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI:append = " file://0001-su_INLINE-gcc-only-GNU-specifics-after-Og.patch \
-           	    file://0001-su_INLINE-eh-no-give-up-share-detection.patch "
+# su_INLINE patches (backport from upstream) are already incorporated in s-nail 14.9.25

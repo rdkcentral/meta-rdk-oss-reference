@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Mon, 29 May 2023 20:55:43 +0200
 From: =?UTF-8?q?Enrique=20Oca=C3=B1a=20Gonz=C3=A1lez?= <eocanha@igalia.com>
 Subject: [PATCH] streamsynchronizer: Consider streams having received

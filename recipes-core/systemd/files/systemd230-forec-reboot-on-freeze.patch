@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Dec 11, 2018 1:56 AM
 From: Vinu Palackal <Vinu_P@cable.comcast.com>
 Subject: [PATCH] XONE-19886: force reboot on systemd freeze

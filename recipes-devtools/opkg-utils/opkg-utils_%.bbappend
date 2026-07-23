@@ -17,3 +17,9 @@ do_install_ptest() {
     # Create opkg-feed symlink in ptest root so tests can access it
     ln -sf ${bindir}/opkg-feed ${D}${PTEST_PATH}/opkg-feed
 }
+
+# OE6 wrynose: [build-deps]/[file-rdeps] bash/python3 runtime-only; ptest not in vanilla OE list
+INSANE_SKIP:${PN}:append:wrynose = " build-deps file-rdeps"
+INSANE_SKIP:${PN}-ptest:append:wrynose = " build-deps file-rdeps"
+# [missing-ptest] is a QARECIPETEST via oe.qa.handle_error() which checks ERROR_QA, not INSANE_SKIP
+ERROR_QA:remove:wrynose = "missing-ptest"

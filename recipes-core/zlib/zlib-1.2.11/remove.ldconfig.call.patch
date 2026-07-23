@@ -1,35 +1,80 @@
-Date: Mar 13 09:45:56 2019
+Upstream-Status: Inappropriate [zlib ships ldconfig calls, we remove them]
 
-From: 0fb9f1e5d6242769bb1c6d57f8e86484857fcab0 May 17 16:30:44 2019
-
-Subject: [PATCH] RDKALL-1627 : Security Vulnerability for glibc, zlib and libtasn1
-
-	zlib: remove ldconfig call from install-libs
-
-	it's called from install-libs target and when /etc/ld.so.cache is writeable by user running bitbake
-	then it creates invalid cache (in my case libstdc++.so cannot be found after building zlib(-native)
-	and I have to call touch */libstdc++.so && /sbin/ldconfig to fix it
-
-Source: OPENEMBEDDED
-
-
-Upstream-Status: Submitted [ https://git.congatec.com/yocto-1-5/poky/commit/b2196ca25697bfb6c1412780a27cea5be1d80d6c ]
-
-Signed-off-by: Martin Jansa <Martin.Jansa@gmail.com>
-Signed-off-by: Richard Purdie <richard.purdie@linuxfoundation.org>
----
-
-
-Upstream-Status: Inappropriate [disable feature]
-
-diff -uNr zlib-1.2.6.orig/Makefile.in zlib-1.2.6/Makefile.in
---- zlib-1.2.6.orig/Makefile.in	2012-01-28 23:48:50.000000000 +0100
-+++ zlib-1.2.6/Makefile.in	2012-02-13 15:38:20.577700723 +0100
-@@ -199,7 +199,6 @@
+--- a/Makefile.in	2017-01-15 17:29:40.000000000 +0000
++++ b/Makefile.in	2026-05-28 05:44:51.608004734 +0000
+@@ -26,7 +26,7 @@
+ 
+ SFLAGS=-O
+ LDFLAGS=
+-TEST_LDFLAGS=-L. libz.a
++T_LDFLAGS=-L. $(LDFLAGS)
+ LDSHARED=$(CC)
+ CPP=$(CC) -E
+ 
+@@ -86,6 +86,9 @@
+ test: all teststatic testshared
+ 
+ teststatic: static
++	@make runteststatic
++
++runteststatic:
+ 	@TMPST=tmpst_$$; \
+ 	if echo hello world | ./minigzip | ./minigzip -d && ./example $$TMPST ; then \
+ 	  echo '		*** zlib test OK ***'; \
+@@ -95,6 +98,9 @@
+ 	rm -f $$TMPST
+ 
+ testshared: shared
++	@make runtestshared
++
++runtestshared:
+ 	@LD_LIBRARY_PATH=`pwd`:$(LD_LIBRARY_PATH) ; export LD_LIBRARY_PATH; \
+ 	LD_LIBRARYN32_PATH=`pwd`:$(LD_LIBRARYN32_PATH) ; export LD_LIBRARYN32_PATH; \
+ 	DYLD_LIBRARY_PATH=`pwd`:$(DYLD_LIBRARY_PATH) ; export DYLD_LIBRARY_PATH; \
+@@ -108,6 +114,9 @@
+ 	rm -f $$TMPSH
+ 
+ test64: all64
++	@make runtestall64
++
++runtestall64:
+ 	@TMP64=tmp64_$$; \
+ 	if echo hello world | ./minigzip64 | ./minigzip64 -d && ./example64 $$TMP64; then \
+ 	  echo '		*** zlib 64-bit test OK ***'; \
+@@ -286,22 +295,22 @@
+ 	-@rmdir objs
+ 
+ example$(EXE): example.o $(STATICLIB)
+-	$(CC) $(CFLAGS) -o $@ example.o $(TEST_LDFLAGS)
++	$(CC) $(CFLAGS) -o $@ example.o $(TEST_LDFLAGS) $(STATICLIB)
+ 
+ minigzip$(EXE): minigzip.o $(STATICLIB)
+-	$(CC) $(CFLAGS) -o $@ minigzip.o $(TEST_LDFLAGS)
++	$(CC) $(CFLAGS) -o $@ minigzip.o $(TEST_LDFLAGS) $(STATICLIB)
+ 
+ examplesh$(EXE): example.o $(SHAREDLIBV)
+-	$(CC) $(CFLAGS) -o $@ example.o -L. $(SHAREDLIBV)
++	$(CC) $(CFLAGS) -o $@ example.o $(TEST_LDFLAGS) $(SHAREDLIBV)
+ 
+ minigzipsh$(EXE): minigzip.o $(SHAREDLIBV)
+-	$(CC) $(CFLAGS) -o $@ minigzip.o -L. $(SHAREDLIBV)
++	$(CC) $(CFLAGS) -o $@ minigzip.o $(TEST_LDFLAGS) $(SHAREDLIBV)
+ 
+ example64$(EXE): example64.o $(STATICLIB)
+-	$(CC) $(CFLAGS) -o $@ example64.o $(TEST_LDFLAGS)
++	$(CC) $(CFLAGS) -o $@ example64.o $(TEST_LDFLAGS) $(STATICLIB)
+ 
+ minigzip64$(EXE): minigzip64.o $(STATICLIB)
+-	$(CC) $(CFLAGS) -o $@ minigzip64.o $(TEST_LDFLAGS)
++	$(CC) $(CFLAGS) -o $@ minigzip64.o $(TEST_LDFLAGS) $(STATICLIB)
+ 
+ install-libs: $(LIBS)
+ 	-@if [ ! -d $(DESTDIR)$(exec_prefix)  ]; then mkdir -p $(DESTDIR)$(exec_prefix); fi
+@@ -322,7 +331,6 @@
  	  rm -f $(DESTDIR)$(sharedlibdir)/$(SHAREDLIB) $(DESTDIR)$(sharedlibdir)/$(SHAREDLIBM); \
  	  ln -s $(SHAREDLIBV) $(DESTDIR)$(sharedlibdir)/$(SHAREDLIB); \
  	  ln -s $(SHAREDLIBV) $(DESTDIR)$(sharedlibdir)/$(SHAREDLIBM); \
 -	  ($(LDCONFIG) || true)  >/dev/null 2>&1; \
  	fi
- 	cp zlib.3 $(DESTDIR)$(man3dir)
- 	chmod 644 $(DESTDIR)$(man3dir)/zlib.3
+ 	rm -f $(DESTDIR)$(man3dir)/zlib.3
+ 	cp $(SRCDIR)zlib.3 $(DESTDIR)$(man3dir)

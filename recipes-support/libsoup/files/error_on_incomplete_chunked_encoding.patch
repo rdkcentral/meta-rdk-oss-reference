@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Thu, 4 Mar 2021 11:40:24 +0000
 From: cmurug728 <Chockalingam_Murugan@comcast.com>
 Subject: [PATCH] libsoup: signal error on incomplete chunked encoding

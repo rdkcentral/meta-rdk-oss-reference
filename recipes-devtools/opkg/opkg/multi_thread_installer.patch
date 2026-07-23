@@ -9,6 +9,7 @@ Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
  libopkg/solvers/libsolv/opkg_solver_libsolv.c | 47 ++++++++++++++++---
  1 file changed, 41 insertions(+), 6 deletions(-)
 
+Upstream-Status: Inappropriate
 diff --git a/libopkg/solvers/libsolv/opkg_solver_libsolv.c b/libopkg/solvers/libsolv/opkg_solver_libsolv.c
 index d442d3d..298d9c7 100644
 --- a/libopkg/solvers/libsolv/opkg_solver_libsolv.c

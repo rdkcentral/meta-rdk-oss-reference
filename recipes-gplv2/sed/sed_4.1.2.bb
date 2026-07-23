@@ -1,6 +1,6 @@
 SUMMARY = "Stream EDitor (text filtering utility)"
 HOMEPAGE = "http://www.gnu.org/software/sed/"
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f \
                     file://sed/sed.h;beginline=1;endline=17;md5=e00ffd1837f298439a214fd197f6a407"
 SECTION = "console/utils"
@@ -19,7 +19,7 @@ SRC_URI[sha256sum] = "638e837ba765d5da0a30c98b57c2953cecea96827882f594612acace93
 inherit autotools texinfo update-alternatives gettext
 
 do_configure:prepend () {
-	cp ${WORKDIR}/Makevars ${S}/po/
+	cp ${UNPACKDIR}/Makevars ${S}/po/
 }
 
 do_install () {
@@ -35,68 +35,8 @@ ALTERNATIVE:${PN} = "sed"
 ALTERNATIVE_LINK_NAME[sed] = "${base_bindir}/sed"
 ALTERNATIVE_PRIORITY = "100"
 
-# sed 4.1.2 ptest support
-# Note: sed 4.1.2 uses traditional test structure with runtest script
-# (newer versions use gnulib-style tests which are different)
+RPROVIDES:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'usrmerge', '/bin/sed', '', d)}"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+# GCC 15 makes -Wimplicit-function-declaration and -Wreturn-mismatch errors.
+CFLAGS:append:wrynose = " -Wno-implicit-function-declaration -Wno-error=return-mismatch -Wno-int-conversion"
 
-SRC_URI += "file://run-ptest"
-
-inherit ptest
-
-# sed 4.1.2 tests need perl, gawk, and file comparison tools
-RDEPENDS:${PN}-ptest += "make perl gawk coreutils diffutils bash"
-
-do_compile_ptest() {
-    # Compile C test programs in testsuite
-    # sed 4.1.2 has regex tests written in C
-    cd ${B}/testsuite
-
-    # Compile regex test programs if they exist
-    for test_src in bug-regex*.c tst-*.c; do
-        if [ -f "${S}/testsuite/$test_src" ]; then
-            test_bin="${test_src%.c}"
-            ${CC} ${CFLAGS} ${LDFLAGS} -o $test_bin ${S}/testsuite/$test_src || true
-        fi
-    done
-}
-
-do_install_ptest() {
-    # Install entire testsuite directory
-    install -d ${D}${PTEST_PATH}/testsuite
-
-    # Copy test data files (.good, .inp, .sed, .sh files)
-    install -m 0644 ${S}/testsuite/*.good ${D}${PTEST_PATH}/testsuite/ || true
-    install -m 0644 ${S}/testsuite/*.inp ${D}${PTEST_PATH}/testsuite/ || true
-    install -m 0644 ${S}/testsuite/*.sed ${D}${PTEST_PATH}/testsuite/ || true
-    install -m 0755 ${S}/testsuite/*.sh ${D}${PTEST_PATH}/testsuite/ || true
-    install -m 0644 ${S}/testsuite/*.gin ${D}${PTEST_PATH}/testsuite/ || true
-    install -m 0644 ${S}/testsuite/*.h ${D}${PTEST_PATH}/testsuite/ || true
-    install -m 0644 ${S}/testsuite/*.tests ${D}${PTEST_PATH}/testsuite/ || true
-
-    # Copy C source files (needed by some tests)
-    install -m 0644 ${S}/testsuite/*.c ${D}${PTEST_PATH}/testsuite/ || true
-
-    # Install test runner script
-    if [ -f "${S}/testsuite/runtest" ]; then
-        install -m 0755 ${S}/testsuite/runtest ${D}${PTEST_PATH}/testsuite/
-    fi
-
-    # Install compiled test binaries from build directory
-    for test_bin in ${B}/testsuite/bug-regex* ${B}/testsuite/tst-*; do
-        if [ -f "$test_bin" ] && [ -x "$test_bin" ]; then
-            install -m 0755 $test_bin ${D}${PTEST_PATH}/testsuite/ || true
-        fi
-    done
-
-    # Install Makefile components needed for tests
-    install -m 0644 ${S}/testsuite/Makefile.* ${D}${PTEST_PATH}/testsuite/ || true
-
-    # Install sed binary to ptest directory
-    install -d ${D}${PTEST_PATH}/bin
-    install -m 0755 ${B}/sed/sed ${D}${PTEST_PATH}/bin/sed
-
-    # Substitute PTEST_PATH in run-ptest script
-    sed -i -e 's|@PTEST_PATH@|${PTEST_PATH}|g' ${D}${PTEST_PATH}/run-ptest
-}

@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Fri, 2 Feb 2024 08:59:27 -0500
 From: Pawel Lampe <pawel.lampe@sky.uk>
 Subject: [PATCH] attach cbcs crypt info at the right moment Before, 

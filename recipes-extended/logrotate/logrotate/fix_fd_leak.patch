@@ -1,7 +1,7 @@
 Subject: [PATCH] File descriptor leak when run as a daemon
 Source: COMCAST
 License: GPL-2.0-only
-Upstream-Status: NA
+Upstream-Status: Pending
 Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
 
 Index: logrotate-3.21.0/logrotate.c

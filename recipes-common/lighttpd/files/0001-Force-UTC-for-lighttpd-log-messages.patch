@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Wed, 15 May 2024 20:44:09 +0000
 From: Scott Angel <scott_angel@cable.comcast.com>
 Subject: [PATCH] Force UTC for lighttpd log messages Force UTC for lighttpd log messages to allow consistent logging.

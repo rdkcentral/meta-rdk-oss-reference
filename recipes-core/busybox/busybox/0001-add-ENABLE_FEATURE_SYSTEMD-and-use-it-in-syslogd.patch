@@ -5,19 +5,14 @@ Source: 9b3b9790b32d440eb89af5edda70a66b1829e861 Mon Sep 17 00:00:00 2001
 Signed-off-by: Davide Cavalca <davide@geexbox.org>
 Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
 ---
- include/libbb.h         |  6 ++++
- libbb/systemd_support.c | 62 +++++++++++++++++++++++++++++++++++++++++
- sysklogd/syslogd.c      |  5 ++++
- 3 files changed, 73 insertions(+)
- create mode 100644 libbb/systemd_support.c
 
-diff --git a/include/libbb.h b/include/libbb.h
-index 968bdcf5a..32e25a8d4 100644
---- a/include/libbb.h
-+++ b/include/libbb.h
-@@ -1217,6 +1217,12 @@ extern void selinux_preserve_fcontext(int fdesc) FAST_FUNC;
- #endif
+Upstream-Status: Pending
+
+--- a/include/libbb.h	2024-09-26 14:00:52.000000000 +0000
++++ b/include/libbb.h	2026-06-09 10:27:55.062560025 +0000
+@@ -1749,6 +1749,12 @@
  extern void selinux_or_die(void) FAST_FUNC;
+ 
  
 +
 +/* systemd support */
@@ -26,13 +21,10 @@ index 968bdcf5a..32e25a8d4 100644
 +
 +
  /* setup_environment:
-  * if chdir pw->pw_dir: ok: else if to_tmp == 1: goto /tmp else: goto / or die
-  * if clear_env = 1: cd(pw->pw_dir), clear environment, then set
-diff --git a/libbb/systemd_support.c b/libbb/systemd_support.c
-new file mode 100644
-index 000000000..981296dbb
---- /dev/null
-+++ b/libbb/systemd_support.c
+  * if SETUP_ENV_CHDIR:
+  *   if cd(pw->pw_dir): ok: else if SETUP_ENV_TO_TMP: cd(/tmp) else: cd(/) or die
+--- a/libbb/systemd_support.c	2026-06-09 10:27:55.062560025 +0000
++++ b/libbb/systemd_support.c	2026-06-09 10:27:55.062560025 +0000
 @@ -0,0 +1,62 @@
 +/*
 + * Copyright (C) 2011 Davide Cavalca <davide@geexbox.org>
@@ -96,11 +88,9 @@ index 000000000..981296dbb
 +
 +	return n;
 +}
-diff --git a/sysklogd/syslogd.c b/sysklogd/syslogd.c
-index fb7309538..24cab3b6c 100644
---- a/sysklogd/syslogd.c
-+++ b/sysklogd/syslogd.c
-@@ -512,6 +512,11 @@ static NOINLINE int create_socket(void)
+--- a/sysklogd/syslogd.c	2026-06-09 10:27:53.990561377 +0000
++++ b/sysklogd/syslogd.c	2026-06-09 10:27:55.062560025 +0000
+@@ -962,6 +962,11 @@
  	int sock_fd;
  	char *dev_log_name;
  
@@ -112,6 +102,3 @@ index fb7309538..24cab3b6c 100644
  	memset(&sunx, 0, sizeof(sunx));
  	sunx.sun_family = AF_UNIX;
  
--- 
-2.17.1
-

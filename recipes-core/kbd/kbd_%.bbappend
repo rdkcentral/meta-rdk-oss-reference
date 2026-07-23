@@ -10,6 +10,40 @@ inherit ptest
 
 RDEPENDS:${PN}-ptest += "bash"
 
+# The recipe-level LICENSE includes GPL-3.0-or-later (for keymaps-pine).
+# Sub-packages dev/staticdev/dbg/ptest only contain GPL-2.0/LGPL-2.0 code;
+# set their license explicitly so they don't inherit GPL-3.0 and fail the
+# incompatible-license QA check.
+LICENSE:${PN}-dev      = "GPL-2.0-or-later & LGPL-2.0-or-later"
+LICENSE:${PN}-staticdev = "GPL-2.0-or-later & LGPL-2.0-or-later"
+LICENSE:${PN}-dbg      = "GPL-2.0-or-later & LGPL-2.0-or-later"
+LICENSE:${PN}-ptest    = "GPL-2.0-or-later & LGPL-2.0-or-later"
+
+# kbd-ptest test binaries embed the source WORKDIR path (DATADIR for test data)
+# compiled in; this is expected for ptest binaries and harmless.
+INSANE_SKIP:${PN}-ptest:wrynose = "buildpaths"
+
+# kbd-src is added programmatically by package.bbclass anonymous Python
+# (prependVar PACKAGES) AFTER PACKAGES:remove runs at parse time, so
+# PACKAGES:remove cannot prevent it. Set its license explicitly to compatible
+# (kbd-src contains only compiled C debug sources, not the GPL-3.0 keymap data).
+LICENSE:${PN}-src:wrynose = "GPL-2.0-or-later & LGPL-2.0-or-later"
+
+# kbd-src, kbd-doc, kbd-locale inherit GPL-3.0-or-later from the recipe-level
+# LICENSE; kbd-keymaps-pine IS GPL-3.0. Remove all four to avoid
+# incompatible-license QA failure.
+# Also remove the RRECOMMENDS from kbd-keymaps on kbd-keymaps-pine so nothing
+# requires a package that no longer exists in PACKAGES.
+RRECOMMENDS:${PN}-keymaps:remove = "${PN}-keymaps-pine"
+PACKAGES:remove = "${PN}-src ${PN}-doc ${PN}-locale ${PN}-keymaps-pine"
+
+# kbd-doc is removed from PACKAGES above, so man pages in ${mandir} are
+# unshipped → installed-vs-shipped error. Delete them for wrynose (embedded
+# target; man pages are not needed in the image).
+do_install:append:wrynose() {
+    rm -rf ${D}${mandir}
+}
+
 do_compile_ptest() {
     # update DATADIR in Makefile
     sed -i 's,-DDATADIR=.*,-DDATADIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/libkeymap/Makefile

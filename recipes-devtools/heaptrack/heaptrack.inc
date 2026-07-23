@@ -9,7 +9,6 @@ DEPENDS = "zlib boost libunwind elfutils"
 SRC_URI = "git://github.com/KDE/heaptrack \
            file://rdk_heaptrack.patch \
            "
-S = "${WORKDIR}/git"
 
 inherit cmake
 

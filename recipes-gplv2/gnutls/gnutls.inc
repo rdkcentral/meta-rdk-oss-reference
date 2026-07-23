@@ -6,7 +6,16 @@ LICENSE = "GPL-3.0-or-later & LGPL-2.1-or-later"
 LICENSE:${PN} = "LGPL-2.1-or-later"
 LICENSE:${PN}-xx = "LGPL-2.1-or-later"
 LICENSE:${PN}-bin = "GPL-3.0-or-later"
-LICENSE:${PN}-OpenSSL = "GPL-3.0-or-later"
+# Fix: was GPL-3.0-or-later with wrong capitalisation (gnutls-OpenSSL vs actual
+# package gnutls-openssl). The OpenSSL compat layer is LGPL-2.1, not GPL-3.0.
+LICENSE:${PN}-openssl = "LGPL-2.1-or-later"
+# Sub-packages derived from the LGPL library; must not inherit recipe-level
+# GPL-3.0-or-later or they fail the incompatible-license QA check.
+LICENSE:${PN}-dev       = "LGPL-2.1-or-later"
+LICENSE:${PN}-staticdev = "LGPL-2.1-or-later"
+LICENSE:${PN}-dbg       = "LGPL-2.1-or-later"
+LICENSE:${PN}-doc       = "LGPL-2.1-or-later"
+LICENSE:${PN}-src       = "LGPL-2.1-or-later"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
                     file://COPYING.LESSER;md5=a6f89e2100d9b6cdffcea4f398e37343"

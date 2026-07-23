@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 diff --git a/tls/openssl/gtlsconnection-openssl.c b/tls/openssl/gtlsconnection-openssl.c
 index 06356c5..6d5deac 100644
 --- a/tls/openssl/gtlsconnection-openssl.c

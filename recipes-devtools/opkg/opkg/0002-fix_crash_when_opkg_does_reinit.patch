@@ -4,6 +4,7 @@ Source: COMCAST
 Subject: Add extraction hooks in opkg code to support Comcast packager. 
 Hooks will extract the two levels of compression done during build time to get the final ipk
 Signed-off-by: Deva <Deva_Thiyagarajan2@comcast.com>
+Upstream-Status: Inappropriate
 diff --git a/libopkg/opkg.c b/libopkg/opkg.c
 index 581b343..89d7e21 100644
 --- a/libopkg/opkg.c

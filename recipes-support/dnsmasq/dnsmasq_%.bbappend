@@ -31,12 +31,12 @@ PACKAGES =+ "${PN}-service"
 
 do_install:append() {
      install -d ${D}${base_libdir}/rdk
-     install -m 0644 ${WORKDIR}/dnsmasq.service ${D}${systemd_unitdir}/system
+     install -m 0644 ${UNPACKDIR}/dnsmasq.service ${D}${systemd_unitdir}/system
      sed -i -- 's/#resolv-file=/resolv-file="\/etc\/resolv.dnsmasq"/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#user=/user=root/g' ${D}/etc/dnsmasq.conf
      sed -i -- 's/#dhcp-leasefile=\/var\/lib\/misc\/dnsmasq.leases/dhcp-leasefile=\/tmp\/dnsmasq.leases/g' ${D}/etc/dnsmasq.conf
      install -m 0755 ${S}/../dnsmasqLauncher.sh ${D}${base_libdir}/rdk
-     install -D -m 0644 ${WORKDIR}/dns.conf ${D}${systemd_unitdir}/system/dnsmasq.service.d/dns.conf
+     install -D -m 0644 ${UNPACKDIR}/dns.conf ${D}${systemd_unitdir}/system/dnsmasq.service.d/dns.conf
 }
 
 RDEPENDS:${PN} += "busybox"

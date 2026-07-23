@@ -28,3 +28,7 @@ do_compile_ptest() {
 do_install_ptest() {
     install -d ${D}${PTEST_PATH}
 }
+
+# dejagnu (GPL-3.0-only) is excluded by INCOMPATIBLE_LICENSE in wrynose.
+# It is only a ptest runtime dep — remove it to keep procps buildable.
+RDEPENDS:${PN}-ptest:remove:wrynose = "dejagnu"

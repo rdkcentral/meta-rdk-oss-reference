@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Fri, 17 Dec 2021 21:00:07 +0000
 From: mselva006c <mani_selvaraj@comcast.com>
 Subject: [PATCH] esdk cert path issue. The esdk installation and git secure checkout for some of the

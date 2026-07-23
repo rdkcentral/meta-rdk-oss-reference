@@ -57,7 +57,7 @@ SRC_URI = "${KERNELORG_MIRROR}/linux/bluetooth/bluez-${PV}.tar.xz \
            file://0001-bluetooth-debug-enable.patch \
            file://0002-ble-privacy-device.patch \
            "
-S = "${WORKDIR}/bluez-${PV}"
+S = "${UNPACKDIR}/bluez-${PV}"
 
 CVE_PRODUCT = "bluez"
 

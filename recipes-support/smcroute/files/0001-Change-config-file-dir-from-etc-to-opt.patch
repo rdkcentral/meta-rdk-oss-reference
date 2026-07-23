@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Fri, 27 Nov 2020 14:44:33 +0000
 From: Stephen Foulds <stephen.foulds@consult.red>
 Subject: [PATCH] Change config file dir from etc to opt

@@ -1,0 +1,30 @@
+{
+        "arrisxi6" : [
+              {
+                 "group_id": 1,
+	             "subdocs": [
+                               {
+                                  "name": "telemetry",
+                                  "bitposition": 1,
+                                  "support": true,
+                                  "version": "1.0",
+                                  "secondary_doc": true
+                               }
+                            ]
+               }
+             ],
+        "default" : [
+              {
+                 "group_id": 1,
+	             "subdocs": [
+                               {
+                                  "name": "telemetry",
+                                  "bitposition": 1,
+                                  "support": true,
+                                  "version": "1.0",
+                                  "secondary_doc": true
+                               }
+                            ]
+               }
+             ]
+}

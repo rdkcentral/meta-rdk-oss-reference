@@ -5,6 +5,7 @@ Source: COMCAST
 Signed-off-by: achelakkode <anoopnair_c@infosys.com>
 ---
 
+Upstream-Status: Inappropriate
 diff --git a/src/log4c/rollingpolicy_type_sizewin.c b/src/log4c/rollingpolicy_type_sizewin.c
 index cec35bd..dc16dd2 100644
 --- a/src/log4c/rollingpolicy_type_sizewin.c

@@ -3,6 +3,7 @@ From: Naveen Saini <naveen.kumar.saini@intel.com>
 Subject: [PATCH] Makefile.am: suppress perllocal.pod
 Source: 9f9cfbf07214ac68a55372a3c2777192765cbeb9 Mon Sep 17 00:00:00 2001
 Signed-off-by: Naveen Saini <naveen.kumar.saini@intel.com>
+Upstream-Status: Inappropriate
 ---
  libraries/libapparmor/swig/perl/Makefile.am | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

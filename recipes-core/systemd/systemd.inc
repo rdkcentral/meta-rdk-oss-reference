@@ -20,6 +20,5 @@ SRC_URI = "git://github.com/systemd/systemd.git;protocol=git;branch=main"
 
 PV = "230+git${SRCPV}"
 
-S = "${WORKDIR}/git"
 
 LDFLAGS:append:libc-uclibc = " -lrt -lssp_nonshared -lssp "

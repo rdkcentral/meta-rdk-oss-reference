@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Mon, 30 Nov 2020 18:24:48 +0200
 From: Beniamin Sandu <beniaminsandu@gmail.com>
 Subject: [PATCH] trace-cmd: make it build with musl

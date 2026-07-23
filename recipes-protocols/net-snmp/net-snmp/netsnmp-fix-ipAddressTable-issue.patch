@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Fixed the below issue
 Some physical interface data were missing in ipAddressTable MIB
 

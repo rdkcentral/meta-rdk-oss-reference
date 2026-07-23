@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 Date: Fri, 3 Dec 2021 17:30:31 +0000
 From: Tony Paul <Tony_Paul@comcast.com>
 Subject: [PATCH 1/1] fix gst plugins base configure issue with dunfell

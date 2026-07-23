@@ -4,7 +4,7 @@ SUMMARY = "This receipe compiles the westeros compositor simple-buffer component
 
 LICENSE = "Apache-2.0"
 
-S = "${WORKDIR}/git/simplebuffer"
+S = "${UNPACKDIR}/git/simplebuffer"
 
 LICENSE_LOCATION = "${S}/../LICENSE"
 

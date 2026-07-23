@@ -26,7 +26,6 @@ SRCREV = "b9fbcaf55332bfd3165e59c40718645cef14e5cf"
 #
 # We can't use the approach of setting ${S} to mDNSPosix as we need
 # DEBUG_PREFIX_MAP to cover files which come from the Clients directory too.
-S = "${WORKDIR}/git"
 
 inherit systemd update-rc.d
 
@@ -102,7 +101,7 @@ do_install () {
 	install -m 0644 libnss_mdns.8 ${D}${mandir}/man8
 
 	install -d ${D}${systemd_system_unitdir}
-	install -m 0644 ${WORKDIR}/mdns.service ${D}${systemd_system_unitdir}
+	install -m 0644 ${UNPACKDIR}/mdns.service ${D}${systemd_system_unitdir}
 
 	install -d ${D}${INIT_D_DIR}
 	install mdnsd.sh ${D}${INIT_D_DIR}/mdns
@@ -131,3 +130,6 @@ FILES_SOLIBSDEV = "${libdir}/libdns_sd.so"
 FILES:${PN} += "${libdir}/libnss_mdns-0.2.so"
 
 RPROVIDES:${PN} += "libdns_sd.so"
+
+# GCC 15 C23: CommonServices.h tries to typedef 'bool' which is now a keyword
+CFLAGS:append:wrynose = " -std=gnu11"
