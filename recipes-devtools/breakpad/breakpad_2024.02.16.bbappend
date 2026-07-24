@@ -4,7 +4,7 @@ SRC_URI:append = " file://breakpad_disable_format_macros_check.patch "
 
 SRC_URI += "file://Set-objects-base-name-as-a-module-name.patch"
 
-# TODO : check if neccessary !
+# TODO : check if still needed. It provides new APIs so drop if all builds pass
 #SRC_URI += "file://0001_google-breakpad_comcast_dunfell.patch "
 
 SRC_URI:append:class-target = " file://0003-handler-child-process-hang-fix_kirkstone.patch"

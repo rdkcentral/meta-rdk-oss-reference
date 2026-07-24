@@ -21,10 +21,9 @@ PE = "2"
 SRCREV_FORMAT = "breakpad_gtest_protobuf_lss"
 
 # OE patches live under files-2024.02.16/ alongside the RDK bbappend patches.
-# When submitting upstream, move them to ${PN}/ and remove FILESEXTRAPATHS.
 FILESEXTRAPATHS:prepend := "${THISDIR}/files-2024.02.16:"
 
-# v2024.02.16 tag — last release before the C++20 bump (87b8e45, Mar 2025)
+# v2024.02.16 tag
 SRCREV_breakpad = "f80f2888031b0570783011476a5e862fb7d848a1"
 #v1.11.0
 SRCREV_gtest = "e2239ee6043f73722e7aa812a459f54a28552929"
