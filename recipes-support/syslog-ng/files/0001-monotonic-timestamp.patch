@@ -1,3 +1,10 @@
+Subject: [PATCH] syslog-ng: add support for exporting monotonic timestamp
+
+Add support for exporting the monotonic timestamp in syslog-ng,
+allowing it to be included in the log messages.
+
+Signed-off-by: Konkati Bhavani <Konkati_Bhavani@comcast.com>
+
 Index: syslog-ng-3.36.1/modules/systemd-journal/journald-subsystem.c
 ===================================================================
 --- syslog-ng-3.36.1.orig/modules/systemd-journal/journald-subsystem.c
