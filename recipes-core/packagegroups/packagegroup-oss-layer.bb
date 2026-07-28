@@ -86,8 +86,6 @@ RDEPENDS:${PN} = "\
      libjpeg \
      libmd \
      libnl \
-     libnetfilter-log \
-     libnfnetlink \
      libnsl2 \
      libnss-mdns \
      libogg \
@@ -237,6 +235,8 @@ RDEPENDS:${PN} += "\
      yajl \
      zstd \
      yaml-cpp \
+     libnetfilter-log \
+     libnfnetlink \
 "
 
 # meta-rust components
