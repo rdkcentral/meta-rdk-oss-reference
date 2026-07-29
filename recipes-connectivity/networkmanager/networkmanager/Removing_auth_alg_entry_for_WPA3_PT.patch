@@ -1,0 +1,39 @@
+Subject: Disable auth_alg entry for WPA3-PT and WPA2 in NetworkManager
+Description: Disable auth_alg entry for WPA3-PT and WPA2 in connection profile. This prevents NetworkManager
+from adding auth_alg=open in connection profile.
+
+Upstream-Status: Inappropriate [platform-specific change]
+
+Signed-off-by: Devika Jaladi <Devika_Jaladi@cable.comcast.com>
+Index: NetworkManager-1.43.7/src/core/devices/wifi/nm-wifi-utils.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/devices/wifi/nm-wifi-utils.c
++++ NetworkManager-1.43.7/src/core/devices/wifi/nm-wifi-utils.c
+@@ -819,9 +819,11 @@ nm_wifi_utils_complete_connection(GBytes
+         g_object_set(s_wsec,
+                      NM_SETTING_WIRELESS_SECURITY_KEY_MGMT,
+                      nm_streq0(key_mgmt, "sae") ? "sae" : "wpa-psk",
+-                     NM_SETTING_WIRELESS_SECURITY_AUTH_ALG,
++#if 0
++		     NM_SETTING_WIRELESS_SECURITY_AUTH_ALG,
+                      "open",
+-                     NULL);
++#endif
++		     NULL);
+     } else if (nm_streq0(key_mgmt, "sae") || (ap_rsn_flags & NM_802_11_AP_SEC_KEY_MGMT_SAE)) {
+         g_object_set(s_wsec, NM_SETTING_WIRELESS_SECURITY_KEY_MGMT, "sae", NULL);
+     } else if (nm_streq0(key_mgmt, "owe")
+@@ -833,9 +835,11 @@ nm_wifi_utils_complete_connection(GBytes
+         g_object_set(s_wsec,
+                      NM_SETTING_WIRELESS_SECURITY_KEY_MGMT,
+                      "wpa-psk",
+-                     NM_SETTING_WIRELESS_SECURITY_AUTH_ALG,
++#if 0
++		     NM_SETTING_WIRELESS_SECURITY_AUTH_ALG,
+                      "open",
+-                     NULL);
++#endif
++		     NULL);
+         /* Leave proto/pairwise/group as client set them; if they are unset the
+          * supplicant will figure out the best combination at connect time.
+          */
