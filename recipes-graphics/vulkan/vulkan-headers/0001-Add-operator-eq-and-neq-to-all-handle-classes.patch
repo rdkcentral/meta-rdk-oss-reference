@@ -1,0 +1,852 @@
+diff --git a/include/vulkan/vulkan_handles.hpp b/include/vulkan/vulkan_handles.hpp
+index 617126a..3f67125 100644
+--- a/include/vulkan/vulkan_handles.hpp
++++ b/include/vulkan/vulkan_handles.hpp
+@@ -2641,6 +2641,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_surfaceKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(SurfaceKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_surfaceKHR == rhs.m_surfaceKHR;
++    }
++
++    bool operator!=(SurfaceKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkSurfaceKHR m_surfaceKHR = {};
+@@ -2738,6 +2747,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_debugReportCallbackEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(DebugReportCallbackEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_debugReportCallbackEXT == rhs.m_debugReportCallbackEXT;
++    }
++
++    bool operator!=(DebugReportCallbackEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDebugReportCallbackEXT m_debugReportCallbackEXT = {};
+@@ -2835,6 +2853,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_debugUtilsMessengerEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(DebugUtilsMessengerEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_debugUtilsMessengerEXT == rhs.m_debugUtilsMessengerEXT;
++    }
++
++    bool operator!=(DebugUtilsMessengerEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDebugUtilsMessengerEXT m_debugUtilsMessengerEXT = {};
+@@ -2920,6 +2947,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_displayKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(DisplayKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_displayKHR == rhs.m_displayKHR;
++    }
++
++    bool operator!=(DisplayKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDisplayKHR m_displayKHR = {};
+@@ -3011,6 +3047,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_swapchainKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(SwapchainKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_swapchainKHR == rhs.m_swapchainKHR;
++    }
++
++    bool operator!=(SwapchainKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkSwapchainKHR m_swapchainKHR = {};
+@@ -3102,6 +3147,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_semaphore == VK_NULL_HANDLE;
+     }
++    bool operator==(Semaphore const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_semaphore == rhs.m_semaphore;
++    }
++
++    bool operator!=(Semaphore const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkSemaphore m_semaphore = {};
+@@ -3193,6 +3247,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_fence == VK_NULL_HANDLE;
+     }
++    bool operator==(Fence const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_fence == rhs.m_fence;
++    }
++
++    bool operator!=(Fence const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkFence m_fence = {};
+@@ -3290,6 +3353,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_performanceConfigurationINTEL == VK_NULL_HANDLE;
+     }
++    bool operator==(PerformanceConfigurationINTEL const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_performanceConfigurationINTEL == rhs.m_performanceConfigurationINTEL;
++    }
++
++    bool operator!=(PerformanceConfigurationINTEL const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPerformanceConfigurationINTEL m_performanceConfigurationINTEL = {};
+@@ -3375,6 +3447,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_queryPool == VK_NULL_HANDLE;
+     }
++    bool operator==(QueryPool const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_queryPool == rhs.m_queryPool;
++    }
++
++    bool operator!=(QueryPool const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkQueryPool m_queryPool = {};
+@@ -3466,6 +3547,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_buffer == VK_NULL_HANDLE;
+     }
++    bool operator==(Buffer const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_buffer == rhs.m_buffer;
++    }
++
++    bool operator!=(Buffer const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkBuffer m_buffer = {};
+@@ -3557,6 +3647,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_pipelineLayout == VK_NULL_HANDLE;
+     }
++    bool operator==(PipelineLayout const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_pipelineLayout == rhs.m_pipelineLayout;
++    }
++
++    bool operator!=(PipelineLayout const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPipelineLayout m_pipelineLayout = {};
+@@ -3648,6 +3747,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_descriptorSet == VK_NULL_HANDLE;
+     }
++    bool operator==(DescriptorSet const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_descriptorSet == rhs.m_descriptorSet;
++    }
++
++    bool operator!=(DescriptorSet const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDescriptorSet m_descriptorSet = {};
+@@ -3739,6 +3847,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_imageView == VK_NULL_HANDLE;
+     }
++    bool operator==(ImageView const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_imageView == rhs.m_imageView;
++    }
++
++    bool operator!=(ImageView const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkImageView m_imageView = {};
+@@ -3830,6 +3947,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_pipeline == VK_NULL_HANDLE;
+     }
++    bool operator==(Pipeline const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_pipeline == rhs.m_pipeline;
++    }
++
++    bool operator!=(Pipeline const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPipeline m_pipeline = {};
+@@ -3921,6 +4047,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_shaderEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(ShaderEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_shaderEXT == rhs.m_shaderEXT;
++    }
++
++    bool operator!=(ShaderEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkShaderEXT m_shaderEXT = {};
+@@ -4006,6 +4141,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_image == VK_NULL_HANDLE;
+     }
++    bool operator==(Image const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_image == rhs.m_image;
++    }
++
++    bool operator!=(Image const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkImage m_image = {};
+@@ -4103,6 +4247,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_accelerationStructureNV == VK_NULL_HANDLE;
+     }
++    bool operator==(AccelerationStructureNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_accelerationStructureNV == rhs.m_accelerationStructureNV;
++    }
++
++    bool operator!=(AccelerationStructureNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkAccelerationStructureNV m_accelerationStructureNV = {};
+@@ -4200,6 +4353,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_opticalFlowSessionNV == VK_NULL_HANDLE;
+     }
++    bool operator==(OpticalFlowSessionNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_opticalFlowSessionNV == rhs.m_opticalFlowSessionNV;
++    }
++
++    bool operator!=(OpticalFlowSessionNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkOpticalFlowSessionNV m_opticalFlowSessionNV = {};
+@@ -4291,6 +4453,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_descriptorUpdateTemplate == VK_NULL_HANDLE;
+     }
++    bool operator==(DescriptorUpdateTemplate const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_descriptorUpdateTemplate == rhs.m_descriptorUpdateTemplate;
++    }
++
++    bool operator!=(DescriptorUpdateTemplate const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDescriptorUpdateTemplate m_descriptorUpdateTemplate = {};
+@@ -4384,6 +4555,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_event == VK_NULL_HANDLE;
+     }
++    bool operator==(Event const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_event == rhs.m_event;
++    }
++
++    bool operator!=(Event const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkEvent m_event = {};
+@@ -4481,6 +4661,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_accelerationStructureKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(AccelerationStructureKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_accelerationStructureKHR == rhs.m_accelerationStructureKHR;
++    }
++
++    bool operator!=(AccelerationStructureKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkAccelerationStructureKHR m_accelerationStructureKHR = {};
+@@ -4572,6 +4761,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_micromapEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(MicromapEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_micromapEXT == rhs.m_micromapEXT;
++    }
++
++    bool operator!=(MicromapEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkMicromapEXT m_micromapEXT = {};
+@@ -7099,6 +7297,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_commandBuffer == VK_NULL_HANDLE;
+     }
++    bool operator==(CommandBuffer const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_commandBuffer == rhs.m_commandBuffer;
++    }
++
++    bool operator!=(CommandBuffer const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkCommandBuffer m_commandBuffer = {};
+@@ -7190,6 +7397,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_deviceMemory == VK_NULL_HANDLE;
+     }
++    bool operator==(DeviceMemory const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_deviceMemory == rhs.m_deviceMemory;
++    }
++
++    bool operator!=(DeviceMemory const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDeviceMemory m_deviceMemory = {};
+@@ -7281,6 +7497,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_videoSessionKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(VideoSessionKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_videoSessionKHR == rhs.m_videoSessionKHR;
++    }
++
++    bool operator!=(VideoSessionKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkVideoSessionKHR m_videoSessionKHR = {};
+@@ -7372,6 +7597,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_deferredOperationKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(DeferredOperationKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_deferredOperationKHR == rhs.m_deferredOperationKHR;
++    }
++
++    bool operator!=(DeferredOperationKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDeferredOperationKHR m_deferredOperationKHR = {};
+@@ -7464,6 +7698,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_bufferCollectionFUCHSIA == VK_NULL_HANDLE;
+     }
++    bool operator==(BufferCollectionFUCHSIA const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_bufferCollectionFUCHSIA == rhs.m_bufferCollectionFUCHSIA;
++    }
++
++    bool operator!=(BufferCollectionFUCHSIA const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkBufferCollectionFUCHSIA m_bufferCollectionFUCHSIA = {};
+@@ -7556,6 +7799,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_bufferView == VK_NULL_HANDLE;
+     }
++    bool operator==(BufferView const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_bufferView == rhs.m_bufferView;
++    }
++
++    bool operator!=(BufferView const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkBufferView m_bufferView = {};
+@@ -7647,6 +7899,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_commandPool == VK_NULL_HANDLE;
+     }
++    bool operator==(CommandPool const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_commandPool == rhs.m_commandPool;
++    }
++
++    bool operator!=(CommandPool const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkCommandPool m_commandPool = {};
+@@ -7738,6 +7999,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_pipelineCache == VK_NULL_HANDLE;
+     }
++    bool operator==(PipelineCache const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_pipelineCache == rhs.m_pipelineCache;
++    }
++
++    bool operator!=(PipelineCache const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPipelineCache m_pipelineCache = {};
+@@ -7829,6 +8099,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_cuFunctionNVX == VK_NULL_HANDLE;
+     }
++    bool operator==(CuFunctionNVX const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_cuFunctionNVX == rhs.m_cuFunctionNVX;
++    }
++
++    bool operator!=(CuFunctionNVX const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkCuFunctionNVX m_cuFunctionNVX = {};
+@@ -7920,6 +8199,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_cuModuleNVX == VK_NULL_HANDLE;
+     }
++    bool operator==(CuModuleNVX const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_cuModuleNVX == rhs.m_cuModuleNVX;
++    }
++
++    bool operator!=(CuModuleNVX const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkCuModuleNVX m_cuModuleNVX = {};
+@@ -8012,6 +8300,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_cudaFunctionNV == VK_NULL_HANDLE;
+     }
++    bool operator==(CudaFunctionNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_cudaFunctionNV == rhs.m_cudaFunctionNV;
++    }
++
++    bool operator!=(CudaFunctionNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkCudaFunctionNV m_cudaFunctionNV = {};
+@@ -8105,6 +8402,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_cudaModuleNV == VK_NULL_HANDLE;
+     }
++    bool operator==(CudaModuleNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_cudaModuleNV == rhs.m_cudaModuleNV;
++    }
++
++    bool operator!=(CudaModuleNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkCudaModuleNV m_cudaModuleNV = {};
+@@ -8197,6 +8503,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_descriptorPool == VK_NULL_HANDLE;
+     }
++    bool operator==(DescriptorPool const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_descriptorPool == rhs.m_descriptorPool;
++    }
++
++    bool operator!=(DescriptorPool const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDescriptorPool m_descriptorPool = {};
+@@ -8294,6 +8609,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_descriptorSetLayout == VK_NULL_HANDLE;
+     }
++    bool operator==(DescriptorSetLayout const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_descriptorSetLayout == rhs.m_descriptorSetLayout;
++    }
++
++    bool operator!=(DescriptorSetLayout const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDescriptorSetLayout m_descriptorSetLayout = {};
+@@ -8385,6 +8709,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_framebuffer == VK_NULL_HANDLE;
+     }
++    bool operator==(Framebuffer const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_framebuffer == rhs.m_framebuffer;
++    }
++
++    bool operator!=(Framebuffer const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkFramebuffer m_framebuffer = {};
+@@ -8482,6 +8815,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_indirectCommandsLayoutEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(IndirectCommandsLayoutEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_indirectCommandsLayoutEXT == rhs.m_indirectCommandsLayoutEXT;
++    }
++
++    bool operator!=(IndirectCommandsLayoutEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkIndirectCommandsLayoutEXT m_indirectCommandsLayoutEXT = {};
+@@ -8573,6 +8915,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_indirectCommandsLayoutNV == VK_NULL_HANDLE;
+     }
++    bool operator==(IndirectCommandsLayoutNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_indirectCommandsLayoutNV == rhs.m_indirectCommandsLayoutNV;
++    }
++
++    bool operator!=(IndirectCommandsLayoutNV const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkIndirectCommandsLayoutNV m_indirectCommandsLayoutNV = {};
+@@ -8664,6 +9015,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_indirectExecutionSetEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(IndirectExecutionSetEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_indirectExecutionSetEXT == rhs.m_indirectExecutionSetEXT;
++    }
++
++    bool operator!=(IndirectExecutionSetEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkIndirectExecutionSetEXT m_indirectExecutionSetEXT = {};
+@@ -8749,6 +9109,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_privateDataSlot == VK_NULL_HANDLE;
+     }
++    bool operator==(PrivateDataSlot const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_privateDataSlot == rhs.m_privateDataSlot;
++    }
++
++    bool operator!=(PrivateDataSlot const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPrivateDataSlot m_privateDataSlot = {};
+@@ -8836,6 +9205,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_renderPass == VK_NULL_HANDLE;
+     }
++    bool operator==(RenderPass const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_renderPass == rhs.m_renderPass;
++    }
++
++    bool operator!=(RenderPass const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkRenderPass m_renderPass = {};
+@@ -8927,6 +9305,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_sampler == VK_NULL_HANDLE;
+     }
++    bool operator==(Sampler const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_sampler == rhs.m_sampler;
++    }
++
++    bool operator!=(Sampler const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkSampler m_sampler = {};
+@@ -9024,6 +9411,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_samplerYcbcrConversion == VK_NULL_HANDLE;
+     }
++    bool operator==(SamplerYcbcrConversion const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_samplerYcbcrConversion == rhs.m_samplerYcbcrConversion;
++    }
++
++    bool operator!=(SamplerYcbcrConversion const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkSamplerYcbcrConversion m_samplerYcbcrConversion = {};
+@@ -9117,6 +9513,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_shaderModule == VK_NULL_HANDLE;
+     }
++    bool operator==(ShaderModule const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_shaderModule == rhs.m_shaderModule;
++    }
++
++    bool operator!=(ShaderModule const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkShaderModule m_shaderModule = {};
+@@ -9212,6 +9617,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_validationCacheEXT == VK_NULL_HANDLE;
+     }
++    bool operator==(ValidationCacheEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_validationCacheEXT == rhs.m_validationCacheEXT;
++    }
++
++    bool operator!=(ValidationCacheEXT const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkValidationCacheEXT m_validationCacheEXT = {};
+@@ -9309,6 +9723,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_videoSessionParametersKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(VideoSessionParametersKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_videoSessionParametersKHR == rhs.m_videoSessionParametersKHR;
++    }
++
++    bool operator!=(VideoSessionParametersKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkVideoSessionParametersKHR m_videoSessionParametersKHR = {};
+@@ -9394,6 +9817,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_pipelineBinaryKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(PipelineBinaryKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_pipelineBinaryKHR == rhs.m_pipelineBinaryKHR;
++    }
++
++    bool operator!=(PipelineBinaryKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPipelineBinaryKHR m_pipelineBinaryKHR = {};
+@@ -9641,6 +10073,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_queue == VK_NULL_HANDLE;
+     }
++    bool operator==(Queue const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_queue == rhs.m_queue;
++    }
++
++    bool operator!=(Queue const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkQueue m_queue = {};
+@@ -15267,6 +15708,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_device == VK_NULL_HANDLE;
+     }
++    bool operator==(Device const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_device == rhs.m_device;
++    }
++
++    bool operator!=(Device const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDevice m_device = {};
+@@ -15358,6 +15808,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_displayModeKHR == VK_NULL_HANDLE;
+     }
++    bool operator==(DisplayModeKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_displayModeKHR == rhs.m_displayModeKHR;
++    }
++
++    bool operator!=(DisplayModeKHR const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkDisplayModeKHR m_displayModeKHR = {};
+@@ -16925,6 +17384,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_physicalDevice == VK_NULL_HANDLE;
+     }
++    bool operator==(PhysicalDevice const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_physicalDevice == rhs.m_physicalDevice;
++    }
++
++    bool operator!=(PhysicalDevice const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkPhysicalDevice m_physicalDevice = {};
+@@ -17603,6 +18071,15 @@ namespace VULKAN_HPP_NAMESPACE
+     {
+       return m_instance == VK_NULL_HANDLE;
+     }
++    bool operator==(Instance const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return m_instance == rhs.m_instance;
++    }
++
++    bool operator!=(Instance const& rhs) const VULKAN_HPP_NOEXCEPT
++    {
++      return !operator==(rhs);
++    }
+ 
+   private:
+     VkInstance m_instance = {};
