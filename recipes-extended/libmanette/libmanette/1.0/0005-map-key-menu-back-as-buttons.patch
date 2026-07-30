@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Petar Tijanic <Petar_Tijanic@comcast.com>
+Date: Tue, 10 Jun 2026 00:00:00 +0000
+Subject: [PATCH] Map menu/back/home keyboard keys to gamepad buttons
+
+Some STB controllers and remotes report the menu, home and back keys as
+keyboard codes (KEY_MENU, KEY_HOMEPAGE, KEY_BACK) rather than gamepad button
+codes, so libmanette dropped them. Map them to the Mode (Guide) and Select
+buttons, as the 0.2 build did. 1.0 already gives these keys a hardware index
+in the key map, so only the evdev->ManetteButton mapping was missing.
+---
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index 120dc5a..f768e94 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -196,10 +196,16 @@ evdev_code_to_button (guint code)
+   case BTN_EAST:
+     return MANETTE_BUTTON_EAST;
+   case BTN_SELECT:
++  /* Some STB controllers/remotes send keyboard codes instead of gamepad
++   * button codes for the back and menu/home keys; treat them as Select and
++   * Mode (Guide). */
++  case KEY_BACK:
+     return MANETTE_BUTTON_SELECT;
+   case BTN_START:
+     return MANETTE_BUTTON_START;
+   case BTN_MODE:
++  case KEY_MENU:
++  case KEY_HOMEPAGE:
+     return MANETTE_BUTTON_MODE;
+   case BTN_TL:
+     return MANETTE_BUTTON_LEFT_SHOULDER;
