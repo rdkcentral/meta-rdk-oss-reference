@@ -15,6 +15,9 @@ SRC_URI = "https://launchpad.net/ecryptfs/trunk/${PV}/+download/${BPN}_${PV}.ori
 SRC_URI:append_dunfell = "\ 
            file://0001-ecryptfs-patch-for-openssl-1.x.patch \
            "
+SRC_URI:append:wrynose = "\ 
+           file://0001-ecryptfs-patch-for-openssl-1.x.patch \
+           "
 SRC_URI[md5sum] = "bff8052636f6be642f15c6be45a14ea3"
 SRC_URI[sha256sum] = "173e0add31e898789076103723894964ce474233988ef8d3309021bad8a7b6b4"
 
@@ -22,7 +25,7 @@ inherit pkgconfig autotools systemd
 
 SYSTEMD_PACKAGES = "${PN}"
 
-EXTRA_OECONF += "--disable-nss --disable-pywrap --enable-openssl --prefix=/ --sbindir=/sbin --datarootdir=/usr/share"
+EXTRA_OECONF += "--disable-nss --disable-pywrap --enable-openssl --prefix=/ --sbindir=${sbindir} --datarootdir=/usr/share"
 EXTRA_OEMAKE += "'CFLAGS+= -lgcrypt '"
 
 FILES:${PN} += " \

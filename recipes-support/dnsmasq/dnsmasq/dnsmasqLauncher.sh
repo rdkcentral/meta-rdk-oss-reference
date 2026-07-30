@@ -1,4 +1,4 @@
-#!/bin/busybox sh
+#!${bindir}/busybox sh
 
 ####################################################################################
 # If not stated otherwise in this file or this component's LICENSE file the

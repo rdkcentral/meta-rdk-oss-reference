@@ -33,6 +33,7 @@ SRC_URI:append:broadband = " file://Udhcpc_Early_Background.patch"
 SRC_URI:remove:broadband += " \
    file://blkid.cfg \
    "
+SRC_URI:append:wrynose = " file://disable-mkdosfs.cfg"
 
 do_configure:append() {
     # Ensure math macros and math functions are explicitly injected into ping.c safely

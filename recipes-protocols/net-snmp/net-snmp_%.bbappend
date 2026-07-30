@@ -29,8 +29,8 @@ EXTRA_OECONF += "--without-rpm --with-perl-modules=no --disable-embedded-perl \
                  --disable-manuals \
 "
 
-SRC_URI += "file://netsnmp-fix-ipAddressTable-issue.patch \
-"
+#SRC_URI += "file://netsnmp-fix-ipAddressTable-issue.patch \
+#"
 
 SRC_URI:append = " file://pciutils3.5.1_udev_leak.patch \
                          "

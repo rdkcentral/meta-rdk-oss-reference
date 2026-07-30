@@ -9,3 +9,8 @@ EXTRA_OECONF:append = " \
 "
 FILESEXTRAPATHS:prepend:="${THISDIR}/files:"
 SRC_URI:append = " file://cares-quagga-configure.patch " 
+
+CFLAGS:append:wrynose = " -Wno-error=incompatible-pointer-types"
+
+PACKAGES += "libzebra"
+FILES:${PN} += "${libdir}/libzebra.so.*"

@@ -1,5 +1,5 @@
-PACKAGECONFIG:remove = "libidn"
-EXTRA_OECONF:append = " --without-libidn2"
+PACKAGECONFIG:remove:broadband:wrynose = "libidn"
+PACKAGECONFIG:remove:broadband:wrynose = "libtasn1"
 
 PACKAGES := "${PN}"
 PACKAGES:remove = "\
