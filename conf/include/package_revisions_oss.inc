@@ -19,6 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
+#oss release version
 OSS_LAYER_VERSION = "4.14.0"
 
 LAYER_EXTENSION ?= ""
