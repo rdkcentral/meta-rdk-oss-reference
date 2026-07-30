@@ -387,3 +387,4 @@ RDEPENDS:${PN} += "\
      woff2 \
      brotli \
 "
+RDEPENDS:${PN}:remove = "libidn2"
