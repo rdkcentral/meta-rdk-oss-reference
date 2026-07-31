@@ -1,0 +1,49 @@
+From f009e72c5181a1742c4717d9c4fa35cef923723e Mon Sep 17 00:00:00 2001
+From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
+Date: Fri, 31 Jul 2026 11:21:23 +0000
+Subject: [PATCH] Try loading debug info from .debug dir first
+
+---
+ src/elfxx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/elfxx.c b/src/elfxx.c
+index 7e42a9a9..244ee66f 100644
+--- a/src/elfxx.c
++++ b/src/elfxx.c
+@@ -936,6 +936,7 @@ elf_w (load_debuginfo) (const char* file, struct elf_image *ei, int is_local)
+     return 0;
+   }
+ 
++#if 0
+   ret = elf_w (find_build_id_path) (ei, path, sizeof(path));
+   if (ret == 0)
+     {
+@@ -951,6 +952,7 @@ elf_w (load_debuginfo) (const char* file, struct elf_image *ei, int is_local)
+       ei->image = prev_image;
+       ei->size  = prev_size;
+     }
++#endif
+ 
+   shdr = elf_w (find_section) (ei, ".gnu_debuglink");
+   if (shdr) {
+@@ -985,14 +987,14 @@ elf_w (load_debuginfo) (const char* file, struct elf_image *ei, int is_local)
+ 	basedir[0] = 0;
+ 
+       strcpy (newname, basedir);
+-      strcat (newname, "/");
++      strcat (newname, "/.debug/");
+       strcat (newname, linkbuf);
+       ret = elf_w (load_debuginfo) (newname, ei, -1);
+ 
+       if (ret == -1)
+ 	{
+ 	  strcpy (newname, basedir);
+-	  strcat (newname, "/.debug/");
++	  strcat (newname, "/");
+ 	  strcat (newname, linkbuf);
+ 	  ret = elf_w (load_debuginfo) (newname, ei, -1);
+ 	}
+-- 
+2.34.1
+

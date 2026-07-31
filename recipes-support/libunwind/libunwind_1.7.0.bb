@@ -3,10 +3,12 @@ require libunwind_1.7.0.inc
 
 SRC_URI = "git://github.com/libunwind/libunwind.git;protocol=https;branch=master \
           "
-SRCREV = "26b0cfc407f2bf89f8a3a9770bd1d73ad2cc3306"
+SRCREV = "e6d3ba30d79ca5a8f1206b81740404224fa745eb"
 
 
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'enable_heaptrack','file://core.patch','', d)}"
+SRC_URI += "file://0001-Try-loading-debug-info-from-.debug-dir-first.patch"
+
 S = "${WORKDIR}/git"
 
 #SRC_URI[sha256sum] = "4a6aec666991fb45d0889c44aede8ad6eb108071c3554fcdff671f9c94794976"
