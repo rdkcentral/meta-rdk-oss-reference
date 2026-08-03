@@ -1,6 +1,7 @@
 Subject: Disable auth_alg entry for WPA3-PT and WPA2 in NetworkManager
-Description: Disable auth_alg entry for WPA3-PT and WPA2 in connection profile. This prevents NetworkManager
-from adding auth_alg=open in connection profile.
+Description: Disable auth_alg entry for WPA3-PT and WPA2 in new connection profile. 
+This prevents NetworkManager from adding auth_alg=open in new connection profile
+and passing auth_alg to supplicant.
 
 Upstream-Status: Pending
 
@@ -27,3 +28,21 @@ Index: NetworkManager-1.43.7/src/core/devices/wifi/nm-wifi-utils.c
                       NULL);
          /* Leave proto/pairwise/group as client set them; if they are unset the
           * supplicant will figure out the best combination at connect time.
+Index: NetworkManager-1.43.7/src/core/supplicant/nm-supplicant-config.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/supplicant/nm-supplicant-config.c
++++ NetworkManager-1.43.7/src/core/supplicant/nm-supplicant-config.c
+@@ -966,8 +966,11 @@ nm_supplicant_config_add_setting_wireles
+         return FALSE;
+ 
+     auth_alg = nm_setting_wireless_security_get_auth_alg(setting);
+-    if (!add_string_val(self, auth_alg, "auth_alg", TRUE, NULL, error))
+-        return FALSE;
++    // For SAE and WPA-PSK, do not force auth_alg into supplicant config.
++    if (!NM_IN_STRSET(key_mgmt, "sae", "wpa-psk")) {
++        if (!add_string_val(self, auth_alg, "auth_alg", TRUE, NULL, error))
++            return FALSE;
++    }
+ 
+     psk = nm_setting_wireless_security_get_psk(setting);
+     if (psk) {
