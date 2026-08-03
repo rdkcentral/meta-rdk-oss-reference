@@ -628,7 +628,7 @@ PACKAGE_ARCH:pn-libxslt ?= "${OSS_LAYER_ARCH}"
 PR:pn-libzip ?= "r0"
 PACKAGE_ARCH:pn-libzip ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-lighttpd ?= "r3"
+PR:pn-lighttpd ?= "r4"
 PACKAGE_ARCH:pn-lighttpd ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-linenoise ?= "r1"
