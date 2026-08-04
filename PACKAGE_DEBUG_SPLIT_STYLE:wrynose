@@ -1,0 +1,2 @@
+INSANE_SKIP:${PN} += "installed-vs-shipped"
+CFLAGS:append = " -DNDBM_H_USES_PROTOTYPES"
