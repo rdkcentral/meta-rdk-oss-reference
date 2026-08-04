@@ -208,3 +208,4 @@ RDEPENDS:${PN} += "\
      nopoll \ 
      msgpack-c \ 
 "
+RDEPENDS:${PN}:remove = "libidn2"
