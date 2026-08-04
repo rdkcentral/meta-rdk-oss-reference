@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Petar Tijanic <Petar_Tijanic@comcast.com>
+Date: Fri, 12 Jun 2026 00:00:00 +0000
+Subject: [PATCH] evdev: fix the d-pad hat index
+
+The hat index for the mapping lookup was key_map[hat_number] * 2 + axis, but
+key_map is the button map - indexing it by a hat ordinal returns a button value
+(a home button can land at key_map[0]) and the d-pad stops working on some
+controllers. The mapping stores hat bindings at hat_number * 2 + axis, which is
+just (code - ABS_HAT0X). Forward-ports the 0.2 nintendo dpad fix; the analog
+trigger detection half is dropped since 1.0 exposes triggers as axes.
+---
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index e8bb474..b1631df 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -344,9 +344,10 @@ on_evdev_event (ManetteEvdevBackend *self,
+     case ABS_HAT2Y:
+     case ABS_HAT3X:
+     case ABS_HAT3Y:
+-      guint index =
+-        self->key_map[(evdev_event->code - ABS_HAT0X) / 2] * 2 +
+-        (evdev_event->code - ABS_HAT0X) % 2;
++      /* (code - ABS_HAT0X) is hat_number*2 + axis, the index the mapping wants.
++       * Don't run the hat number through key_map (the button map) - it returns a
++       * button value and breaks the dpad. */
++      guint index = evdev_event->code - ABS_HAT0X;
+ 
+       manette_backend_emit_unmapped_hat_event (MANETTE_BACKEND (self), time,
+                                                index, evdev_event->value);
+--
+2.34.1

@@ -1,0 +1,134 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Petar Tijanic <Petar_Tijanic@comcast.com>
+Date: Fri, 12 Jun 2026 00:00:00 +0000
+Subject: [PATCH] evdev: poll on the thread-default context
+
+g_io_add_watch() puts the poll source on the global default context. On the
+box the gamepad monitor runs on the WPE web process thread (it gets the device
+fds over wayland inputfd), and that thread doesn't run the global default
+context, so the controller connects but no buttons or axes come through.
+
+Use g_io_create_watch() + g_source_attach() on the thread-default context so
+the poll runs where the monitor lives. On the main thread this is the same as
+before. Keep the source as a GSource* and drop it with g_source_destroy().
+---
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index f768e94..e8bb474 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -43,7 +43,7 @@ struct _ManetteEvdevBackend
+ 
+   int fd;
+   gboolean has_external_fd;
+-  guint event_source_id;
++  GSource *event_source;
+   struct libevdev *evdev_device;
+ 
+   guint8 key_map[KEY_MAX];
+@@ -413,7 +413,7 @@ poll_events (GIOChannel          *source,
+   if (condition & (G_IO_HUP | G_IO_ERR | G_IO_NVAL)) {
+     g_debug ("Evdev poll condition indicates error/disconnect (condition=0x%x), removing poll source",
+              (guint) condition);
+-    self->event_source_id = 0;
++    g_clear_pointer (&self->event_source, g_source_unref);
+     return G_SOURCE_REMOVE;
+   }
+ 
+@@ -425,7 +425,7 @@ poll_events (GIOChannel          *source,
+       on_evdev_event (self, &evdev_event);
+     } else if (rc < 0) {
+       g_debug ("Error reading from evdev (%d), removing poll source", rc);
+-      self->event_source_id = 0;
++      g_clear_pointer (&self->event_source, g_source_unref);
+       return G_SOURCE_REMOVE;
+     }
+   }
+@@ -433,13 +433,39 @@ poll_events (GIOChannel          *source,
+   return G_SOURCE_CONTINUE;
+ }
+ 
++static void
++clear_event_source (ManetteEvdevBackend *self)
++{
++  if (self->event_source == NULL)
++    return;
++
++  g_source_destroy (self->event_source);
++  g_clear_pointer (&self->event_source, g_source_unref);
++}
++
++/* Watch the evdev fd on the thread-default main context rather than the global
++ * default one. libmanette can be driven from a non-main thread/runloop (the WPE
++ * web process runs the gamepad monitor off a wayland inputfd handover); using
++ * g_io_add_watch() would attach the poll to the global default context, which
++ * that thread never iterates, so device input would never be dispatched even
++ * though the device connects. */
++static void
++start_polling (ManetteEvdevBackend *self)
++{
++  g_autoptr (GIOChannel) channel = g_io_channel_unix_new (self->fd);
++
++  self->event_source = g_io_create_watch (channel, G_IO_IN | G_IO_HUP | G_IO_ERR);
++  g_source_set_callback (self->event_source, G_SOURCE_FUNC (poll_events), self, NULL);
++  g_source_attach (self->event_source, g_main_context_get_thread_default ());
++}
++
+ static void
+ manette_evdev_backend_finalize (GObject *object)
+ {
+   ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (object);
+ 
+   g_clear_object (&self->mapping);
+-  g_clear_handle_id (&self->event_source_id, g_source_remove);
++  clear_event_source (self);
+   close (self->fd);
+   libevdev_free (self->evdev_device);
+   g_free (self->filename);
+@@ -466,7 +492,6 @@ static gboolean
+ manette_evdev_backend_initialize (ManetteBackend *backend)
+ {
+   ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (backend);
+-  g_autoptr (GIOChannel) channel = NULL;
+   int vendor, product;
+   int buttons_number;
+   int axes_number;
+@@ -497,9 +522,8 @@ manette_evdev_backend_initialize (ManetteBackend *backend)
+   if (manette_device_type_guess (vendor, product) != MANETTE_DEVICE_GENERIC)
+     return FALSE;
+ 
+-  // Poll the events in the main loop.
+-  channel = g_io_channel_unix_new (self->fd);
+-  self->event_source_id = g_io_add_watch (channel, G_IO_IN | G_IO_HUP | G_IO_ERR, (GIOFunc) poll_events, self);
++  // Poll the events on the thread-default main context.
++  start_polling (self);
+ 
+   buttons_number = 0;
+ 
+@@ -747,13 +771,12 @@ manette_evdev_backend_change_fd (ManetteBackend *backend,
+                                  int             fd)
+ {
+   ManetteEvdevBackend *self = MANETTE_EVDEV_BACKEND (backend);
+-  g_autoptr (GIOChannel) channel = NULL;
+   struct input_event evdev_event;
+ 
+   g_return_if_fail (MANETTE_IS_EVDEV_BACKEND (self));
+   g_return_if_fail (fd >= 0);
+ 
+-  g_clear_handle_id (&self->event_source_id, g_source_remove);
++  clear_event_source (self);
+   close (self->fd);
+   self->fd = fd;
+ 
+@@ -767,9 +790,7 @@ manette_evdev_backend_change_fd (ManetteBackend *backend,
+                               &evdev_event) == LIBEVDEV_READ_STATUS_SYNC)
+     ; /* drain */
+ 
+-  channel = g_io_channel_unix_new (self->fd);
+-  self->event_source_id = g_io_add_watch (channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
+-                                          (GIOFunc) poll_events, self);
++  start_polling (self);
+ }
+ 
+ /*
+--
+2.34.1
