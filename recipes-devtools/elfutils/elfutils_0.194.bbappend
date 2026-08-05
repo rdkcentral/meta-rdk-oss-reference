@@ -1,4 +1,4 @@
-#PACKAGE_DEBUG_SPLIT_STYLE='debug-without-srcpkg'
+PACKAGE_DEBUG_SPLIT_STYLE='debug-without-srcpkg'
 PACKAGES:remove = " \
     elfutils-staticdev \
     elfutils-doc \
@@ -9,12 +9,16 @@ PACKAGES:remove = " \
     elfutils-locale-es \
     elfutils-locale-ja \
     elfutils-locale-pl \
-    elfutils-locale-uk \
+    elfutils-src \
+    elfutils-binutils \
+    elfutils-dbg \
+    elfutils-dev \
+    elfutils \
 "
 NOAUTOPACKAGEDEBUG = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
-
+INSANE_SKIP:${PN} +="installed-vs-shipped"
 do_install:append() {
     rm -rf ${D}${datadir}/locale
     rm -rf ${D}${bindir}/.debug

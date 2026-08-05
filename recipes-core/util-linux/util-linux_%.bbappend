@@ -52,4 +52,4 @@ RRECOMMENDS:${PN}:remove = " \
                            ${PN}-zramctl \
                           "
 
-TARGET_LDFLAGS:append:pn-util-linux = " -Wl,-z,nodlopen"
+#TARGET_LDFLAGS:append:pn-util-linux = " -Wl,-z,nodlopen"
