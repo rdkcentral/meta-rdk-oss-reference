@@ -77,11 +77,11 @@ do_install () {
     # Install init script and default settings
     install -m 0755 -d ${D}${sysconfdir}/default ${D}${sysconfdir}/init.d \
     ${D}${sysconfdir}/quagga ${D}${sysconfdir}/default/volatiles
-    install -m 0644 ${WORKDIR}/quagga.default ${D}${sysconfdir}/default/quagga
-    install -m 0644 ${WORKDIR}/watchquagga.default ${D}${sysconfdir}/default/watchquagga
-    install -m 0755 ${WORKDIR}/quagga.init ${D}${sysconfdir}/init.d/quagga
-    install -m 0755 ${WORKDIR}/watchquagga.init ${D}${sysconfdir}/init.d/watchquagga
-    install -m 0644 ${WORKDIR}/volatiles.03_quagga  ${D}${sysconfdir}/default/volatiles/03_quagga
+    install -m 0644 ${UNPACKDIR}/quagga.default ${D}${sysconfdir}/default/quagga
+    install -m 0644 ${UNPACKDIR}/watchquagga.default ${D}${sysconfdir}/default/watchquagga
+    install -m 0755 ${UNPACKDIR}/quagga.init ${D}${sysconfdir}/init.d/quagga
+    install -m 0755 ${UNPACKDIR}/watchquagga.init ${D}${sysconfdir}/init.d/watchquagga
+    install -m 0644 ${UNPACKDIR}/volatiles.03_quagga  ${D}${sysconfdir}/default/volatiles/03_quagga
 
     # Install sample configurations for the daemons
     for f in bgpd vtysh isisd ospfd ripngd zebra ripd ospf6d; do
@@ -115,7 +115,7 @@ do_install () {
     # For PAM
     for feature in ${DISTRO_FEATURES}; do
         if [ "$feature" = "pam" ]; then
-            install -D -m 644 ${WORKDIR}/quagga.pam ${D}/${sysconfdir}/pam.d/quagga
+            install -D -m 644 ${UNPACKDIR}/quagga.pam ${D}/${sysconfdir}/pam.d/quagga
             break
         fi
     done
@@ -134,7 +134,7 @@ do_install () {
 
     install -d ${D}${systemd_unitdir}/system
     for i in bgpd isisd ospf6d ospfd ripd ripngd zebra; do
-        install -m 0644 ${WORKDIR}/$i.service ${D}${systemd_unitdir}/system
+        install -m 0644 ${UNPACKDIR}/$i.service ${D}${systemd_unitdir}/system
     done
     sed -e 's,@BASE_SBINDIR@,${base_sbindir},g' \
         -e 's,@SYSCONFDIR@,${sysconfdir},g' \

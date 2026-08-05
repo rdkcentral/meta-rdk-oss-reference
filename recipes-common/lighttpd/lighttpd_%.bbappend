@@ -3,22 +3,15 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 RDEPENDS:${PN} += " \
     libpcreposix \
     pcregrep \
-    lighttpd-module-cgi \
-    lighttpd-module-redirect \
-    lighttpd-module-setenv \
     lighttpd-module-ssi \
-    lighttpd-module-access \
     lighttpd-module-accesslog \
 	"
 
-RDEPENDS:${PN}:append:broadband = " lighttpd-module-rewrite \
-				    lighttpd-module-secdownload \
-				  "
 
 # From meta-rdk-comcast/recipes-common/lighttpd/lighttpd_%.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/files:"
 
-inherit logrotate_config
+inherit  ${@bb.utils.contains("DISTRO_FEATURES", "wrynose", "logrotate", "logrotate_config", d)}
 
 LOGROTATE_NAME    = "lighttpd"
 LOGROTATE_LOGNAME_lighttpd = "lighttpd*.log"
@@ -31,8 +24,8 @@ LOGROTATE_ROTATION_MEM_lighttpd  = "1"
 
 SRC_URI:append:qemux86 ="file://lighttpd.conf_emulator "
 
-SRC_URI:append = " file://0001-Force-UTC-for-lighttpd-log-messages.patch "
-SRC_URI:append:broadband = " file://drop_root_lighttpd.patch "
+#SRC_URI:append = " file://0001-Force-UTC-for-lighttpd-log-messages.patch "
+#SRC_URI:append:broadband = " file://drop_root_lighttpd.patch "
 
 DEPENDS:append:broadband = " utopia libunpriv"
 
@@ -45,9 +38,6 @@ LDFLAGS:append:broadband = " -lprivilege -lsyscfg"
 RDEPENDS:${PN} += " \
        libpcreposix \
        pcregrep \
-       lighttpd-module-cgi \
-       lighttpd-module-redirect \
-       lighttpd-module-setenv \
        lighttpd-module-ssi \
        "
 do_install:append:qemux86() {
