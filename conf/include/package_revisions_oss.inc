@@ -624,6 +624,9 @@ PACKAGE_ARCH:pn-libxml2 ?= "${OSS_LAYER_ARCH}"
 PR:pn-libxslt ?= "r1"
 PACKAGE_ARCH:pn-libxslt ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libyaml ?= "r0"
+PACKAGE_ARCH:pn-libyaml ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-libzip ?= "r0"
 PACKAGE_ARCH:pn-libzip ?= "${OSS_LAYER_ARCH}"
 
