@@ -91,6 +91,7 @@ FILES:${PN}-extras = "${libdir}/${PN}/loggen \
                      ${libdir}/syslog-ng/libxml.so \
                      ${libdir}/libloggen_helper-* \
                      ${libdir}/libloggen_plugin-* \
+                     ${D}${datadir}/${BPN} \
                      "
 
 pkg_postinst:${PN}() {
