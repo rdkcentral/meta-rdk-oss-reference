@@ -52,6 +52,9 @@ do_install:append() {
 
         #Remove the syslog-ng@default.service link from multiuser target as we don't use it. 
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
+
+        # removing /usr/share/syslog-ng as part of cleanup
+        rm -rf ${D}${datadir}/${BPN}
     fi
 
 }
@@ -91,8 +94,7 @@ FILES:${PN}-extras = "${libdir}/${PN}/loggen \
                      ${libdir}/syslog-ng/libxml.so \
                      ${libdir}/libloggen_helper-* \
                      ${libdir}/libloggen_plugin-* \
-                     ${datadir}/syslog-ng/* \
-                     "
+\                     "
 
 pkg_postinst:${PN}() {
     version="${@d.getVar('PV', True)}"
