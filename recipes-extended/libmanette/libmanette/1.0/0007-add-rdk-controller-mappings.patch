@@ -22,6 +22,13 @@ resolved every mapping to the opposite face button. Two errors that cancelled.
 The libmanette 1.0 consumers (ManetteGamepadProvider in WPE WebKit, and
 toStandardGamepadButton_v1 in wpe-backend-rdk) use the ManetteButton enum
 directly and do not have that bug, so the compensation has to be absent here.
+The Amazon Luna reports its select and home keys as keyboard codes (KEY_BACK and
+KEY_HOMEPAGE) rather than gamepad button codes. 0.2 and 1.0 give those two keys
+their hardware index in opposite order - the RDK 0.2 patch assigns Mode before
+Select with two hard-coded ifs, while 1.0 walks the key codes in ascending order
+and so reaches KEY_BACK (158) before KEY_HOMEPAGE (172). back: and guide: must
+therefore differ between the two databases; do not copy them across.
+
 ---
 diff --git a/src/gamecontrollerdb b/src/gamecontrollerdb
 index 01f64d3..799cac2 100644
@@ -42,7 +49,7 @@ index 01f64d3..799cac2 100644
 +050000007e0500000620000001000000,RedStorm gamer Choice Pro mode,a:b0,b:b2,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:b6,leftx:a0,lefty:a1,misc1:b13,rightshoulder:b5,rightstick:b11,righttrigger:b7,rightx:a3,righty:a4,start:b9,x:b1,y:b3,
 +050000005e040000e002000003090000,Xbox One Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,
 +0500000049190000020400001b010000,GameSir T4 Pro,a:b0,b:b1,back:b10,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b23,leftshoulder:b6,leftstick:b13,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b14,righttrigger:a9,rightx:a2,righty:a5,start:b11,x:b3,y:b4,
-+05000000710100001904000000010000,Amazon Luna Controller,a:b0,b:b1,back:b10,dpdown:h0.5,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b9,leftshoulder:b4,leftstick:b7,lefttrigger:a10,leftx:a0,lefty:a1,misc1:b11,rightshoulder:b5,rightstick:b8,righttrigger:a9,rightx:a2,righty:a5,start:b6,y:b3,x:b2,
++05000000710100001904000000010000,Amazon Luna Controller,a:b0,b:b1,back:b9,dpdown:h0.5,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b10,leftshoulder:b4,leftstick:b7,lefttrigger:a10,leftx:a0,lefty:a1,misc1:b11,rightshoulder:b5,rightstick:b8,righttrigger:a9,rightx:a2,righty:a5,start:b6,y:b3,x:b2,
 +050000005e040000130b000015050000,Xbox Series Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,
 +050000005e040000200b000013050000,Xbox Wireless Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,
 +050000005e040000130b000009050000,Xbox Series Controller,a:b0,b:b1,back:b6,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b8,leftshoulder:b4,leftstick:b9,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b10,righttrigger:a5,rightx:a3,righty:a4,start:b7,x:b2,y:b3,
