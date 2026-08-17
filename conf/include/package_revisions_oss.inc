@@ -95,6 +95,12 @@ PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
 PR:pn-alsa-state ?= "r5"
 PACKAGE_ARCH:pn-alsa-state ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libmicrohttpd12 ?= "r0"
+PACKAGE_ARCH:pn-libmicrohttpd12 ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libyaml ?= "r0"
+PACKAGE_ARCH:pn-libyaml ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-alsa-topology-conf ?= "r0"
 PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
 
