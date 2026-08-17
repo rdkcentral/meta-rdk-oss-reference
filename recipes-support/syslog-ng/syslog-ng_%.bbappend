@@ -56,10 +56,12 @@ do_install:append() {
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
     fi
     install -d ${D}${base_libdir}/rdk
-    install -m 0755 ${WORKDIR}/apply-syslog-ng-template.sh ${D}${base_libdir}/apply-syslog-ng-template.sh
+    install -m 0755 ${WORKDIR}/apply-syslog-ng-template.sh \
+                    ${D}${base_libdir}/rdk/apply-syslog-ng-template.sh
 }
 
-FILES:${PN} += "${base_libdir}/rdk/apply-syslog-ng-template.sh"
+FILES:${PN} += "${base_libdir}/rdk \
+                ${base_libdir}/rdk/apply-syslog-ng-template.sh \"
 
 PACKAGE_BEFORE_PN += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', '${PN}-extras', '', d)}"
 FILES:${PN}-extras = "${libdir}/${PN}/loggen \
