@@ -54,7 +54,7 @@ do_install:append() {
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
 
         # removing /usr/share/syslog-ng as part of cleanup
-        rm -rf ${D}${datadir}/${BPN}/include/scl/windowseventlog.xml
+        rm -rf ${D}${datadir}/${BPN}/include/scl/windowseventlog/*
     fi
 
 }
