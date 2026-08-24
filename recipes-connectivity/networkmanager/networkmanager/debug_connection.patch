@@ -1,0 +1,245 @@
+Index: NetworkManager-1.43.7/src/core/nm-policy.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/nm-policy.c
++++ NetworkManager-1.43.7/src/core/nm-policy.c
+@@ -1344,7 +1344,7 @@ _auto_activate_device(NMPolicy *self, NM
+ 
+     nm_assert(NM_IS_POLICY(self));
+     nm_assert(NM_IS_DEVICE(device));
+-
++    _LOGI(LOGD_DEVICE, "Devika: entered to auto-activating ");
+     priv = NM_POLICY_GET_PRIVATE(self);
+ 
+     // FIXME: if a device is already activating (or activated) with a connection
+@@ -1359,15 +1359,24 @@ _auto_activate_device(NMPolicy *self, NM
+              *
+              * pass. */
+         } else
++	{
++	    _LOGI(LOGD_DEVICE, "Devika: Device is already connecting ");
+             return;
++	}
+     }
+ 
+     if (!nm_device_autoconnect_allowed(device))
+-        return;
++    {
++	_LOGI(LOGD_DEVICE, "Devika: Device is not allowed to auto connect ");
++	return;
++    }
+ 
+     connections = nm_manager_get_activatable_connections(priv->manager, TRUE, TRUE, &len);
+     if (!connections[0])
++    {
++	_LOGI(LOGD_DEVICE, "Devika: No connections available to auto connect ");
+         return;
++    }
+ 
+     /* Find the first connection that should be auto-activated */
+     best_connection = NULL;
+@@ -1384,20 +1393,30 @@ _auto_activate_device(NMPolicy *self, NM
+ 
+         s_con = nm_connection_get_setting_connection(cand_conn);
+         if (!nm_setting_connection_get_autoconnect(s_con))
++	{
++	    _LOGI(LOGD_DEVICE, "Devika: Auto connect is not enabled for connection %s ", nm_settings_connection_get_id(connections[i]));
+             continue;
++	}
+ 
+         permission = nm_utils_get_shared_wifi_permission(cand_conn);
+         if (permission && !nm_settings_connection_check_permission(candidate, permission))
+-            continue;
++	{
++	    _LOGI(LOGD_DEVICE, "Devika: Auto connect is not allowed for connection %s ", nm_settings_connection_get_id(connections[i]));
++	    continue;
++	}
+ 
+         if (nm_device_can_auto_connect(device, candidate, &specific_object)) {
+             best_connection = candidate;
++	    _LOGI(LOGD_DEVICE, "Devika: Found a connection to auto connect ");
+             break;
+         }
+     }
+ 
+     if (!best_connection)
++    {
++	_LOGI(LOGD_DEVICE, "Devika: No connection found to auto connect ");
+         return;
++    }
+ 
+     _LOGI(LOGD_DEVICE,
+           "auto-activating connection '%s' (%s)",
+Index: NetworkManager-1.43.7/src/core/devices/nm-device.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/devices/nm-device.c
++++ NetworkManager-1.43.7/src/core/devices/nm-device.c
+@@ -8559,16 +8559,10 @@ nm_device_can_auto_connect(NMDevice *sel
+                                               NULL,
+                                               NULL))
+    
+-    {
+-        _LOGI(LOGD_DEVICE, "Devika: Auto connect is not available for connection %s ", nm_settings_connection_get_id(sett_conn));
+ 	return FALSE;
+-    }
+ 
+     if (!NM_DEVICE_GET_CLASS(self)->can_auto_connect(self, sett_conn, specific_object))
+-    {
+-	_LOGI(LOGD_DEVICE, "Devika: Auto connect is not possible for connection %s ", nm_settings_connection_get_id(sett_conn));
+         return FALSE;
+-    }
+ 
+     return TRUE;
+ }
+@@ -15104,7 +15098,6 @@ _nm_device_check_connection_available(NM
+                                        local->message);
+                     g_error_free(local);
+                 }
+-		_LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with software device", nm_settings_connection_get_id(connection));
+                 return FALSE;
+             }
+             return TRUE;
+@@ -15112,7 +15105,6 @@ _nm_device_check_connection_available(NM
+         nm_utils_error_set_literal(error,
+                                    NM_UTILS_ERROR_CONNECTION_AVAILABLE_UNMANAGED_DEVICE,
+                                    "hardware device is not realized");
+-        _LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with hardware device", nm_settings_connection_get_id(connection));
+ 	return FALSE;
+     }
+ 
+@@ -15121,7 +15113,6 @@ _nm_device_check_connection_available(NM
+         nm_utils_error_set_literal(error,
+                                    NM_UTILS_ERROR_CONNECTION_AVAILABLE_UNMANAGED_DEVICE,
+                                    "device is in unknown state");
+-        _LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with device in unknown state", nm_settings_connection_get_id(connection));
+ 	return FALSE;
+     }
+     if (state < NM_DEVICE_STATE_UNAVAILABLE) {
+@@ -15134,7 +15125,6 @@ _nm_device_check_connection_available(NM
+                     error,
+                     NM_UTILS_ERROR_CONNECTION_AVAILABLE_STRICTLY_UNMANAGED_DEVICE,
+                     "device is strictly unmanaged");
+-                _LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with strictly unmanaged device", nm_settings_connection_get_id(connection));
+ 		return FALSE;
+             }
+             if (!NM_FLAGS_HAS(flags,
+@@ -15143,7 +15133,6 @@ _nm_device_check_connection_available(NM
+                 nm_utils_error_set_literal(error,
+                                            NM_UTILS_ERROR_CONNECTION_AVAILABLE_UNMANAGED_DEVICE,
+                                            "device is currently unmanaged");
+-                _LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with unmanaged device", nm_settings_connection_get_id(connection));
+ 		return FALSE;
+             }
+         }
+@@ -15159,7 +15148,6 @@ _nm_device_check_connection_available(NM
+                                            NM_UTILS_ERROR_CONNECTION_AVAILABLE_TEMPORARY,
+                                            "device is not available for internal request");
+             }
+-            _LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with unavailable device", nm_settings_connection_get_id(connection));
+ 	    return FALSE;
+         }
+     }
+@@ -15173,7 +15161,6 @@ _nm_device_check_connection_available(NM
+                                local->message);
+             g_error_free(local);
+         }
+-	_LOGI(LOGD_DEVICE, "Devika: Connection %s is not compatible with device", nm_settings_connection_get_id(connection));
+         return FALSE;
+     }
+ 
+@@ -15300,7 +15287,6 @@ check_connection_available(NMDevice
+     nm_utils_error_set_literal(error,
+                                NM_UTILS_ERROR_CONNECTION_AVAILABLE_TEMPORARY,
+                                "device has no carrier");
+-    _LOGI(LOGD_DEVICE, "Devika: ""Connection %s is not compatible with device without carrier", nm_settings_connection_get_id(connection));
+     return FALSE;
+ }
+ 
+Index: NetworkManager-1.43.7/src/core/devices/wifi/nm-wifi-ap.c
+===================================================================
+--- NetworkManager-1.43.7.orig/src/core/devices/wifi/nm-wifi-ap.c
++++ NetworkManager-1.43.7/src/core/devices/wifi/nm-wifi-ap.c
+@@ -571,57 +571,32 @@ nm_wifi_ap_check_compatible(NMWifiAP *se
+     g_return_val_if_fail(NM_IS_CONNECTION(connection), FALSE);
+ 
+     priv = NM_WIFI_AP_GET_PRIVATE(self);
+-    _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible");
+     s_wireless = nm_connection_get_setting_wireless(connection);
+     if (s_wireless == NULL)
+-    {
+-	_LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: s_wireless is NULL");
+         return FALSE;
+-    }
+ 
+     ssid = nm_setting_wireless_get_ssid(s_wireless);
+     if (ssid != priv->ssid) {
+         if (!ssid || !priv->ssid)
+-	{
+-	    _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: ssid or priv->ssid is NULL");
+             return FALSE;
+-	}
+         if (!g_bytes_equal(ssid, priv->ssid))
+-	{
+-	    _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: ssid and priv->ssid are not equal");
+             return FALSE;
+-	}
+     }
+ 
+     bssid = nm_setting_wireless_get_bssid(s_wireless);
+     if (bssid && (!priv->address || !nm_utils_hwaddr_matches(bssid, -1, priv->address, -1)))
+-    {
+-	_LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: bssid is not compatible with priv->address");
+         return FALSE;
+-    }
+ 
+     mode = nm_setting_wireless_get_mode(s_wireless);
+     if (mode) {
+         if (!strcmp(mode, "infrastructure") && (priv->mode != _NM_802_11_MODE_INFRA))
+-	{
+-            _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: mode (%s) is not compatible with priv->mode (%d)", mode, priv->mode);
+ 	    return FALSE;
+-	}
+         if (!strcmp(mode, "adhoc") && (priv->mode != _NM_802_11_MODE_ADHOC))
+-	{
+-            _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: mode (%s) is not compatible with priv->mode (%d)", mode, priv->mode);
+ 	    return FALSE;
+-	}
+         if (!strcmp(mode, "ap") && (priv->mode != _NM_802_11_MODE_INFRA || priv->hotspot != TRUE))
+-	{
+-	    _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: mode (%s) is not compatible with priv->mode (%d) or priv->hotspot (%d)", mode, priv->mode, priv->hotspot);
+             return FALSE;
+-	}
+         if (!strcmp(mode, "mesh") && (priv->mode != _NM_802_11_MODE_MESH))
+-	{
+-            _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: mode (%s) is not compatible with priv->mode (%d)", mode, priv->mode);
+ 	    return FALSE;
+-	}
+     }
+ 
+     band = nm_setting_wireless_get_band(s_wireless);
+@@ -629,15 +604,9 @@ nm_wifi_ap_check_compatible(NMWifiAP *se
+         guint ap_band = freq_to_band(priv->freq);
+ 
+         if (!strcmp(band, "a") && ap_band != 5)
+-	{
+-	    _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: band (%s) is not compatible with priv->freq (%d)", band, priv->freq);
+ 	    return FALSE;
+-        }
+         else if (!strcmp(band, "bg") && ap_band != 2)
+-	{
+-            _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: band (%s) is not compatible with priv->freq (%d)", band, priv->freq);
+ 	    return FALSE;
+-	}
+     }
+ 
+     channel = nm_setting_wireless_get_channel(s_wireless);
+@@ -645,10 +614,7 @@ nm_wifi_ap_check_compatible(NMWifiAP *se
+         guint32 ap_chan = nm_utils_wifi_freq_to_channel(priv->freq);
+ 
+         if (channel != ap_chan)
+-	{
+-	    _LOGI(LOGD_DEVICE, "Devika: nm_wifi_ap_check_compatible: channel (%d) is not compatible with priv->freq (%d)", ap_chan, priv->freq);
+ 	    return FALSE;
+-	}
+     }
+ 
+     s_wireless_sec = nm_connection_get_setting_wireless_security(connection);
