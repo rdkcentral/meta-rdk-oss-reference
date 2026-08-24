@@ -1,0 +1,10 @@
+[Unit]
+Description=Monitor for certificate availability to reload audit rules
+After=auditd.service
+
+[Path]
+PathExists=/opt/dl/certs/staticXpkiCrt.pk12
+Unit=audit-rules-reload.service
+
+[Install]
+WantedBy=multi-user.target
