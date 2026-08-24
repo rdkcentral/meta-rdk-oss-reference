@@ -1,7 +1,9 @@
 #!/bin/sh
 
-ExecStartPre=/bin/mkdir -p /tmp/syslog-ng
-ExecStartPre=/bin/sh -c 'if [ ! -f /tmp/syslog-ng.conf ];then cp /etc/syslog-ng/syslog-ng.conf /tmp/syslog-ng.conf ; fi'
+mkdir -p /tmp/syslog-ng
+if [ ! -f "${SYSLOG_NG_CONF}" ]; then
+   cp /etc/syslog-ng/syslog-ng.conf "${SYSLOG_NG_CONF}"
+fi
 
 DISABLE_LOGCHRONO="/opt/secure/RFC/disable_logchrono"
 SYSLOG_NG_CONF="/tmp/syslog-ng.conf"
