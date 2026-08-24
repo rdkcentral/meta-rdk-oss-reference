@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service ', '', d)} \
-            file://apply-syslog-ng-template.sh \
+            file://prepare-syslog-ng-config.sh \
            "
 
 RDEPENDS:${PN}:remove = "gawk"
@@ -54,10 +54,10 @@ do_install:append() {
 
         #Remove the syslog-ng@default.service link from multiuser target as we don't use it. 
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
+        install -d ${D}${base_libdir}/rdk
+	install -m 0755 ${WORKDIR}/apply-syslog-ng-template.sh \
+                   ${D}${base_libdir}/rdk/prepare-syslog-ng-config.sh
     fi
-    install -d ${D}${base_libdir}/rdk
-    install -m 0755 ${WORKDIR}/apply-syslog-ng-template.sh \
-                    ${D}${base_libdir}/rdk/apply-syslog-ng-template.sh
 }
 
 FILES:${PN} += "${base_libdir}/rdk \
