@@ -11,7 +11,7 @@ SRC_URI += "file://local.conf \
 
 do_install:append() {
 	install -d ${D}${sysconfdir}/fonts
-	install -m 0644 ${WORKDIR}/local.conf ${D}${sysconfdir}/fonts
+	install -m 0644 ${UNPACKDIR}/local.conf ${D}${sysconfdir}/fonts
         rm ${D}${sysconfdir}/fonts/conf.d/README
         rm ${D}${datadir}/fontconfig/conf.avail/10-autohint.conf
         rm ${D}${datadir}/fontconfig/conf.avail/10-no-sub-pixel.conf

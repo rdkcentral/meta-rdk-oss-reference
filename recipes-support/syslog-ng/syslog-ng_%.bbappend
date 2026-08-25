@@ -48,7 +48,7 @@ do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/${BPN}
         install -d ${D}${systemd_unitdir}/system
-        install -m 644 ${WORKDIR}/syslog-ng.service  ${D}${systemd_unitdir}/system
+        install -m 644 ${UNPACKDIR}/syslog-ng.service  ${D}${systemd_unitdir}/system
 
         #Remove the syslog-ng@default.service link from multiuser target as we don't use it. 
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service

@@ -7,7 +7,7 @@ Subject: [PATCH] Use embedded gconv.h during compilation
 Source: OPENSOURCE
 
 
-Upstream-Status: pending
+Upstream-Status: Pending
 
 Signed-off-by: Nikolai Merinov <n.merinov@inango-systems.com>
 ---

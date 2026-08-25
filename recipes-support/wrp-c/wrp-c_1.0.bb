@@ -16,7 +16,7 @@ ASNEEDED = ""
 
 inherit pkgconfig cmake
 
-EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true"
+EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true -DCMAKE_POLICY_VERSION_MINIMUM=3.5 "
 
 LDFLAGS += "-lcimplog -lmsgpackc -ltrower-base64"
 

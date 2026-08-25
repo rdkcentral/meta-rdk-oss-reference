@@ -43,25 +43,25 @@ RDEPENDS:${PN} += "\
 
 do_install:append() {
      install -d ${D}${sysconfdir}/lighttpd
-	 install -m 0644 ${WORKDIR}/lighttpd.conf ${D}${sysconfdir}/lighttpd
+	 install -m 0644 ${UNPACKDIR}/lighttpd.conf ${D}${sysconfdir}/lighttpd
      #mod_alias is already part of conf, we can add the two entries to the end of conf file 
      if ${@bb.utils.contains('DISTRO_FEATURES', 'offline_apps', 'true', 'false', d)}; then
         #Remove the generic version added
         rm -f ${D}${sysconfdir}/lighttpd.d/offline_apps.conf
-        cat ${WORKDIR}/offline_apps.conf >>${D}${sysconfdir}/lighttpd/lighttpd.conf
+        cat ${UNPACKDIR}/offline_apps.conf >>${D}${sysconfdir}/lighttpd/lighttpd.conf
      fi
 }
 
 do_install:append:broadband() {
     install -d ${D}/var
     if ${@bb.utils.contains('DISTRO_FEATURES', 'webui_php', 'true', 'false', d)}; then
-    	install ${WORKDIR}/lighttpd_php.conf_broadband ${D}${sysconfdir}/lighttpd.conf
+    	install ${UNPACKDIR}/lighttpd_php.conf_broadband ${D}${sysconfdir}/lighttpd.conf
     fi
     if ${@bb.utils.contains('DISTRO_FEATURES', 'webui_jst', 'true', 'false', d)}; then
 	if ${@bb.utils.contains('DISTRO_FEATURES', 'bci', 'true', 'false', d)}; then
-        	install ${WORKDIR}/lighttpd_php.conf_broadband ${D}${sysconfdir}/lighttpd.conf
+        	install ${UNPACKDIR}/lighttpd_php.conf_broadband ${D}${sysconfdir}/lighttpd.conf
 	else
-    		install ${WORKDIR}/lighttpd_jst.conf_broadband ${D}${sysconfdir}/lighttpd.conf
+    		install ${UNPACKDIR}/lighttpd_jst.conf_broadband ${D}${sysconfdir}/lighttpd.conf
 	fi
     fi
     rm -r ${D}${sysconfdir}/lighttpd

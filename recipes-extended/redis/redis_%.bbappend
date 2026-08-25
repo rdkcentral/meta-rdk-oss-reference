@@ -10,7 +10,7 @@ do_install:append() {
     sed -i '/^appendfilename "appendonly.aof"/s/^/#/' ${D}${sysconfdir}/redis/redis.conf
 
     install -d ${D}${systemd_unitdir}/system/redis.service.d
-    install -m 0644 ${WORKDIR}/redis-system.conf ${D}${systemd_unitdir}/system/redis.service.d/redis.conf
+    install -m 0644 ${UNPACKDIR}/redis-system.conf ${D}${systemd_unitdir}/system/redis.service.d/redis.conf
 
 }
 FILES:${PN} += "${systemd_unitdir}/system/redis.service.d/redis.conf"

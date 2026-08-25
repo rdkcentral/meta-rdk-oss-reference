@@ -59,12 +59,12 @@ SYSTEMD_SERVICE:${PN} = "lighttpd.service"
 
 do_install:append() {
 	install -d ${D}${sysconfdir}/init.d ${D}${sysconfdir}/lighttpd ${D}${sysconfdir}/lighttpd.d ${D}/www/pages/dav
-	install -m 0755 ${WORKDIR}/lighttpd ${D}${sysconfdir}/init.d
-	install -m 0644 ${WORKDIR}/lighttpd.conf ${D}${sysconfdir}/lighttpd
-	install -m 0644 ${WORKDIR}/index.html.lighttpd ${D}/www/pages/index.html
+	install -m 0755 ${UNPACKDIR}/lighttpd ${D}${sysconfdir}/init.d
+	install -m 0644 ${UNPACKDIR}/lighttpd.conf ${D}${sysconfdir}/lighttpd
+	install -m 0644 ${UNPACKDIR}/index.html.lighttpd ${D}/www/pages/index.html
 
 	install -d ${D}${systemd_unitdir}/system
-        install -m 0644 ${WORKDIR}/lighttpd.service ${D}${systemd_unitdir}/system
+        install -m 0644 ${UNPACKDIR}/lighttpd.service ${D}${systemd_unitdir}/system
 	sed -i -e 's,@SBINDIR@,${sbindir},g' \
 		-e 's,@SYSCONFDIR@,${sysconfdir},g' \
 		-e 's,@BASE_BINDIR@,${base_bindir},g' \
@@ -74,7 +74,7 @@ do_install:append() {
 	ln -sf ${localstatedir}/tmp ${D}/www/var
     
     if ${@bb.utils.contains('DISTRO_FEATURES', 'offline_apps', 'true', 'false', d)}; then
-       install -m 0644 ${WORKDIR}/offline_apps.conf ${D}${sysconfdir}/lighttpd.d/
+       install -m 0644 ${UNPACKDIR}/offline_apps.conf ${D}${sysconfdir}/lighttpd.d/
     fi
 
 }

@@ -24,7 +24,7 @@ SRC_URI += "file://0004-fix-heap-use-after-free-caused-by-Finishing-Queue-item-t
 PROVIDES = "libsoup-3.0"
 CVE_PRODUCT = "libsoup"
 
-S = "${WORKDIR}/libsoup-${PV}"
+S = "${UNPACKDIR}/libsoup-${PV}"
 
 inherit meson gettext pkgconfig upstream-version-is-even gobject-introspection
 

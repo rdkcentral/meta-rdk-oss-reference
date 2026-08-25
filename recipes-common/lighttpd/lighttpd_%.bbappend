@@ -42,7 +42,7 @@ RDEPENDS:${PN} += " \
        "
 do_install:append:qemux86() {
        install -d ${D}/opt/www ${D}/opt
-       install -m 0755 ${WORKDIR}/lighttpd.conf_emulator ${D}${sysconfdir}
+       install -m 0755 ${UNPACKDIR}/lighttpd.conf_emulator ${D}${sysconfdir}
        mv ${D}${sysconfdir}/lighttpd.conf_emulator ${D}${sysconfdir}/lighttpd.conf
 }
 

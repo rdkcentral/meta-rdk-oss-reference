@@ -9,7 +9,7 @@ SRC_URI:append:broadband = " \
            "
 
 do_install:append:broadband() {
-        install -m 644 ${WORKDIR}/50-reservlocalport.conf ${D}${sysconfdir}/sysctl.d
+        install -m 644 ${UNPACKDIR}/50-reservlocalport.conf ${D}${sysconfdir}/sysctl.d
 }
 
 FILES:${PN}:append:broadband = " ${sysconfdir}/sysctl.d/50-reservlocalport.conf "
@@ -179,11 +179,11 @@ FILES:${PN}:append = " ${sbindir}/usb-mount.sh"
 do_install:append() {
 	install -d ${D}${sysconfdir}/sysctl.d
 	install -d ${D}${localstatedir}/lib/systemd/coredump
-	install -m 644 ${WORKDIR}/50-coredump.conf ${D}${sysconfdir}/sysctl.d
-	install -m 644 ${WORKDIR}/50-panic.conf ${D}${sysconfdir}/sysctl.d
-	install -m 644 ${WORKDIR}/50-netfilter.conf ${D}${sysconfdir}/sysctl.d
-	install -m 644 ${WORKDIR}/traffic-filter.conf ${D}${sysconfdir}/sysctl.d
-        install -m 644 ${WORKDIR}/protected_regular.conf ${D}${sysconfdir}/sysctl.d
+	install -m 644 ${UNPACKDIR}/50-coredump.conf ${D}${sysconfdir}/sysctl.d
+	install -m 644 ${UNPACKDIR}/50-panic.conf ${D}${sysconfdir}/sysctl.d
+	install -m 644 ${UNPACKDIR}/50-netfilter.conf ${D}${sysconfdir}/sysctl.d
+	install -m 644 ${UNPACKDIR}/traffic-filter.conf ${D}${sysconfdir}/sysctl.d
+        install -m 644 ${UNPACKDIR}/protected_regular.conf ${D}${sysconfdir}/sysctl.d
         mkdir -pv ${D}/usb
         mkdir -pv ${D}/usb0
         mkdir -pv ${D}/usb1
@@ -250,7 +250,7 @@ do_install:append:client() {
 
 do_install:append:hybrid() {
         install -d ${D}/media/apps
-        install -m 644 ${WORKDIR}/50-portreserv.conf ${D}${sysconfdir}/sysctl.d
+        install -m 644 ${UNPACKDIR}/50-portreserv.conf ${D}${sysconfdir}/sysctl.d
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-binfmt
         rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-binfmt.service
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-update-done
@@ -312,7 +312,7 @@ do_install:append() {
 
 do_install:append:client() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/
+    install -m 0644 ${UNPACKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/
     rm -rf ${D}${base_libdir}/systemd/systemd-update-done
     rm -rf ${D}${base_libdir}/systemd/system/systemd-update-done.service
     rm -rf ${D}${base_libdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
@@ -322,10 +322,10 @@ do_install:append:client() {
 
 do_install:append:hybrid() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/
+    install -m 0644 ${UNPACKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/
     sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-hwdb-update.service || true
 }
 
 do_install:append() {
-    install -Dm 0644 ${WORKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
+    install -Dm 0644 ${UNPACKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
 }

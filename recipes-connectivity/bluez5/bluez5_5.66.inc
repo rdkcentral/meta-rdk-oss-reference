@@ -57,7 +57,7 @@ SRC_URI = "${KERNELORG_MIRROR}/linux/bluetooth/bluez-${PV}.tar.xz \
            file://0001-bluetooth-debug-enable.patch \
            file://0002-ble-privacy-device.patch \
            "
-S = "${WORKDIR}/bluez-${PV}"
+S = "${UNPACKDIR}/bluez-${PV}"
 
 CVE_PRODUCT = "bluez"
 
@@ -83,7 +83,7 @@ NOINST_TOOLS = " \
 
 do_install:append() {
     install -d ${D}${INIT_D_DIR}
-    install -m 0755 ${WORKDIR}/init ${D}${INIT_D_DIR}/bluetooth
+    install -m 0755 ${UNPACKDIR}/init ${D}${INIT_D_DIR}/bluetooth
 
     install -m 0755 -d ${D}${sysconfdir}/bluetooth/
     if [ -f ${S}/profiles/network/network.conf ]; then

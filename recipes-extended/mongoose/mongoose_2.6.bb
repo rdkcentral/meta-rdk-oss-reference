@@ -10,7 +10,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c919934a724781b6cd4a296b0fc27dc2"
 LIC_FILES_CHKSUM = "file://mongoose.c;beginline=1;endline=23;md5=660cfd3ad92e2cc9e655a4567a738309"
 
-S = "${WORKDIR}/${BPN}/"
+S = "${UNPACKDIR}/${BPN}/"
 SRC_URI = "http://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/mongoose/mongoose-${PV}.tgz"
 
 SRC_URI += " \

@@ -13,5 +13,5 @@ SRC_URI += "file://CMakeLists.txt"
 inherit pkgconfig cmake
 
 do_configure:prepend () {
-    cp ${WORKDIR}/CMakeLists.txt ${WORKDIR}/${PN}-${PV}/
+    cp ${UNPACKDIR}/CMakeLists.txt ${WORKDIR}/${PN}-${PV}/
 }
