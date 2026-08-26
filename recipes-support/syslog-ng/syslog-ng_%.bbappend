@@ -1,6 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service ', '', d)} \
+            file://0001-monotonic-timestamp.patch \
             file://prepare-syslog-ng-config.sh \
            "
 
