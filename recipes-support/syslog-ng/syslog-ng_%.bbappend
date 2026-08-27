@@ -61,9 +61,7 @@ do_install:append() {
     fi
 }
 
-FILES:${PN} += "${base_libdir}/rdk \
-                ${base_libdir}/rdk/prepare-syslog-ng-config.sh \"
-
+FILES:${PN} += "${base_libdir}/rdk/prepare-syslog-ng-config.sh"
 PACKAGE_BEFORE_PN += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', '${PN}-extras', '', d)}"
 FILES:${PN}-extras = "${libdir}/${PN}/loggen \
                      ${sbindir}/syslog-ng-debun \
