@@ -1,9 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service ', '', d)} \
-            file://0001-monotonic-timestamp.patch \
-            file://prepare-syslog-ng-config.sh \
-           "
+SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service file://0001-monotonic-timestamp.patch file://prepare-syslog-ng-config.sh ', '', d)}"
 
 RDEPENDS:${PN}:remove = "gawk"
 inherit update-alternatives
