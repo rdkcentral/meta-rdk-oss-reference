@@ -3,6 +3,8 @@ From: kkarup694 <kumar_Karuppiahyogarajah@comcast.com>
 Date: Fri, 14 Aug 2026 09:10:41 +0000
 Subject: [PATCH] fix io_data use after NULL caused by racecondition
 
+Upstream-Status: Backport [From: https://gitlab.gnome.org/GNOME/libsoup/-/commit/665fa0a440368d95c63ab51bfdcfe0da653f6ad9]
+
 ---
  libsoup/soup-message.c | 2 ++
  1 file changed, 2 insertions(+)
