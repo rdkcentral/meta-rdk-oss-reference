@@ -52,8 +52,8 @@ do_install:append() {
 
         #Remove the syslog-ng@default.service link from multiuser target as we don't use it. 
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
-        install -d ${D}/lib/rdk
-        install -m 0755 ${WORKDIR}/prepare-syslog-ng-config.sh ${D}/lib/rdk/prepare-syslog-ng-config.sh
+        install -d ${D}${base_libdir}/rdk
+        install -m 0755 ${WORKDIR}/prepare-syslog-ng-config.sh ${D}${base_libdir}/rdk/prepare-syslog-ng-config.sh
     fi
 }
 
