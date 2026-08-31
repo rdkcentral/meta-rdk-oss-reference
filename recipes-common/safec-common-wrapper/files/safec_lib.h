@@ -71,8 +71,7 @@ typedef int errno_t;
 #define ESLEMAX          403       /* length exceeds RSIZE_MAX    */
 #define ESNOSPC          406       /* not enough space for s2     */
 
-#define strcpy_s(dst,max,src) (src != NULL)?((max > strlen(src))?EOK:ESLEMAX):ESNULLP; \
- if((src != NULL) && (max > strlen(src))) strcpy(dst,src);
+#define strcpy_s(dst,max,src) ({ const char *safec_src__ = (src); safec_src__ != NULL ? (((max) > strlen(safec_src__)) ? (strcpy((dst), safec_src__), EOK) : ESLEMAX) : ESNULLP; })
 
 #define strncpy_s(dst,max,src,len) (src != NULL)?((len <= max)?EOK:ESLEMAX):ESNULLP; \
  if((src != NULL) && (len <= max)) { size_t copy_len = strnlen(src, len); memcpy(dst, src, copy_len); if(copy_len < (size_t)(max)) memset((char *)(dst) + copy_len, 0, (size_t)(max) - copy_len); }
@@ -120,7 +119,7 @@ typedef int errno_t;
         }\
 }
 
-static inline int parseFormat(const char *dst, int max, const char *fmt, ...)
+static inline int parseFormat(char *dst, int max, const char *fmt, ...)
 {
     va_list argp;
     int len = 0;
@@ -132,7 +131,7 @@ static inline int parseFormat(const char *dst, int max, const char *fmt, ...)
 
     va_start(argp, fmt);
 
-    len = vsnprintf((char *)dst, (size_t)max, fmt, argp);
+    len = vsnprintf(dst, (size_t)max, fmt, argp);
 
     va_end(argp);
 
