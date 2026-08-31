@@ -16,9 +16,9 @@ ASNEEDED = ""
 
 inherit pkgconfig cmake
 
-EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true"
+EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true -DCMAKE_POLICY_VERSION_MINIMUM=3.5 "
 
-LDFLAGS += "-lcimplog -lmsgpackc -ltrower-base64"
+LDFLAGS += "-lcimplog ${@bb.utils.contains('DISTRO_FEATURES', 'wrynose',  ' -lmsgpack-c', ' -lmsgpackc', d)} -ltrower-base64"
 
 # The libwrp-c.so shared lib isn't versioned, so force the .so file into the
 # run-time package (and keep it out of the -dev package).

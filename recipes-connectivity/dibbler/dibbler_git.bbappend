@@ -21,4 +21,4 @@ SRC_URI:append:broadband:kirkstone = " file://dhcpv6c_handle_system_time_change_
 SRC_URI:append:kirkstone = " file://0001-TOptIAPrefix-args-in-TClntOptIA_PD-constructor_kirk.patch"
 SRC_URI:append:kirkstone = " file://0001-fix-misguided-and-broken-usage-of-clock_gettime-CLOC.patch"
 #SRC_URI:append:broadband = " file://Configurable-WanName-Support.patch"
-SRC_URI:append:broadband = " file://Configurable-WanName-NotifyScript-mapT.patch"
+#SRC_URI:append:broadband = " file://Configurable-WanName-NotifyScript-mapT.patch"

@@ -24,8 +24,7 @@ CFLAGS:append = " \
     -I${STAGING_INCDIR}/nanomsg \
     -I${STAGING_INCDIR}/trower-base64 \
     "
-
-EXTRA_OECMAKE += "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true"
+EXTRA_OECMAKE += "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 # The libparodus.so shared lib isn't versioned, so force the .so file into the
 # run-time package (and keep it out of the -dev package).
