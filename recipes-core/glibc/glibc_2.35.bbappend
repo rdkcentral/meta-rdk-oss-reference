@@ -10,3 +10,6 @@ SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'enable_heaptrack','file://s
 SRC_URI += " file://CVE-2025-15281_2.35_fix.patch \
 	     file://CVE-2026-0915_2.35_fix.patch \
 	    "
+
+SRC_URI:append = " file://CVE-2026-0861_glibc_2.35_fix.patch \
+"
