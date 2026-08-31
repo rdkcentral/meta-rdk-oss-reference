@@ -17,6 +17,8 @@
  * limitations under the License.
 */
 
+#ifndef RDK_SAFEC_LIB_H
+#define RDK_SAFEC_LIB_H
 
 #ifndef SAFEC_DUMMY_API
 #include "safe_str_lib.h"
@@ -73,7 +75,7 @@ typedef int errno_t;
  if((src != NULL) && (max > strlen(src))) strcpy(dst,src);
 
 #define strncpy_s(dst,max,src,len) (src != NULL)?((len <= max)?EOK:ESLEMAX):ESNULLP; \
- if((src != NULL) && (len <= max)) strncpy(dst,src,len);
+ if((src != NULL) && (len <= max)) { size_t copy_len = strnlen(src, len); memcpy(dst, src, copy_len); if(copy_len < (size_t)(max)) memset((char *)(dst) + copy_len, 0, (size_t)(max) - copy_len); }
 
 #define memset_s(dst,max_1,c,max) EOK; \
  memset(dst,c,max);
@@ -163,3 +165,5 @@ static inline int memcmp_s(const void *dst, int dmax, const void *src, int len, 
         return EOK;
 }
 #endif
+
+#endif /* RDK_SAFEC_LIB_H */
