@@ -1,0 +1,38 @@
+From: Muthumani Koodalingam <muthumani_koodalingam@comcast.com>
+Subject: [PATCH] gstpluginloader: handle EOF while reading from plugin scanner
+
+Upstream-Status: Pending
+---
+diff --git a/gst/gstpluginloader.c b/gst/gstpluginloader.c
+--- a/gst/gstpluginloader.c
++++ b/gst/gstpluginloader.c
+@@ -951,6 +951,13 @@ read_one (GstPluginLoader * l)
+   to_read = HEADER_SIZE;
+   in = l->rx_buf;
+   do {
+     res = read (l->fd_r.fd, in, to_read);
++
++    if (G_UNLIKELY (res == 0)) {
++      GST_ERROR
++          ("EOF received while reading packet header from plugin scanner");
++      return FALSE;
++    }
++
+     if (G_UNLIKELY (res < 0)) {
+       if (errno == EAGAIN || errno == EINTR)
+         continue;
+@@ -991,6 +998,13 @@ read_one (GstPluginLoader * l)
+   in = l->rx_buf;
+   to_read = packet_len;
+   do {
+     res = read (l->fd_r.fd, in, to_read);
++
++    if (G_UNLIKELY (res == 0)) {
++      GST_ERROR
++          ("EOF received while reading packet payload from plugin scanner");
++      return FALSE;
++    }
++
+     if (G_UNLIKELY (res < 0)) {
+       if (errno == EAGAIN || errno == EINTR)
+         continue;

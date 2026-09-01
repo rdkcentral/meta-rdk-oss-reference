@@ -27,6 +27,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.x
            file://0006-tests-use-a-dictionaries-for-environment.patch \
            file://0007-tests-install-the-environment-for-installed_tests.patch \
            file://0008-calculating-the-bytes-for-seeked-position.patch \
+           file://0009-gstpluginloader-handle-EOF-while-reading-from-scanner.patch \
            "
 SRC_URI[sha256sum] = "55862232a63459bbf56abebde3085ca9aec211b478e891dacea4d6df8cafe80a"
 
