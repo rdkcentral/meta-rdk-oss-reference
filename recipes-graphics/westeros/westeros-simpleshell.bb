@@ -4,7 +4,7 @@ SUMMARY = "This receipe compiles the westeros compositor simple-shell component"
 
 LICENSE = "Apache-2.0"
 
-S = "${WORKDIR}/git/simpleshell"
+S = "${UNPACKDIR}/git/simpleshell"
 
 DEPENDS = "wayland glib-2.0 wayland-native"
 

@@ -21,7 +21,7 @@ UPSTREAM_CHECK_REGEX = "releases/tag/v?(?P<pver>\d+(\.\d+)+)$"
 
 SRC_URI[sha256sum] = "ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575"
 
-S = "${WORKDIR}/libusb-${PV}"
+S = "${UNPACKDIR}/libusb-${PV}"
 
 inherit autotools pkgconfig ptest
 

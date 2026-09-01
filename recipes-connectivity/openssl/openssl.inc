@@ -16,7 +16,7 @@ PROVIDES += "openssl10"
 
 SRC_URI = "http://www.openssl.org/source/openssl-${PV}.tar.gz \
           "
-S = "${WORKDIR}/openssl-${PV}"
+S = "${UNPACKDIR}/openssl-${PV}"
 
 PACKAGECONFIG[perl] = ",,,"
 
@@ -227,7 +227,7 @@ do_install () {
 	install -d ${D}${includedir}
 	cp --dereference -R include/openssl ${D}${includedir}
 
-	install -Dm 0755 ${WORKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
+	install -Dm 0755 ${UNPACKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
 	sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
 
 	oe_multilib_header openssl/opensslconf.h

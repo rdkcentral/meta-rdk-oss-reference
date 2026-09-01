@@ -65,7 +65,7 @@ do_install:append () {
         # Install a custom version of c_rehash that can handle sysroots properly.
         # This version is used for example when installing ca-certificates during
         # image creation.
-        install -Dm 0755 ${WORKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
+        install -Dm 0755 ${UNPACKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
         sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
 }
 

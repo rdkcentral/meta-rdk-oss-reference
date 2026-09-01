@@ -6,7 +6,7 @@ BUGTRACKER = "https://gitlab.gnome.org/GNOME/gssdp/-/issues"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-S = "${WORKDIR}/gssdp-1.6.3"
+S = "${UNPACKDIR}/gssdp-1.6.3"
 
 SRC_URI = "https://download.gnome.org/sources/gssdp/1.6/gssdp-1.6.3.tar.xz;name=archive"
 SRC_URI:append = " file://0001-gssdp-enums.c.template-use-basename-instead-of-filen.patch"

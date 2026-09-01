@@ -34,7 +34,7 @@ DEPENDS:append:class-target = "${@' gtk-doc' if d.getVar('GTKDOC_ENABLED') == 'T
 
 GTKDOC_MESON_OPTION = "gtk_doc"
 
-S = "${WORKDIR}/glib-${PV}"
+S = "${UNPACKDIR}/glib-${PV}"
 
 PACKAGECONFIG ??= "libmount \
                    ${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)}"

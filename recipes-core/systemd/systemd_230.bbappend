@@ -43,7 +43,7 @@ do_install:append() {
 	install -d ${D}${localstatedir}/lib/systemd/coredump
         ln -s /dev/null ${D}${sysconfdir}/udev/rules.d/80-net-setup-link.rules
 
-        install -D -m 0644 ${WORKDIR}/rfkill_rdk.conf ${D}${systemd_unitdir}/system/systemd-rfkill.service.d/rfkill_rdk.conf
+        install -D -m 0644 ${UNPACKDIR}/rfkill_rdk.conf ${D}${systemd_unitdir}/system/systemd-rfkill.service.d/rfkill_rdk.conf
 
         sed -i -e 's/^#DumpCore=.*$/DumpCore=yes/g' ${D}${sysconfdir}/systemd/system.conf
         sed -i -e 's/^#DumpCore=.*$/LogColor=no/g' ${D}${sysconfdir}/systemd/system.conf
@@ -98,7 +98,7 @@ do_install:append:client() {
 do_install:append:hybrid() {
         install -d ${D}/media/apps
         install -d ${D}${sysconfdir}/sysctl.d
-        install -m 644 ${WORKDIR}/50-portreserv.conf ${D}${sysconfdir}/sysctl.d
+        install -m 644 ${UNPACKDIR}/50-portreserv.conf ${D}${sysconfdir}/sysctl.d
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-binfmt
         rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-binfmt.service
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-update-done
@@ -167,7 +167,7 @@ do_install:append() {
 
 do_install:append:client() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/    
+    install -m 0644 ${UNPACKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/    
     rm -rf ${D}${base_libdir}/systemd/systemd-update-done
     rm -rf ${D}${base_libdir}/systemd/system/systemd-update-done.service
     rm -rf ${D}${base_libdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
@@ -177,7 +177,7 @@ do_install:append:client() {
 
 do_install:append:hybrid() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/    
+    install -m 0644 ${UNPACKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/    
     sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-hwdb-update.service || true
 }
 
@@ -186,7 +186,7 @@ do_install:append:broadband() {
 }
 
 do_install:append() {
-    install -Dm 0644 ${WORKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
+    install -Dm 0644 ${UNPACKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
 }
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"

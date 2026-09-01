@@ -20,7 +20,7 @@ inherit pkgconfig cmake
 
 EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DBUILD_YOCTO=true"
 
-LDFLAGS += "-lcjson -lmsgpackc -lwdmp-c -lcimplog -lrbus"
+LDFLAGS += "-lcjson -lmsgpack-c -lwdmp-c -lcimplog -lrbus"
 
 CFLAGS:append = " ${@bb.utils.contains("DISTRO_FEATURES", "WanFailOverSupportEnable", " -DWAN_FAILOVER_SUPPORTED ", " ", d)} "
 

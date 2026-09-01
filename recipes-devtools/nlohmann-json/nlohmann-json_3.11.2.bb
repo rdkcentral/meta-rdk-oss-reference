@@ -12,7 +12,7 @@ S = "${UNPACKDIR}/${PN}-${PV}"
 
 inherit cmake
 
-EXTRA_OECMAKE += "-DJSON_BuildTests=OFF"
+EXTRA_OECMAKE += "-DJSON_BuildTests=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 # nlohmann-json is a header only C++ library, so the main package will be empty.
 

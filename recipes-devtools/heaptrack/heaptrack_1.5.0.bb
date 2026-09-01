@@ -32,7 +32,7 @@ do_install:append() {
 install -d ${D}/lib/rdk
 install -d ${D}/${includedir}
 install -m 0755 ${S}/src/track/libheaptrack.h ${D}/${includedir}/libheaptrack.h
-install -m 0755 ${WORKDIR}/copy_Debugrootfs.sh ${D}/lib/rdk
+install -m 0755 ${UNPACKDIR}/copy_Debugrootfs.sh ${D}/lib/rdk
 }
 
 FILES:${PN} += " /lib/rdk/copy_Debugrootfs.sh"

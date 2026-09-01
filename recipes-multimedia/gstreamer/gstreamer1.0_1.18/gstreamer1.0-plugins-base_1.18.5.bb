@@ -26,7 +26,7 @@ SRC_URI += "file://0001-fix-gst-plugins-base-configure-issue-with-dunfell.patch"
 
 SRC_URI[sha256sum] = "960b7af4585700db0fdd5b843554e11e2564fed9e061f591fae88a7be6446fa3"
 
-S = "${WORKDIR}/gst-plugins-base-${PV}"
+S = "${UNPACKDIR}/gst-plugins-base-${PV}"
 
 DEPENDS += "iso-codes util-linux zlib"
 

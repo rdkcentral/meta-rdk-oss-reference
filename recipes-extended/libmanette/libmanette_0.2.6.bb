@@ -28,9 +28,9 @@ PACKAGECONFIG[wayland-inputfd] = "-Dwayland-inputfd=true,-Dwayland-inputfd=false
 do_install:append() {
     install -d ${D}${sysconfdir}/udev
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
+    install -m 0644 ${UNPACKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
     install -d ${D}${datadir}/libmanette/
-    cp -f ${WORKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
+    cp -f ${UNPACKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
     chmod 0644 ${D}${datadir}/libmanette/gamecontrollerdb
 
     rm ${D}/usr/bin/manette-test

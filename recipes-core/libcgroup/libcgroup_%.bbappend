@@ -11,10 +11,10 @@ EXTRA_OECONF:append = " --enable-initscript-install"
 
 do_install:append () {
         install -d ${D}${sysconfdir}
-        install -m 0755 ${WORKDIR}/cgconfig.conf ${D}${sysconfdir}/
-        install -m 0755 ${WORKDIR}/cgrules.conf ${D}${sysconfdir}/
-        install -D -m644 ${WORKDIR}/cgconfig.service ${D}${systemd_unitdir}/system/cgconfig.service
-        install -D -m644 ${WORKDIR}/cgrules.service ${D}${systemd_unitdir}/system/cgrules.service
+        install -m 0755 ${UNPACKDIR}/cgconfig.conf ${D}${sysconfdir}/
+        install -m 0755 ${UNPACKDIR}/cgrules.conf ${D}${sysconfdir}/
+        install -D -m644 ${UNPACKDIR}/cgconfig.service ${D}${systemd_unitdir}/system/cgconfig.service
+        install -D -m644 ${UNPACKDIR}/cgrules.service ${D}${systemd_unitdir}/system/cgrules.service
 }
 
 SYSTEMD_SERVICE:${PN} = "cgconfig.service cgrules.service"

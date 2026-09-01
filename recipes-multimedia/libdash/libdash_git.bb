@@ -25,7 +25,7 @@ SRC_URI = "git://github.com/bitmovin/libdash;branch=stable_3_0;protocol=https \
            file://0012-To-retrieves-the-text-content-of-CDATA-section.patch \
           "
 
-S = "${WORKDIR}/git/libdash"
+S = "${UNPACKDIR}/git/libdash"
 DEPENDS += "libxml2 curl zlib"
 inherit pkgconfig cmake
 FILES:${PN} += "${libdir}/libdash.so"
@@ -48,5 +48,5 @@ do_install:append() {
 	install -m 0644 ${S}/libdash/source/portable/*.h ${D}${includedir}/libdash/portable
 	install -m 0644 ${S}/libdash/source/helpers/*.h ${D}${includedir}/libdash/helpers
 	install -m 0644 ${S}/libdash/source/metrics/*.h ${D}${includedir}/libdash/metrics
-	install -Dm644 ${WORKDIR}/libdash.pc ${D}${libdir}/pkgconfig/libdash.pc
+	install -Dm644 ${UNPACKDIR}/libdash.pc ${D}${libdir}/pkgconfig/libdash.pc
 }
