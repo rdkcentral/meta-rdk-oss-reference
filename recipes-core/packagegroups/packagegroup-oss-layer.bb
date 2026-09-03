@@ -114,6 +114,7 @@ RDEPENDS:${PN} = "\
      libxcrypt \
      libxml2 \
      libxslt \
+     libyaml \
      lsof \
      lttng-ust \
      lz4 \
@@ -193,6 +194,7 @@ RDEPENDS:${PN} += "\
      lcms \
      libev \
      libmicrohttpd \
+     libmicrohttpd12 \
      libmng \
      libmnl \
      liboauth \
