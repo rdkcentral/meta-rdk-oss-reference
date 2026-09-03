@@ -43,6 +43,8 @@ SRC_URI += " file://openssl-c_rehash.sh \
 PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1', '0', d)}"
 
 #Disable unapproved cipher algorithms
+# Prevent embedding compiler flags (incl. -g) in binary buildinfo — MNGVULN debug-symbols fix
+EXTRA_OECONF += "no-buildinfo"
 EXTRA_OECONF += "no-camellia"
 EXTRA_OECONF += "no-seed"
 EXTRA_OECONF += "no-rc5"
