@@ -555,7 +555,7 @@ PACKAGE_ARCH:pn-libsndfile1 ?= "${OSS_LAYER_ARCH}"
 PR:pn-libsolv ?= "r0"
 PACKAGE_ARCH:pn-libsolv ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libsoup ?= "r1"
+PR:pn-libsoup ?= "r2"
 PACKAGE_ARCH:pn-libsoup ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libsoup-2.4 ?= "r1"
