@@ -1,0 +1,81 @@
+From 0bd707a560d0631ef77f656a156b3a44ad3aa371 Mon Sep 17 00:00:00 2001
+From: Petar Tijanic <petar_tijanic@comcast.com>
+Date: Tue, 9 Jun 2026 08:06:02 +0000
+Subject: [PATCH] Build against GLib < 2.76 (RDK platform ships GLib 2.72)
+
+libmanette 1.0 uses two GLib APIs newer than the RDK platform's GLib 2.72.3,
+causing implicit-declaration errors and a failed build:
+
+* manette_monitor_list_devices() uses g_hash_table_get_values_as_ptr_array()
+  (GLib >= 2.76). Replaced with an explicit GHashTableIter loop filling a
+  GPtrArray (available since 2.16); g_ptr_array_steal() is 2.64.
+
+* The Steam Deck HID driver arms its rumble-stop timeout with
+  g_timeout_add_once() / GSourceOnceFunc (GLib >= 2.74). Replaced with plain
+  g_timeout_add(): stop_rumble_cb() now returns gboolean G_SOURCE_REMOVE so it
+  still fires exactly once.
+---
+ src/drivers/manette-steam-deck-driver.c | 10 ++++++----
+ src/manette-monitor.c                   |  9 ++++++++-
+ 2 files changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/src/drivers/manette-steam-deck-driver.c b/src/drivers/manette-steam-deck-driver.c
+index 577b8ed..150625a 100644
+--- a/src/drivers/manette-steam-deck-driver.c
++++ b/src/drivers/manette-steam-deck-driver.c
+@@ -834,12 +834,14 @@ send_rumble (ManetteSteamDeckDriver *self,
+   return TRUE;
+ }
+ 
+-static void
++static gboolean
+ stop_rumble_cb (ManetteSteamDeckDriver *self)
+ {
+   self->rumble_timeout = 0;
+ 
+   send_rumble (self, 0, 0);
++
++  return G_SOURCE_REMOVE;
+ }
+ 
+ static gboolean
+@@ -858,9 +860,9 @@ manette_steam_deck_driver_rumble (ManetteHidDriver *driver,
+ 
+   g_clear_handle_id (&self->rumble_timeout, g_source_remove);
+ 
+-  self->rumble_timeout = g_timeout_add_once (milliseconds,
+-                                             (GSourceOnceFunc) stop_rumble_cb,
+-                                             self);
++  self->rumble_timeout = g_timeout_add (milliseconds,
++                                        G_SOURCE_FUNC (stop_rumble_cb),
++                                        self);
+ 
+   return TRUE;
+ }
+diff --git a/src/manette-monitor.c b/src/manette-monitor.c
+index 48f71ae..f73328a 100644
+--- a/src/manette-monitor.c
++++ b/src/manette-monitor.c
+@@ -599,11 +599,18 @@ manette_monitor_list_devices (ManetteMonitor *self,
+                               gsize          *n_devices)
+ {
+   GPtrArray *devices;
++  GHashTableIter iter;
++  gpointer value;
+ 
+   g_return_val_if_fail (MANETTE_IS_MONITOR (self), NULL);
+   g_return_val_if_fail (n_devices != NULL, NULL);
+ 
+-  devices = g_hash_table_get_values_as_ptr_array (self->devices);
++  /* g_hash_table_get_values_as_ptr_array() requires GLib >= 2.76; the RDK
++   * platform ships GLib 2.72. Build the array manually instead. */
++  devices = g_ptr_array_new ();
++  g_hash_table_iter_init (&iter, self->devices);
++  while (g_hash_table_iter_next (&iter, NULL, &value))
++    g_ptr_array_add (devices, value);
+ 
+   return (ManetteDevice **) g_ptr_array_steal (devices, n_devices);
+ }
+-- 
+2.34.1
+
