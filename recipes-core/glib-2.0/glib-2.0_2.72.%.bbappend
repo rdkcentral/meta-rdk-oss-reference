@@ -1,9 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/glib-2.0:"
 
-SRC_URI += " \
-           file://0001-glib-gmessages-UTC_glib2_72.patch \
-"
-
 RDEPENDS:${PN}-utils += "libelf"
 
 
