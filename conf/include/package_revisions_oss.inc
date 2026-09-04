@@ -64,6 +64,8 @@ PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
 PREFERRED_VERSION_sed = "4.1.2"
 PREFERRED_VERSION_libmanette ??= "0.2%"
 
+PREFERRED_VERSION_systemd = "1:250%"
+
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
 MULTILIB_VARIANTS:pn-alsa-ucm-conf = " multilib "
@@ -864,6 +866,9 @@ PACKAGE_ARCH:pn-systemd-serialgetty ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-taglib ?= "r0"
 PACKAGE_ARCH:pn-taglib ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-tar ?= "r0"
+PACKAGE_ARCH:pn-tar ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-tcpdump ?= "r0"
 PACKAGE_ARCH:pn-tcpdump ?= "${OSS_LAYER_ARCH}"
