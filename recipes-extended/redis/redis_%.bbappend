@@ -2,6 +2,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://redis-system.conf"
 do_install:append() {
+    # redis-benchmark is a development utility and is not required on the target.
+    rm -f ${D}${bindir}/redis-benchmark
+
     sed -i 's|^dir /var/lib/redis/.*|dir /tmp/|' ${D}/${sysconfdir}/redis/redis.conf
     echo "unixsocket /tmp/redis.sock" >> ${D}${sysconfdir}/redis/redis.conf
     echo "unixsocketperm 666" >> ${D}${sysconfdir}/redis/redis.conf

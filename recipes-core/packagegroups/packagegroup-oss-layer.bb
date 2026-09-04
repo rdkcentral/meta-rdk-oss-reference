@@ -353,6 +353,7 @@ RDEPENDS:${PN} += "\
 RDEPENDS:${PN}:remove += "\
      alsa-plugins \
      bluez5 \
+     evtest \
      cairo \
      dropbear \
      essos \

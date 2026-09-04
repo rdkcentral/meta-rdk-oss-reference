@@ -1,5 +1,11 @@
 PACKAGES:remove = "mtd-utils-misc"
 
+do_install:append() {
+    # Flash/NAND self-test utilities are not required on the target.
+    rm -f ${D}${sbindir}/nandtest \
+          ${D}${sbindir}/fectest
+}
+
 PACKAGE_BEFORE_PN += "${PN}-extras"
 FILES:${PN}-extras = " \
     ${sbindir}/flashcp.mtd-util \
