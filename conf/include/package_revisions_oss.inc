@@ -19,6 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
+#oss release version
 OSS_LAYER_VERSION = "4.14.0"
 
 LAYER_EXTENSION ?= ""
@@ -627,7 +628,7 @@ PACKAGE_ARCH:pn-libxslt ?= "${OSS_LAYER_ARCH}"
 PR:pn-libzip ?= "r0"
 PACKAGE_ARCH:pn-libzip ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-lighttpd ?= "r3"
+PR:pn-lighttpd ?= "r4"
 PACKAGE_ARCH:pn-lighttpd ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-linenoise ?= "r1"
