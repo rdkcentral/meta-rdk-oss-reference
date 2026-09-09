@@ -28,10 +28,8 @@ EXTRA_OECMAKE += " \
 
 
 do_install:append() {
-    install -d ${D}/usr/include
-    install -d ${D}/usr/include/date
-
-    install -m 0644 ${S}/include/date/*.h ${D}${includedir}/date
+    install -d ${D}${includedir}/date
+    install -m 0644 ${S}/include/date/*.h ${D}${includedir}/date/
 }
 
 FILES:${PN}-dev += "${includedir}/date/*.h"
