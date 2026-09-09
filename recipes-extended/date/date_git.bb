@@ -22,3 +22,13 @@ EXTRA_OECMAKE += " \
     -DBUILD_SHARED_LIBS=ON \
     -DUSE_SYSTEM_TZ_DB=ON \
 "
+
+
+do_install:append() {
+    install -d ${D}/usr/include
+    install -d ${D}/usr/include/date
+
+    install -m 0644 ${S}/include/date/*.h ${D}${includedir}/date
+}
+
+FILES:${PN}-dev += "${includedir}/date/*.h"
