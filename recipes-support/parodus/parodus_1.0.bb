@@ -41,7 +41,8 @@ CFLAGS:append = " \
     -I${STAGING_INCDIR}/ucresolv \
     -DFEATURE_DNS_QUERY \
     "
-CFLAGS:append = " -DINCLUDE_BREAKPAD " 
+CFLAGS:append = " -DINCLUDE_BREAKPAD "
+CFLAGS:append:wrynose = " -Wno-error=implicit-function-declaration " 
 CFLAGS:append = "${@bb.utils.contains("DISTRO_FEATURES", "seshat", "-I${STAGING_INCDIR}/libseshat ", " ", d)}"
 CFLAGS:append = "${@bb.utils.contains("DISTRO_FEATURES", "seshat", "-DENABLE_SESHAT ", " ", d)}"
 CFLAGS:append = "${@bb.utils.contains("DISTRO_FEATURES", "webconfig_bin", " -I${STAGING_INCDIR}/rbus ", " ", d)}"
