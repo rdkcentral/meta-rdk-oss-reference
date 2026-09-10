@@ -50,6 +50,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-go
 	   file://0001-reference-senc-box-when-saiz-box-parsing-fails.patch \
 	   file://0049-LLAMA-12494-attach-cbcs-crypt-info-at-the-right-moment.patch \
            file://0001-Fix-leak-of-protection-event-value-objects.patch \
+           file://0050-qtdemux-Don-t-use-tfdt-for-parsing-subsequent-trun-b.patch \
            "
 SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'sage_svp', 'file://0001-audioparser-remove-eac3-aacparse-for-svp.patch', '', d)}"
 
