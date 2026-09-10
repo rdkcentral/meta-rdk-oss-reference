@@ -1,5 +1,12 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+# Keep assertions enabled for Redis as a recipe-level exception to the layer
+# default in conf/layer.conf.
+TARGET_CPPFLAGS:remove = "-DNDEBUG"
+CPPFLAGS:remove = "-DNDEBUG"
+CFLAGS:remove = "-DNDEBUG"
+CXXFLAGS:remove = "-DNDEBUG"
+
 SRC_URI += "file://redis-system.conf"
 do_install:append() {
     sed -i 's|^dir /var/lib/redis/.*|dir /tmp/|' ${D}/${sysconfdir}/redis/redis.conf
