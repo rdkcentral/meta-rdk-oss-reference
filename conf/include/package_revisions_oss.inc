@@ -19,7 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.14.2"
+OSS_LAYER_VERSION = "4.14.3"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -852,7 +852,7 @@ PACKAGE_ARCH:pn-stunnel ?= "${OSS_LAYER_ARCH}"
 PR:pn-sysfsutils ?= "r6"
 PACKAGE_ARCH:pn-sysfsutils ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-syslog-ng ?= "r3"
+PR:pn-syslog-ng ?= "r4"
 PACKAGE_ARCH:pn-syslog-ng ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd ?= "r13"
