@@ -62,6 +62,7 @@ PREFERRED_VERSION_gettext-native = "0.21"
 PREFERRED_VERSION_libdrm = "2.4.110"
 PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
 PREFERRED_VERSION_sed = "4.1.2"
+PREFERRED_VERSION_libmanette ??= "0.2%"
 
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
