@@ -4,6 +4,12 @@ DESCRIPTION = "'Good' GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues"
 
+# Bump the revision whenever the source changes. Under stack-layering IPK mode
+# the recipe is skipped entirely and the package is taken from the release feed
+# unless PV-PR differs from the feed entry, so a new patch alone does not cause
+# a rebuild. See meta-stack-layering-support/docs/ipk-mode-within-stack-layer.md
+PR = "r1"
+
 #FILESPATH = "${FILE_DIRNAME}/gstreamer1.0-plugins-good"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
