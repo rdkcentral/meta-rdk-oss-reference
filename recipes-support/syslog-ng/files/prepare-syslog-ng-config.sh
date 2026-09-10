@@ -9,13 +9,13 @@ if [ ! -f "${SYSLOG_NG_CONF}" ]; then
 fi
 
 
-GENERAL_TEMPLATE='template-function t_rdk "${S_YEAR}-${S_MONTH}-${S_DAY}T${S_HOUR}:${S_MIN}:${S_SEC}.${S_MSEC}Z ${MSGHDR} ${MSG}";'
+DEFAULT_RDK_TEMPLATE='template-function t_rdk "${S_YEAR}-${S_MONTH}-${S_DAY}T${S_HOUR}:${S_MIN}:${S_SEC}.${S_MSEC}Z ${MSGHDR}${MSG}";'
 
 [ -f "${SYSLOG_NG_CONF}" ] || exit 1
 
 if [ -f "${DISABLE_LOGCHRONO}" ]; then
     sed -i \
-        "s|^[[:space:]]*template-function t_rdk.*|${GENERAL_TEMPLATE}|" \
+        "s|^[[:space:]]*template-function t_rdk.*|${DEFAULT_RDK_TEMPLATE}|" \
         "${SYSLOG_NG_CONF}"
 
 fi
