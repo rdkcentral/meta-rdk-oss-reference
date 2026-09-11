@@ -4,10 +4,20 @@ DESCRIPTION = "'Good' GStreamer plugins"
 HOMEPAGE = "https://gstreamer.freedesktop.org/"
 BUGTRACKER = "https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues"
 
-# Bump the revision whenever the source changes. Under stack-layering IPK mode
-# the recipe is skipped entirely and the package is taken from the release feed
-# unless PV-PR differs from the feed entry, so a new patch alone does not cause
-# a rebuild. See meta-stack-layering-support/docs/ipk-mode-within-stack-layer.md
+# This package must be built from source, not consumed from the release IPK feed.
+#
+# Under stack-layering IPK mode every recipe whose PACKAGE_ARCH is listed in
+# STACK_LAYER_EXTENSION has all of its real tasks marked noexec and is replaced
+# by the prebuilt package from the feed (see base-deps-resolver.bbclass,
+# update_recipe_deps_handler -> update_build_tasks). Neither a new patch in
+# SRC_URI nor a PR bump changes that, because the decision never looks at them.
+# IPK_EXCLUSION_LIST is the per-package opt-out, checked first in
+# check_deps_ipk_mode() via is_excluded_pkg().
+#
+# Required so the qtdemux backport in 0050-... is actually compiled.
+IPK_EXCLUSION_LIST:append = " gstreamer1.0-plugins-good"
+
+# New revision so the resulting package is distinguishable from the feed build.
 PR = "r1"
 
 #FILESPATH = "${FILE_DIRNAME}/gstreamer1.0-plugins-good"
