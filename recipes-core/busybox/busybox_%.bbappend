@@ -34,6 +34,7 @@ SRC_URI:remove:broadband += " \
    file://blkid.cfg \
    "
 SRC_URI:append:wrynose = " file://disable-mkdosfs.cfg"
+SRC_URI:append:wrynose = " file://0001-add-ENABLE_FEATURE_SYSTEMD-and-use-it-in-syslogd.patch"
 
 do_configure:append() {
     # Ensure math macros and math functions are explicitly injected into ping.c safely
