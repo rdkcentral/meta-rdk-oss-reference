@@ -46,8 +46,6 @@ PACKAGECONFIG ??= " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland egl', '', d)} \
 "
 
-PACKAGECONFIG:remove:virtclass-multilib-lib32 = "gles2 egl wayland"
-
 OPENGL_APIS = 'opengl gles2'
 OPENGL_PLATFORMS = 'egl'
 
