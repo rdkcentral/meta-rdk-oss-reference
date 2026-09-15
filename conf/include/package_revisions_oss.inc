@@ -470,6 +470,9 @@ PACKAGE_ARCH:pn-libmd ?= "${OSS_LAYER_ARCH}"
 PR:pn-libmicrohttpd ?= "r0"
 PACKAGE_ARCH:pn-libmicrohttpd ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-libyaml ?= "r0"
+PACKAGE_ARCH:pn-libyaml ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-libmng ?= "r0"
 PACKAGE_ARCH:pn-libmng ?= "${OSS_LAYER_ARCH}"
 
