@@ -1,0 +1,80 @@
+diff -upr a/include/date/ptz.h b/include/date/ptz.h
+--- a/include/date/ptz.h	2026-07-23 22:52:36.000000000 +0300
++++ b/include/date/ptz.h	2026-09-09 19:04:24.724835184 +0300
+@@ -68,14 +68,6 @@
+ #include <ostream>
+ #include <string>
+ 
+-#ifndef HAS_CHRONO_20
+-#  if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 200100
+-#    define HAS_CHRONO_20 0
+-#  else
+-#    define HAS_CHRONO_20 1
+-#  endif
+-#endif
+-
+ #if HAS_CHRONO_20
+    namespace chr = std::chrono;
+ #  define HAS_STRING_VIEW 1
+@@ -832,12 +824,48 @@ read_date(const string_t& s, unsigned i,
+     }
+     else
+         throw_invalid(s, i, "Expected 'J', 'M', or a digit to start rule");
++
+     if (i != s.size() && s[i] == '/')
+     {
++        bool was_negative = false;
+         ++i;
++
++        if (i < s.size() && s[i] == '-')
++        {
++            was_negative = true;
++            ++i;
++        }
++
+         std::chrono::seconds t;
+         i = read_unsigned_time(s, i, t);
++
++        if (was_negative)
++        {
++            t = std::chrono::hours(24) - t;
++
++            if (t.count() < 0)
++                throw_invalid(s, i-1, "Negative time and not in the range [0, 24]");
++
++            if (r.wd_.c_encoding() == 0)
++            {
++                r.wd_ = weekday{6};
++                r.m_--;
++            }
++            else
++            {
++                r.wd_ = weekday{r.wd_.c_encoding() - 1};
++            }
++        }
++
++        while (t > std::chrono::hours{24} && r.wd_.c_encoding() < 6)
++        {
++            t -= std::chrono::hours(24);
++            r.wd_ ++;
++        }
++        if (t > std::chrono::hours{24})
++            throw_invalid(s, i-1, "Expected time to be in the range [0, 24]");
+         r.time_ = t;
++        
+     }
+     return i;
+ }
+@@ -905,9 +933,9 @@ read_unsigned_time(const string_t& s, un
+     if (i == s.size())
+         throw_invalid(s, i, "Expected to read unsigned time, but found end of string");
+     unsigned x;
+-    i = read_unsigned(s, i, 2, x, "Expected to find hours [0, 24]");
+-    if (x > 24)
+-        throw_invalid(s, i-1, "Expected hours to be in the range [0, 24]");
++    i = read_unsigned(s, i, 2, x, "Expected to find hours [0, 24 * 7]");
++    if (x > 24 * 7)
++        throw_invalid(s, i-1, "Expected hours to be in the range [0, 24 * 7]");
+     t = hours{x};
+     if (i != s.size() && s[i] == ':')
+     {
