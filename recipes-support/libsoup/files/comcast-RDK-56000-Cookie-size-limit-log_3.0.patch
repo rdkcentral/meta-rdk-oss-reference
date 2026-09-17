@@ -1,0 +1,46 @@
+From 48f7dad864cf34c1fc3ee82e7af7c5788078c9d5 Mon Sep 17 00:00:00 2001
+From: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+Date: Tue, 4 Feb 2025 12:54:14 +0100
+Subject: [PATCH] comcast - RDK-56000 - Cookie size limit log
+
+Add warning log when cookie size limit is exceeded.
+This patch is not intended to be upstreamed.
+It's here to detect if we have any use-case that will exceed current limit
+and will be dropped in the future.
+
+With libsoup-2.4 we used to have 100KB max cookie size limit
+including name, value, domain and path.
+With libsoup 3 there is only 4KB limit on name and value
+(that is common across PC browsers)
+---
+ libsoup/cookies/soup-cookie-jar.c | 1 +
+ libsoup/cookies/soup-cookie.c     | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/libsoup/cookies/soup-cookie-jar.c b/libsoup/cookies/soup-cookie-jar.c
+index fac53a5f..4fe207b4 100644
+--- a/libsoup/cookies/soup-cookie-jar.c
++++ b/libsoup/cookies/soup-cookie-jar.c
+@@ -677,6 +677,7 @@ soup_cookie_jar_add_cookie_full (SoupCookieJar *jar, SoupCookie *cookie, GUri *u
+ 	}
+ 	
+ 	if (strlen(name) > 4096 || strlen(value) > 4096) {
++		g_warning("Rejecting cookie of size %zu:%zu max 4KB allowed", strlen(name), strlen(value));
+ 		soup_cookie_free (cookie);
+ 		return;
+ 	}
+diff --git a/libsoup/cookies/soup-cookie.c b/libsoup/cookies/soup-cookie.c
+index cc80d001..03da1900 100644
+--- a/libsoup/cookies/soup-cookie.c
++++ b/libsoup/cookies/soup-cookie.c
+@@ -205,6 +205,7 @@ parse_one_cookie (const char *header, GUri *origin)
+         }
+ 
+ 	if (strlen (cookie->name) + strlen (cookie->value) > 4096) {
++		g_warning("Rejecting cookie of size %zu + %zu max 4KB allowed", strlen(cookie->name), strlen(cookie->value));
+ 		soup_cookie_free (cookie);
+ 		return NULL;
+ 	}
+-- 
+2.45.2
+

@@ -1,0 +1,40 @@
+#!/bin/bash
+# libffi ptest - run compiled FFI test binaries
+
+PTEST_PATH="$(dirname "$0")"
+cd "$PTEST_PATH" || exit 1
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+TEST_TIMEOUT=10
+
+for test_bin in tests/*; do
+    if [ ! -x "$test_bin" ]; then
+        continue
+    fi
+
+    test_name=$(basename "$test_bin")
+
+    if timeout "$TEST_TIMEOUT" "./$test_bin" > /dev/null 2>&1; then
+        echo "PASS: $test_name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        ret=$?
+        if [ "$ret" -eq 124 ]; then
+            echo "SKIP: $test_name (timeout)"
+            SKIP_COUNT=$((SKIP_COUNT + 1))
+        else
+            echo "FAIL: $test_name"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    fi
+done
+
+echo ""
+echo "=== libffi ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

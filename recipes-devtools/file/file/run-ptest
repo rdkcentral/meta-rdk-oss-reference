@@ -1,0 +1,35 @@
+#!/bin/sh
+
+cd tests || exit 1
+
+# Run the test program for each testfile
+passed=0
+failed=0
+
+for testfile in *.testfile; do
+    result="${testfile%.testfile}.result"
+    
+    if [ ! -f "$result" ]; then
+        continue
+    fi
+    
+    # Check if custom magic file exists for this test
+    magic="${testfile%.testfile}.magic"
+    if [ -f "$magic" ]; then
+        MAGIC="$PWD/$magic"
+    else
+        # Use installed magic file
+        MAGIC="../magic/magic.mgc"
+    fi
+    
+    # Run test
+    if TZ=UTC MAGIC="$MAGIC" ./test "$testfile" "$result" > /dev/null 2>&1; then
+        echo "PASS: $testfile"
+        passed=$((passed + 1))
+    else
+        echo "FAIL: $testfile"
+        failed=$((failed + 1))
+    fi
+done
+
+echo "Total: $((passed + failed)), Passed: $passed, Failed: $failed"

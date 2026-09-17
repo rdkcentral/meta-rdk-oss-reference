@@ -1,8 +1,8 @@
+SUMMARY = "This recipe compiles the westeros compositor component"
+
 include westeros.inc
 
-SUMMARY = "This receipe compiles the westeros compositor component"
-
-LICENSE = "Apache-2.0"
+SRC_URI = "${WESTEROS_URI}"
 
 PACKAGECONFIG ??= "incapp inctest increndergl incsbprotocol xdgv4"
 PACKAGECONFIG[incapp] = "--enable-app=yes"
@@ -15,6 +15,7 @@ PACKAGECONFIG[xdgv4] = "--enable-xdgv4=yes"
 PACKAGECONFIG[xdgv5] = "--enable-xdgv5=yes"
 PACKAGECONFIG[xdgstable] = "--enable-xdgstable=yes"
 PACKAGECONFIG[modules] = "--enable-modules=yes,,virtual/westeros-soc"
+PACKAGECONFIG[explicit-sync] = "--enable-lexpsyncprotocol=yes, , wayland-protocols"
 
 S = "${WORKDIR}/git"
 
@@ -33,4 +34,11 @@ do_compile:prepend() {
    export SCANNER_TOOL=${STAGING_BINDIR_NATIVE}/wayland-scanner
    oe_runmake -C ${S}/protocol
    oe_runmake -C ${S}/linux-dmabuf/protocol
+   oe_runmake -C ${S}/linux-expsync/protocol
 }
+
+do_install:append() {
+    install -m 0644 ${S}/*.h ${D}${includedir}/
+}
+
+FILES:${PN}-dev += "${includedir}/*.h"

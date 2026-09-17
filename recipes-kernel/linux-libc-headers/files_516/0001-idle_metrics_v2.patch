@@ -1,0 +1,76 @@
+--- a/include/uapi/linux/prctl.h	2025-12-16 15:50:41.761927991 +0000
++++ b/include/uapi/linux/prctl.h	2025-12-16 15:52:25.689668710 +0000
+@@ -272,4 +272,73 @@
+ # define PR_SCHED_CORE_SCOPE_THREAD_GROUP	1
+ # define PR_SCHED_CORE_SCOPE_PROCESS_GROUP	2
+ 
++#define PR_SET_FTRACE_MARKER	99
++
++/* sets max size of string buffer */
++#define FTRACE_BUF_SIZE	1024
++
++
++#define NUM_CPUS 4
++
++/* define structure(s) used for logging idle metrics */
++typedef struct {
++	__u64 metricStartTime;
++	__u64 metricEndTime;
++	__u64 idle_time[NUM_CPUS];
++} IDLE_METRICS;
++
++typedef struct {
++	__u64 sum_idle_time;
++	__u32 max_idle_time;
++	__u32 idle_count;
++} PER_CPU_IDLE_METRIC;
++
++/* define structure(s) used for logging idle metrics */
++typedef struct {
++	__u64 metricStartTime;
++	__u64 metricEndTime;
++	PER_CPU_IDLE_METRIC idle[NUM_CPUS];
++	__u64 sum_all_cpus_running_time;
++	__u64 sum_run_time_lt_1ms;
++	__u64 sum_run_time_gt_1ms;
++	__u64 sum_run_time_gt_5ms;
++	__u64 sum_run_time_gt_10ms;
++	__u64 sum_run_time_gt_20ms;
++	__u64 sum_run_time_gt_30ms;
++	__u64 sum_run_time_gt_40ms;
++	__u64 sum_run_time_gt_50ms;
++	__u64 sum_run_time_gt_75ms;
++	__u64 sum_run_time_gt_100ms;
++	__u32 max_run_time_lt_1ms;
++	__u32 max_run_time_gt_1ms;
++	__u32 max_run_time_gt_5ms;
++	__u32 max_run_time_gt_10ms;
++	__u32 max_run_time_gt_20ms;
++	__u32 max_run_time_gt_30ms;
++	__u32 max_run_time_gt_40ms;
++	__u32 max_run_time_gt_50ms;
++	__u32 max_run_time_gt_75ms;
++	__u32 max_run_time_gt_100ms;
++	__u32 max_all_cpus_running_time;
++	__u32 count;
++	__u32 run_time_gt_1ms;
++	__u32 run_time_gt_5ms;
++	__u32 run_time_gt_10ms;
++	__u32 run_time_gt_20ms;
++	__u32 run_time_gt_30ms;
++	__u32 run_time_gt_40ms;
++	__u32 run_time_gt_50ms;
++	__u32 run_time_gt_75ms;
++	__u32 run_time_gt_100ms;
++} IDLE_METRICS_V2;
++
++#define PR_GET_IDLE_METRICS		104
++#define PR_GET_IDLE_METRICS_VERSION	105
++
++typedef enum {
++	IDLE_METRICS_VERSION_V1 = 0,
++	IDLE_METRICS_VERSION_V2,
++	IDLE_METRICS_VERSION_NUM_VERSIONS
++} IDLE_METRICS_VERSION;
++
+ #endif /* _LINUX_PRCTL_H */
