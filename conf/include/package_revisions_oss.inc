@@ -62,6 +62,7 @@ PREFERRED_VERSION_gettext-native = "0.21"
 PREFERRED_VERSION_libdrm = "2.4.110"
 PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
 PREFERRED_VERSION_sed = "4.1.2"
+PREFERRED_VERSION_libmanette ??= "0.2%"
 
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
@@ -94,6 +95,12 @@ PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-alsa-state ?= "r5"
 PACKAGE_ARCH:pn-alsa-state ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libmicrohttpd12 ?= "r0"
+PACKAGE_ARCH:pn-libmicrohttpd12 ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libyaml ?= "r0"
+PACKAGE_ARCH:pn-libyaml ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-alsa-topology-conf ?= "r0"
 PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
