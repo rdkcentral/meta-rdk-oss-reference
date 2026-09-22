@@ -11,7 +11,6 @@ SRC_URI:append:libc-musl = "\
    "
 
 SRC_URI:append = "\
-    file://0001-scripts-Use-fixed-input-and-output-files-instead-of-.patch \
     file://0001-kbuild-install_headers.sh-Strip-_UAPI-from-if-define.patch \
     file://v4l2.patch \
 "
