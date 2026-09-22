@@ -42,7 +42,7 @@ index d442d3d..298d9c7 100644
 +       gErr = err;
 +    }
 +}
-+#define NUM_THREADS 64
++#define NUM_THREADS 16
 +
  static int libsolv_solver_execute_transaction(libsolv_solver_t *libsolv_solver)
  {

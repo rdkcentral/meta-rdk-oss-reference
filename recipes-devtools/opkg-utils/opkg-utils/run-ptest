@@ -1,0 +1,32 @@
+#!/bin/bash
+# Run opkg-utils test suite
+
+# Check bash version - opkg-feed requires bash 4.0+ for associative arrays
+bash_version=$(bash --version | head -1 | sed 's/.*version \([0-9]\+\)\..*/\1/')
+
+if [ "$bash_version" -lt 4 ]; then
+    echo "SKIP: opkg-utils requires bash 4.0+ (current: $(bash --version | head -1))"
+    echo "opkg-feed uses associative arrays (declare -A) which require bash 4.0+"
+    exit 0
+fi
+
+# Get ptest directory
+PTEST_PATH=$(dirname $(readlink -f $0))
+
+# Set the opkg-feed script path
+export OPKG_FEED_PATH="$PTEST_PATH/opkg-feed"
+
+# Clean up any leftover test state
+rm -rf /tmp/opkgFeedTest
+mkdir -p /tmp/opkgFeedTest
+
+cd "$PTEST_PATH/tests"
+
+# Run the main test
+bash testOpkgFeedManagement.sh
+exit_code=$?
+
+# Cleanup after test
+rm -rf /tmp/opkgFeedTest
+
+exit $exit_code

@@ -1,0 +1,40 @@
+#!/bin/sh
+passed=0
+failed=0
+
+output() {
+    if [ $? -eq 0 ]; then
+        echo "PASS: $test"
+        passed=$((passed + 1))
+    else
+        echo "FAIL: $test"
+        failed=$((failed + 1))
+    fi
+}
+
+PTEST_PATH=$(dirname $(readlink -f $0))
+
+if [ ! -d "$PTEST_PATH/tests" ]; then
+    echo "FAIL: tests directory not found"
+    exit 1
+fi
+
+cd "$PTEST_PATH/tests"
+TEST_COUNT=$(ls t-* 2>/dev/null | wc -l)
+
+if [ "$TEST_COUNT" -eq 0 ] && [ -d ".libs" ]; then
+    cd .libs
+fi
+
+for test in t-* reuse dive dive_ui io logic convert; do
+    if [ -f "$test" ] && [ -x "$test" ]; then
+        ./$test
+        output
+    fi
+done
+
+echo ""
+echo "=== GMP Test Summary ==="
+echo "PASSED: $passed"
+echo "FAILED: $failed"
+echo "TOTAL: $((passed + failed))"

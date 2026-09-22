@@ -1,0 +1,74 @@
+Date: 8, Aug 2024
+Subject: Enable Configurable Wan Name for the Unification enabled builds
+Source: COMCAST 7d16d26d310381084a82119a6f13a17da7049b07
+Signed-off-by: Parthiban Selvaraj <parthiban.selvaraj@sky.uk>
+
+Index: git/CfgMgr/CfgMgr.cpp
+===================================================================
+--- git.orig/CfgMgr/CfgMgr.cpp
++++ git/CfgMgr/CfgMgr.cpp
+@@ -170,7 +170,7 @@ bool TCfgMgr::loadDUID(const std::string
+     return true;
+ }
+ 
+-bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr) {
++bool TCfgMgr::setDUID(const std::string& filename, TIfaceMgr & ifaceMgr, const std::string& cfg_filename) {
+ 
+     // --- load DUID ---
+     if (this->loadDUID(filename)) {
+@@ -187,7 +187,15 @@ bool TCfgMgr::setDUID(const std::string&
+     char *line = NULL;
+     size_t len = 0;
+     char *interfaceName = NULL;
+-    dibblerClientConfPtr = fopen( DEFAULT_CLNTCONF_FILE , "r");
++
++    if(!cfg_filename.empty())
++    {
++        dibblerClientConfPtr = fopen( cfg_filename.c_str() , "r");
++    }else
++    {
++        dibblerClientConfPtr = fopen( DEFAULT_CLNTCONF_FILE, "r");
++    }
++
+     if ( NULL == dibblerClientConfPtr ) {
+         Log(Info) << "Unable to open client config file  " << DEFAULT_CLNTCONF_FILE  << LogEnd;
+     } else {
+Index: git/CfgMgr/CfgMgr.h
+===================================================================
+--- git.orig/CfgMgr/CfgMgr.h
++++ git/CfgMgr/CfgMgr.h
+@@ -72,7 +72,7 @@ class TCfgMgr
+ 
+  protected:
+     SPtr<TDUID> DUID;
+-    bool setDUID(const std::string& duidFile, TIfaceMgr &ifaceMgr);
++    bool setDUID(const std::string& duidFile, TIfaceMgr &ifaceMgr, const std::string& cfg_filename);
+     bool loadDUID(const std::string& filename);
+     bool generateDUID(const std::string& duidFile,char * mac,int macLen, int macType);
+     std::string Workdir;
+Index: git/ClntCfgMgr/ClntCfgMgr.cpp
+===================================================================
+--- git.orig/ClntCfgMgr/ClntCfgMgr.cpp
++++ git/ClntCfgMgr/ClntCfgMgr.cpp
+@@ -69,7 +69,7 @@ TClntCfgMgr::TClntCfgMgr(const std::stri
+ 
+     // load or create DUID
+     string duidFile = (string)CLNTDUID_FILE;
+-    if (!setDUID(duidFile, ClntIfaceMgr())) {
++    if (!setDUID(duidFile, ClntIfaceMgr(), cfgFile)) {
+         IsDone = true;
+         return;
+     }
+Index: git/SrvCfgMgr/SrvCfgMgr.cpp
+===================================================================
+--- git.orig/SrvCfgMgr/SrvCfgMgr.cpp
++++ git/SrvCfgMgr/SrvCfgMgr.cpp
+@@ -50,7 +50,7 @@ TSrvCfgMgr::TSrvCfgMgr(const std::string
+ 
+     // load or create DUID
+     string duidFile = (string)SRVDUID_FILE;
+-    if (!setDUID(duidFile, SrvIfaceMgr())) {
++    if (!setDUID(duidFile, SrvIfaceMgr(), cfgFile)) {
+                 this->IsDone=true;
+                 return;
+     }

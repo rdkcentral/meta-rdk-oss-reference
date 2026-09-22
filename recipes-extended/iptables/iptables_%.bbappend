@@ -8,3 +8,25 @@ do_install:append() {
 }
 
 SYSTEMD_SERVICE:iptables:remove = "iptables.service ip6tables.service"
+
+
+inherit ptest
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
+SRC_URI += "file://run-ptest"
+
+RDEPENDS:${PN}-ptest += "bash util-linux ${PN}"
+
+do_compile_ptest() {
+    :
+}
+
+do_install_ptest() {
+    install -d ${D}${PTEST_PATH}/tests/shell
+    cp -r ${S}/iptables/tests/shell/testcases ${D}${PTEST_PATH}/tests/shell/
+    install -m 0755 ${S}/iptables/tests/shell/run-tests.sh ${D}${PTEST_PATH}/tests/shell/
+
+    # Make all test scripts executable
+    find ${D}${PTEST_PATH}/tests/shell/testcases -type f -exec chmod 0755 {} \;
+}

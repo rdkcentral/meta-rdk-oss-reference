@@ -6,11 +6,14 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 
 inherit packagegroup
 
-PV = "4.6.0"
+
+PV = "4.14.0"
 PR = "r0"
 
 # poky components
 RDEPENDS:${PN} = "\
+     libmicrohttpd12 \
+     libyaml \
      abseil-cpp \
      acl \
      alsa-lib \
@@ -81,7 +84,6 @@ RDEPENDS:${PN} = "\
      libgpg-error \
      libgudev \
      libical \
-     libidn2 \
      libinput \
      libjpeg \
      libmd \
@@ -178,11 +180,14 @@ RDEPENDS:${PN} += "\
      dibbler-client \
      directfb \
      ebtables \
+     ethtool \
      evtest \
+     fmt \
      gflags \
      googletest \
      grpc \
      gssdp \
+     gssdp16 \
      hiredis \
      iperf3 \
      jsonrpc \
@@ -191,6 +196,7 @@ RDEPENDS:${PN} += "\
      libev \
      libmicrohttpd \
      libmng \
+     libmnl \
      liboauth \
      libol \
      libomxil \
@@ -207,12 +213,14 @@ RDEPENDS:${PN} += "\
      lua \
      lvm2 \
      mdns \
+     mosquitto \
      msgpack-c \
      ndisc6-rdnssd \
      ne10 \
      nspr \
      nss \
      openjpeg \
+     paho-mqtt-c \
      protobuf \
      protobuf-c \
      qrencode \
@@ -228,6 +236,7 @@ RDEPENDS:${PN} += "\
      xmlsec1 \
      yajl \
      zstd \
+     yaml-cpp \
 "
 
 # meta-rust components
@@ -254,6 +263,7 @@ RDEPENDS:${PN} += "\
      dnsmasq \
      dosfstools \
      essos \
+     essosrmgr \
      fcgi \
      findutils \
      gawk \
@@ -284,6 +294,7 @@ RDEPENDS:${PN} += "\
      libndp \
      libnewt \
      libpcre \
+     libp11 \
      libseccomp \
      librsvg \
      libtasn1 \
@@ -320,6 +331,7 @@ RDEPENDS:${PN} += "\
      trower-base64 \
      vmtouch \
      volatile-binds \
+     wayland-default-egl \
      westeros \
      westeros-simplebuffer \
      westeros-simpleshell \
@@ -346,6 +358,7 @@ RDEPENDS:${PN}:remove += "\
      cairo \
      dropbear \
      essos \
+     essosrmgr \
      gstreamer1.0 \
      gstreamer1.0-libav \
      gstreamer1.0-meta-base \

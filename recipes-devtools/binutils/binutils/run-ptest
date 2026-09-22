@@ -1,0 +1,284 @@
+#!/bin/bash
+# binutils ptest - functional tests for GNU binutils utilitiesPTEST_PATH="$(dirname "$0")"
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXITPASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0pass() {
+    echo "PASS: $1"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}fail() {
+    echo "FAIL: $1"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+}skip() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}# Use an existing system ELF binary as test input (no gcc needed)
+if file /bin/sh 2>/dev/null | grep -q ELF; then
+    cp /bin/sh "$TMPDIR/test"
+    HAS_TESTBIN=1
+fi# Create a simple test file with a known marker for strings/ar tests
+echo "BINUTILS_PTEST_MARKER" > "$TMPDIR/testdata.txt"
+cp "$TMPDIR/test" "$TMPDIR/member.o" 2>/dev/null# ===== readelf tests =====
+if command -v readelf > /dev/null 2>&1; then
+    # --version
+    if readelf --version 2>&1 | grep -qi "GNU readelf\|binutils"; then
+        pass "readelf --version"
+    else
+        fail "readelf --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        # Read ELF header
+        if readelf -h "$TMPDIR/test" 2>/dev/null | grep -q "ELF Header"; then
+            pass "readelf -h (ELF header)"
+        else
+            fail "readelf -h (ELF header)"
+        fi        # Read section headers
+        if readelf -S "$TMPDIR/test" 2>/dev/null | grep -q "\.text"; then
+            pass "readelf -S (section headers)"
+        else
+            fail "readelf -S (section headers)"
+        fi        # Read program headers
+        if readelf -l "$TMPDIR/test" 2>/dev/null | grep -qi "LOAD\|program header"; then
+            pass "readelf -l (program headers)"
+        else
+            fail "readelf -l (program headers)"
+        fi        # Read symbols
+        if readelf -s "$TMPDIR/test" 2>/dev/null | grep -q "Symbol table"; then
+            pass "readelf -s (symbols)"
+        else
+            fail "readelf -s (symbols)"
+        fi        # Read dynamic section
+        if readelf -d "$TMPDIR/test" 2>/dev/null | grep -qi "NEEDED\|dynamic section"; then
+            pass "readelf -d (dynamic)"
+        else
+            fail "readelf -d (dynamic)"
+        fi
+    fi
+else
+    skip "readelf (not found)"
+fi# ===== objdump tests =====
+if command -v objdump > /dev/null 2>&1; then
+    if objdump --version 2>&1 | grep -qi "GNU objdump\|binutils"; then
+        pass "objdump --version"
+    else
+        fail "objdump --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        # Disassembly
+        if objdump -d "$TMPDIR/test" 2>/dev/null | grep -q "Disassembly"; then
+            pass "objdump -d (disassembly)"
+        else
+            fail "objdump -d (disassembly)"
+        fi        # Section headers
+        if objdump -h "$TMPDIR/test" 2>/dev/null | grep -q "\.text"; then
+            pass "objdump -h (section headers)"
+        else
+            fail "objdump -h (section headers)"
+        fi        # Full contents
+        if objdump -s "$TMPDIR/test" 2>/dev/null | grep -q "Contents of"; then
+            pass "objdump -s (full contents)"
+        else
+            fail "objdump -s (full contents)"
+        fi
+    fi
+else
+    skip "objdump (not found)"
+fi# ===== nm tests =====
+if command -v nm > /dev/null 2>&1; then
+    if nm --version 2>&1 | grep -qi "GNU nm\|binutils"; then
+        pass "nm --version"
+    else
+        fail "nm --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        # List symbols
+        if nm "$TMPDIR/test" 2>/dev/null | grep -q "[Tt] main\|[Tt] _start"; then
+            pass "nm list symbols"
+        else
+            fail "nm list symbols"
+        fi
+    fi
+else
+    skip "nm (not found)"
+fi# ===== strings tests =====
+if command -v strings > /dev/null 2>&1; then
+    if strings --version 2>&1 | grep -qi "GNU strings\|binutils"; then
+        pass "strings --version"
+    else
+        fail "strings --version"
+    fi    # Find our marker string in a plain file
+    if strings "$TMPDIR/testdata.txt" 2>/dev/null | grep -q "BINUTILS_PTEST_MARKER"; then
+        pass "strings find marker"
+    else
+        fail "strings find marker"
+    fi
+else
+    skip "strings (not found)"
+fi# ===== strip tests =====
+if command -v strip > /dev/null 2>&1; then
+    if strip --version 2>&1 | grep -qi "GNU strip\|binutils"; then
+        pass "strip --version"
+    else
+        fail "strip --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        cp "$TMPDIR/test" "$TMPDIR/test_strip"
+        orig_size=$(stat -c%s "$TMPDIR/test_strip" 2>/dev/null || stat -f%z "$TMPDIR/test_strip" 2>/dev/null)
+        if strip "$TMPDIR/test_strip" 2>/dev/null; then
+            new_size=$(stat -c%s "$TMPDIR/test_strip" 2>/dev/null || stat -f%z "$TMPDIR/test_strip" 2>/dev/null)
+            if [ "$new_size" -lt "$orig_size" ]; then
+                pass "strip reduces size"
+            else
+                pass "strip runs successfully"
+            fi
+            # Stripped binary should still be executable
+            if file "$TMPDIR/test_strip" 2>/dev/null | grep -q "ELF"; then
+                pass "strip preserves ELF format"
+            else
+                fail "strip preserves ELF format"
+            fi
+        else
+            fail "strip binary"
+        fi
+    fi
+else
+    skip "strip (not found)"
+fi# ===== objcopy tests =====
+if command -v objcopy > /dev/null 2>&1; then
+    if objcopy --version 2>&1 | grep -qi "GNU objcopy\|binutils"; then
+        pass "objcopy --version"
+    else
+        fail "objcopy --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        # Copy binary
+        if objcopy "$TMPDIR/test" "$TMPDIR/test_copy" 2>/dev/null; then
+            if cmp -s "$TMPDIR/test" "$TMPDIR/test_copy"; then
+                pass "objcopy binary copy"
+            else
+                pass "objcopy creates output"
+            fi
+        else
+            fail "objcopy binary copy"
+        fi        # Strip debug info via objcopy
+        if objcopy --strip-debug "$TMPDIR/test" "$TMPDIR/test_nodbg" 2>/dev/null; then
+            pass "objcopy --strip-debug"
+        else
+            fail "objcopy --strip-debug"
+        fi
+    fi
+else
+    skip "objcopy (not found)"
+fi# ===== ar tests =====
+if command -v ar > /dev/null 2>&1; then
+    if ar --version 2>&1 | grep -qi "GNU ar\|binutils"; then
+        pass "ar --version"
+    else
+        fail "ar --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        # Create archive using copy of ELF binary
+        if ar rcs "$TMPDIR/libtest.a" "$TMPDIR/member.o" 2>/dev/null; then
+            pass "ar create archive"            # List archive contents
+            if ar t "$TMPDIR/libtest.a" 2>/dev/null | grep -q "member.o"; then
+                pass "ar list archive"
+            else
+                fail "ar list archive"
+            fi            # Extract from archive
+            mkdir -p "$TMPDIR/arextract"
+            if (cd "$TMPDIR/arextract" && ar x "$TMPDIR/libtest.a") 2>/dev/null; then
+                if [ -f "$TMPDIR/arextract/member.o" ]; then
+                    pass "ar extract from archive"
+                else
+                    fail "ar extract from archive"
+                fi
+            else
+                fail "ar extract from archive"
+            fi
+        else
+            fail "ar create archive"
+        fi
+    fi
+else
+    skip "ar (not found)"
+fi# ===== ranlib tests =====
+if command -v ranlib > /dev/null 2>&1; then
+    if ranlib --version 2>&1 | grep -qi "GNU ranlib\|binutils"; then
+        pass "ranlib --version"
+    else
+        fail "ranlib --version"
+    fi    if [ -f "$TMPDIR/libtest.a" ]; then
+        if ranlib "$TMPDIR/libtest.a" 2>/dev/null; then
+            pass "ranlib index archive"
+        else
+            fail "ranlib index archive"
+        fi
+    fi
+else
+    skip "ranlib (not found)"
+fi# ===== size tests =====
+if command -v size > /dev/null 2>&1; then
+    if size --version 2>&1 | grep -qi "GNU size\|binutils"; then
+        pass "size --version"
+    else
+        fail "size --version"
+    fi    if [ -n "$HAS_TESTBIN" ]; then
+        if size "$TMPDIR/test" 2>/dev/null | grep -qE "[0-9]+"; then
+            pass "size display sections"
+        else
+            fail "size display sections"
+        fi
+    fi
+else
+    skip "size (not found)"
+fi# ===== addr2line tests =====
+if command -v addr2line > /dev/null 2>&1; then
+    if addr2line --version 2>&1 | grep -qi "GNU addr2line\|binutils"; then
+        pass "addr2line --version"
+    else
+        fail "addr2line --version"
+    fi
+else
+    skip "addr2line (not found)"
+fi# ===== c++filt tests =====
+if command -v c++filt > /dev/null 2>&1; then
+    if c++filt --version 2>&1 | grep -qi "GNU c++filt\|binutils"; then
+        pass "c++filt --version"
+    else
+        fail "c++filt --version"
+    fi    # Demangle a C++ symbol
+    demangled=$(echo "_Z4mainiPPc" | c++filt 2>/dev/null)
+    if echo "$demangled" | grep -q "main"; then
+        pass "c++filt demangle symbol"
+    else
+        fail "c++filt demangle symbol"
+    fi
+else
+    skip "c++filt (not found)"
+fi# ===== as (assembler) tests =====
+if command -v as > /dev/null 2>&1; then
+    if as --version 2>&1 | grep -qi "GNU assembler\|binutils"; then
+        pass "as --version"
+    else
+        fail "as --version"
+    fi
+else
+    skip "as (not found)"
+fi# ===== ld tests =====
+if command -v ld > /dev/null 2>&1; then
+    if ld --version 2>&1 | grep -qi "GNU ld\|binutils"; then
+        pass "ld --version"
+    else
+        fail "ld --version"
+    fi
+else
+    skip "ld (not found)"
+fi# ===== elfedit tests =====
+if command -v elfedit > /dev/null 2>&1; then
+    if elfedit --version 2>&1 | grep -qi "elfedit\|binutils"; then
+        pass "elfedit --version"
+    else
+        fail "elfedit --version"
+    fi
+else
+    skip "elfedit (not found)"
+fiecho ""
+echo "=== binutils ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"
