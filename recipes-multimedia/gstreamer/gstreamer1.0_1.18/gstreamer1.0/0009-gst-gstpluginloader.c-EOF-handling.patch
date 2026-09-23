@@ -1,0 +1,24 @@
+--- a/gst/gstpluginloader.c	2026-09-15 12:36:29.417627984 +0000
++++ b/gst/gstpluginloader.c	2026-09-15 12:41:19.545774992 +0000
+@@ -954,6 +954,10 @@
+   in = l->rx_buf;
+   do {
+     res = read (l->fd_r.fd, in, to_read);
++    if (G_UNLIKELY (res == 0)) {
++	GST_ERROR ("EOF received while reading packet header from plugin scanner");
++	return FALSE;
++    }
+     if (G_UNLIKELY (res < 0)) {
+       if (errno == EAGAIN || errno == EINTR)
+         continue;
+@@ -991,6 +995,10 @@
+     to_read = packet_len;
+     do {
+       res = read (l->fd_r.fd, in, to_read);
++      if (G_UNLIKELY (res == 0)) {
++	GST_ERROR ("EOF received while reading packet header from plugin scanner");
++	return FALSE;
++      }
+       if (G_UNLIKELY (res < 0)) {
+         if (errno == EAGAIN || errno == EINTR)
+           continue;
