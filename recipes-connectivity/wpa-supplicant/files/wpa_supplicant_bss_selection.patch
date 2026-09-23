@@ -1,0 +1,41 @@
+Date: Jan 29, 2020 1:41 AM
+From: 
+Subject: Add retry logic to connect to same bssid during auth timeout events
+Source: COMCAST
+License:
+Upstream-Status: Pending
+Signed-off-by: RDK User <rdk_user@cable.comcast.com>
+Index: wpa_supplicant-2.10/wpa_supplicant/wpa_supplicant.c
+===================================================================
+--- wpa_supplicant-2.10.org/wpa_supplicant/wpa_supplicant.c
++++ wpa_supplicant-2.10/wpa_supplicant/wpa_supplicant.c
+
+@@ -852,7 +852,13 @@
+ 		return;
+ 	}
+ 	if (wpas_driver_bss_selection(wpa_s))
+-		return;
++        {
++		wpa_printf(MSG_DEBUG, "wpas_driver_bss_selection is TRUE");
++	}
++	else
++	{
++		wpa_printf(MSG_DEBUG, "wpas_driver_bss_selection is FALSE");
++	}
+ #ifdef CONFIG_P2P
+ 	if (wpa_s->p2p_group_interface != NOT_P2P_GROUP_INTERFACE)
+ 		return;
+
+Index: wpa_supplicant-2.10/src/drivers/driver_nl80211_capa.c
+===================================================================
+--- wpa_supplicant-2.10.org/src/drivers/driver_nl80211_capa.c	2022-01-16 20:51:29.000000000 +0000
++++ wpa_supplicant-2.10/src/drivers/driver_nl80211_capa-mod.c	2025-11-05 20:32:58.225091403 +0000
+@@ -908,7 +908,7 @@
+ 
+ 	if (tb[NL80211_ATTR_ROAM_SUPPORT]) {
+ 		wpa_printf(MSG_DEBUG, "nl80211: Using driver-based roaming");
+-		capa->flags |= WPA_DRIVER_FLAGS_BSS_SELECTION;
++		wpa_printf(MSG_DEBUG, "Disabled WPA_DRIVER_FLAGS_BSS_SELECTION");
+ 	}
+ 
+ 	wiphy_info_max_roc(capa,
