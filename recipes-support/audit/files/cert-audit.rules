@@ -1,0 +1,2 @@
+-w /opt/dl/certs/staticXpkiCrt.pk12 -p r -k staticcert
+-w /etc/ssl/certs/staticXpkiCrt.pk12 -p r -k staticcert
