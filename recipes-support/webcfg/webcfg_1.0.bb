@@ -60,19 +60,19 @@ SRC_URI:append += " ${@bb.utils.contains('DISTRO_FEATURES', 'webconfig_bin', 'fi
 SRC_URI:append += " ${@bb.utils.contains('DISTRO_FEATURES', 'webconfig_bin', 'file://metadata_parser.py', '', d)}"
 SRC_URI:append += " ${@bb.utils.contains('DISTRO_FEATURES', 'webconfig_bin', 'file://webconfig.service', '', d)}"
 
-do_install:append_broadband() {
+do_install:append:broadband() {
 
     if ${@bb.utils.contains("DISTRO_FEATURES", "webconfig_bin", "true", "false", d)}
     then
       if ${@bb.utils.contains("DISTRO_FEATURES", "gateway_manager", "false", "true", d)}
       then
-        sed -z 's/"name": "gwfailover",\n[[:blank:]]*"bitposition": 1,\n[[:blank:]]*"support": true,/"name": "gwfailover",\n"bitposition": 1,\n"support": false,/g' ${WORKDIR}/webconfig_metadata.json > ${WORKDIR}/out.txt
-        mv ${WORKDIR}/out.txt ${WORKDIR}/webconfig_metadata.json
+        sed -z 's/"name": "gwfailover",\n[[:blank:]]*"bitposition": 1,\n[[:blank:]]*"support": true,/"name": "gwfailover",\n"bitposition": 1,\n"support": false,/g' ${UNPACKDIR}/webconfig_metadata.json > ${UNPACKDIR}/out.txt
+        mv ${UNPACKDIR}/out.txt ${UNPACKDIR}/webconfig_metadata.json
       fi
       install -d ${D}/usr/ccsp/webconfig
       install -d ${D}/etc
       touch ${D}/etc/WEBCONFIG_ENABLE
-      (${PYTHON} ${WORKDIR}/metadata_parser.py ${WORKDIR}/webconfig_metadata.json ${D}/etc/webconfig.properties ${MACHINE})
+      (${PYTHON} ${UNPACKDIR}/metadata_parser.py ${UNPACKDIR}/webconfig_metadata.json ${D}/etc/webconfig.properties ${MACHINE})
     fi
 
     if ${@bb.utils.contains("DISTRO_FEATURES", "WanFailOverSupportEnable", "true", "false", d)}
