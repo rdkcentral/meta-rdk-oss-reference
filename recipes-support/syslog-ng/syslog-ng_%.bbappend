@@ -52,6 +52,9 @@ do_install:append() {
 
         #Remove the syslog-ng@default.service link from multiuser target as we don't use it. 
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
+
+        # removing unused yet sensitive file
+        rm -rf ${D}${datadir}/${BPN}/include/scl/windowseventlog/*
     fi
 
 }
