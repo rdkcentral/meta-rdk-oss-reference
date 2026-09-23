@@ -51,5 +51,12 @@ RRECOMMENDS:${PN}:remove = " \
                            ${PN}-write \ 
                            ${PN}-zramctl \
                           "
+RDEPENDS:${PN}-bash-completion:remove:wrynose = " \
+    ${PN}-lsblk \
+"
 
+RDEPENDS:${PN}-swaponoff:remove:wrynose = " \
+    ${PN}-swapoff \
+    ${PN}-swapon \
+"
 #TARGET_LDFLAGS:append:pn-util-linux = " -Wl,-z,nodlopen"
