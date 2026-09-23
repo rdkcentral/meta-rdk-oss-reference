@@ -31,7 +31,7 @@ Index: git/src/timesync/timesyncd-manager.c
          if (len == sizeof(ntpmsg)) {
                  m->pending = true;
 -                log_debug("Sent NTP request to %s (%s).", strna(pretty), m->current_server_name->string);
-+                log_info("Sent NTP request to %s (%s) at %lld ms.", strna(pretty), m->current_server_name->string,uptime_ms);
++                log_info("Sent NTP request to %s (%s) at %lld", strna(pretty), m->current_server_name->string,uptime_ms);
          } else {
                  log_debug_errno(errno, "Sending NTP request to %s (%s) failed: %m", strna(pretty), m->current_server_name->string);
 +		write_string_file("/tmp/ntp_status", "Error_FailedToSynchronize", WRITE_STRING_FILE_CREATE);
@@ -145,7 +145,7 @@ Index: git/src/timesync/timesyncd-manager.c
 +	clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
 +	long long uptime_ms = (long long)uptime.tv_sec * 1000 + uptime.tv_nsec / 1000000;
 +
-+	log_info("NTP Response received at %lld ms",uptime_ms);
++	log_info("NTP Response received at %lld",uptime_ms);
 +
          /* announce leap seconds */
          if (NTP_FIELD_LEAP(ntpmsg.field) & NTP_LEAP_PLUSSEC)
@@ -178,7 +178,7 @@ Index: git/src/timesync/timesyncd-manager.c
  
                  server_address_pretty(m->current_server_address, &pretty);
 -                log_info("Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
-+                log_info("Synchronized to time server %s (%s) at %lld ms.", strna(pretty), m->current_server_name->string,ntp_sync_ms);
++                log_info("Synchronized to time server %s (%s) at %lld", strna(pretty), m->current_server_name->string,ntp_sync_ms);
                  sd_notifyf(false, "STATUS=Synchronized to time server %s (%s).", strna(pretty), m->current_server_name->string);
          }
  
@@ -258,7 +258,7 @@ Index: git/src/timesync/timesyncd.c
 +       clock_gettime(CLOCK_MONOTONIC_RAW, &uptime);
 +       long long uptime_ms = (long long)uptime.tv_sec * 1000 + uptime.tv_nsec / 1000000;
 +
-+       log_info("NTP Client process started at %lld ms", uptime_ms);
++       log_info("NTP Client process started at %lld", uptime_ms);
 +
          log_debug("systemd-timesyncd running as pid " PID_FMT, getpid());
          sd_notify(false,
