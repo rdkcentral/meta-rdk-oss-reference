@@ -13,3 +13,5 @@ RPROVIDES:${PN}-trust-store += " virtual/ca-certificates-trust-store"
 
 FILES:${PN}-trust-store += "${datadir}/ca-certificates/*"
 FILES:${PN}-trust-store += "${sysconfdir}/*"
+
+RDEPENDS:${PN} += "${PN}-trust-store"
