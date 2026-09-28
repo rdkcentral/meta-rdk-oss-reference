@@ -23,9 +23,8 @@ USE_RDKPERF_SERVICE = "${@bb.utils.contains('DISTRO_FEATURES', 'rdkperf_service'
 #SRC_URI = "git://github.com/rdkcentral/rdkperf;protocol=git;branch=development"
 
 # Using the main branch
-SRC_URI = "git://github.com/rdkcentral/rdkperf;protocol=git;branch=main"
-
-SRCREV = "d802d561c4a2a4456403d572da75e73032d48d91"
+SRC_URI = "git://github.com/vrenu2018/rdkperfRenuka;protocol=git;branch=topic/RDKEMW-25809"
+SRCREV = "26ea3f8a21409a796f38c6ba9bdca232e733f315"
 
 PV = "1.0.0+git${SRCPV}"
 PR ?= "r0"
