@@ -52,7 +52,7 @@ Index: dnsmasq-2.90/src/dnsmasq.c
 +      if (daemon->presenceMq != -1)
 +      {
 +	      poll_listen(daemon->presenceMq, POLLIN);
-+	      my_syslog(LOG_WARNING, _("Poll listen presence mq"));
++	      my_syslog(LOG_DEBUG, _("Poll listen presence mq"));
 +      }
  #  if defined(HAVE_LINUX_NETWORK)
        if (bind_dhcp_devices(bound_device) & 2)

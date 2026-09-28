@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Petar Tijanic <petartijanic01@gmail.com>
+Date: Tue, 9 Jun 2026 12:22:15 +0000
+Subject: [PATCH] nintendo joycon L/R detect
+
+Broaden is_game_controller() so single Nintendo Joy-Con (L)/(R)
+controllers are recognised as game controllers. They expose buttons and
+axes that the upstream systemd-derived detection misses (BTN_Z, BTN_TR2,
+BTN_TL2 and the ABS_X/ABS_Y main-stick axes), so without these they are
+filtered out by the evdev backend.
+
+Forward-ported to libmanette 1.0 (was 0.2 src/manette-device.c, now
+src/manette-evdev-backend.c). Original-Change: RDKOSS-596.
+---
+ src/manette-evdev-backend.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index 5d2ce10..f2c3145 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -89,12 +89,17 @@ is_game_controller (struct libevdev *device,
+   has_buttons =
+     has_key (device, BTN_TRIGGER) ||
+     has_key (device, BTN_A) ||
+-    has_key (device, BTN_1);
++    has_key (device, BTN_Z) ||
++    has_key (device, BTN_1) ||
++    has_key (device, BTN_TR2) ||
++    has_key (device, BTN_TL2);
+ 
+   has_axes =
+     has_abs (device, ABS_RX) ||
+     has_abs (device, ABS_RY) ||
+     has_abs (device, ABS_RZ) ||
++    has_abs (device, ABS_X) ||
++    has_abs (device, ABS_Y) ||
+     has_abs (device, ABS_THROTTLE) ||
+     has_abs (device, ABS_RUDDER) ||
+     has_abs (device, ABS_WHEEL) ||

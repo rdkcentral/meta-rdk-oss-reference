@@ -1,0 +1,216 @@
+diff --git a/cube/cube.c b/cube/cube.c
+index 3c6d3293..bfe67cc6 100644
+--- a/cube/cube.c
++++ b/cube/cube.c
+@@ -427,7 +427,9 @@ struct demo {
+     struct wl_registry *registry;
+     struct wl_compositor *compositor;
+     struct wl_surface *window;
++#ifdef ENABLE_XDG
+     struct xdg_wm_base *xdg_wm_base;
++#endif
+     struct zxdg_decoration_manager_v1 *xdg_decoration_mgr;
+     struct zxdg_toplevel_decoration_v1 *toplevel_decoration;
+     struct xdg_surface *xdg_surface;
+@@ -2562,7 +2564,9 @@ static void demo_cleanup(struct demo *demo) {
+         xdg_toplevel_destroy(demo->xdg_toplevel);
+         xdg_surface_destroy(demo->xdg_surface);
+         wl_surface_destroy(demo->window);
++#ifdef ENABLE_XDG
+         xdg_wm_base_destroy(demo->xdg_wm_base);
++#endif
+         if (demo->xdg_decoration_mgr) {
+             zxdg_toplevel_decoration_v1_destroy(demo->toplevel_decoration);
+             zxdg_decoration_manager_v1_destroy(demo->xdg_decoration_mgr);
+@@ -2975,6 +2979,7 @@ static void demo_run(struct demo *demo) {
+     }
+ }
+ 
++#ifdef ENABLE_XDG
+ static void handle_surface_configure(void *data, struct xdg_surface *xdg_surface, uint32_t serial) {
+     struct demo *demo = (struct demo *)data;
+     xdg_surface_ack_configure(xdg_surface, serial);
+@@ -2985,6 +2990,7 @@ static void handle_surface_configure(void *data, struct xdg_surface *xdg_surface
+ }
+ 
+ static const struct xdg_surface_listener xdg_surface_listener = {handle_surface_configure};
++#endif
+ 
+ static void handle_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel UNUSED, int32_t width, int32_t height,
+                                       struct wl_array *states UNUSED) {
+@@ -3008,11 +3014,13 @@ static void handle_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel
+ static const struct xdg_toplevel_listener xdg_toplevel_listener = {handle_toplevel_configure, handle_toplevel_close};
+ 
+ static void demo_create_wayland_window(struct demo *demo) {
++#ifdef ENABLE_XDG
+     if (!demo->xdg_wm_base) {
+         printf("Compositor did not provide the standard protocol xdg-wm-base\n");
+         fflush(stdout);
+         exit(1);
+     }
++#endif
+ 
+     demo->window = wl_compositor_create_surface(demo->compositor);
+     if (!demo->window) {
+@@ -3020,7 +3028,7 @@ static void demo_create_wayland_window(struct demo *demo) {
+         fflush(stdout);
+         exit(1);
+     }
+-
++#ifdef ENABLE_XDG
+     demo->xdg_surface = xdg_wm_base_get_xdg_surface(demo->xdg_wm_base, demo->window);
+     if (!demo->xdg_surface) {
+         printf("Can not get xdg_surface from wayland_surface!\n");
+@@ -3042,7 +3050,7 @@ static void demo_create_wayland_window(struct demo *demo) {
+             zxdg_decoration_manager_v1_get_toplevel_decoration(demo->xdg_decoration_mgr, demo->xdg_toplevel);
+         zxdg_toplevel_decoration_v1_set_mode(demo->toplevel_decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+     }
+-
++#endif
+     wl_surface_commit(demo->window);
+ }
+ #endif
+@@ -3561,7 +3569,7 @@ static void seat_handle_capabilities(void *data, struct wl_seat *seat, enum wl_s
+         demo->keyboard = wl_seat_get_keyboard(seat);
+         wl_keyboard_add_listener(demo->keyboard, &keyboard_listener, demo);
+     } else if (!(caps & WL_SEAT_CAPABILITY_KEYBOARD) && demo->keyboard) {
+-        wl_keyboard_destroy(demo->keyboard);
++        //wl_keyboard_destroy(demo->keyboard);
+         demo->keyboard = NULL;
+     }
+ }
+@@ -3570,11 +3578,13 @@ static const struct wl_seat_listener seat_listener = {
+     seat_handle_capabilities,
+ };
+ 
++#ifdef ENABLE_XDG
+ static void wm_base_ping(void *data UNUSED, struct xdg_wm_base *xdg_wm_base, uint32_t serial) {
+     xdg_wm_base_pong(xdg_wm_base, serial);
+ }
+ 
+ static const struct xdg_wm_base_listener wm_base_listener = {wm_base_ping};
++#endif
+ 
+ static void registry_handle_global(void *data, struct wl_registry *registry, uint32_t id, const char *interface,
+                                    uint32_t version UNUSED) {
+@@ -3587,10 +3597,14 @@ static void registry_handle_global(void *data, struct wl_registry *registry, uin
+             fprintf(stderr, "Wayland compositor doesn't support VK_KHR_incremental_present, disabling.\n");
+             demo->VK_KHR_incremental_present_enabled = false;
+         }
+-    } else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
++    } 
++#ifdef ENABLE_XDG
++    else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
+         demo->xdg_wm_base = wl_registry_bind(registry, id, &xdg_wm_base_interface, 1);
+         xdg_wm_base_add_listener(demo->xdg_wm_base, &wm_base_listener, NULL);
+-    } else if (strcmp(interface, wl_seat_interface.name) == 0) {
++    }
++#endif
++    else if (strcmp(interface, wl_seat_interface.name) == 0) {
+         demo->seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
+         wl_seat_add_listener(demo->seat, &seat_listener, demo);
+     } else if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0) {
+diff --git a/cube/cube.cpp b/cube/cube.cpp
+index 6c4f9b05..2315bacf 100644
+--- a/cube/cube.cpp
++++ b/cube/cube.cpp
+@@ -415,7 +415,9 @@ struct Demo {
+     wl_registry *registry = nullptr;
+     wl_compositor *compositor = nullptr;
+     wl_surface *wayland_window = nullptr;
++#ifdef ENABLE_XDG
+     xdg_wm_base *wm_base = nullptr;
++#endif
+     zxdg_decoration_manager_v1 *xdg_decoration_mgr = nullptr;
+     zxdg_toplevel_decoration_v1 *toplevel_decoration = nullptr;
+     xdg_surface *window_surface = nullptr;
+@@ -611,7 +613,7 @@ static void seat_handle_capabilities(void *data, wl_seat *seat, uint32_t caps) {
+         demo.keyboard = wl_seat_get_keyboard(seat);
+         wl_keyboard_add_listener(demo.keyboard, &keyboard_listener, &demo);
+     } else if (!(caps & WL_SEAT_CAPABILITY_KEYBOARD) && demo.keyboard) {
+-        wl_keyboard_destroy(demo.keyboard);
++        //wl_keyboard_destroy(demo.keyboard);
+         demo.keyboard = nullptr;
+     }
+ }
+@@ -620,19 +622,25 @@ static const wl_seat_listener seat_listener = {
+     seat_handle_capabilities,
+ };
+ 
++#ifdef ENABLE_XDG
+ static void wm_base_ping(void *data, xdg_wm_base *xdg_wm_base, uint32_t serial) { xdg_wm_base_pong(xdg_wm_base, serial); }
+ 
+ static const struct xdg_wm_base_listener wm_base_listener = {wm_base_ping};
++#endif
+ 
+ static void registry_handle_global(void *data, wl_registry *registry, uint32_t id, const char *interface, uint32_t version) {
+     Demo &demo = *static_cast<Demo *>(data);
+     // pickup wayland objects when they appear
+     if (strcmp(interface, wl_compositor_interface.name) == 0) {
+         demo.compositor = (wl_compositor *)wl_registry_bind(registry, id, &wl_compositor_interface, 1);
+-    } else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
++    } 
++#ifdef ENABLE_XDG
++    else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
+         demo.wm_base = (xdg_wm_base *)wl_registry_bind(registry, id, &xdg_wm_base_interface, 1);
+         xdg_wm_base_add_listener(demo.wm_base, &wm_base_listener, nullptr);
+-    } else if (strcmp(interface, wl_seat_interface.name) == 0) {
++    }
++#endif
++    else if (strcmp(interface, wl_seat_interface.name) == 0) {
+         demo.seat = (wl_seat *)wl_registry_bind(registry, id, &wl_seat_interface, 1);
+         wl_seat_add_listener(demo.seat, &seat_listener, &demo);
+     } else if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0) {
+@@ -730,7 +738,9 @@ void Demo::cleanup() {
+         xdg_toplevel_destroy(window_toplevel);
+         xdg_surface_destroy(window_surface);
+         wl_surface_destroy(wayland_window);
++#ifdef ENABLE_XDG
+         xdg_wm_base_destroy(wm_base);
++#endif
+         if (xdg_decoration_mgr) {
+             zxdg_toplevel_decoration_v1_destroy(toplevel_decoration);
+             zxdg_decoration_manager_v1_destroy(xdg_decoration_mgr);
+@@ -3207,6 +3217,7 @@ void Demo::run_wayland() {
+     }
+ }
+ 
++#ifdef ENABLE_XDG
+ static void handle_surface_configure(void *data, xdg_surface *xdg_surface, uint32_t serial) {
+     Demo &demo = *static_cast<Demo *>(data);
+     xdg_surface_ack_configure(xdg_surface, serial);
+@@ -3238,21 +3249,23 @@ static void handle_toplevel_close(void *data, xdg_toplevel *xdg_toplevel) {
+ }
+ 
+ static const xdg_toplevel_listener toplevel_listener = {handle_toplevel_configure, handle_toplevel_close};
++#endif
+ 
+ void Demo::create_wayland_window() {
++#ifdef ENABLE_XDG
+     if (!wm_base) {
+         printf("Compositor did not provide the standard protocol xdg-wm-base\n");
+         fflush(stdout);
+         exit(1);
+     }
+-
++#endif
+     wayland_window = wl_compositor_create_surface(compositor);
+     if (!wayland_window) {
+         printf("Can not create wayland_surface from compositor!\n");
+         fflush(stdout);
+         exit(1);
+     }
+-
++#ifdef ENABLE_XDG
+     window_surface = xdg_wm_base_get_xdg_surface(wm_base, wayland_window);
+     if (!window_surface) {
+         printf("Can not get xdg_surface from wayland_surface!\n");
+@@ -3273,7 +3286,7 @@ void Demo::create_wayland_window() {
+         toplevel_decoration = zxdg_decoration_manager_v1_get_toplevel_decoration(xdg_decoration_mgr, window_toplevel);
+         zxdg_toplevel_decoration_v1_set_mode(toplevel_decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+     }
+-
++#endif
+     wl_surface_commit(wayland_window);
+ }
+ #endif

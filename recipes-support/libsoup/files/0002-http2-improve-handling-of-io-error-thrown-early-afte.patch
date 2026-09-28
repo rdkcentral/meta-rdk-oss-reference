@@ -1,0 +1,43 @@
+From 5235703b5c541a874a702c6881721e5d585bf0ba Mon Sep 17 00:00:00 2001
+From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
+Date: Tue, 19 Aug 2025 20:01:55 +0000
+Subject: [PATCH 2/3] [http2] improve handling of io error thrown early after
+ handshake
+
+---
+ libsoup/http2/soup-client-message-io-http2.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/libsoup/http2/soup-client-message-io-http2.c b/libsoup/http2/soup-client-message-io-http2.c
+index 79027ecd..251a2234 100644
+--- a/libsoup/http2/soup-client-message-io-http2.c
++++ b/libsoup/http2/soup-client-message-io-http2.c
+@@ -609,8 +609,13 @@ io_try_sniff_content (SoupHTTP2MessageData *data,
+ static void
+ soup_client_message_io_http2_terminate_session (SoupClientMessageIOHTTP2 *io)
+ {
+-        if (io->session_terminated)
++        if (io->session_terminated) {
++                if (io->close_task && !io->goaway_sent && io->error) {
++                        g_task_return_boolean (io->close_task, TRUE);
++                        g_clear_object (&io->close_task);
++                }
+                 return;
++        }
+ 
+         if (g_hash_table_size (io->messages) != 0)
+                 return;
+@@ -1534,6 +1539,10 @@ send_message_request (SoupMessage          *msg,
+                 data->stream_id = stream_id;
+                 h2_debug (io, data, "[SESSION] Request made for %s%s", authority_header, path_and_query);
+                 io_try_write (io, !data->item->async);
++                if (io->error && !data->error) {
++                        set_error_for_data(data, g_error_copy (io->error));
++                        io->is_shutdown = TRUE;
++                }
+         }
+         g_array_free (headers, TRUE);
+         g_free (authority);
+-- 
+2.34.1
+

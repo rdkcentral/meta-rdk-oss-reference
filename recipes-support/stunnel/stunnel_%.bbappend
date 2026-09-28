@@ -10,6 +10,7 @@ do_install:append() {
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI += "file://separate_keying_for_dev_prod_vm_stunnel.patch"
+SRC_URI += "file://fd_credential.patch"
 
 inherit logrotate_config
 
