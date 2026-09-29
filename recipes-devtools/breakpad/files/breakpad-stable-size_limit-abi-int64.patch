@@ -1,0 +1,100 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+Date: Fri, 24 Jul 2026 00:00:00 +0000
+Subject: [PATCH] Use fixed-width int64_t for public size_limit to stabilize ABI
+
+The public client headers expose the minidump size limit as `off_t`
+(MinidumpDescriptor::size_limit_ and the WriteMinidump() overloads).
+Because breakpad enables Large File Support for its own build via
+AC_SYS_LARGEFILE (and, since commit f5123d71, includes <config.h> at the
+top of every .cc), `off_t` is 64-bit inside libbreakpad_client on 32-bit
+targets. A consumer that includes these headers without the identical
+_FILE_OFFSET_BITS setting sees `off_t` as 32-bit, so
+sizeof(MinidumpDescriptor) and the WriteMinidump() argument layout
+disagree across the library boundary. On 32-bit this corrupts the
+stack-allocated descriptor and aborts (SIGABRT) at handler installation
+time.
+
+Store and pass the size limit as a fixed-width int64_t in the public API
+so the layout no longer depends on the consumer's _FILE_OFFSET_BITS.
+int64_t is byte-identical to the LFS off_t breakpad already uses
+internally, so this is behaviour-neutral: the value is only ever compared
+and copied, never passed to an off_t syscall. Internal-only state
+(MinidumpDumper::minidump_size_limit_, WriteMinidumpImpl) keeps off_t, and
+AC_SYS_LARGEFILE is retained so the internal off_t stays 64-bit.
+
+Upstream-Status: Pending
+
+Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+
+---
+ src/client/linux/handler/minidump_descriptor.h      | 4 ++--
+ src/client/linux/minidump_writer/minidump_writer.h  | 4 ++--
+ src/client/linux/minidump_writer/minidump_writer.cc | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/client/linux/handler/minidump_descriptor.h b/src/client/linux/handler/minidump_descriptor.h
+--- a/src/client/linux/handler/minidump_descriptor.h
++++ b/src/client/linux/handler/minidump_descriptor.h
+@@ -109,8 +109,8 @@
+   // Should be called from a normal context: this methods uses the heap.
+   void UpdatePath();
+ 
+-  off_t size_limit() const { return size_limit_; }
+-  void set_size_limit(off_t limit) { size_limit_ = limit; }
++  int64_t size_limit() const { return size_limit_; }
++  void set_size_limit(int64_t limit) { size_limit_ = limit; }
+ 
+   uintptr_t address_within_principal_mapping() const {
+     return address_within_principal_mapping_;
+@@ -163,7 +163,7 @@
+   // context.
+   const char* c_path_;
+ 
+-  off_t size_limit_;
++  int64_t size_limit_;
+ 
+   // This member points somewhere into the main module for this
+   // process (the module that is considerered interesting for the
+diff --git a/src/client/linux/minidump_writer/minidump_writer.h b/src/client/linux/minidump_writer/minidump_writer.h
+--- a/src/client/linux/minidump_writer/minidump_writer.h
++++ b/src/client/linux/minidump_writer/minidump_writer.h
+@@ -115,15 +115,15 @@
+                    bool sanitize_stacks = false);
+ 
+ // These overloads also allow passing a file size limit for the minidump.
+-bool WriteMinidump(const char* minidump_path, off_t minidump_size_limit,
++bool WriteMinidump(const char* minidump_path, int64_t minidump_size_limit,
+                    pid_t crashing_process,
+                    const void* blob, size_t blob_size,
+                    const MappingList& mappings,
+                    const AppMemoryList& appdata,
+                    bool skip_stacks_if_mapping_unreferenced = false,
+                    uintptr_t principal_mapping_address = 0,
+                    bool sanitize_stacks = false);
+-bool WriteMinidump(int minidump_fd, off_t minidump_size_limit,
++bool WriteMinidump(int minidump_fd, int64_t minidump_size_limit,
+                    pid_t crashing_process,
+                    const void* blob, size_t blob_size,
+                    const MappingList& mappings,
+diff --git a/src/client/linux/minidump_writer/minidump_writer.cc b/src/client/linux/minidump_writer/minidump_writer.cc
+--- a/src/client/linux/minidump_writer/minidump_writer.cc
++++ b/src/client/linux/minidump_writer/minidump_writer.cc
+@@ -1570,7 +1570,7 @@
+                            sanitize_stacks);
+ }
+ 
+-bool WriteMinidump(const char* minidump_path, off_t minidump_size_limit,
++bool WriteMinidump(const char* minidump_path, int64_t minidump_size_limit,
+                    pid_t crashing_process,
+                    const void* blob, size_t blob_size,
+                    const MappingList& mappings,
+@@ -1586,7 +1586,7 @@
+                            sanitize_stacks);
+ }
+ 
+-bool WriteMinidump(int minidump_fd, off_t minidump_size_limit,
++bool WriteMinidump(int minidump_fd, int64_t minidump_size_limit,
+                    pid_t crashing_process,
+                    const void* blob, size_t blob_size,
+                    const MappingList& mappings,
