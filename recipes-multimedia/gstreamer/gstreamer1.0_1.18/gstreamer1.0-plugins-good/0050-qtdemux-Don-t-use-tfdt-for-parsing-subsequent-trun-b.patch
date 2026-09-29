@@ -1,0 +1,46 @@
+From 1223324246d83270faf24a8862ad6fb1244ca950 Mon Sep 17 00:00:00 2001
+From: Sebastian Droege <sebastian@centricular.com>
+Date: Thu, 12 May 2022 17:11:38 +0300
+Subject: [PATCH] qtdemux: Don't use tfdt for parsing subsequent trun boxes
+
+The timestamp in the tfdt refers to the first trun box and if there are
+multiple trun boxes then the distance between the first timestamps will
+grow.
+
+At some point this distance reaches a threshold and triggers the
+resetting of the first sample's timestamp of this trun box to be reset
+to the tfdt.
+
+This threshold is implemented for files where there is a jump in the
+timeline between fragments and where this can be detected via a jump
+between the end timestamp of the previous fragment and the tfdt of the
+next. This behaviour is preserved.
+
+Backport of upstream commit 1223324246d83270faf24a8862ad6fb1244ca950
+(merged for 1.22, MR !2409) onto gst-plugins-good 1.18.5.
+
+Symptom without this patch: fMP4 segments that carry more than one trun
+box per traf lose the samples of every trun after the first, because those
+samples are assigned the same start timestamp as the first trun and
+therefore overlap it. Under MSE the overlapping frames replace the
+existing ones, leaving a hole at the end of every fragment, which stops
+readyState from ever reaching HAVE_ENOUGH_DATA so playback never starts.
+
+Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/2409>
+
+Upstream-Status: Backport [1223324246d83270faf24a8862ad6fb1244ca950]
+---
+ gst/isomp4/qtdemux.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/gst/isomp4/qtdemux.c
++++ b/gst/isomp4/qtdemux.c
+@@ -4051,6 +4051,8 @@ qtdemux_parse_moof (GstQTDemux * qtdemux, const guint8 * buffer, guint length,
+       /* iterate all siblings */
+       trun_node = qtdemux_tree_get_sibling_by_type_full (trun_node, FOURCC_trun,
+           &trun_data);
++      /* don't use tfdt for subsequent trun as it only refers to the first */
++      tfdt_node = NULL;
+     }
+ 
+     uuid_node = qtdemux_tree_get_child_by_type (traf_node, FOURCC_uuid);
