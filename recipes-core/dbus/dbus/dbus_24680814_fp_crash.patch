@@ -1,0 +1,116 @@
+##################################################################
+Date: Jun 18, 2026 17:43
+From:
+Subject: [PATCH] FP 24680814 crash fix
+Source: Sky
+License:
+Upstream-Status:
+Signed-off-by: ppalan289 <preethi_palanisamy@comcast.com>
+###################################################################
+Index: dbus-1.14.8/dbus/dbus-sysdeps-pthread.c
+===================================================================
+--- dbus-1.14.8.orig/dbus/dbus-sysdeps-pthread.c
++++ dbus-1.14.8/dbus/dbus-sysdeps-pthread.c
+@@ -79,6 +79,15 @@ struct DBusCondVar {
+ } while (0)
+ #endif /* !DBUS_DISABLE_ASSERT */
+ 
++#ifdef DBUS_DISABLE_ASSERT
++#define WARN_PRINT(...) do { } while (0)
++#else
++#define WARN_PRINT(...) \
++    do { \
++        _dbus_warn_print(__VA_ARGS__); \
++    } while (0)
++#endif
++
+ DBusCMutex *
+ _dbus_platform_cmutex_new (void)
+ {
+@@ -227,6 +236,16 @@ _dbus_platform_condvar_wait_timeout (DBu
+   struct timespec end_time;
+   int result;
+ 
++    /* ---- Sanity: invalid timeout ---- */
++  if (timeout_milliseconds < 0 && timeout_milliseconds != -1)
++    {
++      /* We timed out before anyone signaled or before the condition
++       * satisfied
++       */
++      WARN_PRINT ("Invalid timeout_milliseconds %d", timeout_milliseconds);
++      return FALSE;
++    }
++
+ #ifdef HAVE_MONOTONIC_CLOCK
+   if (have_monotonic_clock)
+     {
+@@ -242,12 +261,23 @@ _dbus_platform_condvar_wait_timeout (DBu
+   
+   end_time.tv_sec = time_now.tv_sec + timeout_milliseconds / 1000;
+   end_time.tv_nsec = (time_now.tv_usec + (timeout_milliseconds % 1000) * 1000) * 1000;
+-  if (end_time.tv_nsec > 1000*1000*1000)
++  if (end_time.tv_nsec >= 1000*1000*1000)
+     {
+       end_time.tv_sec += 1;
+       end_time.tv_nsec -= 1000*1000*1000;
+     }
+ 
++  /* ---- Sanity check ---- */
++#ifndef DBUS_DISABLE_ASSERT
++  if (end_time.tv_nsec < 0 || end_time.tv_nsec >= 1000000000)
++    {
++      WARN_PRINT ("Invalid timespec: tv_sec=%ld tv_nsec=%ld",
++                  (long)end_time.tv_sec,
++                  (long)end_time.tv_nsec);
++      _dbus_abort ();
++    }
++#endif
++
+   result = pthread_cond_timedwait (&cond->cond, &mutex->lock, &end_time);
+   
+   if (result != ETIMEDOUT)
+Index: dbus-1.14.8/dbus/dbus-internals.c
+===================================================================
+--- dbus-1.14.8.orig/dbus/dbus-internals.c
++++ dbus-1.14.8/dbus/dbus-internals.c
+@@ -290,6 +290,24 @@ _dbus_warn_check_failed(const char *form
+     }
+ }
+ 
++void
++_dbus_warn_print(const char *format,
++                        ...)
++{
++  DBusSystemLogSeverity severity = DBUS_SYSTEM_LOG_WARNING;
++  va_list args;
++  
++  if (!warn_initted)
++    init_warnings ();
++
++  if (fatal_warnings_on_check_failed)
++    severity = DBUS_SYSTEM_LOG_ERROR;
++
++  va_start (args, format);
++  _dbus_logv (severity, format, args);
++  va_end (args);
++}
++
+ #ifdef DBUS_ENABLE_VERBOSE_MODE
+ 
+ static dbus_bool_t verbose_initted = FALSE;
+Index: dbus-1.14.8/dbus/dbus-internals.h
+===================================================================
+--- dbus-1.14.8.orig/dbus/dbus-internals.h
++++ dbus-1.14.8/dbus/dbus-internals.h
+@@ -48,6 +48,11 @@ void _dbus_warn               (const cha
+ DBUS_PRIVATE_EXPORT
+ void _dbus_warn_check_failed  (const char *format,
+                                ...) _DBUS_GNUC_PRINTF (1, 2);
++
++DBUS_PRIVATE_EXPORT
++void _dbus_warn_print  (const char *format,
++                               ...) _DBUS_GNUC_PRINTF (1, 2);
++
+ DBUS_PRIVATE_EXPORT
+ void _dbus_warn_return_if_fail (const char *function,
+                                 const char *assertion,
