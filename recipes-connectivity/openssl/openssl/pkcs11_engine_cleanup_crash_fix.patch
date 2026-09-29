@@ -1,0 +1,71 @@
+Index: openssl-3.0.5/crypto/evp/p_legacy.c
+===================================================================
+--- openssl-3.0.5.orig/crypto/evp/p_legacy.c
++++ openssl-3.0.5/crypto/evp/p_legacy.c
+@@ -65,7 +65,7 @@ int EVP_PKEY_set1_EC_KEY(EVP_PKEY *pkey,
+         unsigned char key_id = extract_pkcs11_key_id(key);
+         if (key_id == 0x2c) {
+            EC_KEY *loaded_key = NULL;
+-           loaded_key = (EC_KEY *)load_pkcs11_private_key((void *)&key, PKCS11_KEY_TYPE_EC_KEY);
++           loaded_key = (EC_KEY *)load_pkcs11_private_key((void **)&key, PKCS11_KEY_TYPE_EC_KEY);
+             if (!loaded_key)
+                 return 0;
+             key = loaded_key;
+Index: openssl-3.0.5/crypto/pkcs11_reference_key.c
+===================================================================
+--- openssl-3.0.5.orig/crypto/pkcs11_reference_key.c
++++ openssl-3.0.5/crypto/pkcs11_reference_key.c
+@@ -114,31 +114,30 @@ EVP_PKEY *load_pkcs11_private_key_intern
+   engine = ENGINE_by_id("pkcs11");
+   if (!engine) {
+       ERR_raise(ERR_LIB_EVP, ERR_R_ENGINE_LIB);
+-      goto cleanup;
++      return NULL;
+   }
+   /* Configure PKCS#11 module path */
+   if (!ENGINE_ctrl_cmd_string(engine, "MODULE_PATH", PKCS11_MODULE_PATH, 0)) {
+       ERR_raise(ERR_LIB_EVP, ERR_R_ENGINE_LIB);
+-      goto cleanup;
++      return NULL;
+   }
+   /* Initialize engine */
+   if (!ENGINE_init(engine)) {
+       ERR_raise(ERR_LIB_EVP, ERR_R_ENGINE_LIB);
+-      goto cleanup;
++      return NULL;
+   }
+   /* Load private key from PKCS#11 token */
+   loaded_key = ENGINE_load_private_key(engine, pkcs11_uri, NULL, NULL);
+-  if (!loaded_key) {
++  if (loaded_key == NULL) {
+       ERR_raise(ERR_LIB_EVP, ERR_R_ENGINE_LIB);
+-      goto cleanup;
+-  }
+- cleanup:
+-  if (engine) {
+       ENGINE_finish(engine);
+       ENGINE_free(engine);
+   }
+-     OPENSSL_free(pkcs11_uri);
+-     return loaded_key;
++  else {
++      ENGINE_free(engine);
++  }
++  OPENSSL_free(pkcs11_uri);
++  return loaded_key;
+ }
+ 
+ /*
+Index: openssl-3.0.5/crypto/pkcs12/p12_kiss.c
+===================================================================
+--- openssl-3.0.5.orig/crypto/pkcs12/p12_kiss.c
++++ openssl-3.0.5/crypto/pkcs12/p12_kiss.c
+@@ -113,7 +113,7 @@ int PKCS12_parse(PKCS12 *p12, const char
+     }
+     /* Check if parsed key is PKCS#11 reference and load actual key from hardware */
+     if (pkey && *pkey && is_pkcs11_reference_key(*pkey, PKCS11_KEY_TYPE_EVP_PKEY)) {
+-       if (!load_pkcs11_private_key(pkey, PKCS11_KEY_TYPE_EVP_PKEY))  {
++       if (!load_pkcs11_private_key((void **)pkey, PKCS11_KEY_TYPE_EVP_PKEY))  {
+            goto err;
+        }
+     }
