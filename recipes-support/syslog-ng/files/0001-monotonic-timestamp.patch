@@ -1,3 +1,6 @@
+Upstream-Status: Pending
+Reason: Expose journald monotonic timestamp as "__MONOTONIC_TIMESTAMP" for syslog-ng journal source.
+
 Index: syslog-ng-3.36.1/modules/systemd-journal/journald-subsystem.c
 ===================================================================
 --- syslog-ng-3.36.1.orig/modules/systemd-journal/journald-subsystem.c
