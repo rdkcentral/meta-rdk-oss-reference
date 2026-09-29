@@ -18,6 +18,16 @@ SRC_URI = "${GITHUB_BASE_URI}/download/${PV}/${BP}.tar.xz \
            "
 SRC_URI[sha256sum] = "8fa12015e3b8415c121fc9c0ca53aa872f7b0702f543afda7e32b6c4900f6516"
 
+SRC_URI += "file://logrotate.service \
+            file://logrotate.timer"
+
+inherit systemd
+
+SYSTEMD_SERVICE:${PN} = "logrotate.timer"
+
+FILES:${PN} += "${systemd_system_unitdir}/logrotate.service \
+                ${systemd_system_unitdir}/logrotate.timer"
+
 # These CVEs are debian, gentoo or SUSE specific on the way logrotate was installed/used
 CVE_CHECK_IGNORE += "CVE-2011-1548 CVE-2011-1549 CVE-2011-1550"
 
@@ -73,6 +83,10 @@ do_install(){
     install -p -m 644 ${S}/examples/btmp ${D}${sysconfdir}/logrotate.d/btmp
     install -p -m 644 ${S}/examples/wtmp ${D}${sysconfdir}/logrotate.d/wtmp
     touch ${D}${localstatedir}/lib/logrotate.status
+
+    install -d ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/logrotate.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/logrotate.timer ${D}${systemd_unitdir}/system
 
    
 
