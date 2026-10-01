@@ -16,7 +16,7 @@ PACKAGECONFIG:remove = "vconsole ldconfig"
 PACKAGECONFIG:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'networkd-support', '', 'networkd', d)}"
 PACKAGECONFIG:remove = " resolved nss-resolve "
 
-PACKAGECONFIG:remove_libc-uclibc = "sysusers machined"
+PACKAGECONFIG:remove:libc-uclibc = "sysusers machined"
 DEPENDS += " ${@bb.utils.contains("DISTRO_FEATURES", "apparmor", " apparmor", "" ,d)}"
 PACKAGECONFIG[apparmor] = "-Dapparmor=enabled,-Dapparmor=disabled,apparmor"
 EXTRA_OECONF += "--disable-ldconfig"
