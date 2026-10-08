@@ -16,7 +16,7 @@
      do {
        res = read (l->fd_r.fd, in, to_read);
 +      if (G_UNLIKELY (res == 0)) {
-+	GST_ERROR ("EOF received while reading packet header from plugin scanner");
++        GST_ERROR ("EOF received while reading packet payload from plugin scanner");
 +	return FALSE;
 +      }
        if (G_UNLIKELY (res < 0)) {
