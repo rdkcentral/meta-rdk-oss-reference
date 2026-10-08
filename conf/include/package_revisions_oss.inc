@@ -714,7 +714,7 @@ PACKAGE_ARCH:pn-netbase ?= "${OSS_LAYER_ARCH}"
 PR:pn-nettle ?= "r1"
 PACKAGE_ARCH:pn-nettle ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager ?= "r13"
+PR:pn-networkmanager ?= "r14"
 PACKAGE_ARCH:pn-networkmanager ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-memset-neon ?= "r0"
