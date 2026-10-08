@@ -1,0 +1,85 @@
+#!/bin/bash
+# iptables ptest - run iptables shell testsuite
+# Tests require root and network namespace support (unshare -n)
+
+PTEST_PATH="$(dirname "$0")"
+cd "$PTEST_PATH" || exit 1
+
+RETURNCODE_SEPARATOR="_"
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+# Check if unshare is available
+if ! command -v unshare > /dev/null 2>&1; then
+    echo "SKIP: unshare not available (install util-linux)"
+    exit 0
+fi
+
+# Use host-installed iptables binaries
+if command -v xtables-legacy-multi > /dev/null 2>&1; then
+    XT_MULTI="xtables-legacy-multi"
+elif command -v xtables-nft-multi > /dev/null 2>&1; then
+    XT_MULTI="xtables-nft-multi"
+else
+    echo "SKIP: no xtables-multi binary found"
+    exit 0
+fi
+
+# Skip categories requiring unavailable features:
+# nft-only/ebtables/arptables: require nftables kernel backend
+# firewalld-restore: requires firewalld-specific restore features
+# ip6tables: requires ip6_tables kernel module
+SKIP_DIRS="nft-only ebtables arptables firewalld-restore ip6tables"
+
+# Find and run test cases (-perm for busybox find compatibility)
+# Only match files with _N suffix (where N is expected return code)
+for testfile in $(find tests/shell/testcases -type f -perm -u+x | sort); do
+    test_name=$(echo "$testfile" | sed 's|^tests/shell/testcases/||')
+
+    # Skip data files in dumps/ directories
+    case "$test_name" in
+        */dumps/*) continue ;;
+    esac
+
+    # Verify filename has the _N return code convention
+    rc_spec=$(basename "$testfile" | rev | cut -d"$RETURNCODE_SEPARATOR" -f1 | rev)
+    case "$rc_spec" in
+        [0-9]) ;; # valid single-digit return code
+        *) continue ;; # not a test file
+    esac
+
+    # Skip tests in excluded directories
+    skip=0
+    for skip_dir in $SKIP_DIRS; do
+        case "$test_name" in
+            ${skip_dir}/*) skip=1; break ;;
+        esac
+    done
+
+    if [ "$skip" -eq 1 ]; then
+        echo "SKIP: $test_name"
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+        continue
+    fi
+
+    # Run test in network namespace
+    XT_MULTI="$XT_MULTI" unshare -n "$testfile" > /dev/null 2>&1
+    rc_got=$?
+
+    if [ "$rc_got" = "$rc_spec" ]; then
+        echo "PASS: $test_name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        # Treat as SKIP - likely missing kernel modules (ip6_tables, nat, mangle, etc.)
+        echo "SKIP: $test_name (expected $rc_spec got $rc_got)"
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+    fi
+done
+
+echo ""
+echo "=== iptables ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

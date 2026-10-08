@@ -1,6 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI += "file://wpa_supplicant_utc_timestamp_2.10.patch \
-            file://auth_timeout_retry_logic_2.10.patch \
+SRC_URI += "file://auth_timeout_retry_logic_2.10.patch \
 	    file://wpa_supp_bss_select_additional_logging_2.10.patch \
             file://auth_timeout_retry_logic_1_2.10.patch \
 	    file://fix_wpa_supplicant_operating-mode.patch \
@@ -19,6 +18,4 @@ do_configure:append () {
    sed -i -- 's/#CONFIG_CTRL_IFACE_DBUS=y/\CONFIG_CTRL_IFACE_DBUS=y/' wpa_supplicant/.config
    sed -i -- 's/#CONFIG_CTRL_IFACE_DBUS_INTRO=y/\CONFIG_CTRL_IFACE_DBUS_INTRO=y/' wpa_supplicant/.config
  
-   #configuring SAE support in wpa_supplicant 2.10
-   echo "CONFIG_SAE=y" >> wpa_supplicant/.config
 }

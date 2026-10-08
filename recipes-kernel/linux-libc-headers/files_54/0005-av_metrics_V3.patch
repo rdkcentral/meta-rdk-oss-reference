@@ -1,0 +1,244 @@
+Date: Thu, 06 March 2025 12:18:12 +0000
+From: Deekshit Devadas <deekshit.devadas@sky.uk>
+Subject: [PATCH] RDK-54894,RDK-54893: RT Thread Priority Update
+Add Audio, Video, Idle Time & AAMP Metrics
+Source: SKY
+Signed-off-by: deekshit.devadas <deekshit.devadas@sky.uk>
+---
+
+--- a/include/uapi/linux/prctl.h	2024-06-14 15:12:23.003869861 +0100
++++ b/include/uapi/linux/prctl.h	2024-06-14 15:20:13.143565895 +0100
+@@ -234,6 +234,9 @@
+ #define PR_GET_TAGGED_ADDR_CTRL		56
+ # define PR_TAGGED_ADDR_ENABLE		(1UL << 0)
+ 
++#define PR_SET_VMA		0x53564d41
++# define PR_SET_VMA_ANON_NAME		0
++
+ #define PR_SET_FTRACE_MARKER	99
+ 
+ /* sets max size of string buffer */
+@@ -241,50 +244,64 @@
+ 
+ /* define structure(s) used for logging video and audio metrics */
+ typedef struct {
+-	__s64 lastSyncTime;
+-	__s64 maxSyncTime;
+-	__s64 minSyncTime;
+-	__s64 sumSyncTime;
+-	__s32 numVsyncs1ms;
+-	__s32 numVsyncs2ms;
+-	__s32 numVsyncs3ms;
+-	__s32 numVsyncs4ms;
+-	__s32 numVsyncs5ms;
+-	__s32 numVsyncs6ms;
+-	__s32 numVsyncs7ms;
+-	__s32 numVsyncs8ms;
+-	__s32 numVsyncs9ms;
+-	__s32 numVsyncs10ms;
+-	__s32 vsyncCount;
+-	__s32 framesDisplayed;
+-	__s32 framesFRC;
+-	__s32 framesQDropped;
+-	__s32 framesPTSLateDropped;
+-	__s32 framesSyncFreeDropped;
+-	__s32 framesRepeats;
+-	__s32 underruns;
+-	__s32 Qunderflow;
+-	__s32 gapUnderflow;
+-	__s32 maxConsecQDrops;
+-	__s32 maxConsecPTSLateDrops;
+-	__s32 maxSyncFreeDropped;
+-	__s32 maxConsecRepeats;
+-	__s32 maxUnderruns;
+-	__s32 maxQunderflow;
+-	__s32 maxGapUnderflow;
+-	__s32 consecQDrops;
+-	__s32 consecPTSLateDrops;
+-	__s32 consecSyncFreeDropped;
+-	__s32 consecRepeats;
+-	__s32 consecUnderruns;
+-	__s32 consecQunderflow;
+-	__s32 consecGapUnderflow;
+-	__s32 syncRate;
+-	__s32 syncMode;
+-	__s32 retuneCount;
+-	__s32 decodeErrorCount;
++	__u64 lastSyncTime;
++	__u64 maxSyncTime;
++	__u64 minSyncTime;
++	__u64 sumSyncTime;
++	__u32 numVsyncs1ms;
++	__u32 numVsyncs2ms;
++	__u32 numVsyncs3ms;
++	__u32 numVsyncs4ms;
++	__u32 numVsyncs5ms;
++	__u32 numVsyncs6ms;
++	__u32 numVsyncs7ms;
++	__u32 numVsyncs8ms;
++	__u32 numVsyncs9ms;
++	__u32 numVsyncs10ms;
++	__u32 vsyncCount;
++	__u32 framesDisplayed;
++	__u32 framesFRC;
++	__u32 framesQDropped;
++	__u32 framesPTSLateDropped;
++	__u32 framesSyncFreeDropped;
++	__u32 framesRepeats;
++	__u32 underruns;
++	__u32 Qunderflow;
++	__u32 gapUnderflow;
++	__u32 maxConsecQDrops;
++	__u32 maxConsecPTSLateDrops;
++	__u32 maxSyncFreeDropped;
++	__u32 maxConsecRepeats;
++	__u32 maxUnderruns;
++	__u32 maxQunderflow;
++	__u32 maxGapUnderflow;
++	__u32 consecQDrops;
++	__u32 consecPTSLateDrops;
++	__u32 consecSyncFreeDropped;
++	__u32 consecRepeats;
++	__u32 consecUnderruns;
++	__u32 consecQunderflow;
++	__u32 consecGapUnderflow;
++	__u32 syncRate;
++	__u32 syncMode;
++	__u32 retuneCount;
++	__u32 decodeErrorCount;
++	__u32 numMissed1Vsyncs;
++	__u32 numMissed2Vsyncs;
++	__u32 numMissed3Vsyncs;
++	__u32 numMissed4Vsyncs;
++	__u32 numMissed5Vsyncs;
++	__u32 numMissed6PlusVsyncs;
++	__u32 maxMissedVsyncs;
++	__u32 sumMissedVsyncs;
++	__u32 missedVsyncsCount;
++	__u32 cause_wstServer;
++	__u32 cause_calloc;
++	__u32 cause_wstSyncWaitFence;
++	__u32 cause_eglSwapBuffers;
++	__u64 maxVSyncIrqDelay;
+ 	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
+-	__s32 reserved[2];
++	__u32 reserved[3];
+ } VIDEO_METRICS;
+ /* max two AV channels supported */
+ #define MAX_VIDEO_CHANNELS	2
+@@ -303,53 +320,53 @@
+ 
+ /* define structure(s) used for logging audio metrics */
+ typedef struct {
+-	__s32 underrunTime;
++	__u32 underrunTime;
+ } AUDIO_OUTPUT_METRICS;
+ 
+ typedef struct {
+-	__s32 underruns;
+-	__s32 bufFullTime;
+-	__s32 bufLevel;
+-	__s32 sampleRate;
+-	__s32 numChannels;
+-	__s32 discardPkt;
+-	__s32 reconfigCount;
+-	__s32 frameRepeat;
+-	__s32 frameSkip;
+-	__s32 frameInSync;
+-	__s32 resync;
+-	__s32 reserve[5];
++	__u32 underruns;
++	__u32 bufFullTime;
++	__u32 bufLevel;
++	__u32 sampleRate;
++	__u32 numChannels;
++	__u32 discardPkt;
++	__u32 reconfigCount;
++	__u32 frameRepeat;
++	__u32 frameSkip;
++	__u32 frameInSync;
++	__u32 resync;
++	__u32 reserve[5];
+ } AUDIO_INPUT_CHAN_METRICS;
+ 
+ typedef struct {
+-	__s32 count;
+-	__s32 underruns;
+-	__s32 bufFullTime;
+-	__s32 minBufFullTime;
+-	__s32 maxBufFullTime;
+-	__s32 bufLevelBytes;
+-	__s32 maxBufLevelBytes;
+-	__s32 discardPkt;
+-	__s32 reconfigCount;
+-	__s32 sampleRate;
+-	__s32 numChannels;
+-	__s32 resyncCount;
+-	__s32 frameRepeatCount;
+-	__s32 consecRepeats;
+-	__s32 maxConsecRepeats;
+-	__s32 frameSkipCount;
+-	__s32 frameInSync;
+-	__s32 consecSkips;
+-	__s32 maxConsecSkips;
++	__u32 count;
++	__u32 underruns;
++	__u32 bufFullTime;
++	__u32 minBufFullTime;
++	__u32 maxBufFullTime;
++	__u32 bufLevelBytes;
++	__u32 maxBufLevelBytes;
++	__u32 discardPkt;
++	__u32 reconfigCount;
++	__u32 sampleRate;
++	__u32 numChannels;
++	__u32 resyncCount;
++	__u32 frameRepeatCount;
++	__u32 consecRepeats;
++	__u32 maxConsecRepeats;
++	__u32 frameSkipCount;
++	__u32 frameInSync;
++	__u32 consecSkips;
++	__u32 maxConsecSkips;
+ 	/* pad out to 1 cache line (64 bytes) */
+-	__s32 reserved[13];
++	__u32 reserved[13];
+ } AUDIO_INPUT_METRICS;
+ 
+ typedef struct {
+-	__s32 underrunTime;
+-	__s32 underrunCount;
+-	__s32 minUnderrunTime;
+-	__s32 maxUnderrunTime;
++	__u32 underrunTime;
++	__u32 underrunCount;
++	__u32 minUnderrunTime;
++	__u32 maxUnderrunTime;
+ 	AUDIO_INPUT_METRICS input[AUDIO_METRIC_TYPE_MAX_INPUTS];
+ 	/* pad out structure to be an integer number of cache lines (64bytes/cache line) */
+ } AUDIO_METRICS;
+@@ -359,13 +376,13 @@
+ #define PR_GET_AUDIO_METRICS	102
+ #define PR_SET_AUDIO_METRICS	103
+ 
+-#define T962X3_NUM_CPUS 4
++#define NUM_CPUS 4
+ 
+ /* define structure(s) used for logging idle metrics */
+ typedef struct {
+ 	__u64 metricStartTime;
+ 	__u64 metricEndTime;
+-	__u64 idle_time[T962X3_NUM_CPUS];
++	__u64 idle_time[NUM_CPUS];
+ } IDLE_METRICS;
+ 
+ typedef struct {
+@@ -378,7 +395,7 @@
+ typedef struct {
+ 	__u64 metricStartTime;
+ 	__u64 metricEndTime;
+-	PER_CPU_IDLE_METRIC idle[T962X3_NUM_CPUS];
++	PER_CPU_IDLE_METRIC idle[NUM_CPUS];
+ 	__u64 sum_all_cpus_running_time;
+ 	__u64 sum_run_time_lt_1ms;
+ 	__u64 sum_run_time_gt_1ms;

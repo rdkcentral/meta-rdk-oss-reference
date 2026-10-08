@@ -50,3 +50,9 @@ do_install() {
     oe_runmake install DESTDIR=${D}
     chown -R root:root ${D}
 }
+
+PACKAGE_BEFORE_PN += "${PN}-extras"
+FILES:${PN}-extras = " \
+    ${bindir}/vpxenc \
+    ${bindir}/vpxdec \
+"

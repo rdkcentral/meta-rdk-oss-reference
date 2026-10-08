@@ -1,0 +1,106 @@
+#!/bin/sh
+# libxslt 1.1.35 ptest runner
+# Tests XSLT transformations using xsltproc
+
+cd tests || exit 1
+
+echo "=== Running libxslt 1.1.35 ptests ==="
+
+PASSED=0
+FAILED=0
+
+# Create temporary files securely
+RESULT_TMP=$(mktemp)
+EXPECTED_TMP=$(mktemp)
+ACTUAL_TMP=$(mktemp)
+
+# Ensure cleanup on exit
+trap 'rm -f "$RESULT_TMP" "$EXPECTED_TMP" "$ACTUAL_TMP"' EXIT INT TERM
+
+echo "Running XSLT transformation tests..."
+
+# Test directories to check
+for dir in general documents keys numbers; do
+    if [ ! -d "$dir" ]; then
+        continue
+    fi
+
+    # Check if directory has any .xsl files
+    ls "$dir"/*.xsl >/dev/null 2>&1 || continue
+
+    # Process each XSL stylesheet in the directory
+    for xsl in "$dir"/*.xsl; do
+        [ -f "$xsl" ] || continue
+
+        base=$(basename "$xsl" .xsl)
+        xml="$dir/${base}.xml"
+
+        # Special case: keys/month.xsl uses dates.xml as input
+        if [ "$dir/$base" = "keys/month" ]; then
+            xml="$dir/dates.xml"
+        fi
+
+        # Check for expected output file (.out or .result)
+        if [ -f "$dir/${base}.out" ]; then
+            out="$dir/${base}.out"
+        elif [ -f "$dir/${base}.result" ]; then
+            out="$dir/${base}.result"
+        else
+            out=""
+        fi
+
+        # Skip if input XML doesn't exist
+        if [ ! -f "$xml" ]; then
+            continue
+        fi
+
+        # Run the test
+        if [ -n "$out" ] && [ -f "$out" ]; then
+            # Test with expected output comparison
+            # Run xsltproc and capture both stdout and stderr (some tests produce messages)
+            # Don't fail on non-zero exit - compare output instead
+            xsltproc "$xsl" "$xml" > "$RESULT_TMP" 2>&1
+
+            # Normalize paths: remove ./ prefix and replace with directory path
+            # This handles minor path formatting differences between libxslt versions
+            # Examples: "./message.xml" -> "documents/message.xml"
+            #           "/./message.xml" -> "/message.xml"
+            sed -e 's|/\./|/|g' -e "s|\\./${base}\\.xml|${dir}/${base}.xml|g" "$out" > "$EXPECTED_TMP"
+            sed 's|/\./|/|g' "$RESULT_TMP" > "$ACTUAL_TMP"
+
+            if diff -q "$EXPECTED_TMP" "$ACTUAL_TMP" >/dev/null 2>&1; then
+                echo "PASS: $dir/$base"
+                PASSED=$((PASSED + 1))
+            else
+                echo "FAIL: $dir/$base (output mismatch)"
+                FAILED=$((FAILED + 1))
+            fi
+        else
+            # No expected output - just verify transformation runs without error
+            if xsltproc "$xsl" "$xml" > /dev/null 2>&1; then
+                echo "PASS: $dir/$base"
+                PASSED=$((PASSED + 1))
+            else
+                echo "FAIL: $dir/$base"
+                FAILED=$((FAILED + 1))
+            fi
+        fi
+    done
+done
+
+# Print summary
+TOTAL=$((PASSED + FAILED))
+echo ""
+echo "=== Test Summary ==="
+echo "Total: $TOTAL"
+echo "Passed: $PASSED"
+echo "Failed: $FAILED"
+
+# Exit with appropriate status
+if [ $FAILED -eq 0 ] && [ $TOTAL -gt 0 ]; then
+    echo "PASS: all libxslt tests"
+    exit 0
+else
+    echo "FAIL: some libxslt tests failed"
+    exit 1
+fi

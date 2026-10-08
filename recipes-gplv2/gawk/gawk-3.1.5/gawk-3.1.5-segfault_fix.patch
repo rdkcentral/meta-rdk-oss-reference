@@ -1,0 +1,44 @@
+Date: Sat, 24 Sep 2005 00:00:00 +0000
+From: Matthew Burgess <matthew@linuxfromscratch.org>
+Subject: [PATCH] gawk-3.1.5: Fix segfault when operating on a non-existent file
+
+This patch fixes a segmentation fault in gawk-3.1.5 that occurs when
+operating on a non-existent file.
+
+This patch tracks upstream and is taken directly from the GNU
+bug-gawk mailing list.
+
+Upstream-Status: Backport
+Source: http://lists.gnu.org/archive/html/bug-gnu-utils/2005-08/msg00047.html
+Initial-Package-Version: 3.1.5
+Signed-off-by: Padala Hanuk Kumar <PadalaHanuk_Kumar@comcast.com>
+----
+
+Index: gawk-3.1.5/io.c
+===================================================================
+--- gawk-3.1.5.orig/io.c
++++ gawk-3.1.5/io.c
+@@ -2480,9 +2480,12 @@ iop_alloc(int fd, const char *name, IOBU
+ {
+ 	struct stat sbuf;
+ 	struct open_hook *oh;
++        int iop_malloced = FALSE;
+ 
+-	if (iop == NULL)
++	if (iop == NULL){
+ 		emalloc(iop, IOBUF *, sizeof(IOBUF), "iop_alloc");
++		iop_malloced = TRUE;
++	}
+ 	memset(iop, '\0', sizeof(IOBUF));
+ 	iop->flag = 0;
+ 	iop->fd = fd;
+@@ -2495,7 +2498,8 @@ iop_alloc(int fd, const char *name, IOBU
+ 	}
+ 
+ 	if (iop->fd == INVALID_HANDLE) {
+-		free(iop);
++		if (iop_malloced)
++		        free(iop);
+ 		return NULL;
+ 	}
+ 	if (isatty(iop->fd))

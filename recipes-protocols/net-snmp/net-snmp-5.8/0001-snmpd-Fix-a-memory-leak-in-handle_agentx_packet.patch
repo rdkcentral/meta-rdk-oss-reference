@@ -1,0 +1,51 @@
+###########################################################
+Date: 24 May, 2020 12:55 PM
+From: ddb3a0b1f8b8cf2734f9c2cc4e434c79370b2cb5
+Subject: Fix a memory leak in handle_agentx_packet()
+Source: http://git.code.sf.net/p/net-snmp/code V5.8-patches
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+###########################################################
+From ddb3a0b1f8b8cf2734f9c2cc4e434c79370b2cb5 Mon Sep 17 00:00:00 2001
+From: Mukesh Jain <mukesh.jain@newnet.com>
+Date: Tue, 3 Mar 2020 03:47:49 +0530
+Subject: [PATCH] snmpd: Fix a memory leak in handle_agentx_packet()
+
+Fix a memory leak when contextName is used in the PDU. The memory for
+contextName is assigned to community and is hence lost. This patch
+fixes the following Valgrind complaint:
+
+at 0x4C29EA3: malloc (vg_replace_malloc.c:309)
+by 0x653F294: snmp_clone_mem (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x653F3E7: ??? (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x653F90D: snmp_clone_pdu (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x60E3837: handle_agentx_packet (in /usr/lib64/libnetsnmpagent.so.31.0.2)
+by 0x6567ED0: ??? (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x6568F40: _sess_read (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x65698A8: snmp_sess_read2 (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x65698FA: snmp_read2 (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x656993B: snmp_read (in /usr/lib64/libnetsnmp.so.31.0.2)
+by 0x60DF30A: agent_check_and_process (in /usr/lib64/libnetsnmpagent.so.31.0.2)
+
+See also https://github.com/net-snmp/net-snmp/pull/78.
+See also https://github.com/net-snmp/net-snmp/issues/58.
+
+[ bvanassche: modified commit message and patch ]
+---
+ agent/mibgroup/agentx/subagent.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/agent/mibgroup/agentx/subagent.c b/agent/mibgroup/agentx/subagent.c
+index 20ea0d989d..530c032859 100644
+--- a/agent/mibgroup/agentx/subagent.c
++++ b/agent/mibgroup/agentx/subagent.c
+@@ -503,6 +503,7 @@ handle_agentx_packet(int operation, netsnmp_session * session, int reqid,
+      */
+
+     internal_pdu = snmp_clone_pdu(pdu);
++    free(internal_pdu->contextName);
+     internal_pdu->contextName = (char *) internal_pdu->community;
+     internal_pdu->contextNameLen = internal_pdu->community_len;
+     internal_pdu->community = NULL;
+--
+2.14.2

@@ -1,0 +1,35 @@
+#!/bin/bash
+# libxcrypt ptest - run upstream test binaries
+# Exit codes: 0=PASS, 77=SKIP/UNSUPPORTED, other=FAIL
+
+PTEST_PATH="$(dirname "$0")"
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+for test_bin in "$PTEST_PATH"/test/*; do
+    [ -f "$test_bin" ] && [ -x "$test_bin" ] || continue
+    name=$(basename "$test_bin")
+
+    # Run with 120s timeout (yescrypt/scrypt tests are intentionally slow)
+    timeout 120 "$test_bin" > /dev/null 2>&1
+    rc=$?
+
+    if [ $rc -eq 0 ]; then
+        echo "PASS: $name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    elif [ $rc -eq 77 ]; then
+        echo "SKIP: $name"
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+    else
+        echo "FAIL: $name (exit=$rc)"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+done
+
+echo ""
+echo "=== libxcrypt ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

@@ -28,3 +28,4 @@ do_configure:prepend () {
 
 # Don't need systemd integration, so disable it to remove dependency on libsystemd
 EXTRA_OECONF = "--disable-systemd"
+CFLAGS += "-D_FILE_OFFSET_BITS=64"
