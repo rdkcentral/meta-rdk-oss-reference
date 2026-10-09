@@ -106,3 +106,7 @@ INSANE_SKIP:${PN}-dev = "dev-so ldflags dev-elf"
 
 FILES:${PN} += " ${libdir}/*.so ${libdir}/*.so.* "
 FILES:${PN}-dev = "${includedir}/* ${libdir}/pkgconfig/*"
+
+do_install:append() {
+    rm -rf ${D}${datadir}/ffmpeg/examples
+}
