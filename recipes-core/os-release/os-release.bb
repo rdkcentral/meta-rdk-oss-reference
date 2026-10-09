@@ -35,3 +35,5 @@ do_install () {
     install -d ${D}${sysconfdir}
     install -m 0644 os-release ${D}${sysconfdir}/
 }
+PV = "1.0.0"
+PR = "r0"
