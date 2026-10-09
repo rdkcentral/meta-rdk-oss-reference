@@ -8,8 +8,7 @@ Requires=tmp.mount
 DefaultDependencies=no
 
 [Service]
-ExecStartPre=/bin/mkdir -p /tmp/syslog-ng
-ExecStartPre=/bin/sh -c 'if [ ! -f /tmp/syslog-ng.conf ];then cp /etc/syslog-ng/syslog-ng.conf /tmp/syslog-ng.conf ; fi'
+ExecStartPre=/lib/rdk/prepare-syslog-ng-config.sh
 ExecStart=/usr/sbin/syslog-ng  -F -f /tmp/syslog-ng.conf -R /tmp/syslog-ng/syslog-ng.persist -c /tmp/syslog-ng/syslog-ng.ctl -p /tmp/syslog-ng/syslog-ng.pid
 Type=simple
 ExecReload=/bin/kill -HUP $MAINPID
