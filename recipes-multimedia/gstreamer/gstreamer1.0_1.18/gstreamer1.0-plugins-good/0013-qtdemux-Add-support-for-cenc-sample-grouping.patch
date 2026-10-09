@@ -1,22 +1,23 @@
-Date: Tue, 11 Jul 2023 10:44:22 +0000
+From 015fe817ea5a493e22ccac4d73eb51d980b7123d Mon Sep 17 00:00:00 2001
 From: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+Date: Tue, 11 Jul 2023 10:44:22 +0000
 Subject: [PATCH] qtdemux: Add support for cenc sample grouping
+
 Co-authored-by: Xabier Rodriguez Calvar <calvaris@igalia.com>
-Source: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/3551>
-015fe817ea5a493e22ccac4d73eb51d980b7123d Mon Sep 17 00:00:00 2001
+Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/3551>
+
 Original author Sebastian Szczepaniak <s.szczepaniak@metrological.com>
 Fri, 9 Dec 2022 11:16:21 +0100
-Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
 ---
  gst/isomp4/fourcc.h        |   4 +
  gst/isomp4/qtdemux.c       | 341 ++++++++++++++++++++++++++++++++++++-
  gst/isomp4/qtdemux_types.c |   2 +
  3 files changed, 344 insertions(+), 3 deletions(-)
 
-diff --git a/gst/isomp4/fourcc.h b/gst/isomp4/fourcc.h
-index 939e2a9..7d03789 100644
---- a/gst/isomp4/fourcc.h
-+++ b/gst/isomp4/fourcc.h
+Index: gst-plugins-good-1.18.5/gst/isomp4/fourcc.h
+===================================================================
+--- gst-plugins-good-1.18.5.orig/gst/isomp4/fourcc.h
++++ gst-plugins-good-1.18.5/gst/isomp4/fourcc.h
 @@ -406,6 +406,10 @@ G_BEGIN_DECLS
  #define FOURCC_cbcs     GST_MAKE_FOURCC('c','b','c','s')
  #define FOURCC_senc     GST_MAKE_FOURCC('s','e','n','c')
@@ -28,10 +29,10 @@ index 939e2a9..7d03789 100644
  G_END_DECLS
  
  #endif /* __FOURCC_H__ */
-diff --git a/gst/isomp4/qtdemux.c b/gst/isomp4/qtdemux.c
-index 8697e6a..80c0748 100644
---- a/gst/isomp4/qtdemux.c
-+++ b/gst/isomp4/qtdemux.c
+Index: gst-plugins-good-1.18.5/gst/isomp4/qtdemux.c
+===================================================================
+--- gst-plugins-good-1.18.5.orig/gst/isomp4/qtdemux.c
++++ gst-plugins-good-1.18.5/gst/isomp4/qtdemux.c
 @@ -230,6 +230,11 @@ struct _QtDemuxCencSampleSetInfo
  {
    GstStructure *default_properties;
@@ -44,7 +45,7 @@ index 8697e6a..80c0748 100644
    /* @crypto_info holds one GstStructure per sample */
    GPtrArray *crypto_info;
  };
-@@ -2627,6 +2632,12 @@ gst_qtdemux_stream_clear (QtDemuxStream * stream)
+@@ -2610,6 +2615,14 @@ gst_qtdemux_stream_clear (QtDemuxStream
          g_ptr_array_free (info->crypto_info, TRUE);
  	info->crypto_info = NULL;
        }
@@ -52,12 +53,14 @@ index 8697e6a..80c0748 100644
 +        g_ptr_array_free (info->fragment_group_properties, TRUE);
 +      if (info->track_group_properties)
 +        g_ptr_array_free (info->track_group_properties, TRUE);
-+      if (info->sample_to_group_map)
-+        g_ptr_array_free (info->sample_to_group_map, FALSE);
++      if (info->sample_to_group_map) {
++        gpointer* ptrToFree = g_ptr_array_free (info->sample_to_group_map, FALSE);
++        g_free(ptrToFree);
++      }
      }
      g_free (stream->protection_scheme_info);
      stream->protection_scheme_info = NULL;
-@@ -3707,6 +3718,7 @@ qtdemux_get_cenc_sample_properties (GstQTDemux * qtdemux,
+@@ -3690,6 +3703,7 @@ qtdemux_get_cenc_sample_properties (GstQ
      QtDemuxStream * stream, guint sample_index)
  {
    QtDemuxCencSampleSetInfo *info = NULL;
@@ -65,7 +68,7 @@ index 8697e6a..80c0748 100644
  
    g_return_val_if_fail (stream != NULL, NULL);
    g_return_val_if_fail (stream->protected, NULL);
-@@ -3714,9 +3726,264 @@ qtdemux_get_cenc_sample_properties (GstQTDemux * qtdemux,
+@@ -3697,9 +3711,264 @@ qtdemux_get_cenc_sample_properties (GstQ
  
    info = (QtDemuxCencSampleSetInfo *) stream->protection_scheme_info;
  
@@ -225,7 +228,7 @@ index 8697e6a..80c0748 100644
 +      "', count: %u", flags, GST_FOURCC_ARGS (grouping_type), count);
 +
 +  if (count)
-+    *properties = g_ptr_array_sized_new (count);
++    *properties = g_ptr_array_new_full (count, (GDestroyNotify) qtdemux_gst_structure_free);
 +
 +  for (guint32 index = 0; index < count; index++) {
 +    GstStructure *props = NULL;
@@ -333,7 +336,7 @@ index 8697e6a..80c0748 100644
  }
  
  /* Parses the sizes of sample auxiliary information contained within a stream,
-@@ -4213,6 +4480,51 @@ qtdemux_parse_moof (GstQTDemux * qtdemux, const guint8 * buffer, guint length,
+@@ -4196,6 +4465,52 @@ qtdemux_parse_moof (GstQTDemux * qtdemux
              &ds_size, &ds_flags, &base_offset))
        goto missing_tfhd;
  
@@ -350,7 +353,8 @@ index 8697e6a..80c0748 100644
 +      }
 +
 +      if (info->sample_to_group_map) {
-+        g_ptr_array_free (info->sample_to_group_map, FALSE);
++        gpointer* ptrToFree = g_ptr_array_free (info->sample_to_group_map, FALSE);
++        g_free(ptrToFree);
 +        info->sample_to_group_map = NULL;
 +      }
 +
@@ -385,12 +389,12 @@ index 8697e6a..80c0748 100644
      /* The following code assumes at most a single set of sample auxiliary
       * data in the fragment (consisting of a saiz box and a corresponding saio
       * box); in theory, however, there could be multiple sets of sample
-@@ -13133,7 +13445,30 @@ qtdemux_parse_trak (GstQTDemux * qtdemux, GNode * trak)
+@@ -13117,7 +13432,30 @@ qtdemux_parse_trak (GstQTDemux * qtdemux
  
      stsd_entry_data += len;
      remaining_stsd_len -= len;
 +  }
- 
++
 +  /* Sample grouping support */
 +  if (stream->protected && (stream->protection_scheme_type == FOURCC_cenc
 +          || stream->protection_scheme_type == FOURCC_cbcs)) {
@@ -399,10 +403,10 @@ index 8697e6a..80c0748 100644
 +    GstByteReader sgpd_data;
 +
 +    if (info->track_group_properties) {
-+      g_ptr_array_free (info->fragment_group_properties, TRUE);
-+      info->fragment_group_properties = NULL;
++      g_ptr_array_free (info->track_group_properties, TRUE);
++      info->track_group_properties= NULL;
 +    }
-+
+ 
 +    sgpd_node = qtdemux_tree_get_child_by_type_full (stbl, FOURCC_sgpd,
 +        &sgpd_data);
 +    while (sgpd_node) {
@@ -416,11 +420,11 @@ index 8697e6a..80c0748 100644
    }
  
    /* collect sample information */
-diff --git a/gst/isomp4/qtdemux_types.c b/gst/isomp4/qtdemux_types.c
-index d5be85f..7e504fc 100644
---- a/gst/isomp4/qtdemux_types.c
-+++ b/gst/isomp4/qtdemux_types.c
-@@ -219,6 +219,8 @@ static const QtNodeType qt_node_types[] = {
+Index: gst-plugins-good-1.18.5/gst/isomp4/qtdemux_types.c
+===================================================================
+--- gst-plugins-good-1.18.5.orig/gst/isomp4/qtdemux_types.c
++++ gst-plugins-good-1.18.5/gst/isomp4/qtdemux_types.c
+@@ -219,6 +219,8 @@ static const QtNodeType qt_node_types[]
    {FOURCC_schi, "scheme information", QT_FLAG_CONTAINER},
    {FOURCC_pssh, "protection system specific header", 0},
    {FOURCC_tenc, "track encryption", 0},
@@ -429,6 +433,3 @@ index d5be85f..7e504fc 100644
    {FOURCC_stpp, "XML subtitle sample entry", 0},
    {FOURCC_senc, "sample encryption box", 0},
    {FOURCC_clcp, "Closed Caption", 0},
--- 
-2.17.1
-
