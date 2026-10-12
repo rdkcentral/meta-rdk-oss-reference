@@ -12,6 +12,7 @@ PR = "r0"
 
 # poky components
 RDEPENDS:${PN} = "\
+     libyaml \
      abseil-cpp \
      acl \
      alsa-lib \
