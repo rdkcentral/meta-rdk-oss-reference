@@ -12,7 +12,6 @@ PR = "r0"
 
 # poky components
 RDEPENDS:${PN} = "\
-     libmicrohttpd12 \
      libyaml \
      abseil-cpp \
      acl \

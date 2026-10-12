@@ -96,8 +96,8 @@ PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
 PR:pn-alsa-state ?= "r5"
 PACKAGE_ARCH:pn-alsa-state ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmicrohttpd12 ?= "r0"
-PACKAGE_ARCH:pn-libmicrohttpd12 ?= "${OSS_LAYER_ARCH}"
+#PR:pn-libmicrohttpd12 ?= "r0"
+#PACKAGE_ARCH:pn-libmicrohttpd12 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libyaml ?= "r0"
 PACKAGE_ARCH:pn-libyaml ?= "${OSS_LAYER_ARCH}"
@@ -468,7 +468,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r5"
+PR:pn-libmanette ?= "r6"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -714,7 +714,7 @@ PACKAGE_ARCH:pn-netbase ?= "${OSS_LAYER_ARCH}"
 PR:pn-nettle ?= "r1"
 PACKAGE_ARCH:pn-nettle ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager ?= "r13"
+PR:pn-networkmanager ?= "r14"
 PACKAGE_ARCH:pn-networkmanager ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-memset-neon ?= "r0"
