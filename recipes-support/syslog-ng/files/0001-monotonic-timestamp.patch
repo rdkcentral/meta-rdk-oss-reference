@@ -1,0 +1,103 @@
+Index: syslog-ng-3.36.1/modules/systemd-journal/journald-subsystem.c
+===================================================================
+--- syslog-ng-3.36.1.orig/modules/systemd-journal/journald-subsystem.c
++++ syslog-ng-3.36.1/modules/systemd-journal/journald-subsystem.c
+@@ -87,6 +87,8 @@ typedef int
+ (*SD_JOURNAL_PROCESS)(sd_journal *j);
+ typedef int
+ (*SD_JOURNAL_GET_REALTIME_USEC)(sd_journal *j, guint64 *usec);
++typedef int
++(*SD_JOURNAL_GET_MONOTONIC_USEC)(sd_journal *j, guint64 *usec, sd_id128_t *boot_id);
+ 
+ static SD_JOURNAL_OPEN sd_journal_open;
+ #if SYSLOG_NG_HAVE_JOURNAL_NAMESPACES
+@@ -104,6 +106,7 @@ static SD_JOURNAL_TEST_CURSOR sd_journal
+ static SD_JOURNAL_GET_FD sd_journal_get_fd;
+ static SD_JOURNAL_PROCESS sd_journal_process;
+ static SD_JOURNAL_GET_REALTIME_USEC sd_journal_get_realtime_usec;
++static SD_JOURNAL_GET_MONOTONIC_USEC sd_journal_get_monotonic_usec;
+ 
+ static GModule *
+ _journald_module_open(void)
+@@ -158,6 +161,9 @@ _load_journald_symbols(void)
+   if (!LOAD_SYMBOL(journald_module, sd_journal_get_realtime_usec))
+     return FALSE;
+ 
++  if (!LOAD_SYMBOL(journald_module, sd_journal_get_monotonic_usec))
++    return FALSE;
++
+   if (!LOAD_SYMBOL(journald_module, sd_journal_test_cursor))
+     return FALSE;
+ 
+@@ -274,6 +280,13 @@ journald_get_realtime_usec(Journald *sel
+   return sd_journal_get_realtime_usec(self->journal, usec);
+ }
+ 
++int
++journald_get_monotonic_usec(Journald *self, guint64 *usec, sd_id128_t *boot_id)
++{
++  return sd_journal_get_monotonic_usec(self->journal, usec, boot_id);
++}
++
++
+ Journald *
+ journald_new(void)
+ {
+Index: syslog-ng-3.36.1/modules/systemd-journal/journald-subsystem.h
+===================================================================
+--- syslog-ng-3.36.1.orig/modules/systemd-journal/journald-subsystem.h
++++ syslog-ng-3.36.1/modules/systemd-journal/journald-subsystem.h
+@@ -38,6 +38,15 @@ enum
+   SD_JOURNAL_RUNTIME_ONLY = 2,
+   SD_JOURNAL_SYSTEM_ONLY = 4
+ };
++
++typedef union sd_id128 sd_id128_t;
++
++union sd_id128
++{
++  guint8 bytes[16];
++  guint64 qwords[2];
++};
++
+ #endif
+ 
+ 
+@@ -68,5 +77,6 @@ int journald_test_cursor(Journald *self,
+ int journald_get_fd(Journald *self);
+ int journald_process(Journald *self);
+ int journald_get_realtime_usec(Journald *self, guint64 *usec);
++int journald_get_monotonic_usec(Journald *self, guint64 *usec, sd_id128_t *boot_id);
+ 
+ #endif /* JOURNAL_SOURCE_INTERFACE_H_ */
+Index: syslog-ng-3.36.1/modules/systemd-journal/journal-reader.c
+===================================================================
+--- syslog-ng-3.36.1.orig/modules/systemd-journal/journal-reader.c
++++ syslog-ng-3.36.1/modules/systemd-journal/journal-reader.c
+@@ -255,6 +255,18 @@ _set_message_timestamp(JournalReader *se
+     }
+ }
+ 
++static void
++_set_monotonic_timestamp(JournalReader *self, LogMessage *msg)
++{
++  guint64 ts;
++  sd_id128_t boot_id;
++  if (journald_get_monotonic_usec(self->journal, &ts, &boot_id) < 0)
++    return;
++  gchar monotonic_ts[32];
++  gsize monotonic_ts_len = g_snprintf(monotonic_ts, sizeof(monotonic_ts), "%" G_GUINT64_FORMAT, ts);
++  _set_value_in_message(self->options, msg, "__MONOTONIC_TIMESTAMP", monotonic_ts, monotonic_ts_len);
++}
++
+ static gboolean
+ _handle_message(JournalReader *self)
+ {
+@@ -267,6 +279,7 @@ _handle_message(JournalReader *self)
+   journald_foreach_data(self->journal, _handle_data, args);
+ 
+   _set_message_timestamp(self, msg);
++  _set_monotonic_timestamp(self, msg);
+   _set_program(self->options, msg);
+ 
+   log_source_post(&self->super, msg);
