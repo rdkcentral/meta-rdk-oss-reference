@@ -963,6 +963,9 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 PR:pn-zstd ?= "r1"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-webrtc-audio-processing ?= "r0"
+PACKAGE_ARCH:pn-webrtc-audio-processing ?= "${OSS_LAYER_ARCH}"
+
 # Package revision for OSS modules that are built and released by other layers
 PR:pn-alsa-plugins ?= "r0"
 PR:pn-assimp ?= "r0"
