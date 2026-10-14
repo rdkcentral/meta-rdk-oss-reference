@@ -236,6 +236,7 @@ RDEPENDS:${PN} += "\
      yajl \
      zstd \
      yaml-cpp \
+     webrtc-audio-processing \
 "
 
 # meta-rust components
