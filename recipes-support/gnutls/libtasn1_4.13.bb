@@ -23,4 +23,6 @@ inherit autotools texinfo lib_package gtk-doc
 
 BBCLASSEXTEND = "native"
 
-
+PACKAGES := "${PN}"
+PACKAGE_DEBUG_SPLIT_STYLE = "debug-without-src"
+INSANE_SKIP:${PN} += "installed-vs-shipped"
