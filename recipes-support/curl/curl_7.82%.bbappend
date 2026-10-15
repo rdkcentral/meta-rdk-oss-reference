@@ -2,6 +2,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}_${PV}:"
 
 SRC_URI:append = " file://ocsp_request_to_CA_Directly_curl_7.82.patch \
                    file://CVE-2025-0725_7.82_fix.patch \
+                   file://CVE-2025-10966_7.82.0_fix.patch \
+                   file://CVE-2026-8924_7.82.0_fix.patch \
                    file://run-ptest \
 "
 
