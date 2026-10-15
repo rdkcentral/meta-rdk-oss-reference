@@ -20,6 +20,7 @@ SRC_URI += "file://0001-http2-set-error-on-zero-return-from-write.patch"
 SRC_URI += "file://0002-http2-improve-handling-of-io-error-thrown-early-afte.patch"
 SRC_URI += "file://0003-http2-fix-crash-in-on_data_read-after-connection-has.patch"
 SRC_URI += "file://0004-fix-heap-use-after-free-caused-by-Finishing-Queue-item-twice.patch"
+SRC_URI += "file://0005-fix-crash-in-io_skip-after-connection-close.patch"
 
 PROVIDES = "libsoup-3.0"
 CVE_PRODUCT = "libsoup"
