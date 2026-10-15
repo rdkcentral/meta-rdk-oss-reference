@@ -12,6 +12,7 @@ PR = "r0"
 
 # poky components
 RDEPENDS:${PN} = "\
+     libyaml \
      abseil-cpp \
      acl \
      alsa-lib \
@@ -235,6 +236,7 @@ RDEPENDS:${PN} += "\
      yajl \
      zstd \
      yaml-cpp \
+     webrtc-audio-processing \
 "
 
 # meta-rust components
