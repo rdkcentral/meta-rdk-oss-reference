@@ -26,3 +26,9 @@ do_compile_ptest() {
 }
 
 FILES:${PN} = "${bindir} ${libdir}/${BPN}.so*"
+
+
+PACKAGE_BEFORE_PN += "${PN}-extras"
+FILES:${PN}-extras = " \
+    ${bindir}/scmp_sys_resolver \
+"

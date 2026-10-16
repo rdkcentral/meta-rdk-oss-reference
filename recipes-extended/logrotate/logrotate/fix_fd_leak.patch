@@ -1,0 +1,20 @@
+Subject: [PATCH] File descriptor leak when run as a daemon
+Source: COMCAST
+License: GPL-2.0-only
+Upstream-Status: NA
+Signed-off-by: Aravindan NC <nc.aravindan@gmail.com>
+
+Index: logrotate-3.21.0/logrotate.c
+===================================================================
+--- logrotate-3.21.0.orig/logrotate.c
++++ logrotate-3.21.0/logrotate.c
+@@ -3247,6 +3247,10 @@ int main_logrotate(int argc, const char
+     if (!debug)
+         rc |= writeState(stateFile);
+ 
++    if (logFd) {
++	fclose(logFd);
++    }
++
+     return (rc != 0);
+ }

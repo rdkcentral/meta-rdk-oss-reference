@@ -1,0 +1,64 @@
+#!/bin/bash
+# iproute2 ptest - run testsuite for ip, tc, bridge, and ss utilities
+
+PTEST_PATH="$(dirname "$0")"
+cd "$PTEST_PATH/testsuite" || exit 1
+
+DEV="lo"
+RESULTS_DIR="results"
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+# Check if unshare is available (needed for network namespace isolation)
+if ! command -v unshare > /dev/null 2>&1; then
+    echo "SKIP: unshare not available (install util-linux)"
+    exit 0
+fi
+
+# Generate nlmsg blob for tests that need it
+if [ -x tools/generate_nlmsg ]; then
+    ./tools/generate_nlmsg 2>/dev/null || true
+fi
+
+# Find all test files
+TESTS=$(find tests -name "*.t" | sort)
+
+mkdir -p "$RESULTS_DIR"
+
+for test_file in $TESTS; do
+    test_name=$(echo "$test_file" | sed 's|^tests/||; s|\.t$||')
+
+    TMP_ERR=$(mktemp)
+    TMP_OUT=$(mktemp)
+
+    # Run test in a network namespace for isolation
+    STD_ERR="$TMP_ERR" STD_OUT="$TMP_OUT" \
+    TC="/sbin/tc" IP="/sbin/ip" SS="/sbin/ss" BRIDGE="/sbin/bridge" \
+    DEV="$DEV" ERRF="$RESULTS_DIR/${test_name}.err" \
+    unshare -n bash "$test_file" > "$RESULTS_DIR/${test_name}.out" 2>&1
+    ret=$?
+
+    if [ "$ret" = "127" ]; then
+        echo "SKIP: $test_name"
+        SKIP_COUNT=$((SKIP_COUNT + 1))
+    elif [ -e "$RESULTS_DIR/${test_name}.err" ]; then
+        echo "FAIL: $test_name"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    else
+        echo "PASS: $test_name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    fi
+
+    rm -f "$TMP_ERR" "$TMP_OUT"
+done
+
+echo ""
+echo "=== iproute2 ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"
+
+# Cleanup
+rm -rf "$RESULTS_DIR"

@@ -11,3 +11,5 @@ SRC_URI:append = " \
 	 file://DELIA-57540-Refresh-cookies-from-database-in-runtime.patch \
          file://0001-set-same_site_policy-to-NONE-if-COL_SAME_SITE_POLICY.patch \
 "
+
+SRC_URI:append:broadband = " file://0001-RDKB-42894-UPnP-Refactor-is-configuring-as-false-whi.patch"

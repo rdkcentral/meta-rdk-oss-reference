@@ -1,8 +1,8 @@
+SUMMARY = "This recipe compiles the westeros compositor simple-buffer component"
+
 include westeros.inc
 
-SUMMARY = "This receipe compiles the westeros compositor simple-buffer component"
-
-LICENSE = "Apache-2.0"
+SRC_URI = "${WESTEROS_URI}"
 
 S = "${WORKDIR}/git/simplebuffer"
 

@@ -1,0 +1,68 @@
+Index: xz-5.2.6/tests/test_compress.sh
+===================================================================
+--- xz-5.2.6.orig/tests/test_compress.sh
++++ xz-5.2.6/tests/test_compress.sh
+@@ -10,7 +10,7 @@
+ ###############################################################################
+ 
+ # If xz wasn't built, this test is skipped.
+-if test -x ../src/xz/xz ; then
++if test -x /usr/bin/xz ; then
+ 	:
+ else
+ 	(exit 77)
+@@ -74,10 +74,10 @@ test_xz() {
+ 	echo . | tr -d '\n\r'
+ }
+ 
+-XZ="../src/xz/xz --memlimit-compress=48MiB --memlimit-decompress=5MiB \
++XZ="/usr/bin/xz --memlimit-compress=48MiB --memlimit-decompress=5MiB \
+ 		--no-adjust --threads=1 --check=crc64"
+-XZDEC="../src/xzdec/xzdec" # No memory usage limiter available
+-test -x ../src/xzdec/xzdec || XZDEC=
++XZDEC="/usr/bin/xzdec" # No memory usage limiter available
++test -x /usr/bin/xzdec || XZDEC=
+ 
+ # Create the required input files.
+ if ./create_compress_files ; then
+Index: xz-5.2.6/tests/test_files.sh
+===================================================================
+--- xz-5.2.6.orig/tests/test_files.sh
++++ xz-5.2.6/tests/test_files.sh
+@@ -10,8 +10,8 @@
+ ###############################################################################
+ 
+ # If both xz and xzdec were not build, skip this test.
+-XZ=../src/xz/xz
+-XZDEC=../src/xzdec/xzdec
++XZ=/usr/bin/xz
++XZDEC=/usr/bin/xzdec
+ test -x "$XZ" || XZ=
+ test -x "$XZDEC" || XZDEC=
+ if test -z "$XZ$XZDEC"; then
+Index: xz-5.2.6/tests/test_scripts.sh
+===================================================================
+--- xz-5.2.6.orig/tests/test_scripts.sh
++++ xz-5.2.6/tests/test_scripts.sh
+@@ -10,9 +10,9 @@
+ ###############################################################################
+ 
+ # If scripts weren't built, this test is skipped.
+-XZ=../src/xz/xz
+-XZDIFF=../src/scripts/xzdiff
+-XZGREP=../src/scripts/xzgrep
++XZ=/usr/bin/xz
++XZDIFF=/usr/bin/xzdiff
++XZGREP=/usr/bin/xzgrep
+ 
+ for i in XZ XZDIFF XZGREP; do
+ 	eval test -x "\$$i" && continue
+@@ -20,7 +20,7 @@ for i in XZ XZDIFF XZGREP; do
+ 	exit 77
+ done
+ 
+-PATH=`pwd`/../src/xz:$PATH
++PATH=/usr/bin:$PATH
+ export PATH
+ 
+ test -z "$srcdir" && srcdir=.
