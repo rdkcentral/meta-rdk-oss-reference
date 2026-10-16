@@ -19,9 +19,9 @@ DEPENDS = " \
 "
 DEPENDS:append:class-target = " bash-completion"
 GNOMEBASEBUILDCLASS = "meson"
-inherit gnomebase gettext update-rc.d systemd gobject-introspection gtk-doc update-alternatives upstream-version-is-even
+inherit gnomebase gettext update-rc.d systemd gobject-introspection update-alternatives upstream-version-is-even
 SRC_URI = " \
-    ${GNOME_MIRROR}/NetworkManager/${@gnome_verdir("${PV}")}/NetworkManager-${PV}.tar.xz \
+    https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/archive/${PV}-dev/NetworkManager-${PV}-dev.tar.gz;subdir=NetworkManager-${PV};striplevel=1 \
     file://${BPN}.initd \
     file://95-logging.conf \
     file://NetworkManager.conf \
@@ -30,21 +30,20 @@ SRC_URI = " \
     file://NM_Dispatcher.patch \
     file://connectivity-check.patch \
     file://org.freedesktop.nm_connectivity.service \
-    file://0001-wifi-don-t-recheck-auto-activate-on-disposal.patch \
     file://dnsmasq-logging.conf \
     file://NM_dynamicDNS.patch \
-    file://NM_shutdown_fix.patch \
     file://Removing_auth_alg_entry_for_WPA3_PT.patch \
+    file://NM_fix_CVE_2026_10805.patch \
 "
 
-SRC_URI[sha256sum] = "eb4dd6311f4dbf8b080439a65a3dd0db4fddbd3ebd1ea45994c31a497bf75885"
+SRC_URI[sha256sum] = "6080822bf7549a1b54be51bf7cbf7aa49afd8479548452da13b253bb0a76c971"
 
 #VOLATILE_BINDS:append = "/var/run/NetworkManager/ /etc/NetworkManager/\n"
 
 S = "${WORKDIR}/NetworkManager-${PV}"
 # ['auto', 'symlink', 'file', 'netconfig', 'resolvconf']
 NETWORKMANAGER_DNS_RC_MANAGER_DEFAULT ??= "auto"
-# ['dhcpcanon', 'dhclient', 'dhcpcd', 'internal', 'nettools']
+# ['dhclient', 'dhcpcd', 'internal', 'nettools']
 NETWORKMANAGER_DHCP_DEFAULT ??= "internal"
 # The default gets detected based on whether /usr/sbin/nft or /usr/sbin/iptables is installed, with nftables preferred.
 # ['', 'iptables', 'nftables']
@@ -58,9 +57,11 @@ EXTRA_OEMESON = "\
     -Dqt=false \
     -Dconfig_dns_rc_manager_default=${NETWORKMANAGER_DNS_RC_MANAGER_DEFAULT} \
     -Dconfig_dhcp_default=${NETWORKMANAGER_DHCP_DEFAULT} \
-    -Ddhcpcanon=false \
     -Diptables=${sbindir}/iptables \
     -Dnft=${sbindir}/nft \
+    -Dman=false \
+    -Dclat=false \
+    -Dsystemdsystemgeneratordir=no \
 "
 # stolen from https://github.com/void-linux/void-packages/blob/master/srcpkgs/NetworkManager/template
 # avoids:
@@ -91,16 +92,15 @@ PACKAGECONFIG[nss] = "-Dcrypto=nss,,nss"
 #PACKAGECONFIG[resolvconf] = "-Dresolvconf=${base_sbindir}/resolvconf,-Dresolvconf=no,,resolvconf"
 PACKAGECONFIG[gnutls] = "-Dcrypto=gnutls,,gnutls"
 PACKAGECONFIG[crypto-null] = "-Dcrypto=null"
-PACKAGECONFIG[wifi] = "-Dwext=true -Dwifi=true,-Dwext=false -Dwifi=false"
-#PACKAGECONFIG:append = "iwd"
+PACKAGECONFIG[wifi] = "-Dwifi=true, -Dwifi=false"
 #PACKAGECONFIG[iwd] = "-Diwd=true ,-Diwd=false"
 PACKAGECONFIG[ifupdown] = "-Difupdown=true,-Difupdown=false"
-#PACKAGECONFIG[cloud-setup] = "-Dnm_cloud_setup=true,-Dnm_cloud_setup=false"
+PACKAGECONFIG[cloud-setup] = "-Dnm_cloud_setup=true,-Dnm_cloud_setup=false,jansson"
 PACKAGECONFIG[nmcli] = "-Dnmcli=true,-Dnmcli=false"
 PACKAGECONFIG[readline] = "-Dreadline=libreadline,,readline"
 PACKAGECONFIG[libedit] = "-Dreadline=libedit,,libedit"
 PACKAGECONFIG[ovs] = "-Dovs=true,-Dovs=false,jansson"
-PACKAGECONFIG[audit] = "-Dlibaudit=yes,-Dlibaudit=no"
+PACKAGECONFIG[audit] = "-Dlibaudit=yes,-Dlibaudit=no,audit"
 PACKAGECONFIG[selinux] = "-Dselinux=true,-Dselinux=false,libselinux"
 #PACKAGECONFIG[vala] = "-Dvapi=true,-Dvapi=false"
 #PACKAGECONFIG[dhcpcd] = "-Ddhcpcd=${base_sbindir}/dhcpcd,-Ddhcpcd=no,,dhcpcd"
@@ -109,6 +109,7 @@ PACKAGECONFIG[concheck] = "-Dconcheck=true,-Dconcheck=false"
 # The following PACKAGECONFIG is used to determine whether NM is managing /etc/resolv.conf itself or not
 #PACKAGECONFIG[man-resolv-conf] = ",,"
 #PACKAGECONFIG:append = "man-resolv-conf"
+PACKAGECONFIG[nbft] = "-Dnbft=true,-Dnbft=false"
 PACKAGES =+ " \
     libnm \
     ${PN}-nmcli \
@@ -198,6 +199,7 @@ FILES:${PN}-dev += " \
 "
 SUMMARY:${PN}-daemon += "The NetworkManager daemon"
 FILES:${PN}-daemon += " \
+    ${bindir}/nm-online \
     ${datadir}/polkit-1 \
     ${datadir}/dbus-1 \
     ${libdir}/NetworkManager \
@@ -264,13 +266,16 @@ do_install:append() {
     if ${@bb.utils.contains('PACKAGECONFIG','man-resolv-conf','true','false',d)}; then
         # For read-only filesystem, do not create links during bootup
         # ln -sf ../run/NetworkManager/resolv.conf ${D}${sysconfdir}/resolv-conf.NetworkManager
-        # systemd v210 and newer do not need this rule fil
+        # systemd v210 and newer do not need this rule file
         rm ${D}/${nonarch_base_libdir}/udev/rules.d/84-nm-drivers.rules
+    fi
+
+    if [ -d "${D}${sysconfdir}/NetworkManager/system-connections" ]; then
+         rm -rf ${D}${sysconfdir}/NetworkManager/system-connections
     fi
 
     ln -sf /opt/NetworkManager/system-connections ${D}${sysconfdir}/NetworkManager/
     ln -sf /opt/secure/NetworkManager/system-connections ${D}${sysconfdir}/NetworkManager/
-    rm -f ${D}${systemd_system_unitdir}/NetworkManager-wait-online.service
 
     # Enable iwd if compiled
     if ${@bb.utils.contains('PACKAGECONFIG','iwd','true','false',d)}; then
@@ -281,6 +286,11 @@ do_install:append() {
     if ${@bb.utils.contains('PACKAGECONFIG','dhcpcd','true','false',d)}; then
         install -Dm 0644 ${UNPACKDIR}/enable-dhcpcd.conf ${D}${nonarch_libdir}/NetworkManager/conf.d/enable-dhcpcd.conf
     fi
+
+    # Don't ship initrd specific services into rootfs to avoid the conflict with the main services
+    rm -f ${D}${systemd_system_unitdir}/NetworkManager-config-initrd.service
+    rm -f ${D}${systemd_system_unitdir}/NetworkManager-initrd.service
+    rm -f ${D}${systemd_system_unitdir}/NetworkManager-wait-online-initrd.servicei
 }
 
 inherit syslog-ng-config-gen
