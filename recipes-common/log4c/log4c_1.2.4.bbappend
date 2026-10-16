@@ -5,5 +5,11 @@
 # parsing these invalid config files but the log4crc builtin XML parser is more
 # forgiving...
 
-PACKAGECONFIG:remove:wrynose = "expat"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+PACKAGECONFIG:remove:wrynose = "expat"
+SRC_URI:append = " \
+        file://04log4c_sizewin.patch \
+        file://03log4c_rollingfileapender.patch \
+        file://memory-leak-fix-log4c.patch \
+"
