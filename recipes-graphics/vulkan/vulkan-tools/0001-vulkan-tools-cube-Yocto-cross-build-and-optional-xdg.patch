@@ -1,0 +1,191 @@
+From 247dd2ac91a3d6f32e12258c0dab9c572bf1664f Mon Sep 17 00:00:00 2001
+From: Tarik Sekmen <tarik.sekmen@sky.uk>
+Date: Tue, 10 Feb 2026 18:13:04 +0000
+Subject: [PATCH] vulkan-tools/cube: Yocto cross-build and optional xdg-wm-base
+
+Source: Sky
+Upstream-Status: Inappropriate [Yocto-specific]
+Signed-off-by: Tarik Sekmen <tarik.sekmen@sky.uk>
+
+- Allow cross-build of vkcube and vkcubepp by removing
+  the native-only check (CMAKE_SYSTEM_PROCESSOR eq
+  CMAKE_HOST_SYSTEM_PROCESSOR). Keep linking with rt when available.
+- Guard xdg_wm_base usage in cube.c and cube.cpp with
+  #if defined(XDG_WM_BASE_PROTO) so the build works when xdg-wm-base
+  is not available (e.g. minimal Wayland).
+---
+ cube/CMakeLists.txt | 18 ++++++------------
+ cube/cube.c         |  8 +++++++-
+ cube/cube.cpp       |  8 +++++++-
+ 3 files changed, 20 insertions(+), 14 deletions(-)
+
+diff --git a/cube/CMakeLists.txt b/cube/CMakeLists.txt
+index 4087351d..604283e9 100644
+--- a/cube/CMakeLists.txt
++++ b/cube/CMakeLists.txt
+@@ -228,21 +228,19 @@ include_directories(${CUBE_INCLUDE_DIRS})
+ if(APPLE)
+     include(macOS/cube/cube.cmake)
+ elseif(NOT WIN32)
+-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+-        add_executable(vkcube
++    add_executable(vkcube
+                        cube.c
+                        ${PROJECT_SOURCE_DIR}/cube/cube.vert
+                        ${PROJECT_SOURCE_DIR}/cube/cube.frag
+                        cube.vert.inc
+                        cube.frag.inc
+                        ${OPTIONAL_WAYLAND_DATA_FILES})
+-        target_link_libraries(vkcube Vulkan::Vulkan)
+-        target_compile_definitions(vkcube PUBLIC ${CUBE_PLATFORM})
+-        include(CheckLibraryExists)
+-        CHECK_LIBRARY_EXISTS("rt" clock_gettime "" NEED_RT)
+-        if (NEED_RT)
++    target_link_libraries(vkcube Vulkan::Vulkan)
++    target_compile_definitions(vkcube PUBLIC ${CUBE_PLATFORM})
++    include(CheckLibraryExists)
++    CHECK_LIBRARY_EXISTS("rt" clock_gettime "" NEED_RT)
++    if (NEED_RT)
+             target_link_libraries(vkcube rt)
+-        endif()
+     endif()
+ else()
+     if(CMAKE_CL_64)
+@@ -280,7 +278,6 @@ endif()
+ if(APPLE)
+     include(macOS/cubepp/cubepp.cmake)
+ elseif(NOT WIN32)
+-    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+         add_executable(vkcubepp
+                        cube.cpp
+                        ${PROJECT_SOURCE_DIR}/cube/cube.vert
+@@ -290,7 +287,6 @@ elseif(NOT WIN32)
+                        ${OPTIONAL_WAYLAND_DATA_FILES})
+         target_link_libraries(vkcubepp Vulkan::Vulkan)
+         target_compile_definitions(vkcubepp PUBLIC ${CUBE_PLATFORM})
+-    endif()
+ else()
+     if(CMAKE_CL_64)
+         set(LIB_DIR "Win64")
+@@ -334,7 +330,6 @@ if(UNIX AND NOT APPLE) # i.e. Linux
+             ${CMAKE_CURRENT_BINARY_DIR}/xdg-decoration-code.c
+             ${CMAKE_CURRENT_BINARY_DIR}/xdg-decoration-client-header.h)
+         include_directories(${CMAKE_CURRENT_BINARY_DIR})
+-        if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL ${CMAKE_HOST_SYSTEM_PROCESSOR})
+             add_executable(vkcube-wayland
+                            cube.c
+                            ${PROJECT_SOURCE_DIR}/cube/cube.vert
+@@ -349,6 +344,5 @@ if(UNIX AND NOT APPLE) # i.e. Linux
+             if (NEED_RT)
+                 target_link_libraries(vkcube-wayland rt)
+             endif()
+-        endif()
+     endif()
+ endif()
+diff --git a/cube/cube.c b/cube/cube.c
+index 6bf8f4ac..ee4c0572 100644
+--- a/cube/cube.c
++++ b/cube/cube.c
+@@ -2391,14 +2391,16 @@ static void demo_cleanup(struct demo *demo) {
+     wl_keyboard_destroy(demo->keyboard);
+     wl_pointer_destroy(demo->pointer);
+     wl_seat_destroy(demo->seat);
++#if defined(XDG_WM_BASE_PROTO)
+     xdg_toplevel_destroy(demo->xdg_toplevel);
+     xdg_surface_destroy(demo->xdg_surface);
+-    wl_surface_destroy(demo->window);
+     xdg_wm_base_destroy(demo->xdg_wm_base);
+     if (demo->xdg_decoration_mgr) {
+         zxdg_toplevel_decoration_v1_destroy(demo->toplevel_decoration);
+         zxdg_decoration_manager_v1_destroy(demo->xdg_decoration_mgr);
+     }
++#endif
++    wl_surface_destroy(demo->window);
+     wl_compositor_destroy(demo->compositor);
+     wl_registry_destroy(demo->registry);
+     wl_display_disconnect(demo->display);
+@@ -2812,11 +2814,13 @@ static void handle_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel
+ static const struct xdg_toplevel_listener xdg_toplevel_listener = {handle_toplevel_configure, handle_toplevel_close};
+ 
+ static void demo_create_window(struct demo *demo) {
++#if defined(XDG_WM_BASE_PROTO)
+     if (!demo->xdg_wm_base) {
+         printf("Compositor did not provide the standard protocol xdg-wm-base\n");
+         fflush(stdout);
+         exit(1);
+     }
++#endif
+ 
+     demo->window = wl_compositor_create_surface(demo->compositor);
+     if (!demo->window) {
+@@ -2825,6 +2829,7 @@ static void demo_create_window(struct demo *demo) {
+         exit(1);
+     }
+ 
++#if defined(XDG_WM_BASE_PROTO)
+     demo->xdg_surface = xdg_wm_base_get_xdg_surface(demo->xdg_wm_base, demo->window);
+     if (!demo->xdg_surface) {
+         printf("Can not get xdg_surface from wayland_surface!\n");
+@@ -2846,6 +2851,7 @@ static void demo_create_window(struct demo *demo) {
+             zxdg_decoration_manager_v1_get_toplevel_decoration(demo->xdg_decoration_mgr, demo->xdg_toplevel);
+         zxdg_toplevel_decoration_v1_set_mode(demo->toplevel_decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+     }
++#endif
+ 
+     wl_surface_commit(demo->window);
+ }
+diff --git a/cube/cube.cpp b/cube/cube.cpp
+index 7c836524..119b4ed2 100644
+--- a/cube/cube.cpp
++++ b/cube/cube.cpp
+@@ -686,14 +686,16 @@ void Demo::cleanup() {
+     wl_keyboard_destroy(keyboard);
+     wl_pointer_destroy(pointer);
+     wl_seat_destroy(seat);
++#if defined(XDG_WM_BASE_PROTO)
+     xdg_toplevel_destroy(window_toplevel);
+     xdg_surface_destroy(window_surface);
+-    wl_surface_destroy(window);
+     xdg_wm_base_destroy(wm_base);
+     if (xdg_decoration_mgr) {
+         zxdg_toplevel_decoration_v1_destroy(toplevel_decoration);
+         zxdg_decoration_manager_v1_destroy(xdg_decoration_mgr);
+     }
++#endif
++    wl_surface_destroy(window);
+     wl_compositor_destroy(compositor);
+     wl_registry_destroy(registry);
+     wl_display_disconnect(display);
+@@ -2867,11 +2869,13 @@ static void handle_toplevel_close(void *data, xdg_toplevel *xdg_toplevel) {
+ static const xdg_toplevel_listener toplevel_listener = {handle_toplevel_configure, handle_toplevel_close};
+ 
+ void Demo::create_window() {
++#if defined(XDG_WM_BASE_PROTO)
+     if (!wm_base) {
+         printf("Compositor did not provide the standard protocol xdg-wm-base\n");
+         fflush(stdout);
+         exit(1);
+     }
++#endif
+ 
+     window = wl_compositor_create_surface(compositor);
+     if (!window) {
+@@ -2880,6 +2884,7 @@ void Demo::create_window() {
+         exit(1);
+     }
+ 
++#if defined(XDG_WM_BASE_PROTO)
+     window_surface = xdg_wm_base_get_xdg_surface(wm_base, window);
+     if (!window_surface) {
+         printf("Can not get xdg_surface from wayland_surface!\n");
+@@ -2900,6 +2905,7 @@ void Demo::create_window() {
+         toplevel_decoration = zxdg_decoration_manager_v1_get_toplevel_decoration(xdg_decoration_mgr, window_toplevel);
+         zxdg_toplevel_decoration_v1_set_mode(toplevel_decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+     }
++#endif
+ 
+     wl_surface_commit(window);
+ }
+-- 
+2.34.1
+

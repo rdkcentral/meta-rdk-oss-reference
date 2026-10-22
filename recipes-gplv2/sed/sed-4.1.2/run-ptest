@@ -1,0 +1,46 @@
+#!/bin/bash
+
+cd testsuite
+
+# Set PATH to include sed binary
+export PATH="${PTEST_PATH}/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
+export SED="${PTEST_PATH}/bin/sed"
+
+# Skip list for slow/problematic tests
+skip_tests="distrib.sh"
+
+# Run all executable test scripts and binaries in testsuite
+pass_count=0
+fail_count=0
+skip_count=0
+
+# Find all .sh scripts and executable binaries (using -perm -u+x for portability)
+for test_script in $(find . -type f \( -name "*.sh" -o -perm -u+x \) | sort); do
+    test_name=$(basename "$test_script")
+    
+    # Skip non-executable scripts that aren't .sh files
+    [ ! -x "$test_script" ] && [ ! -name "*.sh" ] && continue
+    
+    # Check if test is in skip list
+    if echo "$skip_tests" | grep -q "$test_name"; then
+        echo "SKIP: $test_script"
+        ((skip_count++))
+        continue
+    fi
+    
+    timeout 60 bash "$test_script" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "PASS: $test_script"
+        ((pass_count++))
+    else
+        echo "FAIL: $test_script"
+        ((fail_count++))
+    fi
+done
+
+# Print summary
+echo ""
+echo "sed test results: $pass_count passed, $fail_count failed, $skip_count skipped"
+
+# Exit with failure if any tests failed
+[ $fail_count -eq 0 ]
