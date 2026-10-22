@@ -1,9 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}_${PV}:"
 
-SRC_URI:append = " file://ocsp_request_to_CA_Directly_curl_7.82.patch \
-                   file://CVE-2025-0725_7.82_fix.patch \
-                   file://run-ptest \
-"
+SRC_URI:append = " file://ocsp_request_to_CA_Directly_curl_7.82.patch file://run-ptest "
 
 CURLGNUTLS = "--without-gnutls --with-ssl"
 DEPENDS += " openssl"
@@ -83,3 +80,7 @@ do_install_ptest() {
 FILES:${PN}-ptest += "${PTEST_PATH}/tests/*"
 
 RDEPENDS:${PN}-ptest += "bash"
+
+SRC_URI:append:kirkstone = " file://CVE-2025-0725_7.82_fix.patch \
+                   file://CVE-2026-9547_curl_7.82.0_fix.patch \
+"
