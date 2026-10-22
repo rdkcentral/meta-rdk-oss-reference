@@ -18,4 +18,8 @@ SRC_URI:append:kirkstone = " file://CVE-2026-7383_openssl_3.0.15_fix.patch \
                    file://CVE-2026-42767_openssl_3.0.15_fix.patch \
                    file://CVE-2026-42770_openssl_3.0.15_fix.patch \
                    file://CVE-2026-45447_openssl_3.0.15_fix.patch \
+                   file://CVE-2026-34180_openssl_3.0.15_fix.patch \
+                   file://CVE-2026-34182_openssl_3.0.15_fix.patch \
+                   file://CVE-2026-45445_openssl_3.0.15_fix.patch \
+                   file://CVE-2026-45446_openssl_3.0.15_fix.patch \
 "
