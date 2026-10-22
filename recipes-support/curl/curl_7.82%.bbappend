@@ -83,4 +83,6 @@ RDEPENDS:${PN}-ptest += "bash"
 
 SRC_URI:append:kirkstone = " file://CVE-2025-0725_7.82_fix.patch \
                    file://CVE-2026-9547_curl_7.82.0_fix.patch \
+                   file://CVE-2025-10966_7.82.0_fix.patch \
+                   file://CVE-2026-8924_7.82.0_fix.patch \
 "
