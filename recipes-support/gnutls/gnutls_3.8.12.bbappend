@@ -1,5 +1,6 @@
 PACKAGECONFIG:remove:broadband:wrynose = "libidn"
 PACKAGECONFIG:remove:broadband:wrynose = "libtasn1"
+PACKAGECONFIG:remove:class-nativesdk = "libtasn1"
 
 PACKAGES := "${PN}"
 PACKAGES:remove = "\
