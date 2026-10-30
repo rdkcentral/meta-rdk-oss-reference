@@ -19,7 +19,7 @@ def get_oss_arch(d):
     arch += "-oss"
     return arch
 
-OSS_LAYER_VERSION = "4.13.0"
+OSS_LAYER_VERSION = "4.15.0"
 
 LAYER_EXTENSION ?= ""
 OSS_LAYER_ARCH = "${@get_oss_arch(d)}${LAYER_EXTENSION}"
@@ -33,7 +33,6 @@ PREFERRED_VERSION_openssl = "3.0.%"
 PREFERRED_VERSION_openssl-native = "3.0.%"
 PREFERRED_VERSION_nativesdk-openssl = "3.0.%"
 PREFERRED_VERSION_civetweb = "1.10+git%"
-PREFERRED_VERSION_wpa-supplicant = "2.10"
 PREFERRED_VERSION_dnsmasq = "2.90"
 PREFERRED_VERSION_msgpack-c = "4.0.0%"
 PREFERRED_VERSION_gupnp ?= "0.20.10"
@@ -62,6 +61,7 @@ PREFERRED_VERSION_gettext-native = "0.21"
 PREFERRED_VERSION_libdrm = "2.4.110"
 PREFERRED_VERSION_nativesdk-libdrm = "2.4.110"
 PREFERRED_VERSION_sed = "4.1.2"
+PREFERRED_VERSION_libmanette ??= "0.2%"
 
 # Workaround to build allarch packags as oss arch
 MULTILIB_VARIANTS:pn-alsa-topology-conf = " multilib "
@@ -94,6 +94,12 @@ PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-alsa-state ?= "r5"
 PACKAGE_ARCH:pn-alsa-state ?= "${OSS_LAYER_ARCH}"
+
+#PR:pn-libmicrohttpd12 ?= "r0"
+#PACKAGE_ARCH:pn-libmicrohttpd12 ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-libyaml ?= "r0"
+PACKAGE_ARCH:pn-libyaml ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-alsa-topology-conf ?= "r0"
 PACKAGE_ARCH:pn-alsa-topology-conf ?= "${OSS_LAYER_ARCH}"
@@ -143,7 +149,7 @@ PACKAGE_ARCH:pn-bind ?= "${OSS_LAYER_ARCH}"
 PR:pn-boost ?= "r0"
 PACKAGE_ARCH:pn-boost ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-breakpad ?= "r1"
+PR:pn-breakpad ?= "r2"
 PACKAGE_ARCH:pn-breakpad ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-breakpad-wrapper ?= "r0"
@@ -173,7 +179,7 @@ PACKAGE_ARCH:pn-civetweb ?= "${OSS_LAYER_ARCH}"
 PR:pn-cjson ?= "r1"
 PACKAGE_ARCH:pn-cjson ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-coreutils ?= "r0"
+PR:pn-coreutils ?= "r1"
 PACKAGE_ARCH:pn-coreutils ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-cracklib ?= "r0"
@@ -188,7 +194,7 @@ PACKAGE_ARCH:pn-ctemplate ?= "${OSS_LAYER_ARCH}"
 PR:pn-cunit ?= "r0"
 PACKAGE_ARCH:pn-cunit ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-curl ?= "r3"
+PR:pn-curl ?= "r4"
 PACKAGE_ARCH:pn-curl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-db ?= "r1"
@@ -281,7 +287,7 @@ PACKAGE_ARCH:pn-gflags ?= "${OSS_LAYER_ARCH}"
 PR:pn-glib-2.0 ?= "r0"
 PACKAGE_ARCH:pn-glib-2.0 ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-glibc ?= "r1"
+PR:pn-glibc ?= "r2"
 PACKAGE_ARCH:pn-glibc ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-glibc-locale ?= "r0"
@@ -461,7 +467,7 @@ PACKAGE_ARCH:pn-libinput ?= "${OSS_LAYER_ARCH}"
 PR:pn-libjpeg ?= "r0"
 PACKAGE_ARCH:pn-libjpeg ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libmanette ?= "r5"
+PR:pn-libmanette ?= "r6"
 PACKAGE_ARCH:pn-libmanette ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libmd ?= "r0"
@@ -554,7 +560,7 @@ PACKAGE_ARCH:pn-libsndfile1 ?= "${OSS_LAYER_ARCH}"
 PR:pn-libsolv ?= "r0"
 PACKAGE_ARCH:pn-libsolv ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-libsoup ?= "r1"
+PR:pn-libsoup ?= "r2"
 PACKAGE_ARCH:pn-libsoup ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-libsoup-2.4 ?= "r1"
@@ -707,8 +713,11 @@ PACKAGE_ARCH:pn-netbase ?= "${OSS_LAYER_ARCH}"
 PR:pn-nettle ?= "r1"
 PACKAGE_ARCH:pn-nettle ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-networkmanager ?= "r12"
+PR:pn-networkmanager ?= "r14"
 PACKAGE_ARCH:pn-networkmanager ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-memset-neon ?= "r0"
+PACKAGE_ARCH:pn-memset-neon ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-nghttp2 ?= "r1"
 PACKAGE_ARCH:pn-nghttp2 ?= "${OSS_LAYER_ARCH}"
@@ -728,7 +737,7 @@ PACKAGE_ARCH:pn-openjpeg ?= "${OSS_LAYER_ARCH}"
 PR:pn-openssh ?= "r0"
 PACKAGE_ARCH:pn-openssh ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-openssl ?= "r3"
+PR:pn-openssl ?= "r4"
 PACKAGE_ARCH:pn-openssl ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-openssl-1.1.1l ?= "r0"
@@ -840,19 +849,19 @@ PACKAGE_ARCH:pn-speexdsp ?= "${OSS_LAYER_ARCH}"
 PR:pn-sqlite ?= "r7"
 PACKAGE_ARCH:pn-sqlite ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-sqlite3 ?= "r1"
+PR:pn-sqlite3 ?= "r2"
 PACKAGE_ARCH:pn-sqlite3 ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-strace ?= "r0"
 PACKAGE_ARCH:pn-strace ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-stunnel ?= "r3"
+PR:pn-stunnel ?= "r4"
 PACKAGE_ARCH:pn-stunnel ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-sysfsutils ?= "r6"
 PACKAGE_ARCH:pn-sysfsutils ?= "${OSS_LAYER_ARCH}"
 
-PR:pn-syslog-ng ?= "r3"
+PR:pn-syslog-ng ?= "r4"
 PACKAGE_ARCH:pn-syslog-ng ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-systemd ?= "r13"
@@ -952,6 +961,9 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 
 PR:pn-zstd ?= "r1"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
+
+PR:pn-webrtc-audio-processing ?= "r0"
+PACKAGE_ARCH:pn-webrtc-audio-processing ?= "${OSS_LAYER_ARCH}"
 
 # Package revision for OSS modules that are built and released by other layers
 PR:pn-alsa-plugins ?= "r0"
