@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.13.7"
+PV = "4.13.8"
 PR = "r0"
 
 # poky components
