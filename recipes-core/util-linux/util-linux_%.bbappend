@@ -49,5 +49,4 @@ RRECOMMENDS:${PN}:remove = " \
                            ${PN}-wdctl \ 
                            ${PN}-whereis \ 
                            ${PN}-write \ 
-                           ${PN}-zramctl \
                           "               
