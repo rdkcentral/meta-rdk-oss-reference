@@ -13,6 +13,7 @@ Priority: P1
 Signed-off-by: deekshit.devadas <deekshit.devadas@sky.uk>
 
 Change-Id: I39eedeeb65f3ac71643f984557e606e8b8e1be86
+Upstream-Status: Inappropriate [RDK-specific change]
 ---
 
 diff --git a/include/uapi/linux/prctl.h b/include/uapi/linux/prctl.h

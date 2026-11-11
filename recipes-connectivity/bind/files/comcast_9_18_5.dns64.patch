@@ -4,10 +4,11 @@ Source: COMCAST
 Subject: Build bind without readline config since readline-5.2 is casuing build errors in bind.
 Re-create version specific patches to fix patch/install errors.
 Signed-off-by: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
-Index: bind-9.18.5/bin/named/server.c
+Upstream-Status: Inappropriate [RDK-specific DNS64 /128 prefix support]
+Index: bind-9.20.22/bin/named/server.c
 ===================================================================
---- bind-9.18.5.orig/bin/named/server.c
-+++ bind-9.18.5/bin/named/server.c
+--- bind-9.20.22.orig/bin/named/server.c
++++ bind-9.20.22/bin/named/server.c
 @@ -1934,7 +1934,7 @@ dns64_reverse(dns_view_t *view, isc_mem_
  	isc_result_t result;
  
@@ -17,10 +18,10 @@ Index: bind-9.18.5/bin/named/server.c
  
  	if (!strcmp(viewname, "_default")) {
  		sep = "";
-Index: bind-9.18.5/lib/bind9/check.c
+Index: bind-9.20.22/lib/isccfg/check.c
 ===================================================================
---- bind-9.18.5.orig/lib/bind9/check.c
-+++ bind-9.18.5/lib/bind9/check.c
+--- bind-9.20.22.orig/lib/isccfg/check.c
++++ bind-9.20.22/lib/isccfg/check.c
 @@ -606,7 +606,7 @@ check_dns64(cfg_aclconfctx_t *actx, cons
  		}
  
@@ -39,10 +40,10 @@ Index: bind-9.18.5/lib/bind9/check.c
  				char netaddrbuf[ISC_NETADDR_FORMATSIZE];
  				isc_netaddr_format(&sa, netaddrbuf,
  						   sizeof(netaddrbuf));
-Index: bind-9.18.5/lib/dns/dns64.c
+Index: bind-9.20.22/lib/dns/dns64.c
 ===================================================================
---- bind-9.18.5.orig/lib/dns/dns64.c
-+++ bind-9.18.5/lib/dns/dns64.c
+--- bind-9.20.22.orig/lib/dns/dns64.c
++++ bind-9.20.22/lib/dns/dns64.c
 @@ -25,6 +25,7 @@
  #include <dns/dns64.h>
  #include <dns/rdata.h>
@@ -80,13 +81,11 @@ Index: bind-9.18.5/lib/dns/dns64.c
  		memmove(dns64->bits + nbytes, suffix->type.in6.s6_addr + nbytes,
  			16 - nbytes);
  	}
-@@ -174,23 +177,28 @@ dns_dns64_aaaafroma(const dns_dns64_t *d
- 	}
- 
+@@ -176,20 +176,22 @@
  	nbytes = dns64->prefixlen / 8;
 -	INSIST(nbytes <= 12);
 -	/* Copy prefix. */
- 	memmove(aaaa, dns64->bits, nbytes);
+-	memmove(aaaa, dns64->bits, nbytes);
 -	/* Bits 64-71 are zeros. rfc6052.txt */
 -	if (nbytes == 8) {
 -		aaaa[nbytes++] = 0;
@@ -102,26 +101,24 @@ Index: bind-9.18.5/lib/dns/dns64.c
 -	/* Copy suffix. */
 -	memmove(aaaa + nbytes, dns64->bits + nbytes, 16 - nbytes);
 +	if (dns64->prefixlen != 128) {
-+	    INSIST(nbytes <= 12);
-+	    /* Copy prefix. */
-+	    /* Bits 64-71 are zeros. rfc6052.txt */
-+	    if (nbytes == 8)
-+		     aaaa[nbytes++] = 0;
-+	    /* Copy mapped address. */
-+	    for (i = 0; i < 4U; i++) {
-+		    aaaa[nbytes++] = a[i];
-+		    /* Bits 64-71 are zeros. rfc6052.txt */
-+		    if (nbytes == 8)
-+			    aaaa[nbytes++] = 0;
-+	    }
-+	    /* Copy suffix. */
-+	    memmove(aaaa + nbytes, dns64->bits + nbytes, 16 - nbytes);
++		INSIST(nbytes <= 12);
++		/* Copy prefix. */
++		memmove(aaaa, dns64->bits, nbytes);
++		/* Bits 64-71 are zeros. rfc6052.txt */
++		if (nbytes == 8) {
++			aaaa[nbytes++] = 0;
++		}
++		/* Copy mapped address. */
++		for (i = 0; i < 4U; i++) {
++			aaaa[nbytes++] = a[i];
++			/* Bits 64-71 are zeros. rfc6052.txt */
++			if (nbytes == 8) {
++				aaaa[nbytes++] = 0;
++			}
++		}
++		/* Copy suffix. */
++		memmove(aaaa + nbytes, dns64->bits + nbytes, 16 - nbytes);
 +	}
-+
-+	isc_log_write(dns_lctx, DNS_LOGCATEGORY_GENERAL,
-+			DNS_LOGMODULE_JOURNAL, ISC_LOG_NOTICE,
-+			"DNS64 Address is being returned");
-+
- 	return (ISC_R_SUCCESS);
+ 	return ISC_R_SUCCESS;
  }
  

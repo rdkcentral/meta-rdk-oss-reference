@@ -1,11 +1,13 @@
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552"
 PR = "r4"
+EXTRA_OECONF += "ac_cv_path_SORT=${bindir}/sort"
 
 require findutils.inc
 
 SRC_URI = "${GNU_MIRROR}/${BPN}/${BP}.tar.gz \
            file://gnulib-extension.patch \
+           file://gcc15-mktime-time64-width.patch \
            file://findutils_fix_for_automake-1.12.patch \
            file://findutils-fix-doc-build-error.patch \
            "

@@ -1,5 +1,6 @@
 Date: Dec 6, 2022
 From: Aravindan NarasimhapuramChakravarthy <aravindan_narasimhapuramchakravarthy@comcast.com>
+Upstream-Status: Inappropriate [RDK-specific parser build fix]
 Source: COMCAST
 Subject: Define macros that are used in the code.
 libxkbcommon uses a .y parser file to recreate .c file.

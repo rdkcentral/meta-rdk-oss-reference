@@ -62,7 +62,7 @@ RDEPENDS:${PN} = "\
      iptables \
      iso-codes \
      json-c \
-     jquery \
+     libjs-jquery \
      kbd \
      kmod \
      libaio \
@@ -71,7 +71,6 @@ RDEPENDS:${PN} = "\
      libcap-ng \
      libcgroup \
      libcheck \
-     libcroco \
      libdaemon \
      libepoxy \
      liberation-fonts \
@@ -81,7 +80,6 @@ RDEPENDS:${PN} = "\
      libffi \
      libgcrypt \
      libgpg-error \
-     libgudev \
      libical \
      libinput \
      libjpeg \
@@ -152,7 +150,6 @@ RDEPENDS:${PN} = "\
      sysfsutils \
      systemd-serialgetty \
      taglib \
-     tcp-wrappers \
      tcpdump \
      tiff \
      tzdata \
@@ -186,7 +183,6 @@ RDEPENDS:${PN} += "\
      googletest \
      grpc \
      gssdp \
-     gssdp16 \
      hiredis \
      iperf3 \
      jsonrpc \
@@ -197,8 +193,6 @@ RDEPENDS:${PN} += "\
      libmng \
      libmnl \
      liboauth \
-     libol \
-     libomxil \
      libopus \
      libsdl \
      libsdl-ttf \
@@ -226,12 +220,10 @@ RDEPENDS:${PN} += "\
      rapidjson \
      redis \
      safec \
-     sqlite \
      stunnel \
      syslog-ng \
      tremor \
      trace-cmd \
-     websocketpp \
      xmlsec1 \
      yajl \
      zstd \
@@ -346,7 +338,6 @@ RDEPENDS:${PN} += "\
      glibc \
      glibc-mtrace \
      libgcc \
-     libgcc-initial \
      libstdc++ \
      localedef \
 "

@@ -19,7 +19,7 @@ SRC_URI[sha256sum] = "b8a034154c7059772e0fdbd27dbfcda6c732df29cae56a82274f6ec5d7
 
 UPSTREAM_CHECK_URI = "https://wayland.freedesktop.org/releases.html"
 
-S = "${WORKDIR}/wayland-${PV}/egl"
+S = "${UNPACKDIR}/wayland-${PV}/egl"
 
 PV ?= "1.20.0"
 PR ?= "r0"
@@ -27,7 +27,7 @@ PR ?= "r0"
 inherit cmake pkgconfig
 
 do_configure:prepend() {
-    cp ${WORKDIR}/CMakeLists.txt ${S}
-    cp ${WORKDIR}/wayland-egl.pc.in ${S}
+    cp ${UNPACKDIR}/CMakeLists.txt ${S}
+    cp ${UNPACKDIR}/wayland-egl.pc.in ${S}
 }
 

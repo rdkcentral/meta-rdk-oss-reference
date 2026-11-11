@@ -1,0 +1,25 @@
+From: Build Compatibility <build@example.invalid>
+Subject: [PATCH] examples: include declaration for sd_debug
+
+The user location formatter calls sd_debug, whose declaration is provided by
+sd/error.h.
+
+Upstream-Status: Pending
+
+---
+ examples/userloc_formatter.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/examples/userloc_formatter.c b/examples/userloc_formatter.c
+--- a/examples/userloc_formatter.c
++++ b/examples/userloc_formatter.c
+@@ -17,6 +17,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <log4c.h>
++#include <sd/error.h>
+ #include "application_3.h"
+ 
+ /**********************************************************************
+-- 
+2.39.0

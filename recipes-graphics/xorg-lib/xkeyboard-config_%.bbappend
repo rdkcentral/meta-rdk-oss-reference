@@ -1,5 +1,4 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-SRC_URI:append = " file://Enhancing-keycode-support_kirkstone.patch"
 
 do_install:append () {
         rm -rf ${D}${datadir}/X11/xkb/compat/japan

@@ -3,9 +3,10 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 PV = "1.0.0"
 
 do_install:prepend() {
-	if [ -z `fgrep '\-\-autologin root' ${WORKDIR}/serial-getty\@.service` ]
+	service_file="${S}/serial-getty@.service"
+	if [ -f "$service_file" ] && ! grep -q -- '--autologin root' "$service_file"
 	then
-		sed -i -e '/^ExecStart=/ s/$/ --autologin root/' ${WORKDIR}/serial-getty\@.service
+		sed -i -e '/^ExecStart=/ s/$/ --autologin root/' "$service_file"
 	fi
 }
 

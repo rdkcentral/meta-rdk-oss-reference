@@ -7,6 +7,7 @@ Subject: [PATCH] Set objects base name as a module name
 Source: COMCAST 5e52b80887d518f729dcaecdca14f80205d9702d Mon Sep 17 00:00:00 2001
 Signed-off-by: mselva006c <mani_selvaraj@comcast.com>
 
+Upstream-Status: Inappropriate [RDK-specific change]
 Index: git/src/client/linux/minidump_writer/linux_dumper.cc
 ===================================================================
 --- git.orig/src/client/linux/minidump_writer/linux_dumper.cc

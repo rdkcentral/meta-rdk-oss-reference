@@ -1,0 +1,19 @@
+From: RDK Build Compatibility
+Subject: [PATCH] m4: remove redundant popen declaration
+
+stdio.h already declares popen with its two arguments. This old empty-list
+declaration becomes a zero-argument prototype with GCC 15 and conflicts with
+the system declaration.
+
+Upstream-Status: Pending
+
+--- a/src/builtin.c
++++ b/src/builtin.c
+@@ -25,7 +25,5 @@
+ #include "m4.h"
+ 
+-extern FILE *popen ();
+-
+ #include "regex.h"
+ 
+ #if HAVE_SYS_WAIT_H

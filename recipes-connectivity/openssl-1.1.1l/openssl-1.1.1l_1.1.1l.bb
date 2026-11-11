@@ -4,9 +4,8 @@ HOMEPAGE = "http://www.openssl.org/"
 BUGTRACKER = "http://www.openssl.org/news/vulnerabilities.html"
 SECTION = "libs/network"
 
-# "openssl" here actually means both OpenSSL and SSLeay licenses apply
-# (see meta/files/common-licenses/OpenSSL to which "openssl" is SPDXLICENSEMAPped)
-LICENSE = "openssl"
+# "OpenSSL" here means both OpenSSL and SSLeay licenses apply.
+LICENSE = "OpenSSL"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d343e62fc9c833710bbbed25f27364c8"
 
 DEPENDS = "hostperl-runtime-native"
@@ -22,7 +21,7 @@ SRC_URI = "http://www.openssl.org/source/openssl-${PV}.tar.gz \
 SRC_URI:append:class-nativesdk = " \
            file://environment.d-openssl.sh \
            "
-S = "${WORKDIR}/openssl-${PV}"
+S = "${UNPACKDIR}/openssl-${PV}"
 
 SRC_URI[sha256sum] = "0b7a3e5e59c34827fe0c3a74b7ec8baef302b98fa80088d7f9153aa16fa76bd1"
 

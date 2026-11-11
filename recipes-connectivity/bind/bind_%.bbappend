@@ -19,10 +19,10 @@ do_install:append () {
     install -d ${D}/var/cache/bind
     install -d ${D}/etc/rdm/post-services
     
-    install ${WORKDIR}/named.conf.options ${D}${sysconfdir}/bind/
+    install ${UNPACKDIR}/named.conf.options ${D}${sysconfdir}/bind/
     sed -i "/.*include.*rndc.*/d" ${D}${sysconfdir}/bind/named.conf
     sed -i 's#.*rndc.*#;#g'  ${D}${sysconfdir}/bind/named.conf
-    install -m 755 ${WORKDIR}/named_start_post_rdm.sh ${D}/etc/rdm/post-services
+    install -m 755 ${UNPACKDIR}/named_start_post_rdm.sh ${D}/etc/rdm/post-services
 }
 
 inherit syslog-ng-config-gen logrotate_config

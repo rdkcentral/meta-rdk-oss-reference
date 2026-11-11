@@ -9,17 +9,17 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "gitsm://github.com/containers/crun;branch=main"
+SRC_URI += "file://0001-fuzzer-use-signal-handler-prototype.patch"
 
 SRCREV = "0356bf4aff9a133d655dc13b1d9ac9424706cac4"
 
 DEPENDS += "yajl libseccomp libtool libcap"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'RDKTV_CHECKPOINT_RESTORE', ' criu', '', d)}"
 
-S = "${WORKDIR}/git"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 inherit autotools-brokensep pkgconfig
+CLEANBROKEN = "1"
 
 do_configure:prepend () {
     cd ${S}

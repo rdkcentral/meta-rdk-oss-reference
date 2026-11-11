@@ -1,0 +1,13 @@
+From: RDK Build Compatibility
+Subject: [PATCH] bash: return correctly from POSIX signal handlers
+
+POSIX signal handlers return void. Use a bare return when POSIX signals are
+enabled, even when VOID_SIGHANDLER was not separately detected.
+
+Upstream-Status: Pending
+
+--- a/sig.h
++++ b/sig.h
+@@ -35 +35 @@
+-#if defined (VOID_SIGHANDLER)
++#if defined (VOID_SIGHANDLER) || defined (HAVE_POSIX_SIGNALS)

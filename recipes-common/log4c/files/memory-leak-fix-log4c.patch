@@ -1,6 +1,7 @@
 ###################################################################
 Date: <May 23 2023>
 Source: Deutsche Telekom AG
+Upstream-Status: Pending
 Changes copyright 2023-2024 Deutsche Telekom AG
 ###################################################################
 Index: log4c-1.2.3/src/log4c/rollingpolicy.c

@@ -1,4 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/../openssl/openssl:"
+DISABLE_STATIC:pn-openssl-1.1.1l = ""
+ERROR_QA:remove = "patch-status"
 
 SRC_URI:append = " file://CVE-2021-4160_fix.patch \
                    file://CVE-2022-2097_fix.patch \

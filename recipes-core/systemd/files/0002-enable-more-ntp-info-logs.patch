@@ -1,3 +1,4 @@
+Upstream-Status: Inappropriate [RDK-specific change]
 Index: git/src/timesync/timesyncd-manager.c
 ===================================================================
 --- git.orig/src/timesync/timesyncd-manager.c

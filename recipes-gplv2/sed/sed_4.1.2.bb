@@ -1,6 +1,6 @@
 SUMMARY = "Stream EDitor (text filtering utility)"
 HOMEPAGE = "http://www.gnu.org/software/sed/"
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f \
                     file://sed/sed.h;beginline=1;endline=17;md5=e00ffd1837f298439a214fd197f6a407"
 SECTION = "console/utils"
@@ -11,6 +11,9 @@ SRC_URI = "${GNU_MIRROR}/sed/sed-${PV}.tar.gz \
            file://sed-4.1.2_fix_for_automake-1.12.patch \
            file://Makevars \
            file://0001-Fix-builds-with-gettext-0.20.patch \
+           file://0001-include-string-and-unistd-headers.patch \
+           file://0002-return-null-on-regex-error.patch \
+           file://0003-include-string-header-in-basicdefs.patch \
            "
 
 SRC_URI[md5sum] = "928f0e06422f414091917401f1a834d0"
@@ -19,7 +22,7 @@ SRC_URI[sha256sum] = "638e837ba765d5da0a30c98b57c2953cecea96827882f594612acace93
 inherit autotools texinfo update-alternatives gettext
 
 do_configure:prepend () {
-	cp ${WORKDIR}/Makevars ${S}/po/
+    cp ${UNPACKDIR}/Makevars ${S}/po/
 }
 
 do_install () {

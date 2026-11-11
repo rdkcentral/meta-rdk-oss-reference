@@ -1,0 +1,12 @@
+Upstream-Status: Pending
+
+Several translation units use standard string routines through the shared
+sed headers. Include their declarations from basicdefs.h.
+
+--- a/basicdefs.h
++++ b/basicdefs.h
+@@ -20,0 +21,4 @@
++
++#ifdef HAVE_STRING_H
++# include <string.h>
++#endif

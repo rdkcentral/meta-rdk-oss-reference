@@ -37,6 +37,7 @@ ALTERNATIVE_TARGET[awk] = "${bindir}/gawk"
 ALTERNATIVE_PRIORITY = "100"
 
 CFLAGS += "-D PROTOTYPES"
+CFLAGS:append = " -std=gnu17"
 
 do_install:append() {
 	# remove the link since we don't package it

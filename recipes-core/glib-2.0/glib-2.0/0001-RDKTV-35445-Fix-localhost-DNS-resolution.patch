@@ -16,6 +16,7 @@ AF_INET or AF_INET6 will always fail when no network avaialble.
 Even if the hostname resolves to localhost in /etc/hosts
 
 Signed-off-by: Andrzej Surdej <Andrzej_Surdej@comcast.com>
+Upstream-Status: Backport [https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4566]
 ---
  gio/gthreadedresolver.c | 12 ++++++++++++
  1 file changed, 12 insertions(+)

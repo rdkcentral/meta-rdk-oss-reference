@@ -1,0 +1,10 @@
+Upstream-Status: Pending
+
+Return a null state when building the combined state fails, matching the
+other error paths in merge_state_with_log.
+
+--- a/lib/regexec.c
++++ b/lib/regexec.c
+@@ -2266,1 +2266,1 @@
+-	    return;
++	    return NULL;

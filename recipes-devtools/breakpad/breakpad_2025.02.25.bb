@@ -25,6 +25,7 @@ SRC_URI += "file://custom-minidump-id.patch"
 SRC_URI += "file://breakpad2_1-processname.patch"
 
 PACKAGES =+ "${PN}-stackwalk ${PN}-binaries"
+ERROR_QA:remove = "patch-fuzz"
 
 # uncomment this line to get minidump_stackwalk in the image
 # RDEPENDS:breakpad += "${PN}-stackwalk"

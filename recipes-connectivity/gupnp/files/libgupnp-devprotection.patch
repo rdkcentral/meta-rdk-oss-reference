@@ -180,22 +180,22 @@ Signed-off-by: Philip Mathew  <philip_mathew@comcast.com>
 +           if (cert_file) {
 +              g_value_init(&value, G_TYPE_STRING);
 +              g_value_set_string (&value, cert_file);
-+              soup_session_set_property_values(soup_session,SOUP_SESSION_SSL_CA_FILE,   
-+                          &value, NULL);
++              g_object_set_property(G_OBJECT(soup_session), SOUP_SESSION_SSL_CA_FILE,
++                          &value);
 +              g_value_unset (&value);
 +           }
 +
 +           g_value_init(&value, G_TYPE_BOOLEAN);
 +           g_value_set_boolean(&value, TRUE);
-+           soup_session_set_property_values(soup_session,SOUP_SESSION_SSL_STRICT,   
-+                          &value, NULL);
++           g_object_set_property(G_OBJECT(soup_session), SOUP_SESSION_SSL_STRICT,
++                          &value);
 +           g_value_unset (&value);
 +
 +           if (xupnp_tlsinteraction) { 
 +              g_value_init(&value, G_TYPE_OBJECT);
 +              g_value_set_object(&value, xupnp_tlsinteraction);
-+              soup_session_set_property_values(soup_session,SOUP_SESSION_TLS_INTERACTION,   
-+                          &value, NULL);
++              g_object_set_property(G_OBJECT(soup_session), SOUP_SESSION_TLS_INTERACTION,
++                          &value);
 +              g_value_unset (&value);
 +           }
 +       }

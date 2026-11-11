@@ -1,3 +1,6 @@
+# Disable mount-FD support when target syscall headers lack SYS_mount_setattr.
+PACKAGECONFIG:remove = "libmount-mountfd-support"
+
 RRECOMMENDS:${PN}:remove = " \
                            ${PN}-addpart \ 
                            ${PN}-cfdisk \ 

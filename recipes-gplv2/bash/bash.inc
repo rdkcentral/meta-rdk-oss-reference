@@ -48,7 +48,8 @@ do_install:append () {
 do_install:append:class-target () {
 	# Clean host path in bashbug
 	sed -i -e "s,--sysroot=${STAGING_DIR_TARGET},,g" \
-		-e "s,-I${WORKDIR}/\S* ,,g" ${D}${bindir}/bashbug
+		-e "s,-I${WORKDIR}/\S* ,,g" \
+		-e 's|-ffile-prefix-map=[^[:space:]]*||g' ${D}${bindir}/bashbug
 }
 
 do_install_ptest () {

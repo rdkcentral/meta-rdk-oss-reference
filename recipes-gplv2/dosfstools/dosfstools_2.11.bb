@@ -5,7 +5,7 @@ SUMMARY = "DOS FAT Filesystem Utilities"
 HOMEPAGE = "https://github.com/dosfstools/dosfstools"
 
 SECTION = "base"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://mkdosfs/COPYING;md5=cbe67f08d6883bff587f615f0cc81aa8"
 PR = "r5"
 
@@ -18,6 +18,7 @@ SRC_URI = "http://pkgs.fedoraproject.org/repo/pkgs/${BPN}/${BP}.src.tar.gz/407d4
            file://include-linux-types.patch \
            file://nofat32_autoselect.patch \
            file://fix_populated_dosfs_creation.patch \
+           file://0001-fix-gcc15-compile-errors.patch \
            file://0001-Include-fcntl.h-for-getting-loff_t-definition.patch \
 	   file://fixing-out-of-bound-writes.patch \
 "

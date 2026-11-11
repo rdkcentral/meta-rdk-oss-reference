@@ -1,0 +1,7 @@
+Upstream-Status: Pending
+
+--- a/gettext-runtime/intl/dcigettext.c
++++ b/gettext-runtime/intl/dcigettext.c
+@@ -162 +162 @@
+-char *getcwd ();
++extern char *getcwd (char *, size_t);

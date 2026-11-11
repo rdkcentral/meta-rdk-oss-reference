@@ -1,5 +1,6 @@
 Date: May 25, 2024
 From: Chris Buchter <Chris_Buchter@cable.comcast.com>
+Upstream-Status: Inappropriate [RDK-specific ping handling]
 Source: COMCAST
 Subject: IPControl actually does respond to ping with pong, but handler doesn't get called when ping doesn't contain data. 
 Update nopoll with patch to make this work

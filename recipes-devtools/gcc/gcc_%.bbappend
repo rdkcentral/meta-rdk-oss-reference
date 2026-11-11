@@ -1,0 +1,1 @@
+INCOMPATIBLE_LICENSE_EXCEPTIONS:pn-gcc = "gcc:GPL-3.0-only gcc-symlinks:GPL-3.0-only g++:GPL-3.0-only"

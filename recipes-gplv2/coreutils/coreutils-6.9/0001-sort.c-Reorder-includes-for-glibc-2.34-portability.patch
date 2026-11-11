@@ -13,16 +13,17 @@ glibc headers
 Upstream-Status: Inappropriate [OE-Specific]
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
 ---
- src/sort.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/sort.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/src/sort.c
 +++ b/src/sort.c
-@@ -21,12 +21,12 @@
+@@ -21,12 +21,13 @@
  
     Ørn E. Hansen added NLS support in 1997.  */
  
 +#include <sys/types.h>
++#include <stdlib.h>
 +#include <sys/wait.h>
  #include <config.h>
  

@@ -1,9 +1,6 @@
 #RDK-46317
 RDEPENDS:${PN}-dev += " libpcre-dev libffi-dev"
+RDEPENDS:${PN}-ptest:remove = "python3-dbusmock"
 
 inherit breakpad-wrapper
 
-#RDK-53880
-CFLAGS:append = " -flto -fuse-linker-plugin"
-CXXFLAGS:append = " -flto -fuse-linker-plugin"
-LDFLAGS:append = " -flto -fuse-linker-plugin"

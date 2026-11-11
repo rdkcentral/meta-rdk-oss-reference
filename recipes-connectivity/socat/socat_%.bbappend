@@ -2,7 +2,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:append = " \
         file://socat_restrict_localhost.patch \
-        file://socat_windows_config_pty.patch \
         "
 EXTRA_OECONF += " --disable-proxy \
 		--disable-tun \

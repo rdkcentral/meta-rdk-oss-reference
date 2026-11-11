@@ -102,6 +102,11 @@ Index: dnsmasq-2.83/src/dnsmasq.h
  #ifdef HAVE_DUMPFILE
    /* file for packet dumps. */
    int dumpfd;
+@@ -1485,0 +1486,4 @@
++#ifdef HAVE_DHCP
++int init_msgq_presence(struct daemon *pDmn);
++int receiveq_updatepresence_status(struct daemon *pDmn);
++#endif
 Index: dnsmasq-2.83/src/rfc2131.c
 ===================================================================
 --- dnsmasq-2.83.orig/src/rfc2131.c

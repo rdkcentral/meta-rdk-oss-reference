@@ -1,5 +1,9 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/opkg:"
 
+DEPENDS:append = " xz"
+
+ERROR_QA:remove = "patch-status patch-fuzz"
+
 SRC_URI:append:class-target = " \
            file://0001-package_name_code_path_crash_fix.patch \
            file://0002-fix_crash_when_opkg_does_reinit.patch \

@@ -1,0 +1,8 @@
+diff --git a/networking/ping.c b/networking/ping.c
+--- a/networking/ping.c
++++ b/networking/ping.c
+@@ -129,3 +129,4 @@
+ #include <netinet/ip_icmp.h>
++#include <math.h>
+ #include "libbb.h"
+ #include "common_bufsiz.h"

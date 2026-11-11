@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service file://0001-monotonic-timestamp.patch file://prepare-syslog-ng-config.sh ', '', d)}"
+SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', ' file://syslog-ng.service file://0001-monotonic-timestamp-wrynose.patch file://prepare-syslog-ng-config.sh ', '', d)}"
 
 RDEPENDS:${PN}:remove = "gawk"
 inherit update-alternatives
@@ -48,7 +48,7 @@ do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/${BPN}
         install -d ${D}${systemd_unitdir}/system
-        install -m 644 ${WORKDIR}/syslog-ng.service  ${D}${systemd_unitdir}/system
+        install -m 644 ${UNPACKDIR}/syslog-ng.service  ${D}${systemd_unitdir}/system
 
         #Remove the syslog-ng@default.service link from multiuser target as we don't use it. 
         rm -f ${D}${systemd_unitdir}/system/multi-user.target.wants/${BPN}@default.service
@@ -56,7 +56,7 @@ do_install:append() {
         rm -rf ${D}${datadir}/${BPN}/include/scl/windowseventlog/*
 
         install -d ${D}${base_libdir}/rdk
-        install -m 0755 ${WORKDIR}/prepare-syslog-ng-config.sh ${D}${base_libdir}/rdk/prepare-syslog-ng-config.sh
+        install -m 0755 ${UNPACKDIR}/prepare-syslog-ng-config.sh ${D}${base_libdir}/rdk/prepare-syslog-ng-config.sh
     fi
 
 }
@@ -106,7 +106,7 @@ pkg_postinst:${PN}() {
     fi
 }
 
-SYSTEMD_SERVICE:${PN}:remove += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'syslog-ng@.service', '', d)}"
+SYSTEMD_SERVICE:${PN}:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'syslog-ng@.service', '', d)}"
 SYSTEMD_SERVICE:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'syslog-ng.service', '', d)}"
 FILES:${PN} += " ${systemd_unitdir}/system/* "
 

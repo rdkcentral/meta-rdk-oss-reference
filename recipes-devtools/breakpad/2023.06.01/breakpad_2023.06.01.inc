@@ -40,13 +40,18 @@ SRC_URI = "git://github.com/google/breakpad;name=breakpad;branch=main;protocol=h
            file://mcontext.patch \
            file://0001-Remove-HAVE_GETCONTEXT-check-to-add-local-implementa.patch \
            file://0001-Fixed-missing-include-for-std-find_if.patch \
-           file://0001-lss-Match-syscalls-to-match-musl.patch;patchdir=src/third_party/lss \
-           file://mips_asm_sgidefs.patch;patchdir=src/third_party/lss \
+           file://0001-lss-Match-syscalls-to-match-musl.patch;patchdir=../git/src/third_party/lss \
+           file://mips_asm_sgidefs.patch;patchdir=../git/src/third_party/lss \
 "
-S = "${WORKDIR}/git"
-
 CXXFLAGS += "-D_GNU_SOURCE"
 LDFLAGS:append:libc-musl = " -lucontext"
+
+do_configure:prepend() {
+        install -d ${S}/src/testing ${S}/src/third_party/protobuf ${S}/src/third_party
+        ln -sfn ${UNPACKDIR}/git/src/testing/gtest ${S}/src/testing/gtest
+        ln -sfn ${UNPACKDIR}/git/src/third_party/protobuf/protobuf ${S}/src/third_party/protobuf/protobuf
+        ln -sfn ${UNPACKDIR}/git/src/third_party/lss ${S}/src/third_party/lss
+}
 
 COMPATIBLE_HOST:powerpc = "null"
 COMPATIBLE_HOST:powerpc64 = "null"

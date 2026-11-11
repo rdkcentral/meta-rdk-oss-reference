@@ -1,1 +1,1 @@
-PACKAGECONFIG:remove += "giflib"
+PACKAGECONFIG:remove = "giflib"

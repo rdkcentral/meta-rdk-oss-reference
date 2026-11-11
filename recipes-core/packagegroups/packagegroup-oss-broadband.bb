@@ -51,7 +51,6 @@ RDEPENDS:${PN} += "\
      attr \ 
      libtirpc \ 
      libtool \ 
-     libgcc-initial \ 
      libnsl2 \ 
      shared-mime-info \ 
      json-c \ 

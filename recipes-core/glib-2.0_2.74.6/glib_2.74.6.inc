@@ -30,11 +30,11 @@ LEAD_SONAME = "libglib-2.0.*"
 
 inherit meson gettext gtk-doc pkgconfig ptest-gnome upstream-version-is-even bash-completion gio-module-cache manpages
 
+S = "${UNPACKDIR}/glib-${PV}"
+
 DEPENDS:append:class-target = "${@' gtk-doc' if d.getVar('GTKDOC_ENABLED') == 'True' else ''}"
 
 GTKDOC_MESON_OPTION = "gtk_doc"
-
-S = "${WORKDIR}/glib-${PV}"
 
 PACKAGECONFIG ??= "libmount \
                    ${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)}"
@@ -139,7 +139,7 @@ do_install:append:mingw32() {
         rm -f ${D}${bindir}/gtester-report
 }
 
-CODEGEN_PYTHON_RDEPENDS = "python3 python3-distutils python3-xml"
+CODEGEN_PYTHON_RDEPENDS = "python3 python3-packaging python3-xml"
 CODEGEN_PYTHON_RDEPENDS:mingw32 = ""
 
 RDEPENDS:${PN}-codegen += "${CODEGEN_PYTHON_RDEPENDS}"

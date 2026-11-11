@@ -1,6 +1,7 @@
 Date: Tue, 16 Aug 2011 16:04:35 +0200
 From: Koen Kooi <koen@dominion.thruhere.net>
 Subject: [PATCH] Upstream: not yet
+Upstream-Status: Pending
 Fix configure to accept "--prefix=" (a blank prefix).
 Source: COMCAST dc0a5c3d2dd4e79d12a150a246a95c4dc88326f1 Mon Sep 17 00:00:00 2001
 Signed-off-by: Ievgen Mutavchi <Ievgen_Mutavchi@comcast.com>

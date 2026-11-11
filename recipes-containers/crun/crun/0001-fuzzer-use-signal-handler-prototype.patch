@@ -1,0 +1,21 @@
+From: Build Compatibility <build@example.invalid>
+Subject: [PATCH] tests: use a prototyped SIGCHLD handler
+
+Match the signal handler signature required by signal(3).
+
+Upstream-Status: Pending
+
+---
+ tests/tests_libcrun_fuzzer.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/tests_libcrun_fuzzer.c b/tests/tests_libcrun_fuzzer.c
+--- a/tests/tests_libcrun_fuzzer.c
++++ b/tests/tests_libcrun_fuzzer.c
+@@ -437,4 +437,5 @@
+ static void
+-sig_chld ()
++sig_chld (int signum)
+ {
++  (void) signum;
+   int status;

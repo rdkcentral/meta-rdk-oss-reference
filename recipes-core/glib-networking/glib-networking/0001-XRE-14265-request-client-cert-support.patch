@@ -47,7 +47,7 @@ Index: glib-networking-2.72.0/tls/openssl/gtlsclientconnection-openssl.c
    if (!cert)
      {
 -      if (g_tls_connection_base_handshake_thread_request_certificate (tls))
-+      if (g_tls_connection_base_handshake_thread_request_certificate (tls) || request_client_certificate (tls))
++      if (g_tls_connection_base_handshake_thread_request_certificate (tls) || request_client_certificate (G_TLS_CONNECTION (tls)))
          cert = g_tls_connection_get_certificate (G_TLS_CONNECTION (client));
      }
  

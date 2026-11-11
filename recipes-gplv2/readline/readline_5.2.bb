@@ -12,6 +12,10 @@ DEPENDS += "ncurses"
 
 PR = "r9"
 
+ERROR_QA:remove:pn-readline-native = "patch-status"
+# GNU's published readline 5.2 patches do not include Yocto status headers.
+ERROR_QA:remove:pn-readline = "patch-status"
+
 SRC_URI = "${GNU_MIRROR}/readline/${BPN}-${PV}.tar.gz;name=archive \
            ${GNU_MIRROR}/readline/readline-5.2-patches/readline52-001;name=patch1;apply=yes;striplevel=0 \
            ${GNU_MIRROR}/readline/readline-5.2-patches/readline52-002;name=patch2;apply=yes;striplevel=0 \
@@ -29,7 +33,8 @@ SRC_URI = "${GNU_MIRROR}/readline/${BPN}-${PV}.tar.gz;name=archive \
            ${GNU_MIRROR}/readline/readline-5.2-patches/readline52-014;name=patch14;apply=yes;striplevel=0 \
            file://configure-fix.patch \
            file://config-dirent-symbols.patch \
-           file://fix-redundant-rpath.patch"
+           file://fix-redundant-rpath.patch \
+           file://readline-gcc15-compile-compat-v2.patch"
 
 SRC_URI[archive.md5sum] = "e39331f32ad14009b9ff49cc10c5e751"
 SRC_URI[archive.sha256sum] = "12e88d96aee2cd1192500356f0535540db499282ca7f76339fb4228c31249f45"

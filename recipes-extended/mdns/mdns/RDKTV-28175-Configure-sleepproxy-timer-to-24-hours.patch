@@ -1,6 +1,7 @@
 Date: Jun 19, 2024
 From: rgangi643 <ramakrishna_gangisetty@comcast.com>
 Source: COMCAST
+Upstream-Status: Inappropriate [RDK-specific sleep proxy configuration]
 Subject: mDNSResponder branch changed from 1790 to  1556
 Signed-off-by: rgangi643 <ramakrishna_gangisetty@comcast.com>
 Index: git/mDNSCore/uDNS.h

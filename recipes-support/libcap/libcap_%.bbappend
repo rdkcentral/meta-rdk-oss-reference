@@ -11,7 +11,7 @@ do_compile_ptest() {
 
 do_install_ptest() {
     # Install the run-ptest script
-    install -D -m 0755 ${WORKDIR}/run-ptest ${D}${PTEST_PATH}/run-ptest
+    install -D -m 0755 ${UNPACKDIR}/run-ptest ${D}${PTEST_PATH}/run-ptest
 }
 
 RDEPENDS:${PN}-ptest += "bash libcap-bin"

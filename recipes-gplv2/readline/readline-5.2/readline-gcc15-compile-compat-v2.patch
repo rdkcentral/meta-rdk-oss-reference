@@ -1,0 +1,24 @@
+From: RDK Build Compatibility
+Subject: [PATCH] readline: fix wcwidth and POSIX signal declarations
+
+Declare wcwidth when configure finds the function but libc hides its
+declaration, and use the POSIX signal handler signature and return form.
+
+Upstream-Status: Pending
+
+--- a/rlmbutil.h
++++ b/rlmbutil.h
+@@ -36,2 +36,5 @@
+ #  include <wchar.h>
++#  if defined (HAVE_WCWIDTH)
++extern int wcwidth (wchar_t);
++#  endif
+ #  include <wctype.h>
+--- a/signals.c
++++ b/signals.c
+@@ -58 +58 @@
+-#if defined (VOID_SIGHANDLER)
++#if defined (VOID_SIGHANDLER) || defined (HAVE_POSIX_SIGNALS)
+@@ -70 +70 @@
+-typedef RETSIGTYPE SigHandler ();
++typedef RETSIGTYPE SigHandler (int);

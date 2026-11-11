@@ -12,7 +12,20 @@ SRC_URI:append = " \
 	file://04log4c_sizewin.patch \
 	file://03log4c_rollingfileapender.patch \
         file://memory-leak-fix-log4c.patch \
+    file://0001-fix-example-sd-debug-declaration.patch \
 "
+
+python do_patch:prepend() {
+
+    import os
+
+    for relative_path in ("src/log4c/rollingpolicy.c", "src/sd/domnode-xml-parser.c"):
+        path = os.path.join(d.getVar("S"), relative_path)
+        with open(path, "rb") as source:
+            contents = source.read().replace(b"\r\n", b"\n")
+        with open(path, "wb") as target:
+            target.write(contents)
+}
 
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[expat] = "--with-expat,--without-expat,expat"

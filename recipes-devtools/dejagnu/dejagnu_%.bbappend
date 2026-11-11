@@ -1,0 +1,1 @@
+INCOMPATIBLE_LICENSE_EXCEPTIONS:pn-dejagnu = "dejagnu:GPL-3.0-only"

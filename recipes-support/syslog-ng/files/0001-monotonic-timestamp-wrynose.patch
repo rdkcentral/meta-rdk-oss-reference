@@ -1,0 +1,45 @@
+From: RDK <rdk@comcast.com>
+Subject: syslog-ng: add journald monotonic timestamp to messages
+
+Port the RDK journald monotonic timestamp support to syslog-ng 4.11.0.
+
+Upstream-Status: Inappropriate [RDK-specific journald message field]
+
+---
+
+diff --git a/modules/systemd-journal/journald-subsystem.c b/modules/systemd-journal/journald-subsystem.c
+--- a/modules/systemd-journal/journald-subsystem.c
++++ b/modules/systemd-journal/journald-subsystem.c
+@@ -52,0 +53,1 @@
++int (*sd_journal_get_monotonic_usec)(sd_journal *j, uint64_t *usec, sd_id128_t *boot_id);
+@@ -142,0 +143,3 @@
++  if (!LOAD_SYMBOL(journald_module, sd_journal_get_monotonic_usec))
++    return FALSE;
++
+
+diff --git a/modules/systemd-journal/journald-subsystem.h b/modules/systemd-journal/journald-subsystem.h
+--- a/modules/systemd-journal/journald-subsystem.h
++++ b/modules/systemd-journal/journald-subsystem.h
+@@ -103,0 +104,1 @@
++VISIBILITY_HIDDEN extern int (*sd_journal_get_monotonic_usec)(sd_journal *j, uint64_t *usec, sd_id128_t *boot_id);
+
+diff --git a/modules/systemd-journal/journal-reader.c b/modules/systemd-journal/journal-reader.c
+--- a/modules/systemd-journal/journal-reader.c
++++ b/modules/systemd-journal/journal-reader.c
+@@ -303,0 +304,14 @@
++static void
++_set_monotonic_timestamp(JournalReader *self, LogMessage *msg)
++{
++  guint64 ts;
++  sd_id128_t boot_id;
++
++  if (sd_journal_get_monotonic_usec(self->journal, &ts, &boot_id) < 0)
++    return;
++
++  gchar monotonic_ts[32];
++  gsize monotonic_ts_len = g_snprintf(monotonic_ts, sizeof(monotonic_ts), "%" G_GUINT64_FORMAT, ts);
++  _set_value_in_message(self->options, msg, "__MONOTONIC_TIMESTAMP", -1, monotonic_ts, monotonic_ts_len);
++}
++
+@@ -316,0 +331,1 @@
++  _set_monotonic_timestamp(self, msg);

@@ -1,0 +1,12 @@
+Upstream-Status: Inappropriate [RDK uses systemd 230; upstream requires libudev 251 or newer]
+
+--- a/meson.build
++++ b/meson.build
+@@ -44 +44 @@
+-libudev_req = '>= 251'
++libudev_req = '>= 230'
+--- a/gudev/gudevdevice.c
++++ b/gudev/gudevdevice.c
+@@ -146 +146 @@
+-  for (l = udev_device_get_current_tags_list_entry (device->priv->udevice); l != NULL; l = udev_list_entry_get_next (l))
++  for (l = udev_device_get_tags_list_entry (device->priv->udevice); l != NULL; l = udev_list_entry_get_next (l))

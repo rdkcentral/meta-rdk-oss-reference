@@ -1,0 +1,41 @@
+From: RDK Build Compatibility
+Subject: [PATCH] findutils: widen gnulib mktime year arithmetic for time64
+
+On 32-bit targets with 64-bit time_t, long int is no wider than int. Use
+long long for mktime's year/day intermediates in that case, preserving the
+compile-time range check instead of disabling it.
+
+Upstream-Status: Pending
+
+--- a/gnulib/lib/mktime.c
++++ b/gnulib/lib/mktime.c
+@@ -103,0 +104,7 @@
++/* time64 can outgrow long int on 32-bit ABIs. */
++#if INT_MAX <= LONG_MAX / 2
++typedef long int mktime_long_int;
++#else
++typedef long long int mktime_long_int;
++#endif
++
+@@ -119,1 +126,1 @@
+-leapyear (long int year)
++leapyear (mktime_long_int year)
+@@ -164,1 +171,1 @@
+-ydhms_diff (long int year1, long int yday1, int hour1, int min1, int sec1,
++ydhms_diff (mktime_long_int year1, mktime_long_int yday1, int hour1, int min1, int sec1,
+@@ -169,1 +176,1 @@
+-	  INT_MAX <= LONG_MAX / 2 || TIME_T_MAX <= UINT_MAX);
++	  INT_MAX <= TYPE_MAXIMUM (mktime_long_int) / 2 || TIME_T_MAX <= UINT_MAX);
+@@ -200,1 +207,1 @@
+-guess_time_tm (long int year, long int yday, int hour, int min, int sec,
++guess_time_tm (mktime_long_int year, mktime_long_int yday, int hour, int min, int sec,
+@@ -302,2 +309,2 @@
+-  long int lyear_requested = year_requested;
+-  long int year = lyear_requested + mon_years;
++  mktime_long_int lyear_requested = year_requested;
++  mktime_long_int year = lyear_requested + mon_years;
+@@ -315,2 +322,2 @@
+-  long int lmday = mday;
+-  long int yday = mon_yday + lmday;
++  mktime_long_int lmday = mday;
++  mktime_long_int yday = mon_yday + lmday;
