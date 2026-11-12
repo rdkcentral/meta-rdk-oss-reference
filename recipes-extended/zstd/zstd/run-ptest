@@ -1,0 +1,47 @@
+#!/bin/sh
+
+set -o pipefail
+
+cd tests || exit 1
+
+# Quick functional tests only - skip long-running stress tests
+
+echo "==> Running fullbench (quick test)"
+if ./fullbench -i1 > /dev/null 2>&1; then
+    echo "PASS: fullbench"
+else
+    echo "FAIL: fullbench"
+fi
+
+echo "==> Running datagen test"
+if ./datagen -g1M > /dev/null 2>&1; then
+    echo "PASS: datagen"
+else
+    echo "FAIL: datagen"
+fi
+
+echo "==> Running compress+decompress test"
+if ./datagen -s1 | ../programs/zstd - | ../programs/zstd -d > /dev/null 2>&1; then
+    echo "PASS: compress+decompress"
+else
+    echo "FAIL: compress+decompress"
+fi
+
+echo "==> Running compression levels test"
+if ./datagen -g1M | ../programs/zstd -1 | ../programs/zstd -d > /dev/null 2>&1; then
+    echo "PASS: compression level 1"
+else
+    echo "FAIL: compression level 1"
+fi
+
+if ./datagen -g1M | ../programs/zstd -19 | ../programs/zstd -d > /dev/null 2>&1; then
+    echo "PASS: compression level 19"
+else
+    echo "FAIL: compression level 19"
+fi
+
+# Skip stress tests - they're too slow for ptest
+echo "SKIP: fuzzer (stress test - too slow for ptest)"
+echo "SKIP: zstreamtest (stress test - too slow for ptest)"
+echo "SKIP: decodecorpus (complex test - not suitable for ptest)"
+echo "SKIP: paramgrill (optimization tool - not a test)"

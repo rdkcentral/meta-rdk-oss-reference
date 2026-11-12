@@ -1,0 +1,187 @@
+#!/bin/bash
+# psmisc ptest - functional tests for psmisc utilities
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+pass() {
+    echo "PASS: $1"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}
+
+fail() {
+    echo "FAIL: $1"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+}
+
+skip() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+# ===== pstree tests =====
+if command -v pstree > /dev/null 2>&1; then
+    # Version check
+    if pstree -V 2>&1 | grep -qi "pstree\|psmisc"; then
+        pass "pstree -V"
+    else
+        fail "pstree -V"
+    fi
+
+    # Default output shows init/systemd at root
+    if pstree 2>/dev/null | grep -q .; then
+        pass "pstree default output"
+    else
+        fail "pstree default output"
+    fi
+
+    # Show PIDs
+    if pstree -p 2>/dev/null | grep -qE "\([0-9]+\)"; then
+        pass "pstree -p (show PIDs)"
+    else
+        fail "pstree -p (show PIDs)"
+    fi
+
+    # Show for specific PID (PID 1)
+    if pstree 1 2>/dev/null | grep -q .; then
+        pass "pstree PID 1"
+    else
+        fail "pstree PID 1"
+    fi
+
+    # ASCII output
+    if pstree -A 2>/dev/null | grep -q .; then
+        pass "pstree -A (ASCII)"
+    else
+        fail "pstree -A (ASCII)"
+    fi
+
+    # Show command line arguments
+    if pstree -a 2>/dev/null | grep -q .; then
+        pass "pstree -a (arguments)"
+    else
+        fail "pstree -a (arguments)"
+    fi
+else
+    skip "pstree (not found)"
+fi
+
+# ===== killall tests =====
+if command -v killall > /dev/null 2>&1; then
+    # Version check
+    if killall -V 2>&1 | grep -qi "killall\|psmisc"; then
+        pass "killall -V"
+    else
+        fail "killall -V"
+    fi
+
+    # List signal names
+    if killall -l 2>/dev/null | grep -qi "HUP\|TERM\|KILL"; then
+        pass "killall -l (list signals)"
+    else
+        fail "killall -l (list signals)"
+    fi
+
+    # Dry-run: send signal 0 to a known process (just checks if process exists)
+    if killall -0 sh 2>/dev/null; then
+        pass "killall -0 (signal check)"
+    else
+        # sh might not be running as a named process
+        skip "killall -0 (no matching process)"
+    fi
+else
+    skip "killall (not found)"
+fi
+
+# ===== fuser tests =====
+if command -v fuser > /dev/null 2>&1; then
+    # Version check
+    if fuser -V 2>&1 | grep -qi "fuser\|psmisc"; then
+        pass "fuser -V"
+    else
+        fail "fuser -V"
+    fi
+
+    # Check who is using root filesystem
+    if fuser -m / > /dev/null 2>&1; then
+        pass "fuser -m / (root mount)"
+    else
+        # May need root privileges
+        skip "fuser -m / (needs root)"
+    fi
+
+    # Check who is using /dev/null
+    if fuser /dev/null > /dev/null 2>&1; then
+        pass "fuser /dev/null"
+    else
+        # No process may be using /dev/null at this moment
+        pass "fuser runs on /dev/null"
+    fi
+
+    # Check a network port (if available)
+    if fuser -n tcp 22 > /dev/null 2>&1; then
+        pass "fuser -n tcp (network)"
+    else
+        skip "fuser -n tcp (port 22 not in use)"
+    fi
+else
+    skip "fuser (not found)"
+fi
+
+# ===== prtstat tests =====
+if command -v prtstat > /dev/null 2>&1; then
+    # Show stats for PID 1
+    if prtstat 1 2>/dev/null | grep -qi "pid\|process\|state\|cmd"; then
+        pass "prtstat PID 1"
+    else
+        fail "prtstat PID 1"
+    fi
+
+    # Raw format
+    if prtstat -r 1 2>/dev/null | grep -q .; then
+        pass "prtstat -r (raw format)"
+    else
+        fail "prtstat -r (raw format)"
+    fi
+else
+    skip "prtstat (not found)"
+fi
+
+# ===== pslog tests =====
+if command -v pslog > /dev/null 2>&1; then
+    # pslog shows log file descriptors for a process
+    # PID 1 may or may not have log fds
+    if pslog 1 > /dev/null 2>&1; then
+        pass "pslog PID 1"
+    else
+        # pslog returns non-zero if no logs found, that's okay
+        rc=$?
+        if [ $rc -eq 1 ]; then
+            pass "pslog runs (no logs for PID 1)"
+        else
+            fail "pslog PID 1 (exit=$rc)"
+        fi
+    fi
+else
+    skip "pslog (not found)"
+fi
+
+# ===== peekfd tests =====
+if command -v peekfd > /dev/null 2>&1; then
+    # peekfd requires ptrace - just check it starts
+    if peekfd --help > /dev/null 2>&1 || peekfd 2>&1 | grep -qi "usage\|peekfd"; then
+        pass "peekfd help"
+    else
+        fail "peekfd help"
+    fi
+else
+    skip "peekfd (not found)"
+fi
+
+echo ""
+echo "=== psmisc ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

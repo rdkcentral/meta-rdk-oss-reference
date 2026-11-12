@@ -1,0 +1,227 @@
+#!/bin/bash
+# libarchive ptest - test bsdtar, bsdcpio, bsdcat and libarchive functionality
+
+PTEST_PATH="$(dirname "$0")"
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+run_test() {
+    local test_name="$1"
+    shift
+    if "$@" > /dev/null 2>&1; then
+        echo "PASS: $test_name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: $test_name"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+}
+
+skip_test() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+# === bsdtar tests ===
+if command -v bsdtar > /dev/null 2>&1; then
+    run_test "bsdtar --version" bsdtar --version
+
+    # Create test data
+    echo "hello libarchive" > "$TMPDIR/testfile.txt"
+    echo "second file" > "$TMPDIR/testfile2.txt"
+    mkdir -p "$TMPDIR/testdir"
+    echo "nested" > "$TMPDIR/testdir/nested.txt"
+
+    # Create tar archive
+    if bsdtar -cf "$TMPDIR/test.tar" -C "$TMPDIR" testfile.txt testfile2.txt testdir 2>/dev/null; then
+        echo "PASS: bsdtar create tar"
+        PASS_COUNT=$((PASS_COUNT + 1))
+
+        # List tar contents
+        if bsdtar -tf "$TMPDIR/test.tar" | grep -q "testfile.txt"; then
+            echo "PASS: bsdtar list tar"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdtar list tar"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+
+        # Extract tar
+        mkdir -p "$TMPDIR/extract_tar"
+        if bsdtar -xf "$TMPDIR/test.tar" -C "$TMPDIR/extract_tar" 2>/dev/null; then
+            echo "PASS: bsdtar extract tar"
+            PASS_COUNT=$((PASS_COUNT + 1))
+
+            # Verify content
+            if [ "$(cat "$TMPDIR/extract_tar/testfile.txt")" = "hello libarchive" ]; then
+                echo "PASS: bsdtar extract content verify"
+                PASS_COUNT=$((PASS_COUNT + 1))
+            else
+                echo "FAIL: bsdtar extract content verify"
+                FAIL_COUNT=$((FAIL_COUNT + 1))
+            fi
+
+            # Verify nested file
+            if [ -f "$TMPDIR/extract_tar/testdir/nested.txt" ]; then
+                echo "PASS: bsdtar extract nested file"
+                PASS_COUNT=$((PASS_COUNT + 1))
+            else
+                echo "FAIL: bsdtar extract nested file"
+                FAIL_COUNT=$((FAIL_COUNT + 1))
+            fi
+        else
+            echo "FAIL: bsdtar extract tar"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    else
+        echo "FAIL: bsdtar create tar"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+
+    # Create gzip-compressed tar
+    if bsdtar -czf "$TMPDIR/test.tar.gz" -C "$TMPDIR" testfile.txt 2>/dev/null; then
+        echo "PASS: bsdtar create tar.gz"
+        PASS_COUNT=$((PASS_COUNT + 1))
+
+        mkdir -p "$TMPDIR/extract_gz"
+        if bsdtar -xf "$TMPDIR/test.tar.gz" -C "$TMPDIR/extract_gz" 2>/dev/null; then
+            echo "PASS: bsdtar extract tar.gz"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdtar extract tar.gz"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    else
+        echo "FAIL: bsdtar create tar.gz"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+
+    # Create bzip2-compressed tar
+    if bsdtar -cjf "$TMPDIR/test.tar.bz2" -C "$TMPDIR" testfile.txt 2>/dev/null; then
+        echo "PASS: bsdtar create tar.bz2"
+        PASS_COUNT=$((PASS_COUNT + 1))
+
+        mkdir -p "$TMPDIR/extract_bz2"
+        if bsdtar -xf "$TMPDIR/test.tar.bz2" -C "$TMPDIR/extract_bz2" 2>/dev/null; then
+            echo "PASS: bsdtar extract tar.bz2"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdtar extract tar.bz2"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    else
+        echo "FAIL: bsdtar create tar.bz2"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+
+    # Create xz-compressed tar
+    if bsdtar -cJf "$TMPDIR/test.tar.xz" -C "$TMPDIR" testfile.txt 2>/dev/null; then
+        echo "PASS: bsdtar create tar.xz"
+        PASS_COUNT=$((PASS_COUNT + 1))
+
+        mkdir -p "$TMPDIR/extract_xz"
+        if bsdtar -xf "$TMPDIR/test.tar.xz" -C "$TMPDIR/extract_xz" 2>/dev/null; then
+            echo "PASS: bsdtar extract tar.xz"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdtar extract tar.xz"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    else
+        echo "FAIL: bsdtar create tar.xz"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+
+    # Create zstd-compressed tar
+    if bsdtar --zstd -cf "$TMPDIR/test.tar.zst" -C "$TMPDIR" testfile.txt 2>/dev/null; then
+        echo "PASS: bsdtar create tar.zst"
+        PASS_COUNT=$((PASS_COUNT + 1))
+
+        mkdir -p "$TMPDIR/extract_zst"
+        if bsdtar -xf "$TMPDIR/test.tar.zst" -C "$TMPDIR/extract_zst" 2>/dev/null; then
+            echo "PASS: bsdtar extract tar.zst"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdtar extract tar.zst"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    else
+        skip_test "bsdtar zstd (not supported)"
+    fi
+else
+    skip_test "bsdtar (not found)"
+fi
+
+# === bsdcpio tests ===
+if command -v bsdcpio > /dev/null 2>&1; then
+    run_test "bsdcpio --version" bsdcpio --version
+
+    # Create cpio archive
+    echo "testfile.txt" > "$TMPDIR/filelist.txt"
+    if (cd "$TMPDIR" && echo "testfile.txt" | bsdcpio -o > "$TMPDIR/test.cpio") 2>/dev/null; then
+        echo "PASS: bsdcpio create archive"
+        PASS_COUNT=$((PASS_COUNT + 1))
+
+        # List cpio contents
+        if bsdcpio -t < "$TMPDIR/test.cpio" 2>/dev/null | grep -q "testfile.txt"; then
+            echo "PASS: bsdcpio list archive"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdcpio list archive"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+
+        # Extract cpio
+        mkdir -p "$TMPDIR/extract_cpio"
+        if (cd "$TMPDIR/extract_cpio" && bsdcpio -id < "$TMPDIR/test.cpio") 2>/dev/null; then
+            echo "PASS: bsdcpio extract archive"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdcpio extract archive"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    else
+        echo "FAIL: bsdcpio create archive"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "bsdcpio (not found)"
+fi
+
+# === bsdcat tests ===
+if command -v bsdcat > /dev/null 2>&1; then
+    run_test "bsdcat --version" bsdcat --version
+
+    # bsdcat should decompress and cat a gzipped file
+    if [ -f "$TMPDIR/test.tar.gz" ]; then
+        if bsdcat "$TMPDIR/test.tar.gz" > /dev/null 2>&1; then
+            echo "PASS: bsdcat decompress gz"
+            PASS_COUNT=$((PASS_COUNT + 1))
+        else
+            echo "FAIL: bsdcat decompress gz"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    fi
+else
+    skip_test "bsdcat (not found)"
+fi
+
+# === Library presence test ===
+if ls /usr/lib/libarchive.so* > /dev/null 2>&1 || ls /usr/lib64/libarchive.so* > /dev/null 2>&1; then
+    echo "PASS: libarchive.so present"
+    PASS_COUNT=$((PASS_COUNT + 1))
+else
+    echo "FAIL: libarchive.so present"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+fi
+
+echo ""
+echo "=== libarchive ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

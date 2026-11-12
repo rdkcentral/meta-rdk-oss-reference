@@ -1,0 +1,20 @@
+diff --git a/cube/CMakeLists.txt b/cube/CMakeLists.txt
+index 4ecd3e36..c3d090d8 100644
+--- a/cube/CMakeLists.txt
++++ b/cube/CMakeLists.txt
+@@ -93,10 +93,15 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
+         pkg_check_modules(WAYLAND_CLIENT REQUIRED IMPORTED_TARGET wayland-client)
+         pkg_get_variable(WAYLAND_INCLUDE_DIRS wayland-client includedir)
+ 
++    if(NOT WAYLAND_SCANNER_EXECUTABLE)
+         pkg_get_variable(WAYLAND_SCANNER_EXECUTABLE wayland-scanner wayland_scanner)
++    endif()
+         message(DEBUG "WAYLAND_SCANNER_EXECUTABLE = ${WAYLAND_SCANNER_EXECUTABLE}")
+ 
++    if(NOT WAYLAND_CLIENT_PATH)
+         pkg_get_variable(WAYLAND_CLIENT_PATH wayland-client pkgdatadir)
++    endif()
++
+         message(DEBUG "WAYLAND_CLIENT_PATH = ${WAYLAND_CLIENT_PATH}")
+         set(WAYLAND_CODE_PROTOCOL ${WAYLAND_CLIENT_PATH}/wayland.xml)
+ 

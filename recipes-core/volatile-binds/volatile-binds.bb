@@ -79,5 +79,5 @@ do_install:append:broadband ()  {
 do_install[dirs] = "${WORKDIR}"
 
 SYSTEMD_SERVICE:${PN} += "var-lib.mount"
-SYSTEMD_SERVICE:${PN}:remove_broadband += "var-lib.mount"
-FILES:${PN}:remove_broadband += "${systemd_unitdir}/system/var-lib.mount"
+SYSTEMD_SERVICE:${PN}:remove:broadband += "var-lib.mount"
+FILES:${PN}:remove:broadband += "${systemd_unitdir}/system/var-lib.mount"

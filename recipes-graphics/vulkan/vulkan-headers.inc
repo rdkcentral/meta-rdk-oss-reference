@@ -1,0 +1,24 @@
+SUMMARY = "Vulkan Header files and API registry"
+DESCRIPTION = "Vulkan is a 3D graphics and compute API providing cross-platform access \
+to modern GPUs with low overhead and targeting realtime graphics applications such as \
+games and interactive media. This package contains the development headers \
+for packages wanting to make use of Vulkan."
+HOMEPAGE = "https://www.khronos.org/vulkan/"
+BUGTRACKER = "https://github.com/KhronosGroup/Vulkan-Headers"
+SECTION = "libs"
+
+LICENSE = "Apache-2.0"
+
+SRC_URI = "git://github.com/KhronosGroup/Vulkan-Headers.git;branch=main;protocol=https"
+
+S = "${WORKDIR}/git"
+
+inherit cmake
+
+FILES:${PN} = "${includedir}/vulkan ${datadir}/cmake/VulkanHeaders"
+
+do_install:append() {
+    rm -rf ${D}${datadir}/vulkan
+}
+
+UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\d+(\.\d+)+)"

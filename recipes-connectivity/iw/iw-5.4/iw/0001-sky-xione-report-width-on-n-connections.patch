@@ -1,0 +1,109 @@
+#####################################################################
+Date: Fri Mar 12 13:12:00 2021 +0000
+From:
+Subject: [PATCH] in "iw wlan0 link" commands report the 20MHz bandwidth 
+			value if connected using 80211n.
+Source: SKY
+License: GPLV2
+Upstream-Status: Pending
+Signed-off-by: Matthew Golab <matthew.golab@sky.uk>
+#####################################################################
+
+Index: iw-5.4/station.c
+===================================================================
+--- iw-5.4-orig/station.c
++++ iw-5.4/station.c
+@@ -24,6 +24,20 @@
+ 	BLOCKED
+ };
+ 
++
++const float N_20MHZ_RATES[] = { 6.5, 7.2, 13, 14.4, 19.5, 21.7, 26, 28.9, 39, 
++									 43.3, 52, 57.8, 58.5, 65, 72.2, 78, 86.7, 104, 
++									 115.6, 117, 130, 144.4, 156, 173.3, 175.5, 195, 
++									 216.7, 28.8, 57.6, 86.8, 173.2, 208, 231.2, 234, 
++									 260, 288.8 };
++
++const float N_40MHZ_RATES[] = { 13.5, 15, 27, 30, 40.5, 45, 54, 60, 81, 90, 108, 
++									 120, 121.5, 135, 150, 162, 180, 216, 240, 243, 270,
++									 300, 324, 360, 364.5, 405, 450, 432, 480, 486, 540,
++									 600, 6, 6.7 };
++
++int getWidthForNConnection (float bitrate);
++
+ static void print_power_mode(struct nlattr *a)
+ {
+ 	enum nl80211_mesh_power_mode pm = nla_get_u32(a);
+@@ -196,6 +210,25 @@
+ 	}
+ }
+ 
++/* 	For 80211n connections 20MHz bandwidth's are not reported
++	Calculate the bandwidth from the bitrate. */
++int getWidthForNConnection (float bitrate)
++{
++	for ( uint i = 0; i < sizeof(N_20MHZ_RATES)/sizeof(N_20MHZ_RATES[0]); i++ )
++	{
++		if (N_20MHZ_RATES[i] == bitrate){
++			return 1;}
++	}
++	
++	for ( uint i = 0; i < sizeof(N_40MHZ_RATES)/sizeof(N_40MHZ_RATES[0]); i++ )
++	{
++		if (N_40MHZ_RATES[i] == bitrate) {
++			return 2;}
++	}
++
++	return 0;
++}
++
+ void parse_bitrate(struct nlattr *bitrate_attr, char *buf, int buflen)
+ {
+ 	int rate = 0;
+@@ -209,6 +242,8 @@
+ 		[NL80211_RATE_INFO_SHORT_GI] = { .type = NLA_FLAG },
+ 	};
+ 
++	char bitrateString[7] = "0";
++
+ 	if (nla_parse_nested(rinfo, NL80211_RATE_INFO_MAX,
+ 			     bitrate_attr, rate_policy)) {
+ 		snprintf(buf, buflen, "failed to parse nested rate attributes!");
+@@ -219,19 +254,34 @@
+ 		rate = nla_get_u32(rinfo[NL80211_RATE_INFO_BITRATE32]);
+ 	else if (rinfo[NL80211_RATE_INFO_BITRATE])
+ 		rate = nla_get_u16(rinfo[NL80211_RATE_INFO_BITRATE]);
+-	if (rate > 0)
++	if (rate > 0) 
++	{
+ 		pos += snprintf(pos, buflen - (pos - buf),
+ 				"%d.%d MBit/s", rate / 10, rate % 10);
++		snprintf(bitrateString, 6, "%d.%d", rate / 10, rate % 10);
++	}
+ 	else
+ 		pos += snprintf(pos, buflen - (pos - buf), "(unknown)");
+ 
+ 	if (rinfo[NL80211_RATE_INFO_MCS])
+ 		pos += snprintf(pos, buflen - (pos - buf),
+-				" MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]));
++				" MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_MCS]));	
+ 	if (rinfo[NL80211_RATE_INFO_VHT_MCS])
+ 		pos += snprintf(pos, buflen - (pos - buf),
+ 				" VHT-MCS %d", nla_get_u8(rinfo[NL80211_RATE_INFO_VHT_MCS]));
+-	if (rinfo[NL80211_RATE_INFO_40_MHZ_WIDTH])
++	
++	if (rinfo[NL80211_RATE_INFO_MCS]) {
++		// For 'n' connections calculate the width and output:
++		if (bitrateString[0] != '0') {
++			int widthReturned = getWidthForNConnection(atof(bitrateString));
++
++			// Only output 20Mhz bandwidth - as the 40Mhz BW will get reported lower down: 
++			if (widthReturned == 1) 
++				pos += snprintf(pos, buflen - (pos - buf), " 20Mhz ");
++		}
++	}
++
++	if (rinfo[NL80211_RATE_INFO_40_MHZ_WIDTH]) 
+ 		pos += snprintf(pos, buflen - (pos - buf), " 40MHz");
+ 	if (rinfo[NL80211_RATE_INFO_80_MHZ_WIDTH])
+ 		pos += snprintf(pos, buflen - (pos - buf), " 80MHz");

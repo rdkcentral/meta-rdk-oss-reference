@@ -1,0 +1,126 @@
+Add possibility to ignore cache mtime when looking up caches and validating them. This is useful for pre-created caches, which may have an mtime that doesn't match the directory's mtime.
+Use the environment variable FONTCONFIG_IGNORE_CACHE_MODTIME to control this behavior. If set to a true value, cache mtimes will be ignored when looking up caches and validating them. If set to a false value or not set at all, cache mtimes will be used as normal.
+Upstream-Status: Appropriate
+Signed-off-by: Glib Novodran <gnovodran@productengine.com>
+Index: b/src/fccache.c
+===================================================================
+--- a/src/fccache.c
++++ b/src/fccache.c
+@@ -267,6 +267,32 @@
+ 
+ }
+ 
++static FcBool
++FcCacheShouldIgnoreMtime (void)
++{
++    enum {
++      MTIME_CHECK_NOT_INITIALIZED = 0,
++      MTIME_CHECK_IGNORE,
++      MTIME_CHECK_VALIDATE,
++    } status;
++    static void *static_status;
++
++    status = (intptr_t) fc_atomic_ptr_get (&static_status);
++
++    if (status == MTIME_CHECK_NOT_INITIALIZED)
++    {
++	const char *env = getenv ("FONTCONFIG_IGNORE_CACHE_MODTIME");
++	FcBool ignore;
++	if (env && FcNameBool ((const FcChar8 *) env, &ignore))
++	    status = ignore ? MTIME_CHECK_IGNORE : MTIME_CHECK_VALIDATE;
++	else
++	    status = MTIME_CHECK_VALIDATE;
++	(void) fc_atomic_ptr_cmpexch (&static_status, NULL, (void *) status);
++    }
++
++    return status == MTIME_CHECK_IGNORE;
++}
++
+ static const char bin2hex[] = { '0', '1', '2', '3',
+ 				'4', '5', '6', '7',
+ 				'8', '9', 'a', 'b',
+@@ -700,21 +726,26 @@
+ FcCacheFindByStat (struct stat *cache_stat)
+ {
+     FcCacheSkip	    *s;
++    FcBool	    ignore_mtime = FcCacheShouldIgnoreMtime ();
+ 
+     lock_cache ();
+     for (s = fcCacheChains[0]; s; s = s->next[0])
++    {
++	/* For pre-created caches, only match by dev/ino, ignore mtime */
+ 	if (s->cache_dev == cache_stat->st_dev &&
+-	    s->cache_ino == cache_stat->st_ino &&
+-	    s->cache_mtime == cache_stat->st_mtime)
++	    s->cache_ino == cache_stat->st_ino)
+ 	{
++	    if (!ignore_mtime && s->cache_mtime != cache_stat->st_mtime)
++		continue;
+ #ifdef HAVE_STRUCT_STAT_ST_MTIM
+-	    if (s->cache_mtime_nano != cache_stat->st_mtim.tv_nsec)
++	    if (!ignore_mtime && s->cache_mtime_nano != cache_stat->st_mtim.tv_nsec)
+ 		continue;
+ #endif
+ 	    FcRefInc (&s->ref);
+ 	    unlock_cache ();
+ 	    return s->cache;
+ 	}
++    }
+     unlock_cache ();
+     return NULL;
+ }
+@@ -804,6 +835,14 @@
+     struct stat	dir_static;
+     FcBool fnano = FcTrue;
+ 
++    if (FcCacheShouldIgnoreMtime ())
++    {
++	if (FcDebug () & FC_DBG_CACHE)
++	    printf ("FcCacheTimeValid ignoring cache mtime checks due to FONTCONFIG_IGNORE_CACHE_MODTIME\n");
++
++	return FcTrue;
++    }
++
+     if (!dir_stat)
+     {
+ 	const FcChar8 *sysroot = FcConfigGetSysRoot (config);
+@@ -1126,6 +1165,7 @@
+ {
+     FcBool  ret = FcTrue;
+     FcCache	c;
++    FcBool	ignore_mtime = FcCacheShouldIgnoreMtime ();
+ 
+     if (read (fd, &c, sizeof (FcCache)) != sizeof (FcCache))
+ 	ret = FcFalse;
+@@ -1135,15 +1175,16 @@
+ 	ret = FcFalse;
+     else if (fd_stat->st_size != c.size)
+ 	ret = FcFalse;
+-    else if (c.checksum != FcDirChecksum (dir_stat))
++    else if (!ignore_mtime && c.checksum != FcDirChecksum (dir_stat))
+ 	ret = FcFalse;
+ #ifdef HAVE_STRUCT_STAT_ST_MTIM
+-    else if (c.checksum_nano != FcDirChecksumNano (dir_stat))
++    else if (!ignore_mtime && c.checksum_nano != FcDirChecksumNano (dir_stat))
+ 	ret = FcFalse;
+ #endif
+     return ret;
+ }
+ 
++
+ static FcBool
+ FcDirCacheValidConfig (const FcChar8 *dir, FcConfig *config)
+ {
+Index: b/src/fccfg.c
+===================================================================
+--- a/src/fccfg.c
++++ b/src/fccfg.c
+@@ -456,6 +456,8 @@
+ 	cache = FcDirCacheRead (dir, FcFalse, config);
+ 	if (!cache)
+ 	    continue;
++	if (FcDebug () & FC_DBG_FONTSET)
++	    printf ("reading cache for directory %s\n", dir);
+ 	FcConfigAddCache (config, cache, set, dirSet, dir);
+ 	FcDirCacheUnload (cache);
+     }

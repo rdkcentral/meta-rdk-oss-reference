@@ -28,6 +28,8 @@ SRC_URI += " \
    "
 
 SRC_URI:append:broadband = " file://enable_ps_wide.cfg"
+SRC_URI:append:broadband = " file://strings.cfg"
+SRC_URI:append:broadband = " file://Udhcpc_Early_Background.patch"
 
 SRC_URI:remove:broadband += " \
    file://blkid.cfg \
@@ -36,5 +38,5 @@ SRC_URI:remove:broadband += " \
 VERSION_PATCHES ?= ""
 VERSION_PATCHES:append:client = " file://busybox-1.35-udhcp-trigger-milestones.patch"
 
-PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable', '1', '0', d)}"
+PTEST_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'ptest', '1', '0', d)}"
 inherit ptest-package-deploy

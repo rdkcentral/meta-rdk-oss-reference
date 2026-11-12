@@ -1,0 +1,27 @@
+From 56836fe4cc4369b4949fad0962f24de0d0cc1df6 Mon Sep 17 00:00:00 2001
+From: kkarup694 <kumar_Karuppiahyogarajah@comcast.com>
+Date: Fri, 14 Aug 2026 09:10:41 +0000
+Subject: [PATCH] fix io_data use after NULL caused by racecondition
+
+Upstream-Status: Backport [From: https://gitlab.gnome.org/GNOME/libsoup/-/commit/665fa0a440368d95c63ab51bfdcfe0da653f6ad9]
+
+---
+ libsoup/soup-message.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libsoup/soup-message.c b/libsoup/soup-message.c
+index 555fe015..64b8ca53 100644
+--- a/libsoup/soup-message.c
++++ b/libsoup/soup-message.c
+@@ -2831,6 +2831,8 @@ soup_message_io_skip (SoupMessage  *msg,
+                       GError      **error)
+ {
+         SoupMessagePrivate *priv = soup_message_get_instance_private (msg);
++		if (!priv->io_data)
++                return TRUE;
+ 
+         return soup_client_message_io_skip (priv->io_data, msg, blocking, cancellable, error);
+ }
+-- 
+2.44.4
+
