@@ -1,0 +1,112 @@
+commit ca571c6819e01651be2197abff8eafff22ef80ef
+Author: Jan Vaclav <jvaclav@redhat.com>
+Date:   Tue Jun 9 11:28:15 2026 +0200
+
+    dhcp/dhclient: validate hostname before pasting it into dhclient config
+    
+    nm_sd_dns_name_is_valid() accepts double quotes, which could break out
+    of the quoted string context in dhclient.conf.
+    
+    Add a check in create_dhclient_config() that rejects hostnames
+    containing characters unsafe for dhclient.conf.
+
+diff --git a/src/core/dhcp/nm-dhcp-dhclient.c b/src/core/dhcp/nm-dhcp-dhclient.c
+index 7e00599cd8..99421b35fd 100644
+--- a/src/core/dhcp/nm-dhcp-dhclient.c
++++ b/src/core/dhcp/nm-dhcp-dhclient.c
+@@ -221,6 +221,16 @@ find_existing_config(NMDhcpDhclient *self, int addr_family, const char *iface, c
+     return NULL;
+ }
+ 
++static gboolean
++_dhclient_hostname_is_valid(const char *hostname)
++{
++    for (const char *p = hostname; *p; p++) {
++        if (!g_ascii_isalnum(*p) && !NM_IN_SET(*p, '-', '.'))
++            return FALSE;
++    }
++    return TRUE;
++}
++
+ /* NM provides interface-specific options; thus the same dhclient config
+  * file cannot be used since DHCP transactions can happen in parallel.
+  * Since some distros don't have default per-interface dhclient config files,
+@@ -251,6 +261,12 @@ create_dhclient_config(NMDhcpDhclient     *self,
+ 
+     g_return_val_if_fail(iface != NULL, NULL);
+ 
++    if (hostname && !_dhclient_hostname_is_valid(hostname)) {
++        _LOGW("hostname '%s' contains unsafe characters for dhclient config, will be ignored",
++              hostname);
++        hostname = NULL;
++    }
++
+     new_path = g_strdup_printf(NMSTATEDIR "/dhclient%s-%s.conf",
+                                _addr_family_to_path_part(addr_family),
+                                iface);
+commit 5326760073c06157652b7e0d0865ada2eb0e393b
+Author: Jan Vaclav <jvaclav@redhat.com>
+Date:   Mon Jun 8 13:05:33 2026 +0200
+
+    libnm-sd-shared: reject urls containing unexpected characters
+    
+    _http_url_is_valid() only rejected non-ASCII bytes (>= 0x80), but
+    accepted control characters, double quotes, and backslashes. These
+    characters can cause injection issues when the URL is pasted into
+    configuration files that interpret them as metacharacters (e.g. quoted
+    strings in dhclient.conf).
+    
+    Reject control characters (< 0x20), double quotes, and backslashes in
+    addition to non-ASCII bytes.
+
+diff --git a/src/libnm-systemd-shared/nm-sd-utils-shared.c b/src/libnm-systemd-shared/nm-sd-utils-shared.c
+index dad21596cf..b51faebcf8 100644
+--- a/src/libnm-systemd-shared/nm-sd-utils-shared.c
++++ b/src/libnm-systemd-shared/nm-sd-utils-shared.c
+@@ -53,6 +53,20 @@ nm_sd_dns_name_normalize(const char *s)
+ 
+ /*****************************************************************************/
+ 
++static gboolean
++_http_url_is_valid_char(char ch)
++{
++    if (g_ascii_isalnum(ch))
++        return TRUE;
++
++    /* Allow symbols which are allowed by the URL standard, or unlikely
++     * to be problematic in this scenario. */
++    if (strchr(":/%=;&+|^`-._~?#<>{}[]@!$'()*, ", ch) != NULL)
++        return TRUE;
++
++    return FALSE;
++}
++
+ static gboolean
+ _http_url_is_valid(const char *url, gboolean only_https)
+ {
+@@ -69,7 +83,7 @@ _http_url_is_valid(const char *url, gboolean only_https)
+     if (!url[0])
+         return FALSE;
+ 
+-    return !NM_STRCHAR_ANY(url, ch, (guchar) ch >= 128u);
++    return NM_STRCHAR_ALL(url, ch, _http_url_is_valid_char(ch));
+ }
+ 
+ gboolean
+@@ -82,12 +96,13 @@ nm_sd_http_url_is_valid_https(const char *url)
+      * assert with http_url_is_valid() that the argument is valid. We thus must make
+      * sure to only pass URLs that are valid according to http_url_is_valid().
+      *
+-     * This is given, because our nm_sd_http_url_is_valid_https() is more strict
+-     * than http_url_is_valid().
++     * This is given, because our nm_sd_http_url_is_valid_https() is more restrictive
++     * than http_url_is_valid(). The assertion below checks that anything we accept,
++     * systemd must also accept.
+      *
+      * We only must make sure that this is also correct in the future, when we
+      * re-import systemd code. */
+-    nm_assert(_http_url_is_valid(url, FALSE) == http_url_is_valid(url));
++    nm_assert(!_http_url_is_valid(url, FALSE) || http_url_is_valid(url));
+     return _http_url_is_valid(url, TRUE);
+ }
+ 
