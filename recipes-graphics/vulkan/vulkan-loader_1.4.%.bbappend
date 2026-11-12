@@ -1,4 +1,4 @@
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 RRECOMMENDS:${PN}:remove = "virtual-vulkan-icd"
 

@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 DEPENDS = "wrp-c nanomsg"
 
 SRCREV = "c6b1ee637eab22ac281779546fab7b7ff171cba2"
-SRC_URI = "git://github.com/Comcast/paroduscl.git"
+SRC_URI = "git://github.com/Comcast/paroduscl.git;protocol=https;nobranch=1"
 
 PV = "git+${SRCPV}"
 S = "${UNPACKDIR}/${PN}-${PV}"

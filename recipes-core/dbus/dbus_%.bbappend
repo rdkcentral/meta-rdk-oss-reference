@@ -17,9 +17,14 @@ EXTRA_OECONF:broadband = "--disable-tests \
                           --disable-systemd"
 
 do_install:append() {
-         # Remove <includedir>system.d</includedir> from system.conf since it consumes much CPU cycles for dbus-daemon
-         sed -i '/system.d/d' ${D}${sysconfdir}/dbus-1/system.conf
-         install -m 0644 ${S}/dbus/dbus-ccsp-apis.h ${D}${includedir}/dbus-1.0/dbus/
+    # Remove <includedir>system.d</includedir> from system.conf since it consumes much CPU cycles for dbus-daemon
+    sed -i '/system.d/d' ${D}${sysconfdir}/dbus-1/system.conf
+}
+
+do_install:append:broadband() {
+    install -m 0644 ${S}/dbus/dbus-ccsp-apis.h ${D}${includedir}/dbus-1.0/dbus/
 }
 
 inherit breakpad-wrapper
+
+do_prepare_recipe_sysroot[postfuncs] += " useradd_sysroot_sstate"

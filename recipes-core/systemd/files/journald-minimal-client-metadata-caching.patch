@@ -18,7 +18,7 @@ Source: https://github.com/systemd/systemd/pull/6392/commits/
         https://github.com/poettering/systemd/commit/4783e5ad3dbacd99e8818440961be1ef179a9373
         https://github.com/poettering/systemd/commit/ef30f7cac18a810814ada7e6a68a31d48cc9fccd
         https://github.com/poettering/systemd/commit/672773b63a4ebf95242b27e63071b93073ebc1f5
-Upstream-Status: Backport 
+Upstream-Status: Backport [https://github.com/systemd/systemd/pull/6392]
 Signed-off-by: gps496 <gomathishankar_ps@comcast.com>
 
 Index: git/src/basic/audit-util.c

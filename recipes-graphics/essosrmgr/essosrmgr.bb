@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1d13a8bfca16dbdad01fe5f270451aaa \
 
 SRC_URI = "${CMF_GIT_ROOT}/rdk/components/generic/ermgr;protocol=${CMF_GIT_PROTOCOL};branch=rdk-next;nobranch=1;name=essosrmgr"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 DEPENDS = "wayland virtual/egl libxkbcommon westeros"
 
@@ -41,4 +41,3 @@ do_install:append() {
 
 SYSTEMD_SERVICE:${PN} += "ermgr.service"
 FILES:${PN} += "${systemd_unitdir}/system/*.service"
-

@@ -56,7 +56,7 @@ do_install:append() {
         rm -rf ${D}${datadir}/${BPN}/include/scl/windowseventlog/*
 
         install -d ${D}${base_libdir}/rdk
-        install -m 0755 ${WORKDIR}/prepare-syslog-ng-config.sh ${D}${base_libdir}/rdk/prepare-syslog-ng-config.sh
+        install -m 0755 ${UNPACKDIR}/prepare-syslog-ng-config.sh ${D}${base_libdir}/rdk/prepare-syslog-ng-config.sh
     fi
 
 }
@@ -116,4 +116,3 @@ FILES:${PN}-jconf = ""
 FILES:${PN}-libs = " ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', '${libdir}/libsyslog-ng-*.so*', '${libdir}/${BPN}/*.so ${libdir}/libsyslog-ng-*.so*', d)}"
 
 FILES:${PN} += "${datadir}/${BPN}/include/scl/cim ${datadir}/${BPN}/include/scl/elasticsearch ${datadir}/${BPN}/include/scl/ewmm  ${datadir}/${BPN}/include/scl/graylog2 ${datadir}/${BPN}/include/scl/loggly ${datadir}/${BPN}/include/scl/logmatic ${datadir}/${BPN}/tools/merge-grammar.pl ${libdir}/${BPN}/libdate.so"
-

@@ -215,7 +215,7 @@ do_install() {
 
 	install -d ${D}${sysconfdir}/udev/rules.d/
 	install -d ${D}${sysconfdir}/tmpfiles.d
-	install -m 0644 ${WORKDIR}/*.rules ${D}${sysconfdir}/udev/rules.d/
+	install -m 0644 ${UNPACKDIR}/*.rules ${D}${sysconfdir}/udev/rules.d/
 	install -d ${D}${libdir}/pkgconfig
 	install -m 0644 ${B}/src/udev/udev.pc ${D}${libdir}/pkgconfig/
 

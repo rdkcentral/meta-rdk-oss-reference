@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=e3fc50a88d0a364313df4b21ef20c29e"
 
 SRCREV= "0b6c359ee47638487afed6193cd98ca5b442534e"
 SRC_URI = " \
-    git://github.com/xmidt-org/parodus.git \
+    git://github.com/xmidt-org/parodus.git;protocol=https;nobranch=1 \
     "
 
 RDEPENDS:${PN} += "util-linux-uuidgen"

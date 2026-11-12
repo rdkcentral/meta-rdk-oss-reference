@@ -258,7 +258,7 @@ do_install:append() {
     install -m 0755 ${UNPACKDIR}/org.freedesktop.nm_connectivity.service ${D}${datadir}/dbus-1/system-services/
     install ${UNPACKDIR}/dnsmasq-logging.conf ${D}${sysconfdir}/NetworkManager/dnsmasq.d/dnsmasq-logging.conf
 
-    install -Dm 0755 ${WORKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
+    install -Dm 0755 ${UNPACKDIR}/${BPN}.initd ${D}${sysconfdir}/init.d/network-manager
 
     rm -rf ${D}/run ${D}${localstatedir}/run
     if ${@bb.utils.contains('PACKAGECONFIG','man-resolv-conf','true','false',d)}; then

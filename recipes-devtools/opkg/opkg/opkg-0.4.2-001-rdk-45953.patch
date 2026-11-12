@@ -3,7 +3,7 @@ From: 179b60088ad681e4109633bffa5b0790d04eb6c9
 Subject: Added to support provides with version
 Source: SKY
 License: CLOSED
-Upstream-Status: NA
+Upstream-Status: Pending
 Signed-off-by: Sreejith Ravi <sreejith.ravi@sky.uk>
 ---
 diff -Naur opkg-0.4.2/libopkg/solvers/libsolv/opkg_solver_libsolv.c opkg-0.4.2_mod/libopkg/solvers/libsolv/opkg_solver_libsolv.c

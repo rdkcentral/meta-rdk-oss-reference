@@ -1,1 +1,1 @@
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"

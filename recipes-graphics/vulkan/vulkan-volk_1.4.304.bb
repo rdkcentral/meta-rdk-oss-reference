@@ -9,7 +9,7 @@ SECTION = "libs"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=12e6af3a0e2a5e5dbf7796aa82b64626"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 SRC_URI = "git://github.com/zeux/volk.git;branch=master;protocol=https"
 SRCREV = "0b17a763ba5643e32da1b2152f8140461b3b7345"
 
@@ -34,4 +34,3 @@ UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\d+(\.\d+)+)"
 do_install:append() {
     sed -i -e 's,${STAGING_DIR_TARGET},,g' ${D}${libdir}/cmake/volk/volkTargets.cmake
 }
-

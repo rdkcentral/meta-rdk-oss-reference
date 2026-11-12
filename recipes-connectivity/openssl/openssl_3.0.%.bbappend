@@ -14,8 +14,8 @@ SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', '
 SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://endpoint-logging-canary-enable-3.0.5.patch', 'file://endpoint-logging-canary-disable-3.0.5.patch', d), '', d)}"
 SRC_URI:append = " file://pkcs11_migration_support_p12.patch"
 
-DEPENDS:append:class-target = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd', '', d)}"
-LDFLAGS =+ "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' -lsystemd ', '', d)}"
+DEPENDS:append:class-target = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', ' systemd', '', d)}"
+LDFLAGS =+ "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', ' -lsystemd ', '', d)}"
 
 inherit syslog-ng-config-gen logrotate_config
 SYSLOG-NG_FILTER = "sslendpoint"

@@ -11,6 +11,14 @@ inherit ptest
 RDEPENDS:${PN}-ptest += "bash"
 
 PACKAGES = "${PN}"
+PACKAGES:append:wrynose = " ${PN}-consolefonts ${PN}-keymaps-pine ${PN}-keymaps ${PN}-unimaps ${PN}-consoletrans"
+PACKAGES:remove:wrynose = "${PN}-keymaps-pine"
+RRECOMMENDS:${PN}-keymaps:remove:wrynose = "${PN}-keymaps-pine"
+
+do_install:append:wrynose() {
+    rm -rf ${D}${datadir}/keymaps/pine
+}
+
 do_compile_ptest() {
     # update DATADIR in Makefile
     sed -i 's,-DDATADIR=.*,-DDATADIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/libkeymap/Makefile
