@@ -1,0 +1,9 @@
+{
+  "name" : "strace",
+  "description" : "System call tracing tool - strace",
+  "version" : "1.0",
+  "installScript" : "/etc/rdm/post-services/strace-post-install.sh",
+  "contents" : ["strace.tar"],
+  "size" : "1024K",
+  "debugMarker" : "STRACE_JSON_TEST_001"
+}
