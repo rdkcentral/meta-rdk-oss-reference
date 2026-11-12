@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI:append = " file://CVE-2024-11053_7.82.0_fix.patch \
+SRC_URI:append:kirkstone = " file://CVE-2024-11053_7.82.0_fix.patch \
                    file://CVE-2025-0167_7.82.0_fix.patch \
                    file://CVE-2025-14524_7.82.0_fix.patch \
                    file://CVE-2025-15079_7.82.0_fix.patch \
@@ -15,4 +15,9 @@ SRC_URI:append = " file://CVE-2024-11053_7.82.0_fix.patch \
                    file://CVE-2026-6276_7.82.0_fix.patch \
                    file://CVE-2026-6429_7.82.0_fix.patch \
                    file://CVE-2026-7168_7.82.0_fix.patch \
+                   file://CVE-2026-8286_curl_7.82.0_fix.patch \
+                   file://CVE-2026-8458_curl_7.82.0_fix.patch \
+                   file://CVE-2026-8924_curl_7.82.0_fix.patch \
+                   file://CVE-2026-8927_curl_7.82.0_fix.patch \
+                   file://CVE-2026-11856_curl_7.82.0_fix.patch \
 "
