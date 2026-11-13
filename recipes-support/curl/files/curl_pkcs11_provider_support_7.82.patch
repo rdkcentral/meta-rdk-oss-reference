@@ -1,0 +1,503 @@
+diff -Naur a/docs/cmdline-opts/cert.d b/docs/cmdline-opts/cert.d
+--- a/docs/cmdline-opts/cert.d	2026-09-29 15:54:04.869372209 +0000
++++ b/docs/cmdline-opts/cert.d	2026-09-29 16:02:57.414334082 +0000
+@@ -26,12 +26,13 @@
+ recognized as password delimiter. If the nickname contains "\\", it needs to
+ be escaped as "\\\\" so that it is not recognized as an escape character.
+ 
+-If curl is built against OpenSSL library, and the engine pkcs11 is available,
+-then a PKCS#11 URI (RFC 7512) can be used to specify a certificate located in
+-a PKCS#11 device. A string beginning with "pkcs11:" will be interpreted as a
+-PKCS#11 URI. If a PKCS#11 URI is provided, then the --engine option will be set
+-as "pkcs11" if none was provided and the --cert-type option will be set as
+-"ENG" if none was provided.
++If curl is built against OpenSSL library, and the engine pkcs11 or pkcs11
++provider is available, then a PKCS#11 URI (RFC 7512) can be used to specify a
++certificate located in a PKCS#11 device. A string beginning with "pkcs11:"
++will be interpreted as a PKCS#11 URI. If a PKCS#11 URI is provided, then the
++--engine option will be set as "pkcs11" if none was provided and the
++--cert-type option will be set as "ENG" or "PROV" if none was provided
++(depending on OpenSSL version).
+ 
+ (iOS and macOS only) If curl is built against Secure Transport, then the
+ certificate string can either be the name of a certificate/private key in the
+diff -Naur a/docs/cmdline-opts/cert-type.d b/docs/cmdline-opts/cert-type.d
+--- a/docs/cmdline-opts/cert-type.d	2026-09-29 15:54:04.849372473 +0000
++++ b/docs/cmdline-opts/cert-type.d	2026-09-29 16:02:57.414334082 +0000
+@@ -1,13 +1,16 @@
+ Long: cert-type
+ Protocols: TLS
+ Arg: <type>
+-Help: Certificate type (DER/PEM/ENG)
++Help: Certificate type (DER/PEM/ENG/PROV/P12)
+ See-also: cert key key-type
+ Category: tls
+ Example: --cert-type PEM --cert file $URL
+ Added: 7.9.3
+ ---
+-Tells curl what type the provided client certificate is using. PEM, DER, ENG
+-and P12 are recognized types. If not specified, PEM is assumed.
++Tells curl what type the provided client certificate is using. PEM, DER, ENG,
++PROV and P12 are recognized types. The default type depends on the TLS backend
++and is usually PEM, however for Secure Transport and Schannel it is P12. If
++--cert is a pkcs11: URI then ENG or PROV is the default type (depending on
++OpenSSL version).
+ 
+ If this option is used several times, the last one will be used.
+diff -Naur a/docs/cmdline-opts/key.d b/docs/cmdline-opts/key.d
+--- a/docs/cmdline-opts/key.d	2026-09-29 15:54:04.873372156 +0000
++++ b/docs/cmdline-opts/key.d	2026-09-29 16:02:57.414334082 +0000
+@@ -11,11 +11,12 @@
+ file. For SSH, if not specified, curl tries the following candidates in order:
+ \&'~/.ssh/id_rsa', '~/.ssh/id_dsa', './id_rsa', './id_dsa'.
+ 
+-If curl is built against OpenSSL library, and the engine pkcs11 is available,
+-then a PKCS#11 URI (RFC 7512) can be used to specify a private key located in a
+-PKCS#11 device. A string beginning with "pkcs11:" will be interpreted as a
+-PKCS#11 URI. If a PKCS#11 URI is provided, then the --engine option will be set
+-as "pkcs11" if none was provided and the --key-type option will be set as
+-"ENG" if none was provided.
++If curl is built against OpenSSL library, and the engine pkcs11 or pkcs11
++provider is available, then a PKCS#11 URI (RFC 7512) can be used to specify a
++private key located in a PKCS#11 device. A string beginning with "pkcs11:"
++will be interpreted as a PKCS#11 URI. If a PKCS#11 URI is provided, then the
++--engine option will be set as "pkcs11" if none was provided and the
++--key-type option will be set as "ENG" or "PROV" if none was provided
++(depending on OpenSSL version).
+ 
+ If this option is used several times, the last one will be used.
+diff -Naur a/docs/cmdline-opts/key-type.d b/docs/cmdline-opts/key-type.d
+--- a/docs/cmdline-opts/key-type.d	2026-09-29 15:54:04.849372473 +0000
++++ b/docs/cmdline-opts/key-type.d	2026-09-29 16:04:07.253411098 +0000
+@@ -1,6 +1,6 @@
+ Long: key-type
+ Arg: <type>
+-Help: Private key file type (DER/PEM/ENG)
++Help: Private key file type (DER/PEM/ENG/PROV)
+ Protocols: TLS
+ Category: tls
+ Example: --key-type DER --key here $URL
+@@ -8,6 +8,6 @@
+ See-also: key
+ ---
+ Private key file type. Specify which type your --key provided private key
+-is. DER, PEM, and ENG are supported. If not specified, PEM is assumed.
++is. DER, PEM, ENG and PROV are supported. If not specified, PEM is assumed.
+ 
+ If this option is used several times, the last one will be used.
+diff -Naur a/docs/cmdline-opts/proxy-cert-type.d b/docs/cmdline-opts/proxy-cert-type.d
+--- a/docs/cmdline-opts/proxy-cert-type.d	2026-09-29 15:54:04.873372156 +0000
++++ b/docs/cmdline-opts/proxy-cert-type.d	2026-09-29 16:02:57.414334082 +0000
+@@ -6,4 +6,6 @@
+ Example: --proxy-cert-type PEM --proxy-cert file -x https://proxy $URL
+ See-also: proxy-cert
+ ---
+-Same as --cert-type but used in HTTPS proxy context.
++Same as --cert-type but used in HTTPS proxy context. PEM, DER, ENG, PROV and
++P12 are recognized types. If --proxy-cert is a pkcs11: URI then ENG or PROV is
++the default type (depending on OpenSSL version).
+diff -Naur a/docs/curl.1 b/docs/curl.1
+--- a/docs/curl.1	2026-09-29 15:54:04.881372050 +0000
++++ b/docs/curl.1	2026-09-29 16:04:07.317410252 +0000
+@@ -374,8 +374,11 @@
+ 
+ See also \fI--pinnedpubkey\fP. Added in 7.41.0.
+ .IP "\-\-cert-type <type>"
+-(TLS) Tells curl what type the provided client certificate is using. PEM, DER, ENG
+-and P12 are recognized types. If not specified, PEM is assumed.
++(TLS) Tells curl what type the provided client certificate is using. PEM, DER,
++ENG, PROV and P12 are recognized types. The default type depends on the TLS
++backend and is usually PEM, however for Secure Transport and Schannel it is P12.
++If --cert is a pkcs11: URI then ENG or PROV is the default type (depending on
++OpenSSL version).
+ 
+ If this option is used several times, the last one will be used.
+ 
+@@ -404,12 +407,13 @@
+ recognized as password delimiter. If the nickname contains "\\", it needs to
+ be escaped as "\\\\" so that it is not recognized as an escape character.
+ 
+-If curl is built against OpenSSL library, and the engine pkcs11 is available,
+-then a PKCS#11 URI (RFC 7512) can be used to specify a certificate located in
+-a PKCS#11 device. A string beginning with "pkcs11:" will be interpreted as a
+-PKCS#11 URI. If a PKCS#11 URI is provided, then the \-\-engine option will be set
+-as "pkcs11" if none was provided and the \-\-cert-type option will be set as
+-"ENG" if none was provided.
++If curl is built against OpenSSL library, and the engine pkcs11 or pkcs11
++provider is available, then a PKCS#11 URI (RFC 7512) can be used to specify a
++certificate located in a PKCS#11 device. A string beginning with "pkcs11:"
++will be interpreted as a PKCS#11 URI. If a PKCS#11 URI is provided, then the
++\-\-engine option will be set as "pkcs11" if none was provided and the
++\-\-cert-type option will be set as "ENG" or "PROV" if none was provided
++(depending on OpenSSL version).
+ 
+ (iOS and macOS only) If curl is built against Secure Transport, then the
+ certificate string can either be the name of a certificate/private key in the
+@@ -1964,7 +1968,7 @@
+ See also \fI--no-keepalive\fP and \fI-m, --max-time\fP.
+ .IP "\-\-key-type <type>"
+ (TLS) Private key file type. Specify which type your \-\-key provided private key
+-is. DER, PEM, and ENG are supported. If not specified, PEM is assumed.
++is. DER, PEM, ENG and PROV are supported. If not specified, PEM is assumed.
+ 
+ If this option is used several times, the last one will be used.
+ 
+@@ -1979,12 +1983,13 @@
+ file. For SSH, if not specified, curl tries the following candidates in order:
+ \&\(aq~/.ssh/id_rsa', '~/.ssh/id_dsa', './id_rsa', './id_dsa'.
+ 
+-If curl is built against OpenSSL library, and the engine pkcs11 is available,
+-then a PKCS#11 URI (RFC 7512) can be used to specify a private key located in a
+-PKCS#11 device. A string beginning with "pkcs11:" will be interpreted as a
+-PKCS#11 URI. If a PKCS#11 URI is provided, then the \-\-engine option will be set
+-as "pkcs11" if none was provided and the \-\-key-type option will be set as
+-"ENG" if none was provided.
++If curl is built against OpenSSL library, and the engine pkcs11 or pkcs11
++provider is available, then a PKCS#11 URI (RFC 7512) can be used to specify a
++private key located in a PKCS#11 device. A string beginning with "pkcs11:"
++will be interpreted as a PKCS#11 URI. If a PKCS#11 URI is provided, then the
++\-\-engine option will be set as "pkcs11" if none was provided and the
++\-\-key-type option will be set as "ENG" or "PROV" if none was provided
++(depending on OpenSSL version).
+ 
+ If this option is used several times, the last one will be used.
+ 
+@@ -2883,7 +2888,9 @@
+ 
+ See also \fI--proxy-cacert\fP, \fI-x, --proxy\fP and \fI--capath\fP. Added in 7.52.0.
+ .IP "\-\-proxy-cert-type <type>"
+-Same as \-\-cert-type but used in HTTPS proxy context.
++Same as \-\-cert-type but used in HTTPS proxy context. PEM, DER, ENG, PROV and
++P12 are recognized types. If \-\-proxy-cert is a pkcs11: URI then ENG or PROV is
++the default type (depending on OpenSSL version).
+ 
+ Example:
+ .nf
+diff -Naur a/docs/libcurl/opts/CURLOPT_PROXY_SSLKEYTYPE.3 b/docs/libcurl/opts/CURLOPT_PROXY_SSLKEYTYPE.3
+--- a/docs/libcurl/opts/CURLOPT_PROXY_SSLKEYTYPE.3	2026-09-29 15:54:04.937371310 +0000
++++ b/docs/libcurl/opts/CURLOPT_PROXY_SSLKEYTYPE.3	2026-09-29 16:02:57.438333765 +0000
+@@ -34,7 +34,8 @@
+ This option is for connecting to an HTTPS proxy, not an HTTPS server.
+ 
+ Pass a pointer to a null-terminated string as parameter. The string should be
+-the format of your private key. Supported formats are "PEM", "DER" and "ENG".
++the format of your private key. Supported formats are "PEM", "DER", "ENG" and
++"PROV" (the latter added in curl 8.12.0).
+ 
+ The application does not have to keep the string around after setting this
+ option.
+diff -Naur a/docs/libcurl/opts/CURLOPT_SSLKEYTYPE.3 b/docs/libcurl/opts/CURLOPT_SSLKEYTYPE.3
+--- a/docs/libcurl/opts/CURLOPT_SSLKEYTYPE.3	2026-09-29 15:54:04.909371680 +0000
++++ b/docs/libcurl/opts/CURLOPT_SSLKEYTYPE.3	2026-09-29 16:02:57.414334082 +0000
+@@ -32,12 +32,18 @@
+ .fi
+ .SH DESCRIPTION
+ Pass a pointer to a null-terminated string as parameter. The string should be
+-the format of your private key. Supported formats are "PEM", "DER" and "ENG".
++the format of your private key. Supported formats are "PEM", "DER", "ENG" and
++"PROV".
+ 
+ The format "ENG" enables you to load the private key from a crypto engine. In
+ this case \fICURLOPT_SSLKEY(3)\fP is used as an identifier passed to the
+ engine. You have to set the crypto engine with \fICURLOPT_SSLENGINE(3)\fP.
+-\&"DER" format key file currently does not work because of a bug in OpenSSL.
++
++The format "PROV" enables you to load the private key from a crypto provider
++(Added in 8.12.0). In this case \fICURLOPT_SSLKEY(3)\fP is used as an
++identifier passed to the provider.
++
++The "DER" format does not work with OpenSSL.
+ 
+ The application does not have to keep the string around after setting this
+ option.
+diff -Naur a/lib/urldata.h b/lib/urldata.h
+--- a/lib/urldata.h	2026-09-29 15:54:05.013370306 +0000
++++ b/lib/urldata.h	2026-09-29 16:00:15.412475097 +0000
+@@ -1376,6 +1376,8 @@
+ #if defined(USE_OPENSSL)
+   /* void instead of ENGINE to avoid bleeding OpenSSL into this header */
+   void *engine;
++  BIT(provider);
++  BIT(provider_failed);
+ #endif /* USE_OPENSSL */
+   struct curltime expiretime; /* set this with Curl_expire() only */
+   struct Curl_tree timenode; /* for the splay stuff */
+diff -Naur a/lib/vtls/openssl.c b/lib/vtls/openssl.c
+--- a/lib/vtls/openssl.c	2026-09-29 15:54:04.993370570 +0000
++++ b/lib/vtls/openssl.c	2026-09-29 16:56:25.535925203 +0000
+@@ -90,6 +90,13 @@
+ #include <openssl/engine.h>
+ #endif
+ 
++#if OPENSSL_VERSION_NUMBER >= 0x03000000fL && \
++  !defined(OPENSSL_NO_UI_CONSOLE)
++#include <openssl/provider.h>
++#include <openssl/store.h>
++#define OPENSSL_HAS_PROVIDERS
++#endif
++
+ #include "warnless.h"
+ 
+ /* The last #include files should be: */
+@@ -107,7 +114,7 @@
+ #error "OPENSSL_VERSION_NUMBER not defined"
+ #endif
+ 
+-#ifdef USE_OPENSSL_ENGINE
++#if defined(USE_OPENSSL_ENGINE) || defined(OPENSSL_HAS_PROVIDERS)
+ #include <openssl/ui.h>
+ #endif
+ 
+@@ -570,6 +577,9 @@
+ #ifndef SSL_FILETYPE_PKCS12
+ #define SSL_FILETYPE_PKCS12 43
+ #endif
++#ifndef SSL_FILETYPE_PROVIDER
++#define SSL_FILETYPE_PROVIDER 44
++#endif
+ static int do_file_type(const char *type)
+ {
+   if(!type || !type[0])
+@@ -578,6 +588,8 @@
+     return SSL_FILETYPE_PEM;
+   if(strcasecompare(type, "DER"))
+     return SSL_FILETYPE_ASN1;
++  if(strcasecompare(type, "PROV"))
++    return SSL_FILETYPE_PROVIDER;
+   if(strcasecompare(type, "ENG"))
+     return SSL_FILETYPE_ENGINE;
+   if(strcasecompare(type, "P12"))
+@@ -585,7 +597,7 @@
+   return -1;
+ }
+ 
+-#ifdef USE_OPENSSL_ENGINE
++#if defined(USE_OPENSSL_ENGINE) || defined(OPENSSL_HAS_PROVIDERS)
+ /*
+  * Supply default password to the engine user interface conversation.
+  * The password is passed by OpenSSL engine from ENGINE_load_private_key()
+@@ -637,6 +649,10 @@
+ #endif
+ 
+ static CURLcode ossl_set_engine(struct Curl_easy *data, const char *engine);
++#ifdef OPENSSL_HAS_PROVIDERS
++static CURLcode ossl_set_provider(struct Curl_easy *data,
++                                 const char *provider);
++#endif
+ 
+ static int
+ SSL_CTX_use_certificate_blob(SSL_CTX *ctx, const struct curl_blob *blob,
+@@ -792,7 +808,8 @@
+ 
+   int file_type = do_file_type(cert_type);
+ 
+-  if(cert_file || cert_blob || (file_type == SSL_FILETYPE_ENGINE)) {
++  if(cert_file || cert_blob || (file_type == SSL_FILETYPE_ENGINE) ||
++     (file_type == SSL_FILETYPE_PROVIDER)) {
+     SSL *ssl;
+     X509 *x509;
+     int cert_done = 0;
+@@ -906,6 +923,70 @@
+       return 0;
+ #endif
+ 
++#ifdef OPENSSL_HAS_PROVIDERS
++    case SSL_FILETYPE_PROVIDER:
++    {
++      OSSL_STORE_CTX *store = NULL;
++      OSSL_STORE_INFO *info = NULL;
++      X509 *cert = NULL;
++
++      if(!cert_file || cert_blob) {
++        failf(data, "file type PROV requires a certificate file");
++        return 0;
++      }
++      if(!data->state.provider && is_pkcs11_uri(cert_file) &&
++         ossl_set_provider(data, "pkcs11") != CURLE_OK)
++        return 0;
++      if(!data->state.provider) {
++        failf(data, "crypto provider not set, cannot load certificate");
++        return 0;
++      }
++
++      store = OSSL_STORE_open(cert_file, NULL, NULL, NULL, NULL);
++      if(!store) {
++        failf(data, "Failed to open OpenSSL store: %s",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++        return 0;
++      }
++      if(OSSL_STORE_expect(store, OSSL_STORE_INFO_CERT) != 1)
++        failf(data, "Failed to set store preference. Ignoring the error: %s",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++
++      while((info = OSSL_STORE_load(store)) != NULL) {
++        int ossl_type = OSSL_STORE_INFO_get_type(info);
++        if(ossl_type == OSSL_STORE_INFO_CERT)
++          cert = OSSL_STORE_INFO_get1_CERT(info);
++        else
++          failf(data, "Ignoring object not matching our type: %d", ossl_type);
++        OSSL_STORE_INFO_free(info);
++        if(cert)
++          break;
++      }
++      OSSL_STORE_close(store);
++      if(!cert) {
++        failf(data, "No cert found in the openssl store: %s",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++        return 0;
++      }
++      if(SSL_CTX_use_certificate(ctx, cert) != 1) {
++        failf(data, "unable to set client certificate [%s]",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++        X509_free(cert);
++        return 0;
++      }
++      X509_free(cert);
++      break;
++    }
++#else
++    case SSL_FILETYPE_PROVIDER:
++      failf(data, "file type PROV for certificate not implemented");
++      return 0;
++#endif
++
+     case SSL_FILETYPE_PKCS12:
+     {
+       BIO *cert_bio = NULL;
+@@ -1103,6 +1184,84 @@
+       failf(data, "file type ENG for private key not supported");
+       return 0;
+ #endif
++#ifdef OPENSSL_HAS_PROVIDERS
++    case SSL_FILETYPE_PROVIDER:
++    {
++      EVP_PKEY *priv_key = NULL;
++      OSSL_STORE_CTX *store = NULL;
++      OSSL_STORE_INFO *info = NULL;
++      UI_METHOD *ui_method = NULL;
++
++      if(!key_file || key_blob) {
++        failf(data, "file type PROV requires a private key file");
++        return 0;
++      }
++      if(!data->state.provider && is_pkcs11_uri(key_file) &&
++         ossl_set_provider(data, "pkcs11") != CURLE_OK)
++        return 0;
++      if(!data->state.provider) {
++        failf(data, "crypto provider not set, cannot load private key");
++        return 0;
++      }
++
++      ui_method = UI_create_method((char *)"curl user interface");
++      if(!ui_method) {
++        failf(data, "unable do create " OSSL_PACKAGE
++              " user-interface method");
++        return 0;
++      }
++      UI_method_set_opener(ui_method, UI_method_get_opener(UI_OpenSSL()));
++      UI_method_set_closer(ui_method, UI_method_get_closer(UI_OpenSSL()));
++      UI_method_set_reader(ui_method, ssl_ui_reader);
++      UI_method_set_writer(ui_method, ssl_ui_writer);
++
++      store = OSSL_STORE_open(key_file, ui_method, NULL, NULL, NULL);
++      if(!store) {
++        failf(data, "Failed to open OpenSSL store: %s",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++        UI_destroy_method(ui_method);
++        return 0;
++      }
++      if(OSSL_STORE_expect(store, OSSL_STORE_INFO_PKEY) != 1)
++        failf(data, "Failed to set store preference. Ignoring the error: %s",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++
++      while((info = OSSL_STORE_load(store)) != NULL) {
++        int ossl_type = OSSL_STORE_INFO_get_type(info);
++        if(ossl_type == OSSL_STORE_INFO_PKEY)
++          priv_key = OSSL_STORE_INFO_get1_PKEY(info);
++        else
++          failf(data, "Ignoring object not matching our type: %d", ossl_type);
++        OSSL_STORE_INFO_free(info);
++        if(priv_key)
++          break;
++      }
++      OSSL_STORE_close(store);
++      UI_destroy_method(ui_method);
++      if(!priv_key) {
++        failf(data, "No private key found in the openssl store: %s",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++        return 0;
++      }
++      if(SSL_CTX_use_PrivateKey(ctx, priv_key) != 1) {
++        failf(data, "unable to set private key [%s]",
++              ossl_strerror(ERR_get_error(), error_buffer,
++                            sizeof(error_buffer)));
++        EVP_PKEY_free(priv_key);
++        return 0;
++      }
++      EVP_PKEY_free(priv_key);
++      break;
++    }
++#else
++    case SSL_FILETYPE_PROVIDER:
++      failf(data, "file type PROV for private key not implemented");
++      return 0;
++#endif
++
+     case SSL_FILETYPE_PKCS12:
+       if(!cert_done) {
+         failf(data, "file type P12 for private key not supported");
+@@ -1433,6 +1592,34 @@
+   return list;
+ }
+ 
++#ifdef OPENSSL_HAS_PROVIDERS
++/* Selects an OpenSSL crypto provider. */
++static CURLcode ossl_set_provider(struct Curl_easy *data,
++                                 const char *provider)
++{
++  OSSL_PROVIDER *provider_handle;
++  char error_buffer[256];
++
++  if(OSSL_PROVIDER_available(NULL, provider)) {
++    data->state.provider = TRUE;
++    return CURLE_OK;
++  }
++  if(data->state.provider_failed)
++    return CURLE_SSL_ENGINE_NOTFOUND;
++
++  provider_handle = OSSL_PROVIDER_try_load(NULL, provider, 1);
++  if(!provider_handle) {
++    failf(data, "Failed to initialize provider: %s",
++          ossl_strerror(ERR_get_error(), error_buffer,
++                        sizeof(error_buffer)));
++    data->state.provider_failed = TRUE;
++    return CURLE_SSL_ENGINE_NOTFOUND;
++  }
++  data->state.provider = TRUE;
++  return CURLE_OK;
++}
++#endif
++
+ #define set_logger(conn, data)                  \
+   conn->ssl[0].backend->logger = data
+ 
+diff -Naur a/src/tool_listhelp.c b/src/tool_listhelp.c
+--- a/src/tool_listhelp.c	2026-09-29 15:54:05.021370200 +0000
++++ b/src/tool_listhelp.c	2026-09-29 16:56:55.775525410 +0000
+@@ -62,7 +62,7 @@
+    "Verify the status of the server cert via OCSP-staple",
+    CURLHELP_TLS},
+   {"    --cert-type <type>",
+-   "Certificate type (DER/PEM/ENG)",
++   "Certificate type (DER/PEM/ENG/PROV/P12)",
+    CURLHELP_TLS},
+   {"    --ciphers <list of ciphers>",
+    "SSL ciphers to use",
+
