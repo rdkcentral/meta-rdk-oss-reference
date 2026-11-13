@@ -71,7 +71,6 @@ RDEPENDS:${PN} = "\
      libcap-ng \
      libcgroup \
      libcheck \
-     libcroco \
      libdaemon \
      libepoxy \
      liberation-fonts \
