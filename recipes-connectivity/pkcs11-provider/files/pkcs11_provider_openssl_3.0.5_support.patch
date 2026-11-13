@@ -1,0 +1,23 @@
+diff -Naur a/meson.build b/meson.build
+--- a/meson.build	2026-10-15 16:37:59.390369876 +0000
++++ b/meson.build	2026-10-15 16:38:25.622022408 +0000
+@@ -45,14 +45,14 @@
+ conf.set('PACKAGE_MAJOR', major_version)
+ conf.set('PACKAGE_MINOR', minor_version)
+ 
+-libcrypto = dependency('libcrypto', version: '>= 3.0.7', required: false)
++libcrypto = dependency('libcrypto', version: '>= 3.0.5', required: false)
+ if not libcrypto.found()
+-  libcrypto = dependency('libcrypto3', version: '>= 3.0.7', required: true)
++  libcrypto = dependency('libcrypto3', version: '>= 3.0.5', required: true)
+ endif
+ provider_path = libcrypto.get_variable(pkgconfig: 'modulesdir')
+-libssl = dependency('libssl', version: '>= 3.0.7', required: false)
++libssl = dependency('libssl', version: '>= 3.0.5', required: false)
+ if not libssl.found()
+-  libssl = dependency('libssl3', version: '>= 3.0.7', required: true, method: 'pkg-config')
++  libssl = dependency('libssl3', version: '>= 3.0.5', required: true, method: 'pkg-config')
+ endif
+ 
+ # Set build version and build info definitions
+
