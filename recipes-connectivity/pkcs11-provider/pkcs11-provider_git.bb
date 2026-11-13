@@ -15,7 +15,7 @@ SRCREV = "b55b94344af87a058fd84d6e15390760a5585b1d"
 
 SRC_URI = "git://github.com/openssl-projects/pkcs11-provider.git;protocol=https;branch=main"
 
-SRC_URI_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'hrot_pkcs11_provider', ' file://pkcs11_provider_openssl_3.0.5_support.patch ', ' ', d)}"
+SRC_URI:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'hrot_pkcs11_provider', ' file://pkcs11_provider_openssl_3.0.5_support.patch ', ' ', d)}"
 
 S = "${WORKDIR}/git"
 
