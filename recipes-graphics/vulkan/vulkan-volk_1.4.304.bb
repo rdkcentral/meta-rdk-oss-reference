@@ -9,7 +9,6 @@ SECTION = "libs"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=12e6af3a0e2a5e5dbf7796aa82b64626"
 
-S = "${UNPACKDIR}/git"
 SRC_URI = "git://github.com/zeux/volk.git;branch=master;protocol=https"
 SRCREV = "0b17a763ba5643e32da1b2152f8140461b3b7345"
 
