@@ -122,7 +122,7 @@ Index: log4c-1.2.3/src/sd/hash.c
 +     *     */
 +    if (a_this == 0 || a_key == 0 ||
 +        a_this->ops == 0 || a_this->ops->hash == 0 ||
-+        a_this->tab == 0 || a_this->size == 0)
++        a_this->ops->compare == 0 || a_this->tab == 0 || a_this->size == 0)
 +        return 0;
 +
      if ((p = sd_hash_lookup(a_this, a_key)) != 0)	return p;
