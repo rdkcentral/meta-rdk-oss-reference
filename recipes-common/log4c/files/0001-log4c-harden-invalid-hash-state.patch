@@ -43,9 +43,10 @@ Index: log4c-1.2.3/src/sd/factory.c
 +
    this->fac_name = sd_strdup(a_name);
    this->fac_ops  = a_ops;
-   this->fac_hash = sd_hash_new(20, NULL);
+-  this->fac_hash = sd_hash_new(20, NULL);
 +
-+  if (this->fac_name == NULL || this->fac_hash == NULL) {
++  if (this->fac_name == NULL ||
++      (this->fac_hash = sd_hash_new(20, NULL)) == NULL) {
 +    free(this->fac_name);
 +    free(this);
 +    return NULL;
