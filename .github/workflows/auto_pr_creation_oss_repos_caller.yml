@@ -1,0 +1,18 @@
+name: OSS Manifest Auto PR Creation Caller
+
+on:
+  pull_request:
+    types: [closed]
+     # Remove feature/oss-auto-merge after merge.
+    branches:
+      - develop
+      - 'support/*.*.*'
+      - 'support/*.*.*.*'
+      - feature/oss-auto-merge
+
+jobs:
+  call_oss_auto_pr_workflow:
+    # Temporary checkout; revert to develop after merge.
+    uses: rdkcentral/build_tools_workflows/.github/workflows/auto_pr_creation_oss_manifests.yml@feature/oss-auto-merge
+    secrets:
+      RDKCM_RDKE: ${{ secrets.RDKCM_RDKE }}
