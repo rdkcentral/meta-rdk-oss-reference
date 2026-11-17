@@ -12,6 +12,7 @@ SRC_URI:append = " \
 	file://04log4c_sizewin.patch \
 	file://03log4c_rollingfileapender.patch \
         file://memory-leak-fix-log4c.patch \
+        file://0001-log4c-harden-invalid-hash-state.patch \
 "
 
 PACKAGECONFIG ??= ""
