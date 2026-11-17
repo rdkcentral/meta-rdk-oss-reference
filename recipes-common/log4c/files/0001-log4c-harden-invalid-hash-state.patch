@@ -1,0 +1,130 @@
+Index: log4c-1.2.3/src/log4c/category.c
+===================================================================
+--- log4c-1.2.3.orig/src/log4c/category.c
++++ log4c-1.2.3/src/log4c/category.c
+@@ -52,12 +52,18 @@ extern log4c_category_t* log4c_category_
+     (void*) log4c_category_delete,
+     (void*) log4c_category_print,
+   };
++
++  if (!a_name)
++    return NULL;
+   
+   if (!log4c_category_factory) {
+     log4c_category_factory = sd_factory_new("log4c_category_factory",
+       &log4c_category_factory_ops);
+   }
+-  
++
++  if (!log4c_category_factory)
++    return NULL;
++
+   return sd_factory_get(log4c_category_factory, a_name);
+ }
+ 
+Index: log4c-1.2.3/src/sd/factory.c
+===================================================================
+--- log4c-1.2.3.orig/src/sd/factory.c
++++ log4c-1.2.3/src/sd/factory.c
+@@ -37,14 +37,24 @@ extern sd_factory_t* sd_factory_new(cons
+   const sd_factory_ops_t* a_ops)
+ {
+   sd_factory_t* this;
+-  
+-  if (!a_name || !a_ops)
++
++  if (a_name == NULL || a_ops == NULL)
+     return NULL;
+-  
++
+   this           = sd_calloc(1, sizeof(*this));
++  if (this == NULL)
++      return NULL;
++
+   this->fac_name = sd_strdup(a_name);
+   this->fac_ops  = a_ops;
+-  this->fac_hash = sd_hash_new(20, NULL);
++
++  if (this->fac_name == NULL ||
++      (this->fac_hash = sd_hash_new(20, NULL)) == NULL) {
++    free(this->fac_name);
++    free(this);
++    return NULL;
++  }
++
+   return this;
+ }
+ 
+@@ -80,7 +90,11 @@ extern void* sd_factory_get(sd_factory_t
+ {
+   sd_hash_iter_t*		i;
+   sd_factory_product_t*	pr;	
+-  
++
++  if (this == NULL || a_name == NULL ||
++      this->fac_ops == NULL || this->fac_hash == NULL)
++    return NULL;
++
+   if ( (i = sd_hash_lookup(this->fac_hash, a_name)) != NULL)
+     return i->data;
+   
+@@ -90,7 +104,16 @@ extern void* sd_factory_get(sd_factory_t
+   if ( (pr = this->fac_ops->fac_new(a_name)) == NULL)
+     return NULL;
+   
+-  sd_hash_add(this->fac_hash, pr->pr_name, pr);
++  /*
++   *  * Do not return the newly created factory product as successfully
++   *   * registered if insertion failed due to invalid hash state.
++   *    */
++  if (sd_hash_add(this->fac_hash, pr->pr_name, pr) == NULL) {
++    if (this->fac_ops->fac_delete)
++    this->fac_ops->fac_delete(pr);
++    return NULL;
++  }
++
+   return pr;
+   
+ }
+Index: log4c-1.2.3/src/sd/hash.c
+===================================================================
+--- log4c-1.2.3.orig/src/sd/hash.c
++++ log4c-1.2.3/src/sd/hash.c
+@@ -93,8 +93,17 @@ extern sd_hash_iter_t* sd_hash_lookup(sd
+     int			h;
+     sd_hash_iter_t*	p;
+     
+-    if (a_this == 0 || a_key == 0) return 0;
+-    
++    /*
++    * Logging must fail safely if the hash is not in a valid state.
++    * Returning NULL causes the current lookup/log operation to fail
++    * rather than crashing the application.
++    */
++    if (a_this == 0 || a_key == 0 ||
++        a_this->ops == 0 || a_this->ops->hash == 0 ||
++        a_this->ops->compare == 0 ||
++        a_this->tab == 0 || a_this->size == 0)
++        return 0;
++
+     h = hindex(a_this->ops->hash(a_key), a_this->size);
+     for (p = a_this->tab[h]; p != 0; p = p->__next)
+ 	if (a_this->ops->compare(a_key, p->key) == 0) {
+@@ -110,7 +119,16 @@ extern sd_hash_iter_t* sd_hash_lookadd(s
+     int			h;
+     sd_hash_iter_t*	p;
+     
+-    if (a_this == 0 || a_key == 0)			return 0;
++    /*
++     *  * sd_hash_lookup() returning NULL normally means "not found".
++     *   * Validate the hash here as well so an invalid hash is not treated
++     *    * as a missing entry and then dereferenced during insertion.
++     *     */
++    if (a_this == 0 || a_key == 0 ||
++        a_this->ops == 0 || a_this->ops->hash == 0 ||
++        a_this->ops->compare == 0 || a_this->tab == 0 || a_this->size == 0)
++        return 0;
++
+     if ((p = sd_hash_lookup(a_this, a_key)) != 0)	return p;
+     if ((p = sd_calloc(1, sizeof(*p))) == 0)		return 0;
+     
