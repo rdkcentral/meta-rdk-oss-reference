@@ -17,7 +17,7 @@ EXTRA_OECONF:broadband = "--disable-tests \
                           --disable-checks \
                           --disable-systemd"
 
-do_install:append() {
+do_install:append:class-target() {
          # Remove <includedir>system.d</includedir> from system.conf since it consumes much CPU cycles for dbus-daemon
          sed -i '/system.d/d' ${D}${sysconfdir}/dbus-1/system.conf
 }

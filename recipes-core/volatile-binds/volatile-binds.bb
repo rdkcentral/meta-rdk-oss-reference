@@ -42,7 +42,7 @@ do_compile () {
         servicefile="$(echo "$servicefile" | tr / -).service"
         sed -e "s#@what@#$spec#g; s#@where@#$mountpoint#g" \
             -e "s#@whatparent@#${spec%/*}#g; s#@whereparent@#${mountpoint%/*}#g" \
-            volatile-binds.service.in >$servicefile
+            ${UNPACKDIR}/volatile-binds.service.in >$servicefile
     done <<END
 ${@d.getVar('VOLATILE_BINDS', True).replace("\\n", "\n")}
 END
@@ -63,13 +63,16 @@ do_compile[dirs] = "${WORKDIR}"
 
 do_install () {
     install -d ${D}${base_sbindir}
-    install -m 0755 mount-copybind ${D}${base_sbindir}/
+    install -m 0755 ${UNPACKDIR}/mount-copybind ${D}${base_sbindir}/
 
     install -d ${D}${systemd_unitdir}/system
     for service in ${SYSTEMD_SERVICE:${PN}}; do
-        install -m 0644 $service ${D}${systemd_unitdir}/system/
+        if [ "$service" = "var-lib.mount" ]; then
+            install -m 0644 ${UNPACKDIR}/var-lib.mount ${D}${systemd_unitdir}/system/
+        else
+            install -m 0644 $service ${D}${systemd_unitdir}/system/
+        fi
     done
-    install -m 0644 ${WORKDIR}/var-lib.mount ${D}${systemd_unitdir}/system/
 }
 
 do_install:append:broadband ()  {

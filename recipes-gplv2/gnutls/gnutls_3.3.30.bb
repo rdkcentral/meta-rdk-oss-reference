@@ -1,5 +1,9 @@
 require gnutls.inc
 
+CFLAGS:append = " -std=gnu17"
+ERROR_QA:remove = "incompatible-license"
+WARN_QA:append = " incompatible-license"
+
 SRC_URI += " \
     file://configure.ac-fix-sed-command.patch \
     file://use-pkg-config-to-locate-zlib.patch \

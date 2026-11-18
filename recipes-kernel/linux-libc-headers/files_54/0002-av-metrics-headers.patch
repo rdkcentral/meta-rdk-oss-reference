@@ -12,6 +12,7 @@ Priority: P1
 Signed-off-by: deekshit.devadas <deekshit.devadas@sky.uk>
 
 Change-Id: I63f0c4d858eb4fbc92dc052eb5eb6d3b45a4001d
+Upstream-Status: Inappropriate [RDK-specific change]
 ---
 
 diff -Naur a/linux-4.9/include/uapi/linux/prctl.h b/linux-4.9/include/uapi/linux/prctl.h

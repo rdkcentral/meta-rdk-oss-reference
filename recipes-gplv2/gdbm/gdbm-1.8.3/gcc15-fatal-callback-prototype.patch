@@ -1,0 +1,44 @@
+gdbm: Declare fatal error callback parameter
+
+The fatal error callback is invoked with a char pointer, but its declarations
+use an empty parameter list. With C23 semantics this declares a function that
+takes no arguments and causes compilation to fail. Declare the callback
+parameter consistently in the implementation, public header, and manuals.
+
+Upstream-Status: Pending
+
+--- a/gdbmdefs.h
++++ b/gdbmdefs.h
+@@ -170 +170 @@
+-	void (*fatal_err) ();
++	void (*fatal_err) (char *);
+--- a/gdbmopen.c
++++ b/gdbmopen.c
+@@ -62 +62 @@
+-     void (*fatal_func) ();
++     void (*fatal_func) (char *);
+--- a/proto.h
++++ b/proto.h
+@@ -67 +67 @@
+-gdbm_file_info *gdbm_open __P((char *, int, int, int, void (*) (void)));
++gdbm_file_info *gdbm_open __P((char *, int, int, int, void (*)(char *)));
+--- a/gdbm.proto
++++ b/gdbm.proto
+@@ -85 +85 @@
+-extern GDBM_FILE gdbm_open __P((char *, int, int, int, void (*)()));
++extern GDBM_FILE gdbm_open __P((char *, int, int, int, void (*)(char *)));
+--- a/gdbm.3
++++ b/gdbm.3
+@@ -26 +26 @@
+-.B void (*fatal_func) ();
++.B void (*fatal_func) (char *);
+--- a/gdbm.texinfo
++++ b/gdbm.texinfo
+@@ -267 +267 @@
+-@item void (*fatal_func) ()
++@item void (*fatal_func) (char *)
+--- a/gdbm.info
++++ b/gdbm.info
+@@ -216 +216 @@
+-void (*fatal_func) ()
++void (*fatal_func) (char *)

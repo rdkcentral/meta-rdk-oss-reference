@@ -6,7 +6,7 @@ hotspots and temporary allocations"
 HOMEPAGE = "https://phabricator.kde.org/source/heaptrack/"
 #LICENSE = "LGPL-2.1-only"
 #LIC_FILES_CHKSUM = "file://README.md;md5=4ef5b760f4d060d021f18b2ecd154ee5"
-LICENSE = "LGPLv2.1+ & GPLv2+ & BSD-3-Clause & Apache-2.0 & MIT"
+LICENSE = "LGPL-2.1-or-later & GPL-2.0-or-later & BSD-3-Clause & Apache-2.0 & MIT"
 
 DEPENDS = "zlib boost libunwind elfutils zstd"
 RDEPENDS:${PN} += "bash"
@@ -18,22 +18,21 @@ SRCREV = "c8bbebd325f41dd34af409b68eb3eaa619e326cf"
 
 SRC_URI += "file://remove_zstd_depends.patch \
             file://add_tid_in_heaptrack.patch \
-            file://copy_Debugrootfs.sh "
-
-S = "${WORKDIR}/git"
+            file://copy_Debugrootfs.sh \
+            file://0001-Fix-libunwind-backtrace-probes.patch "
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 inherit cmake
 
-EXTRA_OECMAKE += "-DHEAPTRACK_BUILD_PRINT=ON -DHEAPTRACK_BUILD_GUI=ON -DHEAPTRACK_BUILD_BACKTRACE=OFF"
+EXTRA_OECMAKE += "-DHEAPTRACK_BUILD_PRINT=ON -DHEAPTRACK_BUILD_GUI=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 do_install:append() {
-install -d ${D}/lib/rdk
+install -d ${D}${libdir}/rdk
 install -d ${D}/${includedir}
 install -m 0755 ${S}/src/track/libheaptrack.h ${D}/${includedir}/libheaptrack.h
-install -m 0755 ${WORKDIR}/copy_Debugrootfs.sh ${D}/lib/rdk
+install -m 0755 ${UNPACKDIR}/copy_Debugrootfs.sh ${D}${libdir}/rdk
 }
 
-FILES:${PN} += " /lib/rdk/copy_Debugrootfs.sh"
+FILES:${PN} += "${libdir}/rdk/copy_Debugrootfs.sh"
 BBCLASSEXTEND = "native nativesdk"

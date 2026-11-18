@@ -1,0 +1,11 @@
+Upstream-Status: Pending
+
+The source calls unlink without including unistd.h.
+
+--- a/lib/utils.c
++++ b/lib/utils.c
+@@ -32,0 +33,4 @@
++
++#ifdef HAVE_UNISTD_H
++# include <unistd.h>
++#endif

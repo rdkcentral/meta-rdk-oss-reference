@@ -7,6 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe\
 
 PR = "r2"
 SRC_URI += "file://fix_for_circular_dependency.patch"
+SRC_URI += "file://gcc15-remove-popen-redeclaration.patch"
 
 SRC_URI:append:class-target = "\
     file://0001-freeze-fix-compilation-error-with-security-flags-ena.patch \

@@ -9,10 +9,8 @@ PR = "r0"
 SRC_URI = "git://github.com/nmoinvaz/minizip.git;branch=1.2;protocol=http"
 SRCREV = "71ef99f6a051c11652502cf31cfef292de2e7736"
 
-S = "${WORKDIR}/git"
-B = "${WORKDIR}/git"
-
 EXTRA_OECMAKE += "-DUSE_AES=OFF -DBUILD_SHARED_LIBS=ON"
+EXTRA_OECMAKE:append = " -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 DEPENDS += "zlib"
 inherit cmake

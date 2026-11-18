@@ -1,0 +1,15 @@
+zlib: Preserve _FILE_OFFSET_BITS when _TIME_BITS is defined
+
+gzguts.h undefines _FILE_OFFSET_BITS when _LARGEFILE64_SOURCE is set. With
+glibc time64 enabled, this causes compilation to fail because _TIME_BITS=64
+requires _FILE_OFFSET_BITS=64. Keep _FILE_OFFSET_BITS defined in that case.
+
+Upstream-Status: Pending
+
+--- a/gzguts.h
++++ b/gzguts.h
+@@ -10,3 +10,3 @@
+-#  ifdef _FILE_OFFSET_BITS
++#  if defined(_FILE_OFFSET_BITS) && !defined(_TIME_BITS)
+ #    undef _FILE_OFFSET_BITS
+ #  endif
