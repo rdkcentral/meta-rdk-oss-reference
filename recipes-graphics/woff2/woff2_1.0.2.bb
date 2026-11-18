@@ -10,9 +10,12 @@ UPSTREAM_CHECK_URI = "https://github.com/google/woff2/releases"
 
 DEPENDS = "brotli"
 
-S = "${WORKDIR}/git"
-SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https"
+SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https \
+		   file://0001-include-cstdint-in-output-header.patch \
+"
 SRCREV = "1bccf208bca986e53a647dfe4811322adb06ecf8"
 
 inherit cmake lib_package
+
+EXTRA_OECMAKE:append = " -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 

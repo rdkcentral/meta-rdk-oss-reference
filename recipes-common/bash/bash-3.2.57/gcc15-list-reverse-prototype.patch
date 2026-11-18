@@ -1,0 +1,13 @@
+From: RDK Build Compatibility
+Subject: [PATCH] bash: declare list_reverse argument
+
+GCC 15 treats the old no-argument declaration as a prototype and rejects
+the call that passes the list argument. Declare the actual argument type.
+
+Upstream-Status: Pending
+
+--- a/externs.h
++++ b/externs.h
+@@ -124 +124 @@
+-extern GENERIC_LIST *list_reverse ();
++extern GENERIC_LIST *list_reverse __P((GENERIC_LIST *));
