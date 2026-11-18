@@ -16,6 +16,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=3bf50002aefd002f49e7bb854063f7e7 \
 DEFAULT_PREFERENCE = "-1"
 
 EXTRA_OECONF += "--enable-introspection=no"
+CPPFLAGS:append = " -I${STAGING_INCDIR}/libsoup-2.4"
 
 RDEPENDS:${PN}-dev:append = " ${PYTHON_PN}"
 RDEPENDS:${PN}-dev:remove:broadband = "python-textutils python-xml"

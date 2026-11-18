@@ -1,0 +1,16 @@
+Upstream-Status: Inappropriate [Legacy build environment lacks the required msgfmt version]
+
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -6,9 +6,7 @@
+-freedesktop_org_xml = i18n.merge_file(
++freedesktop_org_xml = configure_file(
+     input: 'freedesktop.org.xml.in',
+     output: 'freedesktop.org.xml',
+-    data_dirs: '.',
+-    po_dir: '../po',
+-    type: 'xml',
++    copy: true,
+     install: true,
+     install_dir: get_option('datadir') / 'mime' / 'packages',
+ )

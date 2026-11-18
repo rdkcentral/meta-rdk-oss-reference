@@ -7,19 +7,28 @@ Subject: [PATCH] RDKALL-1221: Create separate CA bundles for browser apps
 	This patch is made compatible to kirkstone Yocto version.
 Source: COMCAST 02060561db73c28bcb9dff8d241c2275c6ad9b47 Mar 22, 2019 2:49 PM
 Signed-off-by: Arjun <arjun_daasuramdass@comcast.com>
+Upstream-Status: Inappropriate [RDK-specific CA bundle layout]
 ---
 
 --- a/sbin/update-ca-certificates	2022-10-31 11:35:36.417666102 +0000
 +++ b/sbin/update-ca-certificates	2022-10-31 11:38:35.772935860 +0000
 @@ -26,6 +26,7 @@
  default=0
- CERTSCONF=$SYSROOT/etc/ca-certificates.conf
- CERTSDIR=$SYSROOT/usr/share/ca-certificates
-+CERTSDIRBUNDLE=$SYSROOT/usr/share/ca-certificates/ca-certificates.crt
- LOCALCERTSDIR=$SYSROOT/usr/local/share/ca-certificates
+ CERTSCONF=/etc/ca-certificates.conf
+ CERTSDIR=/usr/share/ca-certificates
++CERTSDIRBUNDLE=/usr/share/ca-certificates/ca-certificates.crt
+ LOCALCERTSDIR=/usr/local/share/ca-certificates
  CERTBUNDLE=ca-certificates.crt
- ETCCERTSDIR=$SYSROOT/etc/ssl/certs
-@@ -226,9 +227,10 @@
+ ETCCERTSDIR=/etc/ssl/certs
+@@ -65,6 +66,7 @@
+       SYSROOT="$1"
+       CERTSCONF="$1/${CERTSCONF}"
+       CERTSDIR="$1/${CERTSDIR}"
++CERTSDIRBUNDLE="$1/${CERTSDIRBUNDLE}"
+       LOCALCERTSDIR="$1/${LOCALCERTSDIR}"
+       ETCCERTSDIR="$1/${ETCCERTSDIR}"
+       HOOKSDIR="$1/${HOOKSDIR}";;
+@@ -201,9 +203,10 @@
  if [ -f "$TEMPBUNDLE" ]
  then
    chmod 0644 "$TEMPBUNDLE"

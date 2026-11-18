@@ -2,6 +2,7 @@ From 29c8fe97f4d873bcb27b8a04403c90f0bf1c3adb Mon Sep 17 00:00:00 2001
 From: skondu363 <Srihariraghava_konduritirumala@comcast.com>
 Date: Tue, 28 Apr 2026 05:34:29 +0000
 Subject: [PATCH] Subject: Comcast
+Upstream-Status: Inappropriate [RDK-specific certificate verification]
 
 Signed-off-by: skondu363 <Srihariraghava_konduritirumala@comcast.com>
 ---
