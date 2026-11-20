@@ -11,8 +11,6 @@ SRCREV_breakpadwrapper = "be8cd679e095cd300f77913863724fa5e39a6182"
 SRCREV_FORMAT = "breakpadwrapper"
 PV = "1.0.0"
 
-S = "${WORKDIR}/git/"
-
 inherit autotools coverity
 
 CPPFLAGS:append = " \
