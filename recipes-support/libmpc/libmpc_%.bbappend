@@ -1,0 +1,1 @@
+INCOMPATIBLE_LICENSE_EXCEPTIONS:pn-libmpc = "libmpc:LGPL-3.0-only"
