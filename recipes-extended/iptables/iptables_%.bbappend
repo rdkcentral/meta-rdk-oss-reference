@@ -5,6 +5,7 @@
 #
 do_install:append() {
 	rm -rf ${D}${systemd_system_unitdir}
+	rmdir ${D}${systemd_unitdir} 2>/dev/null || true
 }
 
 SYSTEMD_SERVICE:iptables:remove = "iptables.service ip6tables.service"
