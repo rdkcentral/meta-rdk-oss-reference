@@ -1,1 +1,1 @@
-PACKAGECONFIG:remove += "idn2"
+PACKAGECONFIG:remove = "idn2"
