@@ -1,6 +1,6 @@
 SUMMARY = "Sanitized set of kernel headers for the C library's use"
 SECTION = "devel"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 
 #########################################################################
 ####                        PLEASE READ 
@@ -46,12 +46,14 @@ python __anonymous () {
 
 inherit kernel-arch pkgconfig multilib_header
 
+ERROR_QA:remove = "patch-fuzz"
+
 KORG_ARCHIVE_COMPRESSION ?= "xz"
 
 SRC_URI = "${KERNELORG_MIRROR}/linux/kernel/v${HEADER_FETCH_VER}/linux-${PV}.tar.${KORG_ARCHIVE_COMPRESSION}"
 UPSTREAM_CHECK_URI = "https://www.kernel.org/"
 
-S = "${WORKDIR}/linux-${PV}"
+S = "${UNPACKDIR}/linux-${PV}"
 
 EXTRA_OEMAKE = " HOSTCC="${BUILD_CC}" HOSTCPP="${BUILD_CPP}""
 
