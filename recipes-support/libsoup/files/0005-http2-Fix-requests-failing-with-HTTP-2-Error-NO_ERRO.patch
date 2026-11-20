@@ -3,6 +3,7 @@ From: Carlos Alberto Lopez Perez <clopez@igalia.com>
 Date: Fri, 3 Apr 2026 19:08:40 +0100
 Subject: [PATCH] http2: Fix requests failing with "HTTP/2 Error: NO_ERROR" on
  graceful GOAWAY
+Upstream-Status: Backport [https://gitlab.gnome.org/GNOME/libsoup/-/issues/514]
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
