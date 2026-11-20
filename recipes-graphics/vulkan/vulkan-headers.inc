@@ -11,8 +11,6 @@ LICENSE = "Apache-2.0"
 
 SRC_URI = "git://github.com/KhronosGroup/Vulkan-Headers.git;branch=main;protocol=https"
 
-S = "${WORKDIR}/git"
-
 inherit cmake
 
 FILES:${PN} = "${includedir}/vulkan ${datadir}/cmake/VulkanHeaders"
