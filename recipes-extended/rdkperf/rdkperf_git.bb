@@ -29,7 +29,6 @@ SRCREV = "6eeec49b94a97c70da2be491ef4a40e211599535"
 
 PV = "1.0.1+git${SRCPV}"
 PR ?= "r0"
-S = "${WORKDIR}/git"
 
 
 RDKPERF_BUILD_FLAGS += "${@bb.utils.contains('DISTRO_FEATURES', 'rdkperf_service', "ENABLE_PERF_REMOTE=1", "", d)}"
