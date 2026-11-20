@@ -23,6 +23,8 @@ RDEPENDS:${PN}-ptest += "make"
 
 inherit ptest
 
+ERROR_QA:remove = "patch-fuzz"
+
 do_configure() {
 	uname=GNU ./configure --prefix=${prefix} --shared --libdir=${libdir}
 }

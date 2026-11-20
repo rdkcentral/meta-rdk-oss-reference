@@ -11,10 +11,11 @@ inherit ptest
 RDEPENDS:${PN}-ptest += "bash"
 
 do_compile_ptest() {
-    # update DATADIR in Makefile
+    # Update test data paths in generated Makefiles
     sed -i 's,-DDATADIR=.*,-DDATADIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/libkeymap/Makefile
     sed -i 's,-DDATADIR=.*,-DDATADIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/helpers/Makefile
-    sed -i 's,-DDATADIR=.*,-DDATADIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/libkbdfile/Makefile
+    sed -i 's,-DTESTDIR=.*,-DTESTDIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/libkeymap/Makefile
+    sed -i 's,-DTESTDIR=.*,-DTESTDIR=\\\"${PTEST_PATH}/tests\\\" \\,g' ${B}/tests/libkbdfile/Makefile
 
     # recompile tests
     oe_runmake -C ${B}/tests/ clean
