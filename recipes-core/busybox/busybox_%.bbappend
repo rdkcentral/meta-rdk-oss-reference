@@ -1,5 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
+ERROR_QA:remove = "patch-status patch-fuzz"
+
 SRC_URI += " \
    file://nice.cfg \
    file://viconsole.cfg \
@@ -19,8 +21,10 @@ SRC_URI += " \
    file://timeout.cfg \
    file://zcip.cfg \
    file://network-tools-removal.cfg \
+   file://ping-math.cfg \
    file://enable_ar.cfg \
    file://busybox-support-chinese-display.patch \
+   file://0001-ping-include-math-header.patch \
    ${VERSION_PATCHES} \
    file://0001-add-ENABLE_FEATURE_SYSTEMD-and-use-it-in-syslogd.patch \
    file://busybox-1.31-ping-mdev-support.patch \

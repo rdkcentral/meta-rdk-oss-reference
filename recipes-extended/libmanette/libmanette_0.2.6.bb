@@ -2,6 +2,7 @@ SUMMARY = "The simple GObject game controller library"
 HOMEPAGE = "https://gnome.pages.gitlab.gnome.org/libmanette/"
 LICENSE = "LGPL-2.1-only & Zlib"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
+ERROR_QA:remove = "patch-status"
 DEPENDS = "libevdev libgudev"
 SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.tar.xz \
            file://0.2/0001-old-kernel-and-64-bit-kernel-build-error-fix.patch \
@@ -29,9 +30,9 @@ PACKAGECONFIG[wayland-inputfd] = "-Dwayland-inputfd=true,-Dwayland-inputfd=false
 do_install:append() {
     install -d ${D}${sysconfdir}/udev
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
+    install -m 0644 ${UNPACKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
     install -d ${D}${datadir}/libmanette/
-    cp -f ${WORKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
+    cp -f ${UNPACKDIR}/gamecontrollerdb ${D}${datadir}/libmanette/
     chmod 0644 ${D}${datadir}/libmanette/gamecontrollerdb
 
     rm ${D}/usr/bin/manette-test

@@ -1,7 +1,7 @@
 SUMMARY = "libdash provides an object-oriented interface to the Dynamic Adaptive Streaming over HTTP (DASH) standard"
 HOMEPAGE = "https://bitmovin.com/libdash/"
 LICENSE = "LGPL-2.1-or-later"
-LIC_FILES_CHKSUM = "file://libdash/Authors.txt;md5=05b5aea0fa91d5816eb4383707c52b36"
+LIC_FILES_CHKSUM = "file://Authors.txt;md5=05b5aea0fa91d5816eb4383707c52b36"
 SECTION = "libs"
 FILESEXTRAPATHS:prepend := "${THISDIR}/libdash:"
 
@@ -25,9 +25,10 @@ SRC_URI = "git://github.com/bitmovin/libdash;branch=stable_3_0;protocol=https \
            file://0012-To-retrieves-the-text-content-of-CDATA-section.patch \
           "
 
-S = "${WORKDIR}/git/libdash"
+S = "${UNPACKDIR}/${BP}/libdash"
 DEPENDS += "libxml2 curl zlib"
 inherit pkgconfig cmake
+EXTRA_OECMAKE:append = " -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 FILES:${PN} += "${libdir}/libdash.so"
 # Workaround to have dev so to ${PN}. Ideally, the recipe should generate the versioned so file for ${PN}
 FILES:${PN}-dev:remove = "/usr/lib/lib*.so"
@@ -48,5 +49,5 @@ do_install:append() {
 	install -m 0644 ${S}/libdash/source/portable/*.h ${D}${includedir}/libdash/portable
 	install -m 0644 ${S}/libdash/source/helpers/*.h ${D}${includedir}/libdash/helpers
 	install -m 0644 ${S}/libdash/source/metrics/*.h ${D}${includedir}/libdash/metrics
-	install -Dm644 ${WORKDIR}/libdash.pc ${D}${libdir}/pkgconfig/libdash.pc
+	install -Dm644 ${UNPACKDIR}/libdash.pc ${D}${libdir}/pkgconfig/libdash.pc
 }

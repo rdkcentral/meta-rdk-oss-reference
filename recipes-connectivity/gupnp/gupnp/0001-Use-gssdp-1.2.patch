@@ -1,7 +1,7 @@
 From 553591c643e23cc9bf94c70821abbe783166df4f Mon Sep 17 00:00:00 2001
 From: mselva006c <mani_selvaraj@comcast.com>
 Date: Thu, 1 Apr 2021 03:22:56 +0000
-Subject: [PATCH] Use gssdp-1.2 for dunfell build with gupnp-0.20.10
+Subject: [PATCH] Use gssdp-1.6 with gupnp-0.20.10
 
 Source: COMCAST
 Upstream-Status: Pending
@@ -17,7 +17,7 @@ Index: gupnp-0.20.10/configure.ac
                              gio-2.0 \
                              gmodule-2.0 \
 -                            gssdp-1.0 >= 0.13.0 \
-+                            gssdp-1.2 >= 0.13.0 \
++                            gssdp-1.6 >= 0.13.0 \
                              libsoup-2.4 >= 2.28.2 \
                              libxml-2.0 \
                              $UUID)
@@ -31,5 +31,5 @@ Index: gupnp-0.20.10/gupnp-1.0.pc.in
  Cflags: -I${includedir}/gupnp-1.0
 -Requires.private: gssdp-1.0 libxml-2.0 libsoup-2.4 uuid
 +Requires: libxml-2.0
-+Requires.private: gssdp-1.2 libxml-2.0 libsoup-2.4 uuid
++Requires.private: gssdp-1.6 libxml-2.0 libsoup-2.4 uuid
 

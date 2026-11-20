@@ -20,6 +20,7 @@ SRC_URI = "${GNU_MIRROR}/gettext/gettext-${PV}.tar.gz \
            file://fix_gnu_source_circular.patch \
            file://hardcode_macro_version.patch \
            file://0001-gettext-libgrep-fix-compile-error-Werror-format-secu.patch \
+           file://getcwd-prototype.patch \
           "
 
 SRC_URI[md5sum] = "3d9ad24301c6d6b17ec30704a13fe127"

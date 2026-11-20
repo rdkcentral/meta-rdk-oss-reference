@@ -1,0 +1,21 @@
+From: RDK Build Compatibility
+Subject: [PATCH] bash: include signal list after system signal headers
+
+When NSIG is unavailable, trap.h can include signal declarations after
+siglist.h defines the fallback strsignal macro. Include siglist.h last to
+avoid rewriting declarations from the system headers.
+
+Upstream-Status: Pending
+
+--- a/siglist.c
++++ b/siglist.c
+@@ -29,7 +29,7 @@
+-#include "siglist.h"
+-
+ #if !defined (NSIG)
+ #  include "trap.h"
+ #endif
+ 
+ #include "xmalloc.h"
++
++#include "siglist.h"

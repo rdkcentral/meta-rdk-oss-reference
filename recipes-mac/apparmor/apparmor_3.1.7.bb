@@ -25,7 +25,6 @@ SRC_URI = " \
 "
 
 SRCREV = "7279fae3d1e4e9e3c3d9a42079184d638a38bd3c"
-S = "${WORKDIR}/git"
 
 PARALLEL_MAKE = ""
 
@@ -98,13 +97,13 @@ do_compile () {
 
 do_install () {
     install -d ${D}/${INIT_D_DIR}
-    install -d ${D}/lib/apparmor
+    install -d ${D}${base_libdir}/apparmor
     oe_runmake -C ${B}/libraries/libapparmor DESTDIR="${D}" install
     oe_runmake -C ${B}/binutils DESTDIR="${D}" install
     if ${@bb.utils.contains('PACKAGECONFIG','python','true','false', d)}; then
        oe_runmake -C ${B}/utils DESTDIR="${D}" install
     fi
-    oe_runmake -C ${B}/parser DESTDIR="${D}" install
+    oe_runmake -C ${B}/parser DESTDIR="${D}" APPARMOR_BIN_PREFIX="${D}${base_libdir}/apparmor" SBINDIR="${D}${sbindir}" install
     if ${@bb.utils.contains('PACKAGECONFIG','python','true','false', d)}; then
        oe_runmake -C ${B}/profiles DESTDIR="${D}" install
     fi
@@ -130,14 +129,14 @@ do_install () {
     # sed -i -e 's:/usr/bin/env.*:/usr/bin/python3:' ${D}${bindir}/aa-easyprof
     # chmod 0755 ${D}${bindir}/aa-easyprof
 
-    install ${WORKDIR}/apparmor ${D}/${INIT_D_DIR}/apparmor
-    install ${WORKDIR}/functions ${D}/lib/apparmor
-    sed -i -e 's/getconf _NPROCESSORS_ONLN/nproc/' ${D}/lib/apparmor/functions
-    sed -i -e 's/ls -AU/ls -A/' ${D}/lib/apparmor/functions
+    install ${UNPACKDIR}/apparmor ${D}/${INIT_D_DIR}/apparmor
+    install ${UNPACKDIR}/functions ${D}${base_libdir}/apparmor
+    sed -i -e 's/getconf _NPROCESSORS_ONLN/nproc/' ${D}${base_libdir}/apparmor/functions
+    sed -i -e 's/ls -AU/ls -A/' ${D}${base_libdir}/apparmor/functions
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_system_unitdir}
-        install -m 0644 ${WORKDIR}/apparmor.service ${D}${systemd_system_unitdir}
+        install -m 0644 ${UNPACKDIR}/apparmor.service ${D}${systemd_system_unitdir}
     fi
 }
 
@@ -209,7 +208,7 @@ SYSTEMD_AUTO_ENABLE ?= "enable"
 
 PACKAGES += "mod-${PN}"
 
-FILES:${PN} += "/lib/apparmor/  ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
+FILES:${PN} += "${base_libdir}/apparmor/ ${sbindir}/apparmor_parser ${systemd_system_unitdir} ${sysconfdir}/apparmor ${PYTHON_SITEPACKAGES_DIR}"
 FILES:mod-${PN} = "${libdir}/apache2/modules/*"
 
 # Add coreutils and findutils only if sysvinit scripts are in use

@@ -22,9 +22,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=302d50a6369f5f22efdb674db908167a"
 
 SECTION = "libs"
 
-SRC_URI = "https://tls.mbed.org/download/mbedtls-${PV}-apache.tgz"
-SRC_URI[md5sum] = "90ce7c7a001d2514410280706b3ab1a7"
-SRC_URI[sha256sum] = "ec1bee6d82090ed6ea2690784ea4b294ab576a65d428da9fe8750f932d2da661"
+SRC_URI = "git://github.com/Mbed-TLS/mbedtls.git;protocol=https;nobranch=1"
+SRCREV = "04a049bda1ceca48060b57bc4bcf5203ce591421"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI:append = " \
@@ -37,7 +36,7 @@ PACKAGECONFIG ??= "shared-libs"
 PACKAGECONFIG[shared-libs] = "-DUSE_SHARED_MBEDTLS_LIBRARY=ON,-USE_SHARED_MBEDTLS_LIBRARY=OFF"
 PACKAGECONFIG[programs] = "-DENABLE_PROGRAMS=ON,-DENABLE_PROGRAMS=OFF"
 
-EXTRA_OECMAKE = "-DENABLE_TESTING=OFF -DLIB_INSTALL_DIR:STRING=${libdir}"
+EXTRA_OECMAKE = "-DENABLE_TESTING=OFF -DLIB_INSTALL_DIR:STRING=${libdir} -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 PROVIDES += "polarssl"
 RPROVIDES:${PN} = "polarssl"

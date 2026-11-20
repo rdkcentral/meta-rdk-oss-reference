@@ -33,12 +33,12 @@ Index: dibbler-1.0.1/Port-linux/lowlevel-options-linux.c
      f = fopen(RADVD_FILE".old","r");
 +    if (!f) {
 +	    sprintf(errorMsg, "Unable to open %s file. \n", RADVD_FILE".old");
-+	    return LOWLEVEL_ERROR_FILE;
++	    return;
 +    }
      f2 = fopen(RADVD_FILE,"w");
 +    if (!f2) {
 +	    sprintf(errorMsg, "Unable to open %s file. \n", RADVD_FILE);
-+	    return LOWLEVEL_ERROR_FILE;
++	    return;
 +    }
  
      snprintf(buf2, 511, "### %s start ###\n", ifname);

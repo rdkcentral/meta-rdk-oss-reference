@@ -13,6 +13,8 @@ DEPENDS = "virtual/libiconv"
 
 inherit autotools gettext texinfo
 
+CFLAGS:append = " -std=gnu17 -D_GNU_SOURCE"
+
 SRC_URI = "${GNU_MIRROR}/coreutils/${BP}.tar.bz2 \
            file://gnulib_m4.patch \
            file://futimens.patch \
@@ -65,7 +67,7 @@ bindir_progs = "base64 basename cksum comm csplit cut dir dircolors dirname du \
 base_bindir_progs = "cat chgrp chmod chown cp date dd echo false kill ln ls mkdir \
                      mknod mv pwd rm rmdir sleep stty sync touch true uname hostname stat"
 
-sbindir_progs= "chroot"
+sbindir_progs = "chroot"
 
 # Let aclocal use the relative path for the m4 file rather than the
 # absolute since coreutils has a lot of m4 files, otherwise there might
@@ -86,6 +88,12 @@ do_install() {
 	# in update-alternatives to fail, therefore use lbracket - the name used
 	# for the actual source file.
 	mv ${D}${bindir}/[ ${D}${bindir}/lbracket.${BPN}
+}
+
+do_install:append() {
+    for header in string.h time.h sys/time.h; do
+        sed -i "s|//${RECIPE_SYSROOT}/usr/include|../../recipe-sysroot/usr/include|g" "${B}/lib/${header}"
+    done
 }
 
 inherit update-alternatives

@@ -10,7 +10,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c919934a724781b6cd4a296b0fc27dc2"
 LIC_FILES_CHKSUM = "file://mongoose.c;beginline=1;endline=23;md5=660cfd3ad92e2cc9e655a4567a738309"
 
-S = "${WORKDIR}/${BPN}/"
+S = "${UNPACKDIR}/${BPN}/"
 SRC_URI = "http://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/mongoose/mongoose-${PV}.tgz"
 
 SRC_URI += " \
@@ -23,6 +23,19 @@ SRC_URI += " \
 
 SRC_URI[md5sum] = "56afae4cfb86e836024df31224db8104"
 SRC_URI[sha256sum] = "d87c9c50404ae8a88bddf1cedf2596b0887fc226d4c62e46862fa99c270a8e8d"
+
+python normalize_mongoose_makefile() {
+	import os
+
+	for relative_path in ("Makefile", "mongoose.c", "mongoose.h"):
+		path = os.path.join(d.getVar("S"), relative_path)
+		with open(path, "rb") as source:
+			contents = source.read().replace(b"\r\n", b"\n")
+		with open(path, "wb") as target:
+			target.write(contents)
+}
+
+do_unpack[postfuncs] += " normalize_mongoose_makefile"
 
 do_compile () {
     oe_runmake linux
