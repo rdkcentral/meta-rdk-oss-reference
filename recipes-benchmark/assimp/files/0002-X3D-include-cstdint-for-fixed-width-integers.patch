@@ -1,0 +1,24 @@
+From: Yocto Wrynose migration
+Subject: [PATCH] X3D: include cstdint for fixed-width integer types
+
+FIReader.hpp uses fixed-width integer types but does not include their
+declaration.
+
+Upstream-Status: Pending
+
+---
+ code/X3D/FIReader.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/code/X3D/FIReader.hpp b/code/X3D/FIReader.hpp
+--- a/code/X3D/FIReader.hpp
++++ b/code/X3D/FIReader.hpp
+@@ -49,7 +49,7 @@
+ #include <cwchar>
+ #include <vector>
+ //#include <stdio.h>
+-//#include <cstdint>
++#include <cstdint>
+ #ifdef ASSIMP_USE_HUNTER
+ #  include <irrXML/irrXML.h>
+ #else

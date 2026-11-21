@@ -4,7 +4,7 @@ include westeros.inc
 
 SRC_URI = "${WESTEROS_URI}"
 
-S = "${UNPACKDIR}/git/simplebuffer"
+S = "${UNPACKDIR}/westeros-simplebuffer-${PV}/simplebuffer"
 
 LICENSE_LOCATION = "${S}/../LICENSE"
 

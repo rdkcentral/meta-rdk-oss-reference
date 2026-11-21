@@ -4,7 +4,7 @@ include westeros.inc
 
 SRC_URI = "${WESTEROS_URI}"
 
-S = "${UNPACKDIR}/git/simpleshell"
+S = "${UNPACKDIR}/westeros-simpleshell-${PV}/simpleshell"
 
 DEPENDS = "wayland glib-2.0 wayland-native"
 

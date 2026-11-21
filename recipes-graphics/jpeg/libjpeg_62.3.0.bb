@@ -20,9 +20,10 @@ SRC_URI[md5sum] = "d01d9e0c28c27bc0de9f4e2e8ff49855"
 SRC_URI[sha256sum] = "33dd8547efd5543639e890efbf2ef52d5a21df81faf41bb940657af916a23406"
 
 do_unpack() {
-    tar -xf ${DL_DIR}/libjpeg-turbo-2.0.4.tar.gz -C ${WORKDIR}
-    rm -rf ${WORKDIR}/libjpeg
-    mv ${WORKDIR}/libjpeg-turbo-2.0.4/ ${WORKDIR}/libjpeg
+    mkdir -p ${UNPACKDIR}
+    tar -xf ${DL_DIR}/libjpeg-turbo-2.0.4.tar.gz -C ${UNPACKDIR}
+    rm -rf ${UNPACKDIR}/libjpeg
+    mv ${UNPACKDIR}/libjpeg-turbo-2.0.4/ ${UNPACKDIR}/libjpeg
 }
 
 S = "${UNPACKDIR}/libjpeg/"
@@ -68,3 +69,4 @@ FILES:${PN} += "${libdir}/*.so"
 BBCLASSEXTEND = "native nativesdk"
 
 EXTRA_OECMAKE:append = "-DWITH_TURBOJPEG=OFF -DENABLE_SHARED=ON "
+EXTRA_OECMAKE:append = " -DCMAKE_POLICY_VERSION_MINIMUM=3.5"

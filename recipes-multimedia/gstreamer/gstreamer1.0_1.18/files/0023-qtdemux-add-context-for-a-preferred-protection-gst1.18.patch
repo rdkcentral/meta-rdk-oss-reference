@@ -45,8 +45,8 @@ index d7bb93956..d5c275415 100644
  
    if (stream->protection_scheme_event_queue.length) {
      GST_TRACE_OBJECT (qtdemux, "using stream event queue, length %u",
-@@ -8595,21 +8602,20 @@ gst_qtdemux_configure_protected_caps (GstQTDemux * qtdemux,
-     return TRUE;
+@@ -8576,21 +8583,20 @@ gst_qtdemux_configure_protected_caps (GstQTDemux * qtdemux,
+     return FALSE;
    }
  
 -  gst_qtdemux_request_protection_context (qtdemux, stream);

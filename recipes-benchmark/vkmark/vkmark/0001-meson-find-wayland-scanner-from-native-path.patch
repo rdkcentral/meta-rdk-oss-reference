@@ -1,0 +1,18 @@
+From: Copilot <223556219+Copilot@users.noreply.github.com>
+Subject: [PATCH] meson: find wayland-scanner from native PATH
+
+The wayland-scanner pkg-config file exposes /usr/bin/wayland-scanner for
+target-side consumers. Resolve the native build tool through PATH instead.
+
+Upstream-Status: Pending
+
+---
+ src/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/meson.build b/src/meson.build
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -116 +116 @@
+-    wayland_scanner = find_program(wayland_scanner_dep.get_pkgconfig_variable('wayland_scanner'))
++    wayland_scanner = find_program('wayland-scanner')

@@ -1,0 +1,20 @@
+From: Yocto Wrynose migration
+Subject: [PATCH] MMD: include cstdint for fixed-width integer types
+
+MMDPmxParser.h uses fixed-width integer types without including their
+declaration.
+
+Upstream-Status: Pending
+
+---
+ code/MMD/MMDPmxParser.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/code/MMD/MMDPmxParser.h b/code/MMD/MMDPmxParser.h
+--- a/code/MMD/MMDPmxParser.h
++++ b/code/MMD/MMDPmxParser.h
+@@ -44,3 +44,4 @@
++#include <cstdint>
+ #include <vector>
+ #include <string>
+ #include <iostream>

@@ -1,0 +1,28 @@
+Subject: [PATCH] gdbus-codegen: guard use of GLib 2.84 version macro
+
+Older GLib headers do not define GLIB_VERSION_2_84. An undefined macro is
+treated as zero in #if expressions, causing generated code to select the
+GLib 2.84-only static builder API when compiling against older GLib.
+
+Upstream-Status: Pending
+---
+ gio/gdbus-2.0/codegen/codegen.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/gio/gdbus-2.0/codegen/codegen.py b/gio/gdbus-2.0/codegen/codegen.py
+--- a/gio/gdbus-2.0/codegen/codegen.py
++++ b/gio/gdbus-2.0/codegen/codegen.py
+@@ -4038,7 +4038,7 @@
+             "\n"
+             "  GVariantBuilder builder;\n"
+             "  guint n;\n"
+-            "#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84\n"
++            "#if defined(GLIB_VERSION_2_84) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84\n"
+             '  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));\n'
+             "#else\n"
+             '  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));\n'
+@@ -4264,3 +4264,3 @@
+                 "  g_mutex_lock (&skeleton->priv->lock);\n"
+-                "#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84\n"
++                "#if defined(GLIB_VERSION_2_84) && GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84\n"
+                 '  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));\n'

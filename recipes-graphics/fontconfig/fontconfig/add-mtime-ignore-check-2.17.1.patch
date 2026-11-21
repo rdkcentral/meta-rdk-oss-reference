@@ -1,6 +1,6 @@
 Add possibility to ignore cache mtime when looking up caches and validating them. This is useful for pre-created caches, which may have an mtime that doesn't match the directory's mtime.
 Use the environment variable FONTCONFIG_IGNORE_CACHE_MODTIME to control this behavior. If set to a true value, cache mtimes will be ignored when looking up caches and validating them. If set to a false value or not set at all, cache mtimes will be used as normal.
-Upstream-Status: Appropriate
+Upstream-Status: Pending
 Signed-off-by: Glib Novodran <gnovodran@productengine.com>
 
 Index: b/src/fccache.c

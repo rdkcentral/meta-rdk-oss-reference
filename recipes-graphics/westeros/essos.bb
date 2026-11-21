@@ -4,11 +4,14 @@ include westeros.inc
 
 LIC_FILES_CHKSUM = "file://${LICENSE_LOCATION};md5=7df5a8706277b586ca000838046993d1"
 
-SRC_URI = "${ESSOS_URI}"
+SRC_URI = "${ESSOS_URI} \
+           file://0001-essos-use-time64-input-event-fields.patch \
+"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRCREV_FORMAT = "essos"
 
-S = "${UNPACKDIR}/git"
 DEPENDS = "wayland virtual/egl libxkbcommon essosrmgr westeros"
 RDEPENDS:${PN}-dev += "essosrmgr-dev"
 
