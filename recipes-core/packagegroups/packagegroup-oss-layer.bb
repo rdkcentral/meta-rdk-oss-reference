@@ -293,6 +293,7 @@ RDEPENDS:${PN} += "\
      libnewt \
      libpcre \
      libp11 \
+     pkcs11-provider \
      libseccomp \
      librsvg \
      libtasn1 \
