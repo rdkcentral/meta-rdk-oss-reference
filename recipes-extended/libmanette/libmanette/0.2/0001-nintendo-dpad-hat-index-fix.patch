@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
+Date: Mon, 23 Nov 2026 14:32:19 +0100
+Subject: [PATCH] nintendo dpad hat index fix
+
+
+diff --git a/src/manette-device.c b/src/manette-device.c
+index d0d0a87..8a316ac 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -498,9 +498,10 @@ on_evdev_event (ManetteDevice      *self,
+     case ABS_HAT3X:
+     case ABS_HAT3Y:
+       manette_event.any.type = MANETTE_EVENT_HAT;
+-      manette_event.hat.hardware_index =
+-        self->key_map[(evdev_event->code - ABS_HAT0X) / 2] * 2 +
+-        (evdev_event->code - ABS_HAT0X) % 2;
++      //To fix key_map set incorrectly due to home button having a value of 256
++      manette_event.hat.hardware_index = (evdev_event->code - ABS_HAT0X) % 2;
++      //self->key_map[(evdev_event->code - ABS_HAT0X) / 2] * 2 +
++      //(evdev_event->code - ABS_HAT0X) % 2;
+       manette_event.hat.axis = evdev_event->code;
+       manette_event.hat.value = evdev_event->value;
+ 

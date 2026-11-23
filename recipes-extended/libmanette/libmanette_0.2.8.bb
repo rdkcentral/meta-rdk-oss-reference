@@ -11,7 +11,8 @@ SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.ta
            file://0.2/0001-new-SDL-gamedb.patch \
            file://0.2/0002-add-wayland-inputfd-support.patch \
            file://0.2/0003-button-values-for-gas-brake.patch \
-           file://0.2/0001-nintendo-digital-trigger-dpad-fix.patch \
+           file://0.2/0001-nintendo-analog-trigger-type.patch \
+           file://0.2/0001-nintendo-dpad-hat-index-fix.patch \
            file://0.2/0001-nintendo-joycon-L-R-detect.patch \
            file://0.2/0004-handle-revoked-evdev-devices.patch \
            file://0.2/0004-exclusive-grab-and-reconnect.patch \

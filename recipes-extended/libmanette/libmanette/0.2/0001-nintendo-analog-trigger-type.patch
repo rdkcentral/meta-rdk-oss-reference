@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
+Date: Mon, 23 Nov 2026 14:32:19 +0100
+Subject: [PATCH] nintendo analog trigger type detection
+
+
+diff --git a/src/manette-device.c b/src/manette-device.c
+index 4d4b0dc..d0d0a87 100644
+--- a/src/manette-device.c
++++ b/src/manette-device.c
+@@ -66,6 +66,7 @@ struct _ManetteDevice
+   struct input_absinfo abs_info[ABS_MAX];
+   gchar *guid;
+   gboolean has_rumble;
++  gboolean has_analog_trigger;
+ 
+   ManetteMapping *mapping;
+ 
+@@ -171,6 +172,31 @@ has_abs (struct libevdev *device,
+   return libevdev_has_event_code (device, (guint) EV_ABS, code);
+ }
+ 
++gboolean
++manette_device_trigger_type(ManetteDevice *self)
++{
++  g_return_val_if_fail (MANETTE_IS_DEVICE (self), FALSE);
++  return self->has_analog_trigger;
++}
++
++static gboolean
++manette_device_has_analog_trigger(struct libevdev *device)
++{
++  gboolean is_analog_trigger=TRUE;
++
++  g_assert (device != NULL);
++
++  is_analog_trigger =
++    has_abs (device, ABS_GAS) ||
++    has_abs (device, ABS_BRAKE)||
++    has_abs (device, ABS_Z)||
++    has_abs (device, ABS_RZ)||
++    has_abs (device, BTN_TL2)  ||
++    has_abs (device, BTN_TR2);
++
++  return is_analog_trigger;
++}
++
+ static gboolean
+ is_game_controller (struct libevdev *device)
+ {
+@@ -624,6 +650,8 @@ manette_device_new (int      fd,
+ 
+   // Check if rumble is supported
+   self->has_rumble = evdev_has_rumble (self->fd);
++  // Check if device has analog trigger
++  self->has_analog_trigger = manette_device_has_analog_trigger(self->evdev_device);
+ 
+   return g_steal_pointer (&self);
+ }
+diff --git a/src/manette-device.h b/src/manette-device.h
+index 53950a9..a7087fb 100644
+--- a/src/manette-device.h
++++ b/src/manette-device.h
+@@ -41,6 +41,7 @@ void manette_device_save_user_mapping (ManetteDevice *self,
+                                        const gchar   *mapping_string);
+ void manette_device_remove_user_mapping (ManetteDevice *self);
+ gboolean manette_device_has_rumble (ManetteDevice *self);
++gboolean manette_device_trigger_type(ManetteDevice *self);
+ gboolean manette_device_rumble (ManetteDevice *self,
+                                 guint16        strong_magnitude,
+                                 guint16        weak_magnitude,
