@@ -318,7 +318,7 @@ RDEPENDS:${PN} += "\
      orc \
      pango \
      procps \
-     rdkperf \
+     rdkperf-proxy \
      readline \
      safec-common-wrapper \
      sed \
