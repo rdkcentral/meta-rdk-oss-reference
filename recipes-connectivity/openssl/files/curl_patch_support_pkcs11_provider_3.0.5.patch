@@ -1,0 +1,35 @@
+From c2f8d715e54d0f82f0a27fd69b85fd52578d89b8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tom=C3=A1=C5=A1=20Mr=C3=A1z?= <tomas@openssl.org>
+Date: Tue, 13 Sep 2022 14:37:05 +1000
+Subject: [PATCH] EVP_PKEY_eq: regain compatibility with the 3.0.0 FIPS
+ provider
+
+Reviewed-by: Matt Caswell <matt@openssl.org>
+Reviewed-by: Shane Lontis <shane.lontis@oracle.com>
+Reviewed-by: Paul Dale <pauli@openssl.org>
+original changes: https://github.com/openssl/openssl/commit/c2f8d715e5.patch
+---
+diff -Naur a/crypto/evp/p_lib.c b/crypto/evp/p_lib.c
+--- a/crypto/evp/p_lib.c	2026-10-15 15:40:44.359872942 +0000
++++ b/crypto/evp/p_lib.c	2026-10-15 15:37:29.618452947 +0000
+@@ -339,10 +339,16 @@
+     if (a == NULL || b == NULL)
+         return 0;
+ 
+-    if (a->keymgmt != NULL || b->keymgmt != NULL)
+-        return evp_pkey_cmp_any(a, b, (SELECT_PARAMETERS
+-                                       | OSSL_KEYMGMT_SELECT_KEYPAIR));
++    if (a->keymgmt != NULL || b->keymgmt != NULL) {
++        int selection = SELECT_PARAMETERS;
+ 
++        if (evp_keymgmt_util_has((EVP_PKEY *)a, OSSL_KEYMGMT_SELECT_PUBLIC_KEY)
++            && evp_keymgmt_util_has((EVP_PKEY *)b, OSSL_KEYMGMT_SELECT_PUBLIC_KEY))
++            selection |= OSSL_KEYMGMT_SELECT_PUBLIC_KEY;
++        else
++            selection |= OSSL_KEYMGMT_SELECT_KEYPAIR;
++        return evp_pkey_cmp_any(a, b, selection);
++    }
+     /* All legacy keys */
+     if (a->type != b->type)
+         return -1;
+
