@@ -509,6 +509,9 @@ PACKAGE_ARCH:pn-libopus ?= "${OSS_LAYER_ARCH}"
 PR:pn-libp11 ?= "r0"
 PACKAGE_ARCH:pn-libp11 ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-pkcs11-provider ?= "r0"
+PACKAGE_ARCH:pn-pkcs11-provider ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-libpam ?= "r0"
 PACKAGE_ARCH:pn-libpam ?= "${OSS_LAYER_ARCH}"
 
