@@ -1,20 +1,14 @@
-From 3b64045066b801caf2975eb16bdc1f6a2af9ee5b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Ganesh prasad Sahu <GaneshPrasad_Sahu@comcast.com>
-Date: Mon, 11 May 2026 20:11:48 +0000
+Date: Mon, 23 Nov 2026 14:31:39 +0100
 Subject: [PATCH] exclusive grab and reconnect
 
----
- src/manette-device-private.h |  1 +
- src/manette-device.c         | 98 +++++++++++++++++++++++++++++++++++-
- src/manette-device.h         |  6 +++
- src/manette-monitor.c        | 33 +++++++++++-
- 4 files changed, 135 insertions(+), 3 deletions(-)
 
 diff --git a/src/manette-device-private.h b/src/manette-device-private.h
-index 17240b4..2f9e400 100644
+index 74de3f6..c74a064 100644
 --- a/src/manette-device-private.h
 +++ b/src/manette-device-private.h
-@@ -39,5 +39,6 @@ void manette_device_set_mapping (ManetteDevice  *self,
+@@ -38,5 +38,6 @@ void manette_device_set_mapping (ManetteDevice  *self,
  void manette_device_change_fd (ManetteDevice *self,
                                 int            fd);
  gboolean manette_device_revoked (ManetteDevice *self);
@@ -22,7 +16,7 @@ index 17240b4..2f9e400 100644
  
  G_END_DECLS
 diff --git a/src/manette-device.c b/src/manette-device.c
-index 6719712..65673c3 100644
+index 068f175..c35ad28 100644
 --- a/src/manette-device.c
 +++ b/src/manette-device.c
 @@ -67,6 +67,8 @@ struct _ManetteDevice
@@ -75,7 +69,7 @@ index 6719712..65673c3 100644
    g_clear_pointer (&self->evdev_device, libevdev_free);
    g_clear_pointer (&self->guid, g_free);
    g_clear_object (&self->mapping);
-@@ -708,9 +736,18 @@ manette_device_change_fd (ManetteDevice  *self,
+@@ -698,9 +726,18 @@ manette_device_change_fd (ManetteDevice  *self,
    g_return_if_fail (fd >= 0);
  
    remove_event_source (self);
@@ -95,7 +89,7 @@ index 6719712..65673c3 100644
  
    // Change the fd in libevdev and resync events
    libevdev_change_fd (self->evdev_device, fd);
-@@ -1031,3 +1068,60 @@ manette_device_rumble (ManetteDevice *self,
+@@ -1048,3 +1085,60 @@ manette_device_rumble (ManetteDevice *self,
  
    return TRUE;
  }
@@ -157,10 +151,10 @@ index 6719712..65673c3 100644
 +}
 +
 diff --git a/src/manette-device.h b/src/manette-device.h
-index 4f783c1..bc3b92e 100644
+index a7087fb..f5c7d1d 100644
 --- a/src/manette-device.h
 +++ b/src/manette-device.h
-@@ -41,6 +41,12 @@ void manette_device_save_user_mapping (ManetteDevice *self,
+@@ -42,6 +42,12 @@ void manette_device_save_user_mapping (ManetteDevice *self,
  void manette_device_remove_user_mapping (ManetteDevice *self);
  gboolean manette_device_has_rumble (ManetteDevice *self);
  gboolean manette_device_trigger_type(ManetteDevice *self);
@@ -174,18 +168,18 @@ index 4f783c1..bc3b92e 100644
                                  guint16        strong_magnitude,
                                  guint16        weak_magnitude,
 diff --git a/src/manette-monitor.c b/src/manette-monitor.c
-index 2b74c5d..5240d6d 100644
+index 51916dd..e74fd73 100644
 --- a/src/manette-monitor.c
 +++ b/src/manette-monitor.c
-@@ -74,6 +74,7 @@ static guint signals[N_SIGNALS];
- 
- /* Private */
+@@ -78,6 +78,7 @@ is_flatpak (void)
+ }
+ #endif
  
 +void device_disconnected_priv_cb (ManetteMonitor *self, ManetteDevice  *device);
  static void
- manette_monitor_init (ManetteMonitor *self)
- {
-@@ -129,6 +130,11 @@ add_device_with_fd (ManetteMonitor *self,
+ load_mapping (ManetteMonitor *self,
+               ManetteDevice  *device)
+@@ -128,6 +129,11 @@ add_device_with_fd (ManetteMonitor *self,
    g_hash_table_insert (self->devices,
                         g_strdup (name),
                         g_object_ref (device));
@@ -197,7 +191,7 @@ index 2b74c5d..5240d6d 100644
    g_signal_emit (self, signals[SIG_DEVICE_CONNECTED], 0, device);
  }
  
-@@ -167,11 +173,36 @@ remove_device (ManetteMonitor *self,
+@@ -166,11 +172,36 @@ remove_device (ManetteMonitor *self,
  
    g_object_ref (device);
    g_hash_table_remove (self->devices, filename);
@@ -235,6 +229,3 @@ index 2b74c5d..5240d6d 100644
  #if defined(WAYLAND_INPUTFD_ENABLED) /* BACKEND WAYLAND */
  
  static void
--- 
-2.34.1
-

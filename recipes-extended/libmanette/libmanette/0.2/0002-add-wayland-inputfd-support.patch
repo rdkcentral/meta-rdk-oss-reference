@@ -45,7 +45,7 @@ diff --git a/meson_options.txt b/meson_options.txt
 diff --git a/src/manette-device-private.h b/src/manette-device-private.h
 --- a/src/manette-device-private.h
 +++ b/src/manette-device-private.h
-@@ -27,8 +27,8 @@
+@@ -27,13 +27,16 @@
  
  G_BEGIN_DECLS
  
@@ -56,8 +56,7 @@ diff --git a/src/manette-device-private.h b/src/manette-device-private.h
  int manette_device_get_product_id (ManetteDevice *self);
  int manette_device_get_vendor_id (ManetteDevice *self);
  int manette_device_get_bustype_id (ManetteDevice *self);
-@@ -36,5 +36,8 @@ int manette_device_get_version_id (ManetteDevice *self);
- const gchar *manette_device_get_guid (ManetteDevice *self);
+ int manette_device_get_version_id (ManetteDevice *self);
  void manette_device_set_mapping (ManetteDevice  *self,
                                   ManetteMapping *mapping);
 +void manette_device_change_fd (ManetteDevice *self,
@@ -130,7 +129,7 @@ diff --git a/src/manette-device.c b/src/manette-device.c
  static void
  on_evdev_event (ManetteDevice      *self,
                  struct input_event *evdev_event)
-@@ -488,7 +497,7 @@ poll_events (GIOChannel    *source,
+@@ -491,7 +500,7 @@ poll_events (GIOChannel    *source,
  
  /**
   * manette_device_new: (skip)
@@ -139,7 +138,7 @@ diff --git a/src/manette-device.c b/src/manette-device.c
   * @error: return location for a #GError, or %NULL
   *
   * Creates a new #ManetteDevice.
-@@ -496,8 +505,8 @@ poll_events (GIOChannel    *source,
+@@ -499,8 +508,8 @@ poll_events (GIOChannel    *source,
   * Returns: (transfer full): a new #ManetteDevice
   */
  ManetteDevice *
@@ -150,7 +149,7 @@ diff --git a/src/manette-device.c b/src/manette-device.c
  {
    g_autoptr (ManetteDevice) self = NULL;
    g_autoptr (GIOChannel) channel = NULL;
-@@ -505,29 +514,18 @@ manette_device_new (const gchar  *filename,
+@@ -508,29 +517,18 @@ manette_device_new (const gchar  *filename,
    gint axes_number;
    guint i;
  
@@ -183,7 +182,7 @@ diff --git a/src/manette-device.c b/src/manette-device.c
                   strerror (errno));
  
      return NULL;
-@@ -537,21 +535,19 @@ manette_device_new (const gchar  *filename,
+@@ -540,21 +538,19 @@ manette_device_new (const gchar  *filename,
      g_set_error (error,
                   G_FILE_ERROR,
                   G_FILE_ERROR_FAILED,
@@ -208,7 +207,7 @@ diff --git a/src/manette-device.c b/src/manette-device.c
    buttons_number = 0;
  
    // Initialize the axes buttons and hats.
-@@ -587,9 +583,76 @@ manette_device_new (const gchar  *filename,
+@@ -595,9 +591,76 @@ manette_device_new (const gchar  *filename,
      }
    }
  
@@ -285,7 +284,7 @@ diff --git a/src/manette-device.c b/src/manette-device.c
  /**
   * manette_device_get_guid:
   * @self: a #ManetteDevice
-@@ -815,17 +878,9 @@ manette_device_remove_user_mapping (ManetteDevice *self)
+@@ -850,17 +913,9 @@ manette_device_remove_user_mapping (ManetteDevice *self)
  gboolean
  manette_device_has_rumble (ManetteDevice *self)
  {
@@ -307,9 +306,9 @@ diff --git a/src/manette-device.c b/src/manette-device.c
 diff --git a/src/manette-monitor.c b/src/manette-monitor.c
 --- a/src/manette-monitor.c
 +++ b/src/manette-monitor.c
-@@ -32,10 +32,17 @@
- #else
-  #include <gio/gio.h>
+@@ -31,10 +31,17 @@
+ #ifdef GUDEV_ENABLED
+  #include <gudev/gudev.h>
  #endif
 +#include <errno.h>
 +#include <fcntl.h>
@@ -322,10 +321,10 @@ diff --git a/src/manette-monitor.c b/src/manette-monitor.c
 + #include "manette-wayland-inputfd-private.h"
 +#endif
 +
- #ifndef GUDEV_ENABLED
  #define INPUT_DIRECTORY "/dev/input"
- #endif
-@@ -45,7 +52,9 @@ struct _ManetteMonitor {
+ 
+ struct _ManetteMonitor {
+@@ -42,7 +49,9 @@ struct _ManetteMonitor {
  
    GHashTable *devices;
    ManetteMappingManager *mapping_manager;
@@ -334,9 +333,9 @@ diff --git a/src/manette-monitor.c b/src/manette-monitor.c
 +  ManetteWaylandInputFd *wayland_inputfd;
 +#elif defined(GUDEV_ENABLED)
    GUdevClient *client;
- #else
+ #endif
    GFileMonitor *monitor;
-@@ -93,22 +102,24 @@ load_mapping (ManetteMonitor *self,
+@@ -92,22 +101,24 @@ load_mapping (ManetteMonitor *self,
  }
  
  static void
@@ -368,7 +367,7 @@ diff --git a/src/manette-monitor.c b/src/manette-monitor.c
  
      return;
    }
-@@ -116,11 +127,34 @@ add_device (ManetteMonitor *self,
+@@ -115,11 +126,34 @@ add_device (ManetteMonitor *self,
    load_mapping (self, device);
  
    g_hash_table_insert (self->devices,
@@ -404,11 +403,11 @@ diff --git a/src/manette-monitor.c b/src/manette-monitor.c
  static void
  remove_device (ManetteMonitor *self,
                 const gchar    *filename)
-@@ -138,7 +172,95 @@ remove_device (ManetteMonitor *self,
+@@ -137,7 +171,95 @@ remove_device (ManetteMonitor *self,
    g_object_unref (device);
  }
  
--#ifdef GUDEV_ENABLED /* BACKEND GUDEV */
+-#ifdef GUDEV_ENABLED
 +#if defined(WAYLAND_INPUTFD_ENABLED) /* BACKEND WAYLAND */
 +
 +static void
@@ -501,7 +500,32 @@ diff --git a/src/manette-monitor.c b/src/manette-monitor.c
  
  static void
  add_device_for_udev_device (ManetteMonitor *self,
-@@ -426,7 +547,9 @@ manette_monitor_finalize (GObject *object)
+@@ -436,7 +558,11 @@ manette_monitor_init (ManetteMonitor *self)
+                            G_CALLBACK (mappings_changed_cb),
+                            self, 0);
+ 
+-#if GUDEV_ENABLED
++#if defined(WAYLAND_INPUTFD_ENABLED)
++  // The wayland inputfd backend replaces both of the upstream backends: the web
++  // process is sandboxed and never opens /dev/input itself.
++  use_file_backend = FALSE;
++#elif GUDEV_ENABLED
+   use_file_backend = is_flatpak ();
+ #else
+   use_file_backend = TRUE;
+@@ -446,7 +572,10 @@ manette_monitor_init (ManetteMonitor *self)
+     init_file_backend (self);
+     coldplug_file_devices (self);
+   } else {
+-#if GUDEV_ENABLED
++#if defined(WAYLAND_INPUTFD_ENABLED)
++    init_backend (self);
++    coldplug_devices (self);
++#elif GUDEV_ENABLED
+     init_gudev_backend (self);
+     coldplug_gudev_devices (self);
+ #endif
+@@ -458,7 +587,9 @@ manette_monitor_finalize (GObject *object)
  {
    ManetteMonitor *self = MANETTE_MONITOR (object);
  
@@ -510,8 +534,8 @@ diff --git a/src/manette-monitor.c b/src/manette-monitor.c
 +  g_clear_object (&self->wayland_inputfd);
 +#elif defined(GUDEV_ENABLED)
    g_clear_object (&self->client);
- #else
-   g_clear_object (&self->monitor);
+ #endif
+ 
 diff --git a/src/manette-wayland-inputfd-private.h b/src/manette-wayland-inputfd-private.h
 new file mode 100644
 --- /dev/null
@@ -1063,7 +1087,7 @@ diff --git a/src/meson.build b/src/meson.build
 +  libmanette_c_args += [ '-DWAYLAND_INPUTFD_ENABLED' ]
 +endif
 +
- libmanette_lib = shared_library(
+ libmanette_lib = library(
    libmanette_module,
    libmanette_sources,
 diff --git a/src/protocols/inputfd-v1.xml b/src/protocols/inputfd-v1.xml
