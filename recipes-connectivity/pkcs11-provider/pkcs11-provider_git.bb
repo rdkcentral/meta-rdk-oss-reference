@@ -5,7 +5,6 @@ HOMEPAGE = "https://github.com/openssl-projects/pkcs11-provider"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b53b787444a60266932bd270d1cf2d45"
 
-BBCLASSEXTEND = "native"
 
 PV = "1.3.0"
 PR = "r0"
@@ -21,9 +20,8 @@ S = "${WORKDIR}/git"
 
 DEPENDS = "openssl p11-kit"
 
-inherit meson pkgconfig
+inherit autotools meson pkgconfig
 
+FILES:${PN} += "${libdir}/ossl-modules/*"
 
-
-FILES_${PN} += "${libdir}/ossl-modules/*"
-
+BBCLASSEXTEND = "native"
