@@ -32,7 +32,6 @@ SRC_URI = " \
     file://org.freedesktop.nm_connectivity.service \
     file://0001-wifi-don-t-recheck-auto-activate-on-disposal.patch \
     file://dnsmasq-logging.conf \
-    file://NM_autoconnect_retry.patch \
     file://NM_dynamicDNS.patch \
     file://NM_shutdown_fix.patch \
     file://Removing_auth_alg_entry_for_WPA3_PT.patch \

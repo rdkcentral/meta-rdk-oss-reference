@@ -14,9 +14,10 @@ SRC_URI = "https://download.gnome.org/sources/libmanette/0.2/libmanette-${PV}.ta
            file://0.2/0003-button-values-for-gas-brake.patch \
            file://0.2/0001-nintendo-digital-trigger-dpad-fix.patch \
            file://0.2/0001-nintendo-joycon-L-R-detect.patch \
-           file://99-gamepad-set-attr.rules \
            file://0.2/0004-handle-revoked-evdev-devices.patch \
+           file://0.2/0004-exclusive-grab-and-reconnect.patch \
            "
+SRC_URI += "file://99-gamepad-set-attr.rules"
 
 SRC_URI[sha256sum] = "63653259a821ec7d90d681e52e757e2219d462828c9d74b056a5f53267636bac"
 

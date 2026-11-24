@@ -7,11 +7,12 @@ PACKAGE_ARCH = "${OSS_LAYER_ARCH}"
 inherit packagegroup
 
 
-PV = "4.14.0"
+PV = "4.15.0"
 PR = "r0"
 
 # poky components
 RDEPENDS:${PN} = "\
+     libyaml \
      abseil-cpp \
      acl \
      alsa-lib \
@@ -236,6 +237,7 @@ RDEPENDS:${PN} += "\
      zstd \
      audit \
      yaml-cpp \
+     webrtc-audio-processing \
 "
 
 # meta-rust components
