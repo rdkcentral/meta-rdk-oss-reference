@@ -16,6 +16,7 @@ RDKE_GITHUB_BRANCH ?= "nobranch=1"
 RDKE_GITHUB_SRC_URI_SUFFIX ?= "protocol=${RDKE_GITHUB_PROTOCOL};${RDKE_GITHUB_BRANCH}"
 
 INCOMPATIBLE_LICENSE = "LGPL-3.0-or-later LGPL-3.0-only GPL-3.0-or-later GPL-3.0-only"
+INCOMPATIBLE_LICENSE_EXCEPTIONS += "mpfr:LGPL-3.0-or-later libmpc:LGPL-3.0-only gcc:GPL-3.0-only gcc-symlinks:GPL-3.0-only g++:GPL-3.0-only dejagnu:GPL-3.0-only"
 require license_flags_accepted.inc
 
 # Keep excluded subpackages from turning their intentional license exclusions into task failures.
