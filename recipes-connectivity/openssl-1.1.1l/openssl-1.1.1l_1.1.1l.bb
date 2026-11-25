@@ -31,6 +31,7 @@ MULTILIB_SCRIPTS = "${PN}-bin:${bindir}/c_rehash"
 PACKAGECONFIG ?= ""
 PACKAGECONFIG:class-native = ""
 PACKAGECONFIG:class-nativesdk = ""
+DISABLE_STATIC = ""
 
 #PACKAGECONFIG[cryptodev-linux] = "enable-devcryptoeng,disable-devcryptoeng,cryptodev-linux,,cryptodev-module"
 
@@ -159,7 +160,7 @@ do_install:append:class-native () {
 
 do_install:append:class-nativesdk () {
 	mkdir -p ${D}${SDKPATHNATIVE}/environment-setup.d
-	install -m 644 ${WORKDIR}/environment.d-openssl.sh ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
+	install -m 644 ${UNPACKDIR}/environment.d-openssl.sh ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
 	sed 's|/usr/lib/ssl/|/usr/lib/ssl-1.1/|g' -i ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
 }
 

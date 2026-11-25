@@ -8,20 +8,15 @@ Upstream-Status: Inappropriate [layer-specific GDBM 1.8.3 compatibility]
 
 --- a/ext/GDBM_File/GDBM_File.xs
 +++ b/ext/GDBM_File/GDBM_File.xs
-@@ -105,14 +105,14 @@
- #elif GDBM_VERSION_MAJOR == 1 && GDBM_VERSION_MINOR >= 9
- # define FATALFUNC croak_string
- # define NEED_FATALFUNC 1
+@@ -108,3 +108,3 @@
  #else
 -# define FATALFUNC (void (*)()) croak_string
 +# define FATALFUNC (void (*)(char *)) croak_string
  # define NEED_FATALFUNC 1
- #endif
- 
- #ifdef NEED_FATALFUNC
- static void
+@@ -115,1 +115,5 @@
 -croak_string(const char *message) {
++#if GDBM_VERSION_MAJOR == 1 && GDBM_VERSION_MINOR >= 9
++croak_string(const char *message) {
++#else
 +croak_string(char *message) {
-     Perl_croak_nocontext("%s", message);
- }
- #endif
++#endif

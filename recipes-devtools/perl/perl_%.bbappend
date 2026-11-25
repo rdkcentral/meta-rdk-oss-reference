@@ -1,7 +1,3 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-
-SRC_URI:append:class-target = " file://0001-GDBM_File-match-fatal-callback-prototype.patch"
-
 ALTERNATIVE:${PN}-misc:remove = " corelist cpan enc2xs encguess h2ph h2xs instmodsh json_pp libnetcfg \
                      piconv pl2pm pod2html pod2man pod2text pod2usage podchecker podselect \
                      prove ptar ptardiff ptargrep shasum splain xsubpp zipdetails"

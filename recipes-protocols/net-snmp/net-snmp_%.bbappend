@@ -1,7 +1,7 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-CACHED_CONFIGUREVARS = "ac_cv_lib_crypto_EVP_md5=no ac_cv_lib_crypto_AES_cfb128_encrypt=no"
+CACHED_CONFIGUREVARS += "ac_cv_lib_crypto_EVP_md5=no ac_cv_lib_crypto_AES_cfb128_encrypt=no"
 
 DEPENDS += "openssl"
 DEPENDS:append = " libpcap"

@@ -11,6 +11,7 @@ EVP_MD_CTX_init() API returns void, it fixes errors with new compilers
 snmplib/keytools.c: In function 'generate_Ku': error: invalid use of void expression
 
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
+Upstream-Status: Pending
 
 ---
  snmplib/keytools.c | 3 +--
