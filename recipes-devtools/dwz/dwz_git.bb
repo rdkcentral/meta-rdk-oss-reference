@@ -10,7 +10,7 @@ SRC_URI = "git://sourceware.org/git/dwz.git;protocol=https;branch=master"
 PV = "0.14+git${SRCPV}"
 SRCREV = "22fe0df89cfff1985bac38d7e322a9aa4052ab70"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 DEPENDS = "elfutils"
 

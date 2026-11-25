@@ -91,9 +91,10 @@ do_install() {
 }
 
 do_install:append() {
-    for header in string.h time.h sys/time.h; do
+    for header in string.h time.h; do
         sed -i "s|//${RECIPE_SYSROOT}/usr/include|../../recipe-sysroot/usr/include|g" "${B}/lib/${header}"
     done
+    sed -i "s|//${RECIPE_SYSROOT}/usr/include|../../../recipe-sysroot/usr/include|g" "${B}/lib/sys/time.h"
 }
 
 inherit update-alternatives
