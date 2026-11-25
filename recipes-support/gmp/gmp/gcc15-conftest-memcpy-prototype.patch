@@ -1,0 +1,15 @@
+From: Build compatibility fix
+Subject: [PATCH] Include string.h in the legacy compiler probe
+
+GMP 4.2.1's compiler probe calls memcpy without declaring it. GCC 15 treats
+that implicit declaration as an error, causing configure to reject a working
+cross compiler.
+
+Upstream-Status: Pending
+
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -518,2 +518,3 @@
+    this compiler+flags.  */
++#include <string.h>
+ struct try_t

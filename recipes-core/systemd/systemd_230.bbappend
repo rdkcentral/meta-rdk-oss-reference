@@ -1,6 +1,7 @@
 include ${@bb.utils.contains('DISTRO_FEATURES', 'systemd-profile', 'profiles/rdk-${BPN}-profile.inc', 'profiles/generic-profile.inc', d)}
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:${THISDIR}/backports:"
+rootprefix = "${root_prefix}"
 
 PACKAGECONFIG:remove = "vconsole ldconfig"
 PACKAGECONFIG:remove = " resolved nss-resolve "
@@ -37,13 +38,13 @@ PACKAGES =+ "${PN}-rfkill-conf"
 
 FILES:${PN}:append = " ${datadir}/bash-completion"
 
-FILES:${PN}-rfkill-conf = "${systemd_unitdir}/system/systemd-rfkill.service.d/rfkill_rdk.conf"
+FILES:${PN}-rfkill-conf = "${rootlibexecdir}/system/systemd-rfkill.service.d/rfkill_rdk.conf"
 
 do_install:append() {
 	install -d ${D}${localstatedir}/lib/systemd/coredump
         ln -s /dev/null ${D}${sysconfdir}/udev/rules.d/80-net-setup-link.rules
 
-        install -D -m 0644 ${WORKDIR}/rfkill_rdk.conf ${D}${systemd_unitdir}/system/systemd-rfkill.service.d/rfkill_rdk.conf
+        install -D -m 0644 ${UNPACKDIR}/rfkill_rdk.conf ${D}${rootlibexecdir}/system/systemd-rfkill.service.d/rfkill_rdk.conf
 
         sed -i -e 's/^#DumpCore=.*$/DumpCore=yes/g' ${D}${sysconfdir}/systemd/system.conf
         sed -i -e 's/^#DumpCore=.*$/LogColor=no/g' ${D}${sysconfdir}/systemd/system.conf
@@ -75,10 +76,10 @@ fi
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-sleep
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
 	rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
-        rm -rf ${D}${systemd_system_unitdir}/debug-shell.service
-        rm -rf ${D}${systemd_system_unitdir}/console-getty.service
-        rm -rf ${D}${systemd_system_unitdir}/console-shell.service
-	sed -i -e 's/systemd-fsck-root.service//g' ${D}${systemd_unitdir}/system/systemd-remount-fs.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/debug-shell.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/console-getty.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/console-shell.service
+                sed -i -e 's/systemd-fsck-root.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-remount-fs.service
 if ! ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         sed -i -e '/^L! \/etc\/resolv\.conf*/d' ${D}${exec_prefix}/lib/tmpfiles.d/etc.conf
 fi
@@ -91,30 +92,33 @@ do_install:append:client() {
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-update-done
         rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-update-done.service
         rm -rf ${D}${rootlibexecdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
-        sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-journal-catalog-update.service
-        sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-sysusers.service || true
+        sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-journal-catalog-update.service
+        sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-sysusers.service || true
 }
 
 do_install:append:hybrid() {
         install -d ${D}/media/apps
         install -d ${D}${sysconfdir}/sysctl.d
-        install -m 644 ${WORKDIR}/50-portreserv.conf ${D}${sysconfdir}/sysctl.d
+        install -m 644 ${UNPACKDIR}/50-portreserv.conf ${D}${sysconfdir}/sysctl.d
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-binfmt
         rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-binfmt.service
         rm -rf ${D}${rootlibexecdir}/systemd/systemd-update-done
         rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-update-done.service
         rm -rf ${D}${rootlibexecdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
-        sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-journal-catalog-update.service
-        sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-sysusers.service || true
+        sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-journal-catalog-update.service
+        sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-sysusers.service || true
 }
 
 SYSTEMD_SERVICE:systemd-binfmt:remove = " systemd-binfmt.service"
 
 FILES:${PN}:remove = "${bindir}/busctl ${datadir}/bash-completion/completions/busctl ${libdir}/libnss_mymachines.so.2 ${rootlibexecdir}/systemd/systemd-bus-proxyd ${rootlibexecdir}/systemd/systemd-ac-power ${rootlibexecdir}/systemd/systemd-sleep ${rootlibexecdir}/systemd/systemd-reply-password ${rootlibexecdir}/systemd/systemd-activate"
 
+FILES:${PN} += "${base_bindir}/systemd-hwdb ${base_bindir}/systemd-sysusers ${base_bindir}/systemd-tmpfiles ${base_bindir}/systemd-notify ${base_bindir}/systemd-machine-id-setup ${base_bindir}/systemctl ${base_bindir}/journalctl"
+FILES:${PN}-extra-utils += "${base_bindir}/systemd-ask-password ${base_bindir}/systemd-escape ${base_bindir}/systemd-tty-ask-password-agent"
+FILES:udev += "${base_bindir}/udevadm"
+
 FILES:${PN}:append:client = " /media/apps"
-FILES:${PN}:append:hybrid = " /media/apps"
-FILES:${PN}:append:hybrid += "${sysconfdir}/sysctl.d/50-portreserv.conf"
+FILES:${PN}:append:hybrid = " /media/apps ${sysconfdir}/sysctl.d/50-portreserv.conf"
 FILES:${PN} += "/media"
 
 SYSTEMD_SERVICE:systemd-binfmt:remove:hybrid = " systemd-binfmt.service"
@@ -154,10 +158,10 @@ FILES:${PN} += "${sysconfdir}/udev/rules.d/10-ubi-device-systemd.rules"
 
 do_install:append() {
     rm -rf ${D}${sysconfdir}/resolv.conf
-    sed -i '/After=swap.target/d' ${D}${systemd_unitdir}/system/tmp.mount
+    sed -i '/After=swap.target/d' ${D}${rootlibexecdir}/systemd/system/tmp.mount
 
-    rm -rf ${D}${base_libdir}/systemd/system/ldconfig.service
-    rm -rf ${D}${base_libdir}/systemd/system/sysinit.target.wants/ldconfig.service
+    rm -rf ${D}${rootlibexecdir}/systemd/system/ldconfig.service
+    rm -rf ${D}${rootlibexecdir}/systemd/system/sysinit.target.wants/ldconfig.service
 
     # disable LLMNR queries
     if [ -f  ${D}${sysconfdir}/systemd/resolved.conf ]; then
@@ -167,18 +171,18 @@ do_install:append() {
 
 do_install:append:client() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/    
-    rm -rf ${D}${base_libdir}/systemd/systemd-update-done
-    rm -rf ${D}${base_libdir}/systemd/system/systemd-update-done.service
-    rm -rf ${D}${base_libdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
-    sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-journal-catalog-update.service
-    sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-hwdb-update.service || true
+    install -m 0644 ${UNPACKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/
+    rm -rf ${D}${rootlibexecdir}/systemd/systemd-update-done
+        rm -rf ${D}${rootlibexecdir}/systemd/system/systemd-update-done.service
+        rm -rf ${D}${rootlibexecdir}/systemd/system/sysinit.target.wants/systemd-update-done.service
+    sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-journal-catalog-update.service
+    sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-hwdb-update.service || true
 }
 
 do_install:append:hybrid() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/    
-    sed -i -e 's/systemd-update-done.service//g' ${D}${systemd_unitdir}/system/systemd-hwdb-update.service || true
+    install -m 0644 ${UNPACKDIR}/10-ubi-device-systemd.rules ${D}${sysconfdir}/udev/rules.d/
+    sed -i -e 's/systemd-update-done.service//g' ${D}${rootlibexecdir}/systemd/system/systemd-hwdb-update.service || true
 }
 
 do_install:append:broadband() {
@@ -186,7 +190,7 @@ do_install:append:broadband() {
 }
 
 do_install:append() {
-    install -Dm 0644 ${WORKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
+    install -Dm 0644 ${UNPACKDIR}/99-default.preset ${D}${systemd_unitdir}/system-preset/99-default.preset
 }
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
@@ -217,8 +221,8 @@ do_install:append() {
         install -d ${D}/media/tsb
         #Enable comcast ntp server in timesyncd.conf
         if [ -n "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', 'timesyncd', '', d)}" ]; then
-           sed -i -e '/ProtectSystem=full/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/PrivateTmp=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
+           sed -i -e '/ProtectSystem=full/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/PrivateTmp=yes/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
            sed -i -e 's/^#ShutdownWatchdogSec=.*$/ShutdownWatchdogSec=1min/g' ${D}${sysconfdir}/systemd/system.conf
            sed -i -e 's/^#NTP=.*/NTP=time.google.com/g' ${D}${sysconfdir}/systemd/timesyncd.conf
        fi
@@ -228,20 +232,20 @@ do_install:append() {
 do_install:append:hybrid() {
         #Enable comcast ntp server in timesyncd.conf
         if [ -n "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', 'timesyncd', '', d)}" ]; then
-           sed -i -e 's/ExecStart=\/lib\/systemd\/systemd-timesyncd/ExecStart=\/bin\/sh -c \/bin\/echo systemd-timesyncd not needed in gateways/' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/Restart=always/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/WatchdogSec=1min/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/PrivateDevices=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/ProtectHome=yes/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/CapabilityBoundingSet=CAP_SYS_TIME CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/Type=notify/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
-           sed -i -e '/RestartSec=0/d' ${D}${systemd_unitdir}/system/systemd-timesyncd.service
+           sed -i -e 's/ExecStart=\/lib\/systemd\/systemd-timesyncd/ExecStart=\/bin\/sh -c \/bin\/echo systemd-timesyncd not needed in gateways/' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/Restart=always/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/WatchdogSec=1min/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/PrivateDevices=yes/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/ProtectHome=yes/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/CapabilityBoundingSet=CAP_SYS_TIME CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/Type=notify/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
+           sed -i -e '/RestartSec=0/d' ${D}${rootlibexecdir}/systemd/system/systemd-timesyncd.service
 
         fi
         #RDK-20332 : Further Analysis on Systemd Optimisation
 
-        rm -rf ${D}${base_libdir}/systemd/systemd-reply-password
-        rm -rf ${D}${base_libdir}/systemd/systemd-activate
+        rm -rf ${D}${rootlibexecdir}/systemd/systemd-reply-password
+        rm -rf ${D}${rootlibexecdir}/systemd/systemd-activate
 }
 
 FILES:${PN}:append = " /media/tsb"
@@ -256,7 +260,7 @@ SRC_URI:append = " \
 
 do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'benchmark_enable', 'false', 'true', d)}; then
-    sed -i -e 's/Options=/Options=nosuid,nodev,noexec,/' ${D}${systemd_unitdir}/system/tmp.mount
+    sed -i -e 's/Options=/Options=nosuid,nodev,noexec,/' ${D}${rootlibexecdir}/systemd/system/tmp.mount
     fi
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'syslog-ng', 'false', 'true', d)}; then

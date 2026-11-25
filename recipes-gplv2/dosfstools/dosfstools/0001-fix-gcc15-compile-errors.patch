@@ -1,0 +1,31 @@
+From: Build Compatibility <build@example.invalid>
+Subject: [PATCH] mkdosfs: fix compile errors with modern GCC
+
+Include the declaration for toupper and return an error value from every
+early exit in add_file.
+
+Upstream-Status: Pending
+
+---
+ mkdosfs/mkdosfs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/mkdosfs/mkdosfs.c b/mkdosfs/mkdosfs.c
+--- a/mkdosfs/mkdosfs.c
++++ b/mkdosfs/mkdosfs.c
+@@ -88,6 +88,7 @@
+ #include <errno.h>
+ #include <libgen.h>
+ #include <dirent.h>
++#include <ctype.h>
+ 
+ #include <linux/version.h>
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
+@@ -1554,1 +1555,1 @@
+-      return;
++      return -1;
+@@ -1573,1 +1574,1 @@
+-  if (!infile) return;
++  if (!infile) return -1;
+-- 
+2.39.0

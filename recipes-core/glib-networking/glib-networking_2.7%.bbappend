@@ -1,5 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+ERROR_QA:remove = "patch-status"
+
 SRC_URI += "\
     file://relax_read_error_handling.patch \
     file://force_tls1_2.patch \

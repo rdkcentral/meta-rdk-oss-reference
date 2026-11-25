@@ -26,7 +26,6 @@ SRCREV = "b9fbcaf55332bfd3165e59c40718645cef14e5cf"
 #
 # We can't use the approach of setting ${S} to mDNSPosix as we need
 # DEBUG_PREFIX_MAP to cover files which come from the Clients directory too.
-S = "${WORKDIR}/git"
 
 inherit systemd update-rc.d
 
@@ -59,11 +58,12 @@ CVE_CHECK_IGNORE += "CVE-2007-0613"
 
 PARALLEL_MAKE = ""
 
-EXTRA_OEMAKE = "os=linux 'CC=${CCLD}' 'LD=${CCLD}' 'LINKOPTS=${LDFLAGS}' STRIP=: ${PACKAGECONFIG_CONFARGS}"
+EXTRA_OEMAKE = "os=linux 'CC=${CCLD}' 'LD=${CCLD}' 'LINKOPTS=${LDFLAGS}' BUILDDIR=${MDNS_BUILDDIR} STRIP=: ${PACKAGECONFIG_CONFARGS}"
 
 # MDNS_VERSIONSTR_NODTS disables __DATE__ and __TIME__ in the version string,
 # which are fixed anyway for build reproducibility.
 TARGET_CPPFLAGS += "-DMDNS_VERSIONSTR_NODTS"
+CFLAGS:append = " -include stdbool.h"
 
 TARGET_CC_ARCH += "${LDFLAGS}"
 
@@ -102,7 +102,7 @@ do_install () {
 	install -m 0644 libnss_mdns.8 ${D}${mandir}/man8
 
 	install -d ${D}${systemd_system_unitdir}
-	install -m 0644 ${WORKDIR}/mdns.service ${D}${systemd_system_unitdir}
+	install -m 0644 ${UNPACKDIR}/mdns.service ${D}${systemd_system_unitdir}
 
 	install -d ${D}${INIT_D_DIR}
 	install mdnsd.sh ${D}${INIT_D_DIR}/mdns

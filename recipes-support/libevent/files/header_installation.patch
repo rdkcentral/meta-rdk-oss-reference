@@ -13,13 +13,11 @@ Upstream-Status: Pending
 Signed-off-by: 	Shubham Baheti <shubham_baheti@comcast.com>
 ---
 
-Index: libevent-2.0.21-stable/Makefile.am
+Index: libevent-2.1.12-stable/Makefile.am
 ===================================================================
---- libevent-2.0.21-stable.orig/Makefile.am
-+++ libevent-2.0.21-stable/Makefile.am
-@@ -226,7 +226,7 @@ noinst_HEADERS = util-internal.h mm-inte
- EVENT1_HDRS = event.h evhttp.h evdns.h evrpc.h evutil.h
- 
+--- libevent-2.1.12-stable.orig/Makefile.am
++++ libevent-2.1.12-stable/Makefile.am
+@@ -333,5 +333,5 @@
  if INSTALL_LIBEVENT
 -include_HEADERS = $(EVENT1_HDRS)
 +pkginclude_HEADERS = $(EVENT1_HDRS)

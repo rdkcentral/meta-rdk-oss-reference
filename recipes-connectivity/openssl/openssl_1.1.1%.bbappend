@@ -30,7 +30,7 @@ do_install:append () {
         # Install a custom version of c_rehash that can handle sysroots properly.
         # This version is used for example when installing ca-certificates during
         # image creation.
-        install -Dm 0755 ${WORKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
+        install -Dm 0755 ${UNPACKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
         sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
 }
 
@@ -44,7 +44,7 @@ do_install:append () {
         # Install a custom version of c_rehash that can handle sysroots properly.
         # This version is used for example when installing ca-certificates during
         # image creation.
-        install -Dm 0755 ${WORKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
+        install -Dm 0755 ${UNPACKDIR}/openssl-c_rehash.sh ${D}${bindir}/c_rehash
         sed -i -e 's,/etc/openssl,${sysconfdir}/ssl,g' ${D}${bindir}/c_rehash
 }
 FILES:${PN} =+ " ${bindir}/c_rehash"
@@ -70,11 +70,11 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://canary-cert-logging.patch', '', d)}"
 
 SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', 'file://canary-cert-logging.patch', '', d)}"
-SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://openssl-canary-3.0.5.patch', '', d)}"
-SRC_URI:append = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', ' file://endpoint-logging-canary-enable-3.0.5.patch', 'file://endpoint-logging-canary-disable-3.0.5.patch', d), '', d)}"
+SRC_URI:append = "${@' file://openssl-canary-3.0.5.patch' if bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', True, False, d) and d.getVar('PV').startswith('3.') else ''}"
+SRC_URI:append = "${@(' file://endpoint-logging-canary-enable-3.0.5.patch' if bb.utils.contains('DISTRO_FEATURES', 'enable_canarytool', True, False, d) else ' file://endpoint-logging-canary-disable-3.0.5.patch') if bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', True, False, d) and d.getVar('PV').startswith('3.') else ''}"
 
-DEPENDS:append:class-target = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' systemd', '', d)}"
-LDFLAGS =+ "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' -lsystemd ', '', d)}"
+DEPENDS:append:class-target = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', ' systemd', '', d)}"
+LDFLAGS =+ "${@bb.utils.contains('DISTRO_FEATURES', 'systemd logendpoints', ' -lsystemd ', '', d)}"
 
 inherit syslog-ng-config-gen
 SYSLOG-NG_FILTER = "sslendpoint"

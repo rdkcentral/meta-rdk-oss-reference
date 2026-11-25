@@ -5,16 +5,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=7a0449e9bc5370402a94c00204beca3d \
                     file://src/fccache.c;beginline=1712;endline=1727;md5=0326cfeb4a7333dd4dd25fbbc4b9f27f"
 
 
-SRC_URI += "file://local.conf \
-            file://add-mtime-ignore-check.patch \
-        "
+SRC_URI += "file://local.conf"
 
 do_install:append() {
 	install -d ${D}${sysconfdir}/fonts
-	install -m 0644 ${WORKDIR}/local.conf ${D}${sysconfdir}/fonts
+    install -m 0644 ${UNPACKDIR}/local.conf ${D}${sysconfdir}/fonts
         rm ${D}${sysconfdir}/fonts/conf.d/README
         rm ${D}${datadir}/fontconfig/conf.avail/10-autohint.conf
-        rm ${D}${datadir}/fontconfig/conf.avail/10-no-sub-pixel.conf
+        rm -f ${D}${datadir}/fontconfig/conf.avail/10-no-sub-pixel.conf
         rm ${D}${datadir}/fontconfig/conf.avail/10-sub-pixel-bgr.conf
         rm ${D}${datadir}/fontconfig/conf.avail/10-sub-pixel-rgb.conf
         rm ${D}${datadir}/fontconfig/conf.avail/10-sub-pixel-vbgr.conf

@@ -6,10 +6,9 @@ LICENSE = "GPL-2.0-or-later"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 SRCREV = "a8e5847e5f7e411be424f9b52a6cdf9d2ed4aeb5"
-SRC_URI = "git://github.com/troglobit/smcroute.git;branch=master;protocol=git"
+SRC_URI = "git://github.com/troglobit/smcroute.git;branch=master;protocol=https"
 DEPENDS += " systemd"
 
-S = "${WORKDIR}/git"
 inherit autotools systemd
 
 do_configure:prepend() {

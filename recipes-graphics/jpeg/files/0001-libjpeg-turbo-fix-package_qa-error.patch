@@ -15,10 +15,10 @@ Signed-off-by: Anuj Mittal <anuj.mittal@intel.com>
  CMakeLists.txt | 4 ----
  1 file changed, 4 deletions(-)
 
-Index: libjpeg/CMakeLists.txt
+diff --git a/CMakeLists.txt b/CMakeLists.txt
 ===================================================================
---- libjpeg.orig/CMakeLists.txt
-+++ libjpeg/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -189,10 +189,6 @@ endif()
  report_option(ENABLE_SHARED "Shared libraries")
  report_option(ENABLE_STATIC "Static libraries")

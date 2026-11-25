@@ -1,0 +1,98 @@
+From: Avinash Sharma <Avinash_Sharma@comcast.com>
+Subject: libcgroup: preserve RDK RFC gating on current init scripts
+
+Port the RDK init-script behavior to libcgroup 3.2.0.
+
+Upstream-Status: Inappropriate [RDK-specific RFC and init-script behavior]
+
+---
+
+diff --git a/scripts/Makefile.am b/scripts/Makefile.am
+--- a/scripts/Makefile.am
++++ b/scripts/Makefile.am
+@@ -1,7 +1,7 @@
+ EXTRA_DIST = init.d/cgconfig.in init.d/cgred.in
+ 
+ if WITH_INITSCRIPT_INSTALL
+-INITSCRIPTDIR=$(DESTDIR)$(sysconfdir)/rc.d/init.d
++INITSCRIPTDIR=$(DESTDIR)$(sysconfdir)/
+ install-exec-hook:
+ 	$(INSTALL) -d $(INITSCRIPTDIR)
+ 	$(INSTALL_SCRIPT) init.d/cgconfig init.d/cgred $(INITSCRIPTDIR)
+--- a/scripts/init.d/cgconfig.in
++++ b/scripts/init.d/cgconfig.in
+@@ -53,7 +53,7 @@
+ fi
+ 
+ # read the config
+-CREATE_DEFAULT=yes
++CREATE_DEFAULT=no
+ if [ -e /etc/sysconfig/cgconfig ]; then
+ 	# shellcheck disable=SC1091
+         source /etc/sysconfig/cgconfig
+@@ -111,6 +111,22 @@
+ }
+ 
+ start() {
++        # RFC verification if CGROUP is enabled or disabled
++        CGROUP_RFC_ENABLE=`/usr/bin/tr181Set -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.CGROUP.Enable 2>&1 > /dev/null`
++
++        if [ "x$CGROUP_RFC_ENABLE" == "x" ]; then
++            if [ -f /lib/rdk/getRFC.sh ]; then
++                . /lib/rdk/getRFC.sh CGROUPENABLE
++                CGROUP_RFC_ENABLE=$RFC_ENABLE_CGROUPENABLE
++            fi
++        fi
++
++        if [ "x$CGROUP_RFC_ENABLE" != "xtrue" ]; then
++            echo "cgconfig service is disabled through RFC"
++            return 0
++        fi
++        echo "cgconfig service is enabled through RFC"
++
+         printf "Starting %s service: " "$servicename"
+ 	if [[ -f "$lockfile" ]]; then
+             log_warning_msg "lock file already exists"
+@@ -150,7 +166,8 @@
+ stop() {
+     printf "Stopping %s service is not supported!: " "$servicename"
+     log_failure_msg "Failed to stop $servicename"
+-    return 1
++    cgclear -l $CONFIG_FILE
++    return 0
+ }
+ 
+ trapped() {
+--- a/scripts/init.d/cgred.in
++++ b/scripts/init.d/cgred.in
+@@ -78,6 +78,20 @@
+ 
+ start()
+ {
++	# RFC verification if CGROUP is enabled or disabled
++	CGROUP_RFC_ENABLE=`/usr/bin/tr181Set -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.CGROUP.Enable 2>&1 > /dev/null`
++
++	if [ "x$CGROUP_RFC_ENABLE" == "x" ] && [ -f /lib/rdk/getRFC.sh ]; then
++		. /lib/rdk/getRFC.sh CGROUPENABLE
++		CGROUP_RFC_ENABLE=$RFC_ENABLE_CGROUPENABLE
++	fi
++
++	if [ "x$CGROUP_RFC_ENABLE" != "xtrue" ]; then
++		echo "cgrules service is disabled through RFC"
++		return 0
++	fi
++	echo "cgrules service is enabled through RFC"
++
+ 	echo -n $"Starting CGroup Rules Engine Daemon: "
+ 	if [[ -f "$lockfile" ]]; then
+ 		log_failure_msg "$servicename is already running with PID $(cat ${pidfile})"
+@@ -89,7 +103,8 @@
+ 		log_failure_msg $"Cannot find cgroups, is cgconfig service running?"
+ 		return 1
+ 	fi
+-	daemon --check $servicename --pidfile $pidfile $CGRED_BIN $OPTIONS
++	nice=0
++	/sbin/start-stop-daemon --start --nicelevel $nice --quiet --oknodo --pidfile $pidfile --exec $CGRED_BIN -- $OPTIONS
+ 	retval=$?
+ 	echo
+ 	if [[ $retval -ne 0 ]]; then

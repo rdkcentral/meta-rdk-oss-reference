@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/net-snmp:${THISDIR}/${BP}:"
 
 SRC_URI += "file://support-multiple-local-certs.patch"
 SRC_URI += "file://DELIA-40163.patch"

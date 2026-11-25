@@ -8,6 +8,7 @@ $myperl -V:cc | $myperl -n -e 'print if (s/^\s*cc=.([-=\w\s\/]+).;\s*/$1/);'
 can't get corretly the cc's value.
 
 Source: Backported from OE
+Upstream-Status: Pending
 
 Signed-off-by: Wenlin Kang <wenlin.kang@windriver.com>
 

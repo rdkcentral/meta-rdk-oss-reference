@@ -32,18 +32,13 @@ diff --git a/agent/mibgroup/agentx/master.c b/agent/mibgroup/agentx/master.c
 index 99c4123ed3..b7a51dfef1 100644
 --- a/agent/mibgroup/agentx/master.c
 +++ b/agent/mibgroup/agentx/master.c
-@@ -280,6 +280,11 @@ agentx_got_response(int operation,
-         netsnmp_free_delegated_cache(cache);
-         return 0;
-
+@@ -283,1 +283,6 @@ agentx_got_response(int operation,
 +    case NETSNMP_CALLBACK_OP_RESEND:
 +        DEBUGMSGTL(("agentx/master", "resend on session %8p req=0x%x\n",
 +                    session, (unsigned)reqid));
 +        return 0;
 +
      case NETSNMP_CALLBACK_OP_RECEIVED_MESSAGE:
-         /*
-          * This session is alive
 --
 2.14.2
 

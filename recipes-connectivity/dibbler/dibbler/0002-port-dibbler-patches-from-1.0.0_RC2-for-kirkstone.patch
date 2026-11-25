@@ -1,5 +1,6 @@
 Date: Sep 28, 2017 7:13 AM
 From: Andre McCurdy <armccurdy@gmail.com>
+Upstream-Status: Pending
 Subject: [PATCH] RDKALL-973: Update dibbler to 1.0.1
         Address dibbler security vulnerability
         This patch contains following fixes that were added in version 1.0.0RC2

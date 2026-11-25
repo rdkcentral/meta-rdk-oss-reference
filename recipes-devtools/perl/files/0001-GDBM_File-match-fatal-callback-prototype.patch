@@ -1,0 +1,22 @@
+From: OpenAI <noreply@example.com>
+Subject: [PATCH] GDBM_File: match the old GDBM fatal callback prototype
+
+GDBM 1.8.3 in this layer declares the fatal callback as void (*)(char *).
+Match that type in Perl's compatibility callback to avoid a Werror failure.
+
+Upstream-Status: Inappropriate [layer-specific GDBM 1.8.3 compatibility]
+
+--- a/ext/GDBM_File/GDBM_File.xs
++++ b/ext/GDBM_File/GDBM_File.xs
+@@ -108,3 +108,3 @@
+ #else
+-# define FATALFUNC (void (*)()) croak_string
++# define FATALFUNC (void (*)(char *)) croak_string
+ # define NEED_FATALFUNC 1
+@@ -115,1 +115,5 @@
+-croak_string(const char *message) {
++#if GDBM_VERSION_MAJOR == 1 && GDBM_VERSION_MINOR >= 9
++croak_string(const char *message) {
++#else
++croak_string(char *message) {
++#endif

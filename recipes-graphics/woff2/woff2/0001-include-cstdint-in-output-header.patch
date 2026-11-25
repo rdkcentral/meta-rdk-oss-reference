@@ -1,0 +1,22 @@
+From: Build Compatibility <build@example.invalid>
+Subject: [PATCH] include cstdint for uint8_t in output.h
+
+Declare the fixed-width integer type used by WOFF2MemoryOut.
+
+Upstream-Status: Pending
+
+---
+ include/woff2/output.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/woff2/output.h b/include/woff2/output.h
+--- a/include/woff2/output.h
++++ b/include/woff2/output.h
+@@ -12,4 +12,5 @@
+ #include <algorithm>
+ #include <cstring>
++#include <cstdint>
+ #include <memory>
+ #include <string>
+-- 
+2.39.0

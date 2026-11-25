@@ -34,11 +34,20 @@ Index: net-snmp-5.8/include/net-snmp/library/snmpTLSBaseDomain.h
  
      int netsnmp_tlsbase_verify_server_cert(SSL *ssl,
                                             _netsnmpTLSBaseData *tlsdata);
+Index: net-snmp-5.8/include/net-snmp/library/default_store.h
+===================================================================
+--- net-snmp-5.8.orig/include/net-snmp/library/default_store.h
++++ net-snmp-5.8/include/net-snmp/library/default_store.h
+@@ -284,0 +285,4 @@
++#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
++    NETSNMP_IMPORT
++    void            netsnmp_ds_get_localcert_hint(int localport, char **hint);
++#endif
 Index: net-snmp-5.8/snmplib/default_store.c
 ===================================================================
 --- net-snmp-5.8.orig/snmplib/default_store.c   2020-02-10 05:06:32.000000000 -0500
 +++ net-snmp-5.8/snmplib/default_store.c        2020-02-10 05:16:59.759152183 -0500
-@@ -179,6 +179,16 @@
+@@ -179,6 +179,17 @@
 
  static netsnmp_ds_read_config *netsnmp_ds_configs = NULL;
 
@@ -50,6 +59,7 @@ Index: net-snmp-5.8/snmplib/default_store.c
 +} netsnmp_ds_localcert_config;
 +
 +static netsnmp_ds_localcert_config *netsnmp_ds_localcert_configs = NULL;
++static int netsnmp_ds_register_localcerts (char *line);
 +#endif
 +
  static int   netsnmp_ds_integers[NETSNMP_DS_MAX_IDS][NETSNMP_DS_MAX_SUBIDS];
@@ -77,7 +87,7 @@ Index: net-snmp-5.8/snmplib/default_store.c
  }
 
 +#ifdef NETSNMP_ALLOW_MULTI_SERVER_CERTS
-+void
++static int
 +netsnmp_ds_register_localcerts (char *line)
 +{
 +    int which = 0;
@@ -113,7 +123,7 @@ Index: net-snmp-5.8/snmplib/default_store.c
 +       lcertp->port   = atoi(buf);
 +    }
 +    lcertp->hint    = strdup(line);
-+    return;
++    return 0;
 +}
 +
 +void

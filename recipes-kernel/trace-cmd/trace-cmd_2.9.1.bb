@@ -8,7 +8,6 @@ SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/trace-cmd.git;b
 
 SRCREV = "530b1a0caef39466e16bbd49de5afef89656f03f"
 
-S = "${WORKDIR}/git"
 
 do_install() {
        oe_runmake etcdir=${sysconfdir} DESTDIR=${D} install

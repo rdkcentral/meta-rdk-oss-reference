@@ -1,5 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:"
-CACHED_CONFIGUREVARS = "ac_cv_lib_crypto_EVP_md5=yes ac_cv_lib_crypto_AES_cfb128_encrypt=no"
+CACHED_CONFIGUREVARS += "ac_cv_lib_crypto_EVP_md5=yes ac_cv_lib_crypto_AES_cfb128_encrypt=no"
 CACHED_CONFIGUREVARS:append = " ac_cv_file__etc_printcap=no"
 RDEPENDS:${PN}:append = "${@bb.utils.contains('DISTRO_FEATURES', 'ssl-1.1.1', ' openssl', '', d)}"
 

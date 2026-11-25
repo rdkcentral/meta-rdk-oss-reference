@@ -3,6 +3,7 @@ From: Eugene Mutavchi <Ievgen_Mutavchi@comcast.com>
 Date: Tue, 19 Aug 2025 20:01:55 +0000
 Subject: [PATCH 2/3] [http2] improve handling of io error thrown early after
  handshake
+Upstream-Status: Inappropriate [RDK-specific change]
 
 ---
  libsoup/http2/soup-client-message-io-http2.c | 11 ++++++++++-
