@@ -14,7 +14,7 @@ BASEDEPENDS:remove = "cargo-native"
 export RUST_TARGET_PATH="${WORKDIR}/targets/"
 
 RUSTLIB = " \
-	-L ${STAGING_DIR_NATIVE}/${SDKPATHNATIVE}/usr/lib/${TARGET_SYS}/rustlib/${HOST_SYS}/lib \
+	-L ${STAGING_DIR_NATIVE}/${SDKPATHNATIVE}/usr/lib/${RUST_TARGET_SYS}/rustlib/${RUST_HOST_SYS}/lib \
 "
 
 DEPENDS += "rust-native \
@@ -59,7 +59,7 @@ do_install () {
 	if [ ! -f "\$CARGO_HOME/config" ]; then
 		touch "\$CARGO_HOME/config"
 		echo "[build]" >> "\$CARGO_HOME/config"
-		echo 'target = "'${TARGET_SYS}'"' >> "\$CARGO_HOME/config"
+		echo 'target = "'${RUST_TARGET_SYS}'"' >> "\$CARGO_HOME/config"
         fi
 
 	# Keep the below off as long as HTTP/2 is disabled.
