@@ -56,8 +56,8 @@ export WRAPPER_TARGET_LDFLAGS = "${TARGET_LDFLAGS}"
 export WRAPPER_TARGET_AR = "${TARGET_PREFIX}ar"
 
 python do_configure:prepend() {
-    targets = [d.getVar("TARGET_SYS", True), "{}-unknown-linux-gnu".format(d.getVar("HOST_ARCH", True))]
-    hosts = ["{}-unknown-linux-gnu".format(d.getVar("HOST_ARCH", True))]
+    targets = [d.getVar("RUST_TARGET_SYS", True), d.getVar("RUST_HOST_SYS", True)]
+    hosts = [d.getVar("RUST_HOST_SYS", True)]
 }
 
 INSANE_SKIP:${RUSTLIB_TARGET_PN} = "file-rdeps arch ldflags"
