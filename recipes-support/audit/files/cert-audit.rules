@@ -1,4 +1,6 @@
 -w /opt/dl/certs/staticXpkiCrt.pk12 -p r -k staticcert
 -w /etc/ssl/certs/staticXpkiCrt.pk12 -p r -k staticcert
+-w /opt/certs/devicecert_1.pk12 -p r -k devicecert
+-w /opt/certs/devicecert_1.pem -p r -k devicecert
 -w /opt/certs/devicecert_2.pk12 -p r -k devicecert
 -w /opt/certs/devicecert_2.pem -p r -k devicecert
