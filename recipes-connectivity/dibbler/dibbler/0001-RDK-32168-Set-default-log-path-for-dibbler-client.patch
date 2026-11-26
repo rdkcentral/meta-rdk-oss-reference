@@ -22,10 +22,7 @@ index 854b725..6d7781c 100644
  #define SRVLOG_FILE           "dibbler-server.log"
  #define RELLOG_FILE           "dibbler-relay.log"
  #define CLNT_AAASPI_FILE      "AAA-SPI"
-@@ -149,7 +149,7 @@ struct link_state_notify_t
- #define DEFAULT_WORKDIR       "/tmp/dibbler"
- #define DEFAULT_CLNTCONF_FILE "/etc/dibbler/client.conf"
- #define DEFAULT_CLNTPID_FILE  "/tmp/dibbler/client.pid"
+@@ -152,4 +152,4 @@ struct link_state_notify_t
 -#define DEFAULT_CLNTLOG_FILE  "/var/log/dibbler/dibbler-client.log"
 +#define DEFAULT_CLNTLOG_FILE  "/opt/logs/dibbler.log"
  
@@ -44,10 +41,7 @@ index 0397afc..8cec525 100644
  #define SRVLOG_FILE           "dibbler-server.log"
  #define RELLOG_FILE           "dibbler-relay.log"
  #define CLNT_AAASPI_FILE      "AAA-SPI"
-@@ -149,7 +149,7 @@ struct link_state_notify_t
- #define DEFAULT_WORKDIR       "/tmp/dibbler"
- #define DEFAULT_CLNTCONF_FILE "/etc/dibbler/client.conf"
- #define DEFAULT_CLNTPID_FILE  "/tmp/dibbler/client.pid"
+@@ -152,4 +152,4 @@ struct link_state_notify_t
 -#define DEFAULT_CLNTLOG_FILE  "/var/log/dibbler/dibbler-client.log"
 +#define DEFAULT_CLNTLOG_FILE  "/opt/logs/dibbler.log"
  
