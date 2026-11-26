@@ -1,6 +1,6 @@
 inherit ptest
 
-INCOMPATIBLE_LICENSE_EXCEPTIONS:pn-binutils = "binutils:GPL-3.0-only"
+INCOMPATIBLE_LICENSE_EXCEPTIONS:pn-binutils = "binutils:GPL-3.0-only libbfd:GPL-3.0-only libopcodes:GPL-3.0-only"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
