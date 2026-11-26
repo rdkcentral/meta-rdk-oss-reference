@@ -9,7 +9,7 @@ PR = "r5"
 SRC_URI = "${GNU_MIRROR}/gdbm/gdbm-${PV}.tar.gz \
 	   file://makefile.patch \
            file://libtool-mode.patch \
-           file://ldflags.patch \
+           file://gdbm-link.patch \
            file://gcc15-fatal-callback-prototype.patch \
            file://gcc15-ndbm-prototypes.patch"
 

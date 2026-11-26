@@ -1,22 +1,18 @@
-Obey LDFLAGS
+Add the required gdbm dependency to the compatibility library.
 
-Signed-off-by: Christopher Larson <chris_larson@mentor.com>
 Upstream-Status: Inappropriate [old version]
 
 --- gdbm-1.8.3.orig/Makefile.in
 +++ gdbm-1.8.3/Makefile.in
-@@ -156,12 +156,12 @@ install-compat:
-
- libgdbm.la: $(LOBJS) gdbm.h
-	rm -f libgdbm.la
+@@ -159 +159 @@
 -	$(LIBTOOL) --mode=link $(CC) -o libgdbm.la -rpath $(libdir) \
 +	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -o libgdbm.la -rpath $(libdir) \
-		-version-info $(SHLIB_VER) $(LOBJS)
-
- libgdbm_compat.la: $(C_LOBJS) gdbm.h
-	rm -f libgdbm_compat.la
+@@ -162 +162 @@
+-libgdbm_compat.la: $(C_LOBJS) gdbm.h
++libgdbm_compat.la: $(C_LOBJS) gdbm.h libgdbm.la
+@@ -164 +164 @@
 -	$(LIBTOOL) --mode=link $(CC) -o libgdbm_compat.la -rpath $(libdir) \
 +	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -o libgdbm_compat.la -rpath $(libdir) \
-		-version-info $(SHLIB_VER) $(C_LOBJS)
-
- gdbm.h:	gdbm.proto gdbmerrno.h gdbm.proto2
+@@ -165 +165 @@
+-		-version-info $(SHLIB_VER) $(C_LOBJS)
++		-version-info $(SHLIB_VER) $(C_LOBJS) libgdbm.la

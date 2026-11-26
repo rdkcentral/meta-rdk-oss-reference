@@ -237,9 +237,7 @@ RDEPENDS:${PN} += "\
 "
 
 # meta-python2 components
-RDEPENDS:${PN} += "\
-     python \
-"
+RDEPENDS:${PN} += "${@bb.utils.contains('BBFILE_COLLECTIONS', 'meta-python2', 'python', '', d)}"
 
 # meta-rdk-oss-reference components
 RDEPENDS:${PN} += "\
@@ -343,7 +341,7 @@ RDEPENDS:${PN} += "\
 "
 
 # Following packages are currently excluded
-RDEPENDS:${PN}:remove += "\
+RDEPENDS:${PN}:remove = "\
      alsa-plugins \
      bluez5 \
      cairo \
