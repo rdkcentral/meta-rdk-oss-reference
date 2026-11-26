@@ -18,7 +18,7 @@ do_install () {
     SYS_BINDIR=$(dirname ${D}${bindir})
 
     install -d "${SYS_BINDIR}"
-    cp build/${SNAPSHOT_BUILD_SYS}/stage2-tools-bin/* ${SYS_BINDIR}
+    cp build/${RUST_HOST_SYS}/stage2-tools-bin/* ${SYS_BINDIR}
     for i in ${SYS_BINDIR}/*; do
 	chrpath -r "\$ORIGIN/../lib" ${i}
     done

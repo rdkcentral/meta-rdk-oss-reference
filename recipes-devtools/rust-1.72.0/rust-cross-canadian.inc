@@ -25,14 +25,15 @@ do_install () {
     RUSTLIB_DIR=${SYS_LIBDIR}/${RUST_TARGET_SYS}/rustlib
 
     install -d "${SYS_BINDIR}"
-    cp build/${SNAPSHOT_BUILD_SYS}/stage2/bin/* ${SYS_BINDIR}
+    cp build/${RUST_HOST_SYS}/stage2/bin/* ${SYS_BINDIR}
     for i in ${SYS_BINDIR}/*; do
 	chrpath -r "\$ORIGIN/../lib" ${i}
     done
 
     install -d "${D}${libdir}"
-    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${RUST_TARGET_SYS}/*.so ${SYS_LIBDIR}
-    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${RUST_TARGET_SYS}/rustlib ${RUSTLIB_DIR}
+    install -d "${RUSTLIB_DIR}"
+    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/*.so ${SYS_LIBDIR}
+    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/rustlib ${RUSTLIB_DIR}
 
     for i in ${SYS_LIBDIR}/*.so; do
 	chrpath -r "\$ORIGIN/../lib" ${i}
