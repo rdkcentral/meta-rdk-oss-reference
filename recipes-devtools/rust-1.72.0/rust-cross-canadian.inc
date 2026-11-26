@@ -33,7 +33,7 @@ do_install () {
     install -d "${D}${libdir}"
     install -d "${RUSTLIB_DIR}"
     cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/*.so ${SYS_LIBDIR}
-    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/rustlib ${RUSTLIB_DIR}
+    cp -pRd build/${SNAPSHOT_BUILD_SYS}/stage2/lib/${TARGET_SYS}/rustlib/. ${RUSTLIB_DIR}
 
     for i in ${SYS_LIBDIR}/*.so; do
 	chrpath -r "\$ORIGIN/../lib" ${i}
