@@ -251,7 +251,7 @@ TARGET_C_INT_WIDTH[riscv64] = "64"
 MAX_ATOMIC_WIDTH[riscv64] = "64"
 
 def sys_for(d, thing):
-    return d.getVar('{}_SYS'.format(thing))
+    return d.getVar('RUST_{}_SYS'.format(thing))
 
 def prefix_for(d, thing):
     return d.getVar('{}_PREFIX'.format(thing))

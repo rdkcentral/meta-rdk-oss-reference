@@ -1,1 +1,1 @@
-RDEPENDS:${PN}:remove += "netbase"
+RDEPENDS:${PN}:remove = "netbase"

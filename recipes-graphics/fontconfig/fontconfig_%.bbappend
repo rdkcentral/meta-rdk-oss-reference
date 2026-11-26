@@ -17,7 +17,6 @@ do_install:append() {
         rm ${D}${datadir}/fontconfig/conf.avail/10-sub-pixel-rgb.conf
         rm ${D}${datadir}/fontconfig/conf.avail/10-sub-pixel-vbgr.conf
         rm ${D}${datadir}/fontconfig/conf.avail/10-sub-pixel-vrgb.conf
-        rm ${D}${datadir}/fontconfig/conf.avail/10-unhinted.conf
         rm ${D}${datadir}/fontconfig/conf.avail/11-lcdfilter-default.conf
         rm ${D}${datadir}/fontconfig/conf.avail/11-lcdfilter-legacy.conf
         rm ${D}${datadir}/fontconfig/conf.avail/11-lcdfilter-light.conf
@@ -36,5 +35,5 @@ do_install:append() {
     fi
 }
 
-FILES:${PN}:remove += "${sysconfdir}/fonts/conf.d/README ${datadir}/fontconfig/conf.avail/10-autohint.conf ${datadir}/fontconfig/conf.avail/10-no-sub-pixel.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-bgr.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-rgb.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-vbgr.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-vrgb.conf ${datadir}/fontconfig/conf.avail/10-unhinted.conf ${datadir}/fontconfig/conf.avail/11-lcdfilter-default.conf ${datadir}/fontconfig/conf.avail/11-lcdfilter-legacy.conf ${datadir}/fontconfig/conf.avail/11-lcdfilter-light.conf ${datadir}/fontconfig/conf.avail/25-unhint-nonlatin.conf ${datadir}/fontconfig/conf.avail/65-khmer.conf ${datadir}/fontconfig/conf.avail/70-no-bitmaps.conf ${datadir}/fontconfig/conf.avail/70-yes-bitmaps.conf"
+FILES:${PN}:remove = "${sysconfdir}/fonts/conf.d/README ${datadir}/fontconfig/conf.avail/10-autohint.conf ${datadir}/fontconfig/conf.avail/10-no-sub-pixel.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-bgr.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-rgb.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-vbgr.conf ${datadir}/fontconfig/conf.avail/10-sub-pixel-vrgb.conf ${datadir}/fontconfig/conf.avail/10-unhinted.conf ${datadir}/fontconfig/conf.avail/11-lcdfilter-default.conf ${datadir}/fontconfig/conf.avail/11-lcdfilter-legacy.conf ${datadir}/fontconfig/conf.avail/11-lcdfilter-light.conf ${datadir}/fontconfig/conf.avail/25-unhint-nonlatin.conf ${datadir}/fontconfig/conf.avail/65-khmer.conf ${datadir}/fontconfig/conf.avail/70-no-bitmaps.conf ${datadir}/fontconfig/conf.avail/70-yes-bitmaps.conf"
 

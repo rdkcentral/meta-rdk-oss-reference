@@ -41,8 +41,8 @@ PACKAGECONFIG[perl] = "--with-perl, --without-perl, perl perl-native swig-native
 PACKAGECONFIG[apache2] = ",,apache2,"
 PACKAGECONFIG[aa-decode] = ",,,bash"
 
-PAMLIB="${@bb.utils.contains('DISTRO_FEATURES', 'pam', '1', '0', d)}"
-HTTPD="${@bb.utils.contains('PACKAGECONFIG', 'apache2', '1', '0', d)}"
+PAMLIB = "${@bb.utils.contains('DISTRO_FEATURES', 'pam', '1', '0', d)}"
+HTTPD = "${@bb.utils.contains('PACKAGECONFIG', 'apache2', '1', '0', d)}"
 
 python() {
     if 'apache2' in d.getVar('PACKAGECONFIG').split() and \
@@ -213,7 +213,7 @@ FILES:mod-${PN} = "${libdir}/apache2/modules/*"
 
 # Add coreutils and findutils only if sysvinit scripts are in use
 RDEPENDS:${PN} +=  "${@["coreutils findutils", ""][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'systemd')]} ${@bb.utils.contains('PACKAGECONFIG','python','python3-core python3-modules','', d)}"
-RDEPENDS:${PN}:remove += "${@bb.utils.contains('PACKAGECONFIG','perl','','perl', d)}"
+RDEPENDS:${PN}:remove = "${@bb.utils.contains('PACKAGECONFIG','perl','','perl', d)}"
 RDEPENDS:${PN}-ptest += "perl coreutils dbus-lib bash"
 
 PRIVATE_LIBS:${PN}-ptest = "libapparmor.so*"
