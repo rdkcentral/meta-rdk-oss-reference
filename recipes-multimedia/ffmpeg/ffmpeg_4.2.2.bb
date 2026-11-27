@@ -5,7 +5,7 @@ DESCRIPTION = "FFmpeg is the leading multimedia framework, able to decode, encod
 HOMEPAGE = "https://www.ffmpeg.org/"
 SECTION = "libs"
 
-LICENSE = "BSD & GPL-2.0-or-later & LGPL-2.1-or-later & MIT"
+LICENSE = "BSD-2-Clause & BSD-3-Clause & GPL-2.0-or-later & LGPL-2.1-or-later & MIT"
 LICENSE:${PN} = "GPL-2.0-or-later"
 LICENSE:libavcodec = "${@bb.utils.contains('PACKAGECONFIG', 'gpl', 'GPL-2.0-or-later', 'LGPL-2.1-or-later', d)}"
 LICENSE:libavdevice = "${@bb.utils.contains('PACKAGECONFIG', 'gpl', 'GPL-2.0-or-later', 'LGPL-2.1-or-later', d)}"
@@ -126,6 +126,10 @@ EXTRA_OEMAKE = "V=1"
 
 do_configure() {
     ${S}/configure ${EXTRA_OECONF}
+}
+
+do_configure:append() {
+    sed -i 's|${WORKDIR}|/usr/src/debug/${MLPREFIX}${BPN}/${PV}|g' ${B}/config.h
 }
 
 PACKAGES =+ "libavcodec \

@@ -25,7 +25,7 @@ SRC_URI = " \
 "
 
 SRCREV = "7279fae3d1e4e9e3c3d9a42079184d638a38bd3c"
-S = "${UNPACKDIR}/${PN}-${PV}"
+S = "${UNPACKDIR}/${BPN}-${PV}"
 
 PARALLEL_MAKE = ""
 
@@ -215,11 +215,10 @@ FILES:mod-${PN} = "${libdir}/apache2/modules/*"
 
 # Add coreutils and findutils only if sysvinit scripts are in use
 RDEPENDS:${PN} +=  "${@["coreutils findutils", ""][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'systemd')]} ${@bb.utils.contains('PACKAGECONFIG','python','python3-core python3-modules','', d)}"
-RDEPENDS:${PN}:remove += "${@bb.utils.contains('PACKAGECONFIG','perl','','perl', d)}"
+RDEPENDS:${PN}:remove = "${@bb.utils.contains('PACKAGECONFIG','perl','','perl', d)}"
 RDEPENDS:${PN}-ptest += "perl coreutils dbus-lib bash"
 
 PRIVATE_LIBS:${PN}-ptest = "libapparmor.so*"
 LDFLAGS:remove = "-flto"
 CFLAGS:remove = "-flto"
 CXXFLAGS:remove = "-flto"
-

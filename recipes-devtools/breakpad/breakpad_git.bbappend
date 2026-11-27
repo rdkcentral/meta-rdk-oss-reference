@@ -1,4 +1,5 @@
 FILESEXTRAPATHS:append := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/2023.06.01/breakpad:"
 
 SRC_URI:append = " file://breakpad_disable_format_macros_check.patch "
 

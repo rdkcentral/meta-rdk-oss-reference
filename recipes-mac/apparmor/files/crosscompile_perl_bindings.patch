@@ -8,8 +8,8 @@ Source: 585f306916c812990bad220057fb64de3b4638ba
 Upstream-Status: Pending
 Signed-Off-By: Tom Rini <trini@konsulko.com>
 
---- a/libraries/libapparmor/swig/perl/Makefile.am.orig	2017-06-13 19:04:43.296676212 -0400
-+++ b/libraries/libapparmor/swig/perl/Makefile.am	2017-06-13 19:05:03.488676693 -0400
+--- a/libraries/libapparmor/swig/perl/Makefile.am
++++ b/libraries/libapparmor/swig/perl/Makefile.am
 @@ -16,11 +16,11 @@
  
  LibAppArmor.so: libapparmor_wrap.c Makefile.perl

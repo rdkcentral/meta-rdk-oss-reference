@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=e3fc50a88d0a364313df4b21ef20c29e"
 DEPENDS = "trower-base64 msgpack-c cimplog"
 
 SRCREV = "9587e8db33dbbfcd9b78ef66cc2eaf16dfb9afcf"
-SRC_URI = "git://github.com/xmidt-org/wrp-c.git"
+SRC_URI = "git://github.com/xmidt-org/wrp-c.git;protocol=https;nobranch=1"
 PV = "git+${SRCPV}"
 
 S = "${UNPACKDIR}/${PN}-${PV}"

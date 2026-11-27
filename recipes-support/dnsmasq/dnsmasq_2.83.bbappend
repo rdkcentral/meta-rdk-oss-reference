@@ -12,11 +12,9 @@ SRC_URI:append:broadband = "  file://RDKCENTRAL_XDNS_core.patch \
                               file://RDKCENTRAL_XDNS_PROTECT_BROWSING_FIX.patch \
                               file://RDKCENTRAL_XDNS_LOG.patch \
                               file://RDKCENTRAL_XDNS_Refactor.patch \
-                              file://RDKCENTRAL_XDNS_Enable_IPV6.patch  "
-
-SRC_URI:append:broadband += " ${@bb.utils.contains('DISTRO_FEATURES', 'bci', 'file://RDKCENTRAL_MultiProfile_XDNS.patch', '', d)}"
-
-SRC_URI:append:broadband += " ${@bb.utils.contains('DISTRO_FEATURES', 'device_gateway_association', 'file://ManageableDevice.patch', '', d)}"
+                              file://RDKCENTRAL_XDNS_Enable_IPV6.patch \
+                              ${@bb.utils.contains('DISTRO_FEATURES', 'bci', ' file://RDKCENTRAL_MultiProfile_XDNS.patch', '', d)} \
+                              ${@bb.utils.contains('DISTRO_FEATURES', 'device_gateway_association', ' file://ManageableDevice.patch', '', d)}"
 
 
 SRC_URI:append = " file://130-fingerprint-dhcp-lease-file-V2.83.patch \

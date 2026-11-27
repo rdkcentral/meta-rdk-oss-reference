@@ -1,0 +1,67 @@
+Date: Apr 5, 2018 10:05 AM
+From: Avinash Sharma <Avinash_Sharma@comcast.com>
+Subject: [PATCH] Port RDK libcgroup init behavior to 3.2.0
+Source: COMCAST 55ecdc5ca96163a420be9fc759410ccf21528a57 Apr 9, 2018 11:34 PM
+Upstream-Status: Pending
+Signed-off-by: Avinash Sharma <Avinash_Sharma@comcast.com>
+---
+
+--- a/scripts/Makefile.am
++++ b/scripts/Makefile.am
+@@ -4 +4 @@
+-INITSCRIPTDIR=$(DESTDIR)$(sysconfdir)/rc.d/init.d
++INITSCRIPTDIR=$(DESTDIR)$(sysconfdir)/
+--- a/scripts/init.d/cgconfig.in
++++ b/scripts/init.d/cgconfig.in
+@@ -56 +56 @@
+-CREATE_DEFAULT=yes
++CREATE_DEFAULT=no
+@@ -113,0 +114,15 @@
++        CGROUP_RFC_ENABLE=`/usr/bin/tr181Set -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.CGROUP.Enable 2>&1 > /dev/null`
++
++        if [ "x$CGROUP_RFC_ENABLE" == "x" ]; then
++            if [ -f /lib/rdk/getRFC.sh ]; then
++                . /lib/rdk/getRFC.sh CGROUPENABLE
++                CGROUP_RFC_ENABLE=$RFC_ENABLE_CGROUPENABLE
++            fi
++        fi
++
++        if [ "x$CGROUP_RFC_ENABLE" != "xtrue" ]; then
++            echo "cgconfig service is disabled through RFC"
++            return 0
++        fi
++        echo "cgconfig service is enabled through RFC"
++
+@@ -151,3 +166,5 @@
+-    printf "Stopping %s service is not supported!: " "$servicename"
+-    log_failure_msg "Failed to stop $servicename"
+-    return 1
++    printf "Stopping cgconfig service: "
++    cgclear -l "$CONFIG_FILE"
++    rm -f "$lockfile"
++    log_success_msg "Stopped $servicename"
++    return 0
+--- a/scripts/init.d/cgred.in
++++ b/scripts/init.d/cgred.in
+@@ -80,0 +81,15 @@
++        CGROUP_RFC_ENABLE=`/usr/bin/tr181Set -g Device.DeviceInfo.X_RDKCENTRAL-COM_RFC.Feature.CGROUP.Enable 2>&1 > /dev/null`
++
++        if [ "x$CGROUP_RFC_ENABLE" == "x" ]; then
++            if [ -f /lib/rdk/getRFC.sh ]; then
++                . /lib/rdk/getRFC.sh CGROUPENABLE
++                CGROUP_RFC_ENABLE=$RFC_ENABLE_CGROUPENABLE
++            fi
++        fi
++
++        if [ "x$CGROUP_RFC_ENABLE" != "xtrue" ]; then
++            echo "cgrules service is disabled through RFC"
++            return 0
++        fi
++        echo "cgrules service is enabled through RFC"
++
+@@ -92 +107 @@
+-	daemon --check $servicename --pidfile $pidfile $CGRED_BIN $OPTIONS
++	/sbin/start-stop-daemon --start --nicelevel 0 --quiet --oknodo --pidfile $pidfile --exec $CGRED_BIN -- $OPTIONS
+@@ -112 +127 @@
+-	killproc -p $pidfile -TERM "$processname"
++	/sbin/start-stop-daemon --stop --quiet --oknodo --pidfile "$pidfile" --exec "$CGRED_BIN"

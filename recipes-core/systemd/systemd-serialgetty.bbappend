@@ -6,7 +6,7 @@ do_install:prepend() {
     if [ -f "${UNPACKDIR}/serial-getty@.service" ]; then
 	if [ -z `fgrep '\-\-autologin root' ${UNPACKDIR}/serial-getty\@.service` ]
 	then
-		sed -i -e '/^ExecStart=/ s/$/ --autologin root/' ${WORKDIR}/serial-getty\@.service
+		sed -i -e '/^ExecStart=/ s/$/ --autologin root/' ${UNPACKDIR}/serial-getty\@.service
 	fi
     fi
 }

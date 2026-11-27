@@ -9,7 +9,7 @@ DEPENDS:append = "${@bb.utils.contains("DISTRO_FEATURES", "webconfig_bin", " rbu
 DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'aker', ' nanomsg libparodus ', '', d)}"
 
 SRCREV = "4cf4c32cc73009ea57a219b2d5f1e931c425c105"
-SRC_URI = "git://github.com/xmidt-org/webcfg.git"
+SRC_URI = "git://github.com/xmidt-org/webcfg.git;protocol=https;nobranch=1"
 
 RDEPENDS:${PN} += "util-linux-uuidgen"
 
@@ -89,4 +89,3 @@ FILES:${PN} += " ${@bb.utils.contains("DISTRO_FEATURES", "webconfig_bin", "${exe
 
 ASNEEDED_hybrid = ""
 ASNEEDED_client = ""
-

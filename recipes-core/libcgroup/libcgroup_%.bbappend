@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:append := ":${THISDIR}/${BPN}"
 RDEPENDS:${PN} += "bash"
 inherit systemd
-SRC_URI:append = " file://init.patch \
+SRC_URI:append = " ${@'file://init-3.2.0.patch' if d.getVar('PV') == '3.2.0' else 'file://init.patch'} \
                    file://cgconfig.conf \
                    file://cgrules.conf \
                    file://cgconfig.service \

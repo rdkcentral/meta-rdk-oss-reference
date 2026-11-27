@@ -71,7 +71,6 @@ RDEPENDS:${PN} = "\
      libcap-ng \
      libcgroup \
      libcheck \
-     libcroco \
      libdaemon \
      libepoxy \
      liberation-fonts \
@@ -352,7 +351,7 @@ RDEPENDS:${PN} += "\
 "
 
 # Following packages are currently excluded
-RDEPENDS:${PN}:remove += "\
+RDEPENDS:${PN}:remove = "\
      alsa-plugins \
      bluez5 \
      cairo \
@@ -383,6 +382,7 @@ RDEPENDS:${PN}:remove += "\
      westeros-simplebuffer \
      westeros-simpleshell \
      directfb \
+     libidn2 \
 "
 
 # Browser related
@@ -390,4 +390,4 @@ RDEPENDS:${PN} += "\
      woff2 \
      brotli \
 "
-RDEPENDS:${PN}:remove = "libidn2"
+RDEPENDS:${PN}:remove:wrynose = "openssl-1.1.1l"

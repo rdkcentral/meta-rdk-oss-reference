@@ -1,4 +1,4 @@
-From 7fc220b2350d78942fb3935cad0b1564418ebe8f Mon Sep 17 00:00:00 2001
+From f78446b14aff46db2ef27d062a275b6a01fd68b1 Mon Sep 17 00:00:00 2001
 From: Kim Kulling <kim.kulling@googlemail.com>
 Date: Tue, 19 Nov 2019 20:30:40 +0100
 Subject: [PATCH] closes https://github.com/assimp/assimp/issues/2733: update
@@ -20,7 +20,7 @@ Signed-off-by: Alexander Kanavin <alex.kanavin@gmail.com>
  10 files changed, 821 insertions(+), 344 deletions(-)
 
 diff --git a/contrib/zip/.gitignore b/contrib/zip/.gitignore
-index a7904a1e..49b2cb2f 100644
+index a7904a1efc..49b2cb2fda 100644
 --- a/contrib/zip/.gitignore
 +++ b/contrib/zip/.gitignore
 @@ -1,6 +1,7 @@
@@ -37,7 +37,7 @@ index a7904a1e..49b2cb2f 100644
  test/test.exe.dir/
 +
 diff --git a/contrib/zip/CMakeLists.txt b/contrib/zip/CMakeLists.txt
-index b46dbb1d..77916d2e 100644
+index b46dbb1db0..77916d2e14 100644
 --- a/contrib/zip/CMakeLists.txt
 +++ b/contrib/zip/CMakeLists.txt
 @@ -1,10 +1,14 @@
@@ -159,7 +159,7 @@ index b46dbb1d..77916d2e 100644
 +        COMMENT "Generating API documentation with Doxygen" VERBATIM)
 +endif()
 diff --git a/contrib/zip/README.md b/contrib/zip/README.md
-index d5fb8cd2..14eb9a34 100644
+index d5fb8cd203..14eb9a34c8 100644
 --- a/contrib/zip/README.md
 +++ b/contrib/zip/README.md
 @@ -71,7 +71,7 @@ int arg = 2;
@@ -217,7 +217,7 @@ index d5fb8cd2..14eb9a34 100644
  ```shell
  $ mkdir build
 diff --git a/contrib/zip/appveyor.yml b/contrib/zip/appveyor.yml
-index 0be6373c..ea17f5de 100644
+index 0be6373ca0..ea17f5de92 100644
 --- a/contrib/zip/appveyor.yml
 +++ b/contrib/zip/appveyor.yml
 @@ -1,4 +1,4 @@
@@ -227,7 +227,7 @@ index 0be6373c..ea17f5de 100644
  - cmd: >-
      cd c:\projects\zip
 diff --git a/contrib/zip/src/miniz.h b/contrib/zip/src/miniz.h
-index 2c27a94d..c4fcfb83 100644
+index 2c27a94d8d..c4fcfb83e6 100644
 --- a/contrib/zip/src/miniz.h
 +++ b/contrib/zip/src/miniz.h
 @@ -221,6 +221,7 @@
@@ -852,7 +852,7 @@ index 2c27a94d..c4fcfb83 100644
        p += total_header_size;
      }
 diff --git a/contrib/zip/src/zip.c b/contrib/zip/src/zip.c
-index ff3a8fe1..1abcfd8f 100644
+index ff3a8fe1e6..1abcfd8fd1 100644
 --- a/contrib/zip/src/zip.c
 +++ b/contrib/zip/src/zip.c
 @@ -24,7 +24,6 @@
@@ -979,7 +979,7 @@ index ff3a8fe1..1abcfd8f 100644
        }
        symlink_to[info.m_uncomp_size] = '\0';
 diff --git a/contrib/zip/src/zip.h b/contrib/zip/src/zip.h
-index 5f39df50..a48d64d6 100644
+index 5f39df50ad..a48d64d6de 100644
 --- a/contrib/zip/src/zip.h
 +++ b/contrib/zip/src/zip.h
 @@ -20,241 +20,240 @@ extern "C" {
@@ -1505,7 +1505,7 @@ index 5f39df50..a48d64d6 100644
  }
  #endif
 diff --git a/contrib/zip/test/CMakeLists.txt b/contrib/zip/test/CMakeLists.txt
-index 9b2a8db1..cc060b00 100644
+index 9b2a8db106..cc060b00fe 100644
 --- a/contrib/zip/test/CMakeLists.txt
 +++ b/contrib/zip/test/CMakeLists.txt
 @@ -1,19 +1,16 @@
@@ -1541,7 +1541,7 @@ index 9b2a8db1..cc060b00 100644
 +set(test_out ${test_out} PARENT_SCOPE)
 +set(test_miniz_out ${test_miniz_out} PARENT_SCOPE)
 diff --git a/contrib/zip/test/test.c b/contrib/zip/test/test.c
-index 45443053..a9b2ddab 100644
+index 454430533a..a9b2ddab1e 100644
 --- a/contrib/zip/test/test.c
 +++ b/contrib/zip/test/test.c
 @@ -29,6 +29,8 @@
@@ -1618,7 +1618,7 @@ index 45443053..a9b2ddab 100644
    remove(ZIPNAME);
    return 0;
 diff --git a/contrib/zip/test/test_miniz.c b/contrib/zip/test/test_miniz.c
-index ebc0564d..babcaecd 100644
+index ebc0564dc3..babcaecdb6 100644
 --- a/contrib/zip/test/test_miniz.c
 +++ b/contrib/zip/test/test_miniz.c
 @@ -23,16 +23,39 @@ int main(int argc, char *argv[]) {

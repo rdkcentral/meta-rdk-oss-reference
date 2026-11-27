@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/KhronosGroup/SPIRV-Tools.git;protocol=https;branch=m
 
 PE = "1"
 UPSTREAM_CHECK_GITTAGREGEX = "sdk-(?P<pver>\\d+(\\.\\d+)+)"
-S = "${UNPACKDIR}/${PN}-${PV}"
+S = "${UNPACKDIR}/${BPN}-${PV}"
 
 inherit cmake python3native
 

@@ -17,7 +17,7 @@ PACKAGECONFIG[xdgstable] = "--enable-xdgstable=yes"
 PACKAGECONFIG[modules] = "--enable-modules=yes,,virtual/westeros-soc"
 PACKAGECONFIG[explicit-sync] = "--enable-lexpsyncprotocol=yes, , wayland-protocols"
 
-S = "${UNPACKDIR}/${PN}-${PV}"
+S = "${UNPACKDIR}/${BPN}-${PV}"
 
 DEPENDS = "wayland libxkbcommon westeros-simplebuffer westeros-simpleshell virtual/westeros-soc wayland-native"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'gstreamer1', 'gstreamer1.0', 'may-not-be-built-without-gstreamer1', d)}"

@@ -12,11 +12,11 @@ Upstream-Status: Inappropriate [oe-core specific]
 Signed-off-by: Martin Kelly <mkelly@xevo.com>
 Signed-off-by: Khem Raj <raj.khem@gmail.com>
 ---
- llvm/tools/llvm-config/llvm-config.cpp | 7 +++++++
+ tools/llvm-config/llvm-config.cpp | 7 +++++++
  1 file changed, 7 insertions(+)
 
---- a/llvm/tools/llvm-config/llvm-config.cpp
-+++ b/llvm/tools/llvm-config/llvm-config.cpp
+--- a/tools/llvm-config/llvm-config.cpp
++++ b/tools/llvm-config/llvm-config.cpp
 @@ -226,6 +226,13 @@ Typical components:\n\
  
  /// Compute the path to the main executable.

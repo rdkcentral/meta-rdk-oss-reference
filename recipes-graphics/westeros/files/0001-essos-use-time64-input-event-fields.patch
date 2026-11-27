@@ -1,0 +1,24 @@
+From: Yocto Wrynose migration
+Subject: [PATCH] essos: use time64-compatible input event fields
+
+On 32-bit targets using 64-bit time_t, linux/input.h exposes input event
+timestamps through input_event_sec and input_event_usec instead of time.
+
+Upstream-Status: Pending
+
+---
+ essos.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/essos.cpp b/essos.cpp
+--- a/essos.cpp
++++ b/essos.cpp
+@@ -3952,7 +3952,7 @@ void essProcessInputDevices(EssCtx* ctx)
+                            default:
+                               {
+                                  int keyCode= e.code;
+-                                 long long timeMillis= e.time.tv_sec*1000LL+e.time.tv_usec/1000LL;
++                                 long long timeMillis= e.input_event_sec*1000LL+e.input_event_usec/1000LL;
+ 
+                                  switch ( e.value )
+                                  {

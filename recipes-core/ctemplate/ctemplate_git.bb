@@ -28,7 +28,7 @@ PARALLEL_MAKE = ""
 DEPENDS = "python3"
 RDEPENDS:${PN} += "bash"
 
-BBCLASSEXTEND:append += " nativesdk"
+BBCLASSEXTEND:append = " nativesdk"
 
 do_install:append() {
     rm -rf ${D}${bindir}/template-converter

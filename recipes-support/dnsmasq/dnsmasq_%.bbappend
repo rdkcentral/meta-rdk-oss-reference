@@ -5,7 +5,7 @@ SRC_URI += "file://dnsmasq.service"
 SRC_URI += "file://dns.conf"
 
 SRC_URI += "file://dnsmasqLauncher.sh"
-SRC_URI:append:broadband += "file://dnsmasq_syslog_quiet.patch"
+SRC_URI:append:broadband = " file://dnsmasq_syslog_quiet.patch"
 
 inherit syslog-ng-config-gen  ${@bb.utils.contains("DISTRO_FEATURES", "wrynose", "logrotate", "logrotate_config", d)}
 SYSLOG-NG_FILTER = "dnsmasq"

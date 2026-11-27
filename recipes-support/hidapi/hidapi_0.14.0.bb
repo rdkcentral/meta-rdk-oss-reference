@@ -13,4 +13,4 @@ inherit autotools pkgconfig
 
 SRC_URI = "git://github.com/libusb/hidapi.git;protocol=https;branch=master"
 SRCREV = "d3013f0af3f4029d82872c1a9487ea461a56dee4"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"

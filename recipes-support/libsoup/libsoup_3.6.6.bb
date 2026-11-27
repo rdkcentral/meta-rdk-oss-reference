@@ -47,7 +47,7 @@ do_configure:prepend() {
 PROVIDES = "libsoup-3.0"
 CVE_PRODUCT = "libsoup"
 
-S = "${WORKDIR}/libsoup-${PV}"
+S = "${UNPACKDIR}/libsoup-${PV}"
 
 inherit meson gettext pkgconfig upstream-version-is-even gobject-introspection
 

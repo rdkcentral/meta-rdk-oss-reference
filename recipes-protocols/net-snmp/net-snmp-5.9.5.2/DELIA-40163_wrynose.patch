@@ -1,0 +1,39 @@
+###########################################################
+Subject: Make certificate fingerprint comparisons NULL-safe
+Source: DELIA-40163
+License: "BSD & MIT"
+Upstream-Status: Pending
+Signed-off-by: Uma Kumar <Uma_Kumar@cable.comcast.com>
+##########################################################
+diff --git a/snmplib/cert_util.c b/snmplib/cert_util.c
+--- a/snmplib/cert_util.c
++++ b/snmplib/cert_util.c
+@@ -2558,1 +2558,6 @@ _map_compare(const void *p, const void *q)
+-    return strcmp(lhs->fingerprint, rhs->fingerprint);
++    if (lhs->fingerprint == NULL || rhs->fingerprint == NULL) {
++        if (lhs->fingerprint == rhs->fingerprint)
++            return 0;
++        return lhs->fingerprint == NULL ? -1 : 1;
++    }
++    return strcmp(lhs->fingerprint, rhs->fingerprint);
+@@ -2565,6 +2570,12 @@ _map_fp_compare(const void *p, const void *q)
+     int rc;
+ 
+     netsnmp_assert((lhs != NULL) && (rhs != NULL));
++
++    if (lhs->fingerprint == NULL || rhs->fingerprint == NULL) {
++        if (lhs->fingerprint == rhs->fingerprint)
++            return 0;
++        return lhs->fingerprint == NULL ? -1 : 1;
++    }
+ 
+     if ((rc = strcmp(lhs->fingerprint, rhs->fingerprint)) != 0)
+         return rc;
+@@ -2587,1 +2598,6 @@ _map_fp_ncompare(const void *p, const void *q)
+-    return strncmp(lhs->fingerprint, rhs->fingerprint,
++    if (lhs->fingerprint == NULL || rhs->fingerprint == NULL) {
++        if (lhs->fingerprint == rhs->fingerprint)
++            return 0;
++        return lhs->fingerprint == NULL ? -1 : 1;
++    }
++    return strncmp(lhs->fingerprint, rhs->fingerprint,

@@ -8,7 +8,7 @@ DEPENDS = "cjson msgpack-c rbus wdmp-c cimplog"
 
 SRCREV = "b6d23c11a808453e802cd7f21975cfdf3227b9ec"
 
-SRC_URI = "git://github.com/xmidt-org/cpeabs.git"
+SRC_URI = "git://github.com/xmidt-org/cpeabs.git;protocol=https;nobranch=1"
 
 PV = "git+${SRCPV}"
 

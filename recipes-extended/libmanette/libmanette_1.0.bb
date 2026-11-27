@@ -21,7 +21,7 @@ SRC_URI = "git://gitlab.gnome.org/GNOME/libmanette.git;protocol=https;branch=mai
            file://1.0/0009-exclusive-grab-and-reconnect.patch \
            file://99-gamepad-set-attr.rules \
            "
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 # 1.0 needs newer libraries than RDK ships:
 #  - hidapi >= 0.13 for the HID backend (hidapi_git.bbappend bumps it to 0.14).
@@ -41,7 +41,7 @@ PACKAGECONFIG[wayland-inputfd] = "-Dwayland-inputfd=true,-Dwayland-inputfd=false
 # Tag "Joy-Con (R)" so the gudev monitor enumerates it (see 0002).
 do_install:append() {
     install -d ${D}${sysconfdir}/udev/rules.d
-    install -m 0644 ${WORKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
+    install -m 0644 ${UNPACKDIR}/99-gamepad-set-attr.rules ${D}${sysconfdir}/udev/rules.d/99-gamepad-set-attr.rules
 }
 
 FILES:${PN} += "${sysconfdir}/udev/"

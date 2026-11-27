@@ -19,7 +19,7 @@ EXCLUDE_FROM_WORLD = "1"
 inherit cargo pkgconfig
 
 do_cargo_setup_snapshot () {
-	${WORKDIR}/rust-snapshot-components/${CARGO_SNAPSHOT}/install.sh --prefix="${WORKDIR}/${CARGO_SNAPSHOT}" --disable-ldconfig
+	${UNPACKDIR}/rust-snapshot-components/${CARGO_SNAPSHOT}/install.sh --prefix="${WORKDIR}/${CARGO_SNAPSHOT}" --disable-ldconfig
 	# Need to use uninative's loader if enabled/present since the library paths
 	# are used internally by rust and result in symbol mismatches if we don't
 	if [ ! -z "${UNINATIVE_LOADER}" -a -e "${UNINATIVE_LOADER}" ]; then
@@ -31,6 +31,10 @@ addtask cargo_setup_snapshot after do_unpack before do_configure
 do_cargo_setup_snapshot[dirs] += "${WORKDIR}/${CARGO_SNAPSHOT}"
 do_cargo_setup_snapshot[vardepsexclude] += "UNINATIVE_LOADER"
 
+# rustc-native uses a custom x86_64-linux host target spec staged here.
+RUST_TARGET_PATH:append:class-native = ":${STAGING_LIBDIR_NATIVE}/rustlib"
+CARGO_BUILD_FLAGS:class-native = "-v --frozen --target ${BUILD_SYS} ${BUILD_MODE} --manifest-path=${CARGO_MANIFEST_PATH}"
+CARGO_TARGET_SUBDIR:class-native = "${BUILD_SYS}/${BUILD_DIR}"
 
 do_compile:prepend () {
 	export RUSTC_BOOTSTRAP="1"

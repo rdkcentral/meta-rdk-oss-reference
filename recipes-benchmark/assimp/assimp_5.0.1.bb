@@ -13,14 +13,16 @@ DEPENDS += "\
 SRC_URI = "git://github.com/assimp/assimp.git;nobranch=1;protocol=https \
            file://0001-closes-https-github.com-assimp-assimp-issues-2733-up.patch \
            file://0001-Use-ASSIMP_LIB_INSTALL_DIR-to-search-library.patch \
+           file://0002-X3D-include-cstdint-for-fixed-width-integers.patch \
+           file://0003-MMD-include-cstdint-for-fixed-width-integers.patch \
            "
 UPSTREAM_CHECK_GITTAGREGEX = "v(?P<pver>(\d+(\.\d+)+))"
 
 #assimp_5.0_release
 SRCREV ?= "8f0c6b04b2257a520aaab38421b2e090204b69df"
 
-S = "${UNPACKDIR}/${PN}-${PV}"
+S = "${UNPACKDIR}/${BPN}-${PV}"
 
 inherit cmake
 
-EXTRA_OECMAKE = "-DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_TESTS=OFF -DASSIMP_LIB_INSTALL_DIR=${baselib}"
+EXTRA_OECMAKE = "-DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DASSIMP_BUILD_TESTS=OFF -DASSIMP_LIB_INSTALL_DIR=${baselib} -DCMAKE_POLICY_VERSION_MINIMUM=3.5"

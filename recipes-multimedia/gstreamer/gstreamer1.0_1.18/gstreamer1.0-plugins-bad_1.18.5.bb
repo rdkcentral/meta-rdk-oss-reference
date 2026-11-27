@@ -60,7 +60,7 @@ PACKAGECONFIG[fluidsynth]      = "-Dfluidsynth=enabled,-Dfluidsynth=disabled,flu
 PACKAGECONFIG[hls]             = "-Dhls=enabled,-Dhls=disabled,"
 # Pick atleast one crypto backend below when enabling hls
 PACKAGECONFIG[nettle]          = "-Dhls-crypto=nettle,,nettle"
-#PACKAGECONFIG[openssl]         = "-Dhls-crypto=openssl,,openssl"
+PACKAGECONFIG[openssl]         = "-Dhls-crypto=openssl,,openssl"
 #PACKAGECONFIG[gcrypt]          = "-Dhls-crypto=libgcrypt,,libgcrypt"
 # the gl packageconfig enables OpenGL elements that haven't been ported
 # to -base yet. They depend on the gstgl library in -base, so we do

@@ -1,3 +1,5 @@
+Upstream-Status: Pending [Not submitted upstream]
+
 diff --git a/src/ws/kms_window_system.cpp b/src/ws/kms_window_system.cpp
 index 4bf7838..d0e6f12 100644
 --- a/src/ws/kms_window_system.cpp

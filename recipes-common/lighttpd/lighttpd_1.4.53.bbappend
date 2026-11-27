@@ -25,8 +25,7 @@ FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"
 
 SRC_URI:append = " file://lighttpd.conf"
 
-SRC_URI:append:broadband += " file://lighttpd_jst.conf_broadband "
-SRC_URI:append:broadband += " file://lighttpd_php.conf_broadband "
+SRC_URI:append:broadband = " file://lighttpd_jst.conf_broadband file://lighttpd_php.conf_broadband "
 SRC_URI:append = " file://CVE-2019-11072.patch "
 
 DEPENDS:append = " zlib openssl"
@@ -68,7 +67,7 @@ do_install:append:broadband() {
 }
 
 FILES:${PN} += "${sysconfdir}/lighttpd/lighttpd.conf"
-FILES:${PN}:remove:broadband += "${sysconfdir}/lighttpd/lighttpd.conf"
+FILES:${PN}:remove:broadband = "${sysconfdir}/lighttpd/lighttpd.conf"
 # From meta-rdk-comcast-video/recipes-common/lighttpd/lighttpd_1.4.53.bbappend
 FILESEXTRAPATHS:prepend:="${THISDIR}/${PN}:"
 SRC_URI:append = " file://CVE-2022-22707_fix.patch "

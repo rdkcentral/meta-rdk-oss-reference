@@ -18,4 +18,3 @@ do_install:append() {
       -e 's|#define NETSNMP_CONFIGURE_OPTIONS.*|#define NETSNMP_CONFIGURE_OPTIONS ""|' \
       ${D}${includedir}/net-snmp/net-snmp-config-64.h
 }
-

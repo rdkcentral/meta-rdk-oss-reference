@@ -8,6 +8,8 @@ needs a timestamp. Only call GST_TRACER_TS (clock_gettime) if at least
 one registered hook requires it. Also add gst_tracing_register_hook_full
 API to allow callers to opt out of timestamp collection.
 
+Upstream-Status: Pending
+
 Signed-off-by: Douglas Adler <douglas_adler2@comcast.com>
 ---
  gst/gsttracer.h      |  4 ++++

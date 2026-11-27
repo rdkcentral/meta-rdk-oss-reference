@@ -10,8 +10,10 @@ SRC_URI[sha256sum] = "62f72206427633077cb02e7ccd2599ace4d254db409334593b86d262c0
 
 SRC_URI += "file://CMakeLists.txt"
 
+S = "${UNPACKDIR}/${BP}"
+
 inherit pkgconfig cmake
 
 do_configure:prepend () {
-    cp ${UNPACKDIR}/CMakeLists.txt ${WORKDIR}/${PN}-${PV}/
+    cp ${UNPACKDIR}/CMakeLists.txt ${S}/
 }

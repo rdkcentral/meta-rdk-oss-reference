@@ -15,7 +15,7 @@ SRC_URI = "git://github.com/cinemast/libjson-rpc-cpp;branch=master;protocol=http
 
 SRCREV = "c696f6932113b81cd20cd4a34fdb1808e773f23e"
 
-S:kirkstone = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG[coverage] = "-DWITH_COVERAGE=YES,-DWITH_COVERAGE=NO,,"

@@ -46,7 +46,7 @@ do_install:append:qemux86() {
        mv ${D}${sysconfdir}/lighttpd.conf_emulator ${D}${sysconfdir}/lighttpd.conf
 }
 
-FILES:${PN}:append:qemux86 += "/opt"
+FILES:${PN}:append:qemux86 = " /opt"
 
 # From meta-rdk-comcast-video/recipes-common/lighttpd/lighttpd_%.bbappend
 # Modifies the lighttpd.conf file to add an extra alias.url for firebolt root app if this is cert build.

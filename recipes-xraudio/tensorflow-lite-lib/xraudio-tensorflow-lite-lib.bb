@@ -28,7 +28,7 @@ SRCREV_gemmlowp     = "fda83bdc38b118cc6b56753bd540caa49e570745"
 
 SRCREV_FORMAT = "xraudio-tensorflow-lite-lib"
 
-S = "${WORKDIR}/git/tensorflow/lite/c/"
+S = "${UNPACKDIR}/git/tensorflow/lite/c/"
 FILES_${PN}            += "${libdir}/libtensorflowlite_c.so"
 INHIBIT_PACKAGE_STRIP   = "1"
 INSANE_SKIP:${PN}       += "already-stripped"
@@ -62,7 +62,7 @@ do_configure:prepend() {
     # an include path. Since ${B} is wiped by cleandirs before do_configure, we
     # recreate the symlink here (after cleandir, before cmake invocation).
     mkdir -p ${B}
-    ln -sf ${WORKDIR}/gemmlowp ${B}/gemmlowp
+    ln -sf ${UNPACKDIR}/gemmlowp ${B}/gemmlowp
 }
 
 do_correct_toolchain_file() {
@@ -70,15 +70,15 @@ do_correct_toolchain_file() {
 }
 
 EXTRA_OECMAKE = " -DTFLITE_ENABLE_XNNPACK=OFF \
-    -DFETCHCONTENT_SOURCE_DIR_ABSEIL-CPP=${WORKDIR}/abseil-cpp \
-    -DFETCHCONTENT_SOURCE_DIR_EIGEN=${WORKDIR}/eigen \
-    -DFETCHCONTENT_SOURCE_DIR_FLATBUFFERS=${WORKDIR}/flatbuffers \
-    -DFETCHCONTENT_SOURCE_DIR_NEON2SSE=${WORKDIR}/neon2sse \
-    -DFETCHCONTENT_SOURCE_DIR_CPUINFO=${WORKDIR}/cpuinfo \
-    -DFETCHCONTENT_SOURCE_DIR_RUY=${WORKDIR}/ruy \
-    -DFETCHCONTENT_SOURCE_DIR_FARMHASH=${WORKDIR}/farmhash \
-    -DFETCHCONTENT_SOURCE_DIR_FFT2D=${WORKDIR}/fft2d \
-    -DFETCHCONTENT_SOURCE_DIR_GEMMLOWP=${WORKDIR}/gemmlowp \
+    -DFETCHCONTENT_SOURCE_DIR_ABSEIL-CPP=${UNPACKDIR}/abseil-cpp \
+    -DFETCHCONTENT_SOURCE_DIR_EIGEN=${UNPACKDIR}/eigen \
+    -DFETCHCONTENT_SOURCE_DIR_FLATBUFFERS=${UNPACKDIR}/flatbuffers \
+    -DFETCHCONTENT_SOURCE_DIR_NEON2SSE=${UNPACKDIR}/neon2sse \
+    -DFETCHCONTENT_SOURCE_DIR_CPUINFO=${UNPACKDIR}/cpuinfo \
+    -DFETCHCONTENT_SOURCE_DIR_RUY=${UNPACKDIR}/ruy \
+    -DFETCHCONTENT_SOURCE_DIR_FARMHASH=${UNPACKDIR}/farmhash \
+    -DFETCHCONTENT_SOURCE_DIR_FFT2D=${UNPACKDIR}/fft2d \
+    -DFETCHCONTENT_SOURCE_DIR_GEMMLOWP=${UNPACKDIR}/gemmlowp \
 "
 CFLAGS:append     = " -O3 -mfp16-format=ieee -lpthread"
 CXXFLAGS:append   = " -O3 -mfp16-format=ieee -lpthread"
@@ -87,4 +87,3 @@ FC                = ""
 LDFLAGS:append    = " -lpthread"
 
 addtask correct_toolchain_file after do_generate_toolchain_file before do_configure
-
