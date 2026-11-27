@@ -1,0 +1,1 @@
+INCOMPATIBLE_LICENSE_EXCEPTIONS:pn-mpfr = "mpfr:LGPL-3.0-or-later"
