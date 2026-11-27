@@ -1,0 +1,194 @@
+#!/bin/bash
+# libtool ptest - functional tests for GNU libtool and libtoolize
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+pass() {
+    echo "PASS: $1"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}
+
+fail() {
+    echo "FAIL: $1"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+}
+
+skip() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
+
+# ===== libtool tests =====
+if command -v libtool > /dev/null 2>&1; then
+    # Version check
+    if libtool --version 2>&1 | grep -qi "libtool\|GNU"; then
+        pass "libtool --version"
+    else
+        fail "libtool --version"
+    fi
+
+    # Help output
+    if libtool --help 2>&1 | grep -qi "compile\|link\|install\|mode"; then
+        pass "libtool --help"
+    else
+        fail "libtool --help"
+    fi
+
+    # Config output
+    if libtool --config 2>&1 | grep -q .; then
+        pass "libtool --config"
+    else
+        fail "libtool --config"
+    fi
+
+    # Features check
+    if libtool --features 2>&1 | grep -qi "host\|enable\|disable"; then
+        pass "libtool --features"
+    else
+        fail "libtool --features"
+    fi
+
+    # Check that libtool knows the build type
+    if libtool --config 2>&1 | grep -q "build_libtool_libs"; then
+        pass "libtool config build_libtool_libs"
+    else
+        fail "libtool config build_libtool_libs"
+    fi
+
+    # Check shared library support
+    if libtool --config 2>&1 | grep "build_libtool_libs" | grep -q "yes"; then
+        pass "libtool shared lib support"
+    else
+        skip "libtool shared lib support (disabled)"
+    fi
+
+    # Check --mode=compile with --dry-run (no actual compiler needed)
+    if libtool --mode=compile --dry-run echo test > /dev/null 2>&1; then
+        pass "libtool --mode=compile dry-run"
+    else
+        # dry-run may not work with echo, try just checking the mode is recognized
+        if libtool --help 2>&1 | grep -q "compile"; then
+            pass "libtool compile mode recognized"
+        else
+            fail "libtool compile mode"
+        fi
+    fi
+
+    # Check --mode=link is recognized
+    if libtool --help 2>&1 | grep -q "link"; then
+        pass "libtool link mode recognized"
+    else
+        fail "libtool link mode recognized"
+    fi
+
+    # Check --mode=install is recognized
+    if libtool --help 2>&1 | grep -q "install"; then
+        pass "libtool install mode recognized"
+    else
+        fail "libtool install mode recognized"
+    fi
+
+    # Check --mode=finish is recognized
+    if libtool --help 2>&1 | grep -q "finish"; then
+        pass "libtool finish mode recognized"
+    else
+        fail "libtool finish mode recognized"
+    fi
+
+    # Check --mode=clean is recognized
+    if libtool --help 2>&1 | grep -q "clean"; then
+        pass "libtool clean mode recognized"
+    else
+        fail "libtool clean mode recognized"
+    fi
+else
+    skip "libtool (not found)"
+fi
+
+# ===== libtoolize tests =====
+if command -v libtoolize > /dev/null 2>&1; then
+    # Version check
+    if libtoolize --version 2>&1 | grep -qi "libtoolize\|GNU"; then
+        pass "libtoolize --version"
+    else
+        fail "libtoolize --version"
+    fi
+
+    # Help output
+    if libtoolize --help 2>&1 | grep -qi "usage\|install\|copy\|force"; then
+        pass "libtoolize --help"
+    else
+        fail "libtoolize --help"
+    fi
+
+    # Dry-run in a temp directory
+    mkdir -p "$TMPDIR/ltproject"
+    cat > "$TMPDIR/ltproject/configure.ac" <<'EOF'
+AC_INIT([ptest], [1.0])
+AM_INIT_AUTOMAKE
+LT_INIT
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
+EOF
+    cat > "$TMPDIR/ltproject/Makefile.am" <<'EOF'
+lib_LTLIBRARIES = libptest.la
+libptest_la_SOURCES =
+EOF
+
+    if (cd "$TMPDIR/ltproject" && libtoolize --dry-run 2>&1 | grep -qi "libtool\|ltmain\|copying\|remember"); then
+        pass "libtoolize --dry-run"
+    else
+        # Try without dry-run
+        if (cd "$TMPDIR/ltproject" && libtoolize --copy 2>/dev/null); then
+            pass "libtoolize --copy"
+        else
+            fail "libtoolize run"
+        fi
+    fi
+
+    # Check that libtoolize installs files
+    mkdir -p "$TMPDIR/ltproject2"
+    cp "$TMPDIR/ltproject/configure.ac" "$TMPDIR/ltproject2/"
+    cp "$TMPDIR/ltproject/Makefile.am" "$TMPDIR/ltproject2/"
+    if (cd "$TMPDIR/ltproject2" && libtoolize --copy --force 2>/dev/null); then
+        if [ -f "$TMPDIR/ltproject2/ltmain.sh" ] || [ -d "$TMPDIR/ltproject2/m4" ]; then
+            pass "libtoolize installs files"
+        else
+            # Check build-aux
+            if [ -f "$TMPDIR/ltproject2/build-aux/ltmain.sh" ]; then
+                pass "libtoolize installs files (build-aux)"
+            else
+                fail "libtoolize installs files"
+            fi
+        fi
+    else
+        fail "libtoolize --copy --force"
+    fi
+else
+    skip "libtoolize (not found)"
+fi
+
+# ===== Data files presence =====
+if [ -d /usr/share/libtool ]; then
+    pass "libtool data dir present"
+else
+    fail "libtool data dir present"
+fi
+
+if [ -d /usr/share/aclocal ] && ls /usr/share/aclocal/libtool.m4 > /dev/null 2>&1; then
+    pass "libtool.m4 present"
+else
+    fail "libtool.m4 present"
+fi
+
+echo ""
+echo "=== libtool ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

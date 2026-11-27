@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Petar Tijanic <petartijanic01@gmail.com>
+Date: Tue, 9 Jun 2026 12:23:55 +0000
+Subject: [PATCH] handle revoked evdev devices
+
+An evdev fd can be revoked (EVIOCREVOKE) or the device can vanish without a
+udev remove event reaching the monitor. Previously poll_events() watched only
+G_IO_IN, ignored libevdev read errors and always returned G_SOURCE_CONTINUE,
+so it would keep firing on a dead fd.
+
+Watch G_IO_HUP/G_IO_ERR as well, and tear down the poll source (returning
+G_SOURCE_REMOVE, clearing event_source_id so finalize does not double-remove
+it) when the channel reports error/disconnect or libevdev returns a read
+error.
+
+Forward-ported to libmanette 1.0 (was 0.2 src/manette-device.c poll_events,
+now src/manette-evdev-backend.c). Original-Change: RDKOSS-709.
+---
+ src/manette-evdev-backend.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/src/manette-evdev-backend.c b/src/manette-evdev-backend.c
+index f2c3145..403a345 100644
+--- a/src/manette-evdev-backend.c
++++ b/src/manette-evdev-backend.c
+@@ -395,18 +395,34 @@ poll_events (GIOChannel          *source,
+              ManetteEvdevBackend *self)
+ {
+   struct input_event evdev_event;
++  int rc;
+ 
+   g_assert (MANETTE_IS_EVDEV_BACKEND (self));
+ 
++  /* The fd may be revoked (EVIOCREVOKE) or the device may disappear without a
++   * udev remove event. In that case the channel signals HUP/ERR/NVAL; drop the
++   * watch so we stop polling a dead fd. */
++  if (condition & (G_IO_HUP | G_IO_ERR | G_IO_NVAL)) {
++    g_debug ("Evdev poll condition indicates error/disconnect (condition=0x%x), removing poll source",
++             (guint) condition);
++    self->event_source_id = 0;
++    return G_SOURCE_REMOVE;
++  }
++
+   while (libevdev_has_event_pending (self->evdev_device)) {
+-    if (libevdev_next_event (self->evdev_device,
+-                             (guint) LIBEVDEV_READ_FLAG_NORMAL,
+-                             &evdev_event) == 0) {
++    rc = libevdev_next_event (self->evdev_device,
++                              (guint) LIBEVDEV_READ_FLAG_NORMAL,
++                              &evdev_event);
++    if (rc == LIBEVDEV_READ_STATUS_SUCCESS) {
+       on_evdev_event (self, &evdev_event);
++    } else if (rc < 0) {
++      g_debug ("Error reading from evdev (%d), removing poll source", rc);
++      self->event_source_id = 0;
++      return G_SOURCE_REMOVE;
+     }
+   }
+ 
+-  return TRUE;
++  return G_SOURCE_CONTINUE;
+ }
+ 
+ static void
+@@ -471,7 +487,7 @@ manette_evdev_backend_initialize (ManetteBackend *backend)
+ 
+   // Poll the events in the main loop.
+   channel = g_io_channel_unix_new (self->fd);
+-  self->event_source_id = g_io_add_watch (channel, G_IO_IN, (GIOFunc) poll_events, self);
++  self->event_source_id = g_io_add_watch (channel, G_IO_IN | G_IO_HUP | G_IO_ERR, (GIOFunc) poll_events, self);
+ 
+   buttons_number = 0;
+ 

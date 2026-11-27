@@ -87,7 +87,7 @@ index a8de084ff..adebcbda5 100644
 +    if (qtdemux->aamp_player_enabled  && stream->protected == FALSE)
 +      stream->protected = TRUE;
 +
-+    if (qtdemux->aamp_player_enabled)
++    if (qtdemux->aamp_player_enabled && (stream->protection_scheme_type == 0))
 +      stream->protection_scheme_type = FOURCC_cenc;
 +
      if (stream->protected) {

@@ -1,0 +1,49 @@
+#!/bin/bash
+# Basic libcap functionality tests using installed tools
+
+# Test 1: Check capsh can display its capabilities
+echo -n "Test capsh capabilities display: "
+output=$(/usr/sbin/capsh --print 2>&1)
+if [ $? -eq 0 ] && echo "$output" | grep -q "Current:"; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 2: Check getpcaps on current process
+echo -n "Test getpcaps on current PID: "
+output=$(/usr/sbin/getpcaps $$ 2>&1)
+if [ $? -eq 0 ]; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 3: Test getcap utility
+echo -n "Test getcap utility: "
+if /usr/sbin/getcap /usr/sbin/capsh 2>&1; then
+    # getcap succeeds whether file has caps or not
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 4: Verify capsh can decode capability mask
+# This mask (0x0000000000003fffffffff) represents a full set of capabilities
+# up to CAP_LAST_CAP, used to verify the decode functionality
+echo -n "Test capsh decode capability: "
+output=$(/usr/sbin/capsh --decode=0x0000000000003fffffffff 2>&1)
+if echo "$output" | grep -qE "(cap_|0x)"; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi
+
+# Test 5: Check libcap library functions with capsh
+echo -n "Test capsh current capabilities: "
+output=$(/usr/sbin/capsh --current 2>&1)
+if [ $? -eq 0 ]; then
+    echo "PASS"
+else
+    echo "FAIL"
+fi

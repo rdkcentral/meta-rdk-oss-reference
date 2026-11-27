@@ -1,17 +1,18 @@
-Date: Wed, 14 june 2023 06:15:39 +0000
-From: Sohail Ahmad <sohail_ahmad@comcast.com>
-Subject: [PATCH] From: Sohail Ahmad <sohail_ahmad@comcast.com>
-Source: COMCAST 86597c1c363141c358a26d1ecace347aeefc34d2 Mon Sep 17 00:00:00 2001
-Signed-off-by: Sohail Ahmad <sohail_ahmad@comcast.com>
+From 29c8fe97f4d873bcb27b8a04403c90f0bf1c3adb Mon Sep 17 00:00:00 2001
+From: skondu363 <Srihariraghava_konduritirumala@comcast.com>
+Date: Tue, 28 Apr 2026 05:34:29 +0000
+Subject: [PATCH] Subject: Comcast
+
+Signed-off-by: skondu363 <Srihariraghava_konduritirumala@comcast.com>
 ---
- src/verify.c | 31 +++++++++++++++++++++++++------
- 1 file changed, 25 insertions(+), 6 deletions(-)
+ src/verify.c | 26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
 diff --git a/src/verify.c b/src/verify.c
-index ac52b65..7495413 100644
+index 4058d6c..eeee597 100644
 --- a/src/verify.c
 +++ b/src/verify.c
-@@ -306,19 +306,38 @@ NOEXPORT int cert_check_subject(CLI *c, X509_STORE_CTX *callback_ctx) {
+@@ -305,19 +305,33 @@ NOEXPORT int cert_check_subject(CLI *c, X509_STORE_CTX *callback_ctx) {
      X509 *cert=X509_STORE_CTX_get_current_cert(callback_ctx);
      NAME_LIST *ptr;
      char *peername=NULL;
@@ -45,14 +46,9 @@ index ac52b65..7495413 100644
 +            }
          }
 +    } else {
-+        s_log(LOG_INFO, "CERT: SAN fileds not present in certificate, Allow connection if CN is matched");
-+       for(ptr=c->opt->check_host; ptr; ptr=ptr->next)
-+           if(X509_check_host(cert, ptr->name, 0, 0, &peername)>0) {
-+               s_log(LOG_INFO, "CERT: Host name \"%s\" matched with \"%s\"",ptr->name, peername);
-+               OPENSSL_free(peername);
-+               return 1; /* accept */
++        s_log(LOG_ERR, "CERT: SAN fields not present in certificate, rejecting connection");
++               return 0; /* reject */
 +       }
-+    }
 
      for(ptr=c->opt->check_email; ptr; ptr=ptr->next)
          if(X509_check_email(cert, ptr->name, 0, 0)>0) {

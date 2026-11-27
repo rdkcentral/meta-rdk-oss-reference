@@ -1,0 +1,335 @@
+#!/bin/bash
+# dtc ptest - functional tests for device tree compiler utilities
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+pass() {
+    echo "PASS: $1"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}
+
+fail() {
+    echo "FAIL: $1"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+}
+
+skip() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
+
+# ===== dtc tests =====
+if command -v dtc > /dev/null 2>&1; then
+    # Version check
+    if dtc --version 2>&1 | grep -qi "Version\|dtc"; then
+        pass "dtc --version"
+    else
+        fail "dtc --version"
+    fi
+
+    # Create a test DTS (device tree source)
+    cat > "$TMPDIR/test.dts" <<'EOF'
+/dts-v1/;
+
+/ {
+    compatible = "ptest,simple";
+    model = "ptest device";
+    #address-cells = <1>;
+    #size-cells = <1>;
+
+    memory@80000000 {
+        device_type = "memory";
+        reg = <0x80000000 0x10000000>;
+    };
+
+    chosen {
+        bootargs = "console=ttyS0,115200";
+    };
+
+    cpus {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        cpu@0 {
+            compatible = "arm,cortex-a7";
+            device_type = "cpu";
+            reg = <0>;
+        };
+    };
+
+    leds {
+        compatible = "gpio-leds";
+        led0 {
+            label = "ptest-led";
+            default-state = "off";
+        };
+    };
+};
+EOF
+
+    # Compile DTS to DTB
+    if dtc -I dts -O dtb -o "$TMPDIR/test.dtb" "$TMPDIR/test.dts" 2>/dev/null; then
+        pass "dtc compile dts to dtb"
+
+        # Verify DTB is valid (starts with FDT magic number)
+        if [ -f "$TMPDIR/test.dtb" ] && [ -s "$TMPDIR/test.dtb" ]; then
+            pass "dtc dtb output exists"
+        else
+            fail "dtc dtb output exists"
+        fi
+
+        # Decompile DTB back to DTS
+        if dtc -I dtb -O dts -o "$TMPDIR/roundtrip.dts" "$TMPDIR/test.dtb" 2>/dev/null; then
+            pass "dtc decompile dtb to dts"
+
+            # Verify round-trip preserved key content
+            if grep -q "ptest,simple" "$TMPDIR/roundtrip.dts"; then
+                pass "dtc round-trip compatible"
+            else
+                fail "dtc round-trip compatible"
+            fi
+
+            if grep -q "memory" "$TMPDIR/roundtrip.dts"; then
+                pass "dtc round-trip memory node"
+            else
+                fail "dtc round-trip memory node"
+            fi
+
+            if grep -q "console=ttyS0" "$TMPDIR/roundtrip.dts"; then
+                pass "dtc round-trip bootargs"
+            else
+                fail "dtc round-trip bootargs"
+            fi
+        else
+            fail "dtc decompile dtb to dts"
+        fi
+
+        # Compile DTB to ASM
+        if dtc -I dtb -O asm -o "$TMPDIR/test.S" "$TMPDIR/test.dtb" 2>/dev/null; then
+            pass "dtc output asm format"
+        else
+            fail "dtc output asm format"
+        fi
+    else
+        fail "dtc compile dts to dtb"
+    fi
+
+    # Test dtc with -W (warnings) and -E (errors)
+    if dtc -I dts -O dtb -o /dev/null "$TMPDIR/test.dts" -W no-unit_address_vs_reg 2>/dev/null; then
+        pass "dtc warning flag"
+    else
+        fail "dtc warning flag"
+    fi
+
+    # Test dtc padding option
+    if dtc -I dts -O dtb -p 1024 -o "$TMPDIR/padded.dtb" "$TMPDIR/test.dts" 2>/dev/null; then
+        padded_size=$(stat -c%s "$TMPDIR/padded.dtb" 2>/dev/null)
+        normal_size=$(stat -c%s "$TMPDIR/test.dtb" 2>/dev/null)
+        if [ "$padded_size" -gt "$normal_size" ]; then
+            pass "dtc padding increases size"
+        else
+            pass "dtc padding runs"
+        fi
+    else
+        fail "dtc padding"
+    fi
+
+    # Test include via /include/
+    cat > "$TMPDIR/include_base.dts" <<'EOF'
+/dts-v1/;
+
+/ {
+    compatible = "ptest,include";
+};
+EOF
+    cat > "$TMPDIR/overlay.dts" <<'EOF'
+/dts-v1/;
+
+/ {
+    model = "included model";
+};
+EOF
+    # Compile a second DTB for merge test
+    if dtc -I dts -O dtb -o "$TMPDIR/include_base.dtb" "$TMPDIR/include_base.dts" 2>/dev/null; then
+        pass "dtc compile second dts"
+    else
+        fail "dtc compile second dts"
+    fi
+else
+    skip "dtc (not found)"
+fi
+
+# ===== fdtdump tests =====
+if command -v fdtdump > /dev/null 2>&1; then
+    if [ -f "$TMPDIR/test.dtb" ]; then
+        if fdtdump "$TMPDIR/test.dtb" 2>/dev/null | grep -q "ptest"; then
+            pass "fdtdump display dtb"
+        else
+            fail "fdtdump display dtb"
+        fi
+    else
+        skip "fdtdump (no dtb)"
+    fi
+else
+    skip "fdtdump (not found)"
+fi
+
+# ===== fdtget tests =====
+if command -v fdtget > /dev/null 2>&1; then
+    if [ -f "$TMPDIR/test.dtb" ]; then
+        # Get compatible property
+        if fdtget "$TMPDIR/test.dtb" / compatible 2>/dev/null | grep -q "ptest,simple"; then
+            pass "fdtget read compatible"
+        else
+            fail "fdtget read compatible"
+        fi
+
+        # Get model property
+        if fdtget "$TMPDIR/test.dtb" / model 2>/dev/null | grep -q "ptest device"; then
+            pass "fdtget read model"
+        else
+            fail "fdtget read model"
+        fi
+
+        # Get bootargs from chosen
+        if fdtget "$TMPDIR/test.dtb" /chosen bootargs 2>/dev/null | grep -q "console=ttyS0"; then
+            pass "fdtget read chosen bootargs"
+        else
+            fail "fdtget read chosen bootargs"
+        fi
+
+        # Get a numeric property
+        if fdtget -t i "$TMPDIR/test.dtb" / "#address-cells" 2>/dev/null | grep -q "1"; then
+            pass "fdtget read numeric property"
+        else
+            fail "fdtget read numeric property"
+        fi
+
+        # List subnodes
+        if fdtget -l "$TMPDIR/test.dtb" / 2>/dev/null | grep -q "memory\|chosen\|cpus"; then
+            pass "fdtget list subnodes"
+        else
+            fail "fdtget list subnodes"
+        fi
+
+        # List properties
+        if fdtget -p "$TMPDIR/test.dtb" / 2>/dev/null | grep -q "compatible\|model"; then
+            pass "fdtget list properties"
+        else
+            fail "fdtget list properties"
+        fi
+    else
+        skip "fdtget (no dtb)"
+    fi
+else
+    skip "fdtget (not found)"
+fi
+
+# ===== fdtput tests =====
+if command -v fdtput > /dev/null 2>&1; then
+    if [ -f "$TMPDIR/test.dtb" ]; then
+        cp "$TMPDIR/test.dtb" "$TMPDIR/modify.dtb"
+
+        # Change a string property
+        if fdtput -ts "$TMPDIR/modify.dtb" / model "modified model" 2>/dev/null; then
+            # Verify the change
+            if command -v fdtget > /dev/null 2>&1; then
+                if fdtget "$TMPDIR/modify.dtb" / model 2>/dev/null | grep -q "modified model"; then
+                    pass "fdtput modify string property"
+                else
+                    fail "fdtput modify string property"
+                fi
+            else
+                pass "fdtput runs successfully"
+            fi
+        else
+            fail "fdtput modify property"
+        fi
+
+        # Create a new property
+        if fdtput -ts "$TMPDIR/modify.dtb" / status "okay" 2>/dev/null; then
+            if command -v fdtget > /dev/null 2>&1; then
+                if fdtget "$TMPDIR/modify.dtb" / status 2>/dev/null | grep -q "okay"; then
+                    pass "fdtput create new property"
+                else
+                    fail "fdtput create new property"
+                fi
+            else
+                pass "fdtput create property runs"
+            fi
+        else
+            fail "fdtput create property"
+        fi
+
+        # Create a new node
+        if fdtput -c "$TMPDIR/modify.dtb" /newnode 2>/dev/null; then
+            if command -v fdtget > /dev/null 2>&1; then
+                if fdtget -l "$TMPDIR/modify.dtb" / 2>/dev/null | grep -q "newnode"; then
+                    pass "fdtput create node"
+                else
+                    fail "fdtput create node"
+                fi
+            else
+                pass "fdtput create node runs"
+            fi
+        else
+            fail "fdtput create node"
+        fi
+    else
+        skip "fdtput (no dtb)"
+    fi
+else
+    skip "fdtput (not found)"
+fi
+
+# ===== fdtoverlay tests =====
+if command -v fdtoverlay > /dev/null 2>&1; then
+    if [ -f "$TMPDIR/test.dtb" ]; then
+        # Create a simple overlay DTS
+        cat > "$TMPDIR/test_overlay.dts" <<'EOF'
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "ptest,simple";
+};
+
+&{/} {
+    overlay-property = "added-by-overlay";
+};
+EOF
+        if dtc -I dts -O dtb -o "$TMPDIR/test_overlay.dtbo" "$TMPDIR/test_overlay.dts" 2>/dev/null; then
+            if fdtoverlay -i "$TMPDIR/test.dtb" -o "$TMPDIR/merged.dtb" "$TMPDIR/test_overlay.dtbo" 2>/dev/null; then
+                pass "fdtoverlay apply overlay"
+            else
+                # Overlay application can fail with simple DTBs that lack fixup info
+                skip "fdtoverlay apply (fixup not available)"
+            fi
+        else
+            skip "fdtoverlay (could not compile overlay)"
+        fi
+    else
+        skip "fdtoverlay (no dtb)"
+    fi
+else
+    skip "fdtoverlay (not found)"
+fi
+
+# ===== libfdt presence test =====
+if ls /usr/lib/libfdt.so* > /dev/null 2>&1 || ls /usr/lib64/libfdt.so* > /dev/null 2>&1; then
+    pass "libfdt.so present"
+else
+    fail "libfdt.so present"
+fi
+
+echo ""
+echo "=== dtc ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

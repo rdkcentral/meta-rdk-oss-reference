@@ -1,0 +1,231 @@
+#!/bin/bash
+# procps ptest - test basic functionality of procps-ng utilities
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+run_test() {
+    local test_name="$1"
+    shift
+    if "$@" > /dev/null 2>&1; then
+        echo "PASS: $test_name"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: $test_name"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+}
+
+skip_test() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+# === ps tests ===
+if command -v ps > /dev/null 2>&1; then
+    run_test "ps no args" ps
+    run_test "ps aux" ps aux
+    run_test "ps -ef" ps -ef
+    run_test "ps --version" ps --version
+    # Check ps output contains header
+    if ps aux | head -1 | grep -q "PID"; then
+        echo "PASS: ps output has PID header"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: ps output has PID header"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "ps (not found)"
+fi
+
+# === free tests ===
+if command -v free > /dev/null 2>&1; then
+    run_test "free no args" free
+    run_test "free -b (bytes)" free -b
+    run_test "free -k (kilobytes)" free -k
+    run_test "free -m (megabytes)" free -m
+    run_test "free -h (human)" free -h
+    run_test "free --version" free --version
+    # Verify output contains Mem: line
+    if free | grep -q "^Mem:"; then
+        echo "PASS: free output has Mem line"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: free output has Mem line"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "free (not found)"
+fi
+
+# === uptime tests ===
+if command -v uptime > /dev/null 2>&1; then
+    run_test "uptime no args" uptime
+    run_test "uptime --version" uptime --version
+    # Verify load average is present
+    if uptime | grep -q "load average"; then
+        echo "PASS: uptime shows load average"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: uptime shows load average"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "uptime (not found)"
+fi
+
+# === vmstat tests ===
+if command -v vmstat > /dev/null 2>&1; then
+    run_test "vmstat no args" vmstat
+    run_test "vmstat -a (active/inactive)" vmstat -a
+    run_test "vmstat -f (forks)" vmstat -f
+    run_test "vmstat --version" vmstat --version
+    # Verify header present
+    if vmstat | head -1 | grep -q "procs"; then
+        echo "PASS: vmstat output has procs header"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: vmstat output has procs header"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "vmstat (not found)"
+fi
+
+# === kill tests ===
+if command -v kill > /dev/null 2>&1; then
+    run_test "kill -l (list signals)" kill -l
+    # Verify signal list contains HUP
+    if kill -l | grep -q "HUP"; then
+        echo "PASS: kill signal list contains HUP"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: kill signal list contains HUP"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+    # Convert signal name to number
+    if kill -l HUP 2>/dev/null | grep -q "1"; then
+        echo "PASS: kill -l HUP returns 1"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: kill -l HUP returns 1"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "kill (not found)"
+fi
+
+# === pgrep tests ===
+if command -v pgrep > /dev/null 2>&1; then
+    run_test "pgrep --version" pgrep --version
+    # pgrep for init or systemd (PID 1 process)
+    if pgrep -x "init\|systemd" > /dev/null 2>&1 || pgrep -f "init" > /dev/null 2>&1; then
+        echo "PASS: pgrep finds running process"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: pgrep finds running process"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "pgrep (not found)"
+fi
+
+# === pmap tests ===
+if command -v pmap > /dev/null 2>&1; then
+    run_test "pmap --version" pmap --version
+    run_test "pmap of PID 1" pmap 1
+else
+    skip_test "pmap (not found)"
+fi
+
+# === pwdx tests ===
+if command -v pwdx > /dev/null 2>&1; then
+    run_test "pwdx --version" pwdx --version
+    run_test "pwdx of PID 1" pwdx 1
+else
+    skip_test "pwdx (not found)"
+fi
+
+# === sysctl tests ===
+if command -v sysctl > /dev/null 2>&1; then
+    run_test "sysctl --version" sysctl --version
+    run_test "sysctl -a (list all)" sysctl -a
+    # Read a known sysctl key
+    if sysctl kernel.hostname > /dev/null 2>&1; then
+        echo "PASS: sysctl read kernel.hostname"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: sysctl read kernel.hostname"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "sysctl (not found)"
+fi
+
+# === w tests ===
+if command -v w > /dev/null 2>&1; then
+    run_test "w no args" w
+    run_test "w --version" w --version
+else
+    skip_test "w (not found)"
+fi
+
+# === pidof tests ===
+if command -v pidof > /dev/null 2>&1; then
+    # pidof --version may output to stderr or return non-zero
+    if pidof --version > /dev/null 2>&1 || pidof --version 2>&1 | grep -qi "pidof\|procps\|version"; then
+        echo "PASS: pidof --version"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: pidof --version"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+    # pidof should find itself or shell
+    if pidof sh > /dev/null 2>&1 || pidof bash > /dev/null 2>&1; then
+        echo "PASS: pidof finds shell process"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: pidof finds shell process"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "pidof (not found)"
+fi
+
+# === watch tests ===
+if command -v watch > /dev/null 2>&1; then
+    run_test "watch --version" watch --version
+else
+    skip_test "watch (not found)"
+fi
+
+# === top tests ===
+if command -v top > /dev/null 2>&1; then
+    # top --version may output to stderr or return non-zero
+    if top --version > /dev/null 2>&1 || top --version 2>&1 | grep -qi "top\|procps\|version"; then
+        echo "PASS: top --version"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: top --version"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+    # Run top in batch mode for 1 iteration
+    if top -b -n 1 > /dev/null 2>&1; then
+        echo "PASS: top batch mode"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo "FAIL: top batch mode"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    skip_test "top (not found)"
+fi
+
+echo ""
+echo "=== procps ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"

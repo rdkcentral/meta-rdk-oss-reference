@@ -19,3 +19,10 @@ SRCREV = "6c3301111caa75c76e1b2acb1afb2d71341932ef"
 S = "${WORKDIR}/git"
 
 inherit pkgconfig autotools
+
+PACKAGE_BEFORE_PN += "${PN}-extras"
+FILES:${PN}-extras = " \
+    ${bindir}/bsdtar \
+    ${bindir}/bsdcpio \
+    ${bindir}/bsdcat \
+"

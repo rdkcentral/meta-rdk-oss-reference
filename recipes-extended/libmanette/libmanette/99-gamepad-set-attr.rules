@@ -1,0 +1,2 @@
+#Add the attributes to set Joystick property for Joy-con controller
+SUBSYSTEM=="input", ATTRS{name}=="Joy-Con (R)", KERNEL=="event*", ENV{ID_INPUT_JOYSTICK}="1", ENV{ID_INPUT_KEY}="1"

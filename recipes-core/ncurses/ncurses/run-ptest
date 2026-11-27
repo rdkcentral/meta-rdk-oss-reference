@@ -1,0 +1,282 @@
+#!/bin/bash
+# ncurses ptest - functional tests for ncurses utilities and libraries
+
+PASS_COUNT=0
+FAIL_COUNT=0
+SKIP_COUNT=0
+
+pass() {
+    echo "PASS: $1"
+    PASS_COUNT=$((PASS_COUNT + 1))
+}
+
+fail() {
+    echo "FAIL: $1"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+}
+
+skip() {
+    echo "SKIP: $1"
+    SKIP_COUNT=$((SKIP_COUNT + 1))
+}
+
+TMPDIR=$(mktemp -d)
+trap "rm -rf $TMPDIR" EXIT
+
+# ===== tput tests =====
+if command -v tput > /dev/null 2>&1; then
+    # tput should respond to basic queries
+    if tput -V 2>&1 | grep -qi "ncurses"; then
+        pass "tput -V"
+    else
+        fail "tput -V"
+    fi
+
+    # Query number of columns
+    if tput cols > /dev/null 2>&1; then
+        pass "tput cols"
+    else
+        fail "tput cols"
+    fi
+
+    # Query number of lines
+    if tput lines > /dev/null 2>&1; then
+        pass "tput lines"
+    else
+        fail "tput lines"
+    fi
+
+    # Query color support
+    if tput colors > /dev/null 2>&1; then
+        pass "tput colors"
+    else
+        fail "tput colors"
+    fi
+
+    # Initialize terminal (init)
+    if tput init > /dev/null 2>&1; then
+        pass "tput init"
+    else
+        fail "tput init"
+    fi
+
+    # Bold attribute
+    if tput bold > /dev/null 2>&1; then
+        pass "tput bold"
+    else
+        fail "tput bold"
+    fi
+
+    # Reset attributes
+    if tput sgr0 > /dev/null 2>&1; then
+        pass "tput sgr0"
+    else
+        fail "tput sgr0"
+    fi
+else
+    skip "tput (not found)"
+fi
+
+# ===== tset tests =====
+if command -v tset > /dev/null 2>&1; then
+    if tset -V 2>&1 | grep -qi "ncurses\|tset"; then
+        pass "tset -V"
+    else
+        fail "tset -V"
+    fi
+
+    # tset -s prints shell commands to set TERM
+    if tset -s 2>/dev/null | grep -qi "TERM"; then
+        pass "tset -s (print TERM)"
+    else
+        # May not work without a proper terminal
+        skip "tset -s (no terminal)"
+    fi
+else
+    skip "tset (not found)"
+fi
+
+# ===== infocmp tests =====
+if command -v infocmp > /dev/null 2>&1; then
+    if infocmp -V 2>&1 | grep -qi "ncurses"; then
+        pass "infocmp -V"
+    else
+        fail "infocmp -V"
+    fi
+
+    # Dump current terminal description
+    if infocmp 2>/dev/null | grep -q "bool\|num\|str\|colors\|cols"; then
+        pass "infocmp dump terminal"
+    else
+        fail "infocmp dump terminal"
+    fi
+
+    # Dump a specific terminal type
+    if infocmp vt100 2>/dev/null | grep -qi "vt100\|cols"; then
+        pass "infocmp vt100"
+    else
+        # vt100 might not be in terminfo-base
+        skip "infocmp vt100 (not in terminfo-base)"
+    fi
+
+    # Compare two terminals
+    if infocmp -d vt100 xterm 2>/dev/null; then
+        pass "infocmp compare terminals"
+    else
+        skip "infocmp compare (terminals not available)"
+    fi
+else
+    skip "infocmp (not found)"
+fi
+
+# ===== tic tests =====
+if command -v tic > /dev/null 2>&1; then
+    if tic -V 2>&1 | grep -qi "ncurses"; then
+        pass "tic -V"
+    else
+        fail "tic -V"
+    fi
+
+    # Create a minimal terminfo source and compile it
+    cat > "$TMPDIR/test.ti" <<'EOF'
+test-ptest|ptest dummy terminal,
+    cols#80,
+    lines#24,
+    colors#8,
+    am,
+    clear=\E[H\E[J,
+    cup=\E[%i%p1%d;%p2%dH,
+    cr=\r,
+EOF
+
+    if tic -o "$TMPDIR/terminfo" "$TMPDIR/test.ti" 2>/dev/null; then
+        pass "tic compile terminfo"
+
+        # Verify compiled terminfo exists
+        if [ -d "$TMPDIR/terminfo" ]; then
+            if find "$TMPDIR/terminfo" -type f 2>/dev/null | grep -q .; then
+                pass "tic output file exists"
+            else
+                fail "tic output file exists"
+            fi
+        else
+            fail "tic output directory"
+        fi
+
+        # Use infocmp to read back the compiled entry
+        if command -v infocmp > /dev/null 2>&1; then
+            if TERMINFO="$TMPDIR/terminfo" infocmp test-ptest 2>/dev/null | grep -q "cols"; then
+                pass "tic/infocmp round-trip"
+            else
+                fail "tic/infocmp round-trip"
+            fi
+        fi
+    else
+        fail "tic compile terminfo"
+    fi
+else
+    skip "tic (not found)"
+fi
+
+# ===== toe tests =====
+if command -v toe > /dev/null 2>&1; then
+    if toe -V 2>&1 | grep -qi "ncurses"; then
+        pass "toe -V"
+    else
+        fail "toe -V"
+    fi
+
+    # List available terminals
+    if toe 2>/dev/null | grep -q .; then
+        pass "toe list terminals"
+    else
+        # toe may have no output if terminfo-base is minimal
+        skip "toe list (empty terminfo)"
+    fi
+else
+    skip "toe (not found)"
+fi
+
+# ===== clear tests =====
+if command -v clear > /dev/null 2>&1; then
+    # clear just outputs escape sequences
+    if clear 2>/dev/null; then
+        pass "clear runs"
+    else
+        fail "clear runs"
+    fi
+else
+    skip "clear (not found)"
+fi
+
+# ===== reset tests =====
+if command -v reset > /dev/null 2>&1; then
+    # reset is typically a symlink to tset
+    if reset -V 2>&1 | grep -qi "ncurses\|tset"; then
+        pass "reset -V"
+    else
+        fail "reset -V"
+    fi
+else
+    skip "reset (not found)"
+fi
+
+# ===== tabs tests =====
+if command -v tabs > /dev/null 2>&1; then
+    if tabs -V 2>&1 | grep -qi "ncurses\|tabs"; then
+        pass "tabs -V"
+    else
+        fail "tabs -V"
+    fi
+else
+    skip "tabs (not found)"
+fi
+
+# ===== captoinfo tests =====
+if command -v captoinfo > /dev/null 2>&1; then
+    if captoinfo -V 2>&1 | grep -qi "ncurses"; then
+        pass "captoinfo -V"
+    else
+        fail "captoinfo -V"
+    fi
+else
+    skip "captoinfo (not found)"
+fi
+
+# ===== infotocap tests =====
+if command -v infotocap > /dev/null 2>&1; then
+    if infotocap -V 2>&1 | grep -qi "ncurses"; then
+        pass "infotocap -V"
+    else
+        fail "infotocap -V"
+    fi
+else
+    skip "infotocap (not found)"
+fi
+
+# ===== Library presence tests =====
+if ls /usr/lib/libncurses.so* > /dev/null 2>&1 || ls /usr/lib64/libncurses.so* > /dev/null 2>&1; then
+    pass "libncurses.so present"
+else
+    fail "libncurses.so present"
+fi
+
+if ls /usr/lib/libncursesw.so* > /dev/null 2>&1 || ls /usr/lib64/libncursesw.so* > /dev/null 2>&1; then
+    pass "libncursesw.so present"
+else
+    fail "libncursesw.so present"
+fi
+
+# ===== Terminfo database test =====
+if [ -d /usr/share/terminfo ] || [ -d /etc/terminfo ]; then
+    pass "terminfo database present"
+else
+    fail "terminfo database present"
+fi
+
+echo ""
+echo "=== ncurses ptest summary ==="
+echo "PASSED: $PASS_COUNT"
+echo "FAILED: $FAIL_COUNT"
+echo "SKIPPED: $SKIP_COUNT"
+echo "TOTAL: $((PASS_COUNT + FAIL_COUNT + SKIP_COUNT))"
