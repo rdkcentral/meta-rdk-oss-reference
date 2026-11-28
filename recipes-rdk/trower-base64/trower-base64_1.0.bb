@@ -1,11 +1,11 @@
 SUMMARY = "C implementation of base64 encode/decode"
-HOMEPAGE = "https://github.com/Comcast/trower-base64"
+HOMEPAGE = "https://github.com/rdkcentral/trower-base64"
 SECTION = "libs"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b1e01b26bacfc2232046c90a330332b3"
 
 SRCREV = "fbb9440ae2bc1118866baefcea7ff814f16613dd"
-SRC_URI = "git://github.com/Comcast/trower-base64.git;branch=main"
+SRC_URI = "git://github.com/rdkcentral/trower-base64.git;branch=support/RDK-E"
 
 S = "${WORKDIR}/git"
 
