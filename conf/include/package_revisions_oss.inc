@@ -962,6 +962,9 @@ PACKAGE_ARCH:pn-zlib ?= "${OSS_LAYER_ARCH}"
 PR:pn-zstd ?= "r1"
 PACKAGE_ARCH:pn-zstd ?= "${OSS_LAYER_ARCH}"
 
+PR:pn-audit ?= "r1"
+PACKAGE_ARCH:pn-audit ?= "${OSS_LAYER_ARCH}"
+
 PR:pn-webrtc-audio-processing ?= "r0"
 PACKAGE_ARCH:pn-webrtc-audio-processing ?= "${OSS_LAYER_ARCH}"
 
